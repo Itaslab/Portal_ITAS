@@ -1,0 +1,8 @@
+# Ignorar archivos de bases de datos
+*.db
+*.sqlite
+*.sqlite3
+# Node.js
+node_modules/
+npm-debug.log*
+.env

@@ -1,0 +1,35 @@
+.nvbar{
+    font-family: "Orbitron"!important;
+    color: white !important;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+nav{
+    background-color: midnightblue !important;
+}
+
+.main{
+    font-family: 'Chakra Petch';
+
+}
+
+h1{
+    font-family: 'Chakra Petch';
+    font-size: 1.5rem;
+}
+
+h5{
+    font-family: 'Chakra Petch';
+    font-size: 1.1rem;
+}
+
+p{
+    font-family:'Chakra Petch' ;
+    font-size: 1.0rem;
+}
+
+div{
+    font-family:'Chakra Petch' ;
+
+}
