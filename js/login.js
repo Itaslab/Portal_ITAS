@@ -15,7 +15,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
         if(data.success){
             // Login correcto
-            window.location.href = "pages/index.html"; // Redirigir a menú principal
+            window.location.href = "pages/Front_APPs.html"; // Redirigir a menú principal
             localStorage.setItem('usuario', email); // Guardar usuario
         } else {
             // Error del backend
