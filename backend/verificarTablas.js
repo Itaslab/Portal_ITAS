@@ -1,23 +1,30 @@
-const sqlite3 = require("sqlite3").verbose();
-const path = require("path");
+const sql = require("mssql");
 
-// Ajustá la ruta a donde está tu archivo .db
-const dbPath = path.join(__dirname, "../Portal_Itas.db");
+const config = {
+    user: "a002103",
+    password: "6uaE4aZS9hZf_",
+    server: "10.4.48.173",   // ejemplo "192.168.0.105"
+    port:1433,
+    database: "OCTOPUSPROD",
+    options: {
+        encrypt: false,
+        trustServerCertificate: true
+    }
+};
 
-const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
-    if (err) return console.error("Error al abrir DB:", err.message);
-    console.log("DB abierta correctamente");
+async function testConnection() {
+    try {
+        const pool = await sql.connect(config);
+        console.log("✅ Conexión exitosa a SQL Server");
 
-    // Listar todas las tablas
-    db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, tables) => {
-        if (err) console.error(err);
-        else console.log("Tablas visibles en la DB:", tables);
-    });
+        // probamos una query simple
+        const result = await pool.request().query("SELECT 1 AS number");
+        console.log("Resultado:", result.recordset);
 
-    // Verificar si existe ejecucionesRealizadas
-    db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='ejecucionesRealizadas'", [], (err, row) => {
-        if (err) console.error(err);
-        else if (row) console.log("La tabla 'ejecucionesRealizadas' existe ✅");
-        else console.log("La tabla 'ejecucionesRealizadas' NO se encuentra ❌");
-    });
-});
+        await pool.close();
+    } catch (err) {
+        console.error("❌ Error al conectar:", err);
+    }
+}
+
+testConnection();

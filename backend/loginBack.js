@@ -1,22 +1,24 @@
 // loginBack.js
-const sqlite3 = require("sqlite3").verbose();
+const { sql, poolPromise } = require("./db");
 
-// Abrimos la base de datos (ajustá la ruta si es necesario)
-const db = new sqlite3.Database("../Portal_Itas.db", sqlite3.OPEN_READWRITE, (err) => {
-    if (err) console.error("Error al abrir la DB:", err.message);
-    else console.log("Conectado a la base de datos Usuarios");
-});
-
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     const { email, password } = req.body;
-    const sql = "SELECT * FROM Usuarios WHERE email = ? AND password = ?";
 
-    db.get(sql, [email, password], (err, row) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ success: false, error: "Error de base de datos" });
+    try {
+        const pool = await poolPromise;
+        const result = await pool
+            .request()
+            .input("email", sql.VarChar, email)
+            .input("password", sql.VarChar, password)
+            .query("SELECT * FROM Usuarios WHERE email = @email AND password = @password");
+
+        if (result.recordset.length > 0) {
+            return res.json({ success: true });
+        } else {
+            return res.json({ success: false, error: "Usuario o contraseña incorrectos" });
         }
-        if (row) return res.json({ success: true });
-        res.json({ success: false, error: "Usuario o contraseña incorrectos" });
-    });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: "Error de base de datos" });
+    }
 };
