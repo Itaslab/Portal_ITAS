@@ -1,30 +1,24 @@
 // galeriaEjecuciones.js
-const path = require("path");
-const sqlite3 = require("sqlite3").verbose();
+const { sql, poolPromise } = require("./db");
 
-const dbPath = path.join(__dirname, "../Portal_Itas.db");
+module.exports = async (req, res) => {
+    try {
+        const pool = await poolPromise;
 
-module.exports = (req, res) => {
-  console.log("DB path que se está usando:", dbPath);
+        const query = `
+            SELECT * 
+            FROM ejecucionesRealizadas
+            ORDER BY id DESC
+        `;
 
-  const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READONLY, (err) => {
-    if (err) {
-      console.error("Error al abrir DB:", err.message);
-      return res.status(500).json({ success: false, error: "Error al abrir DB" });
+        const result = await pool.request().query(query);
+
+        // Enviar resultado en el mismo formato que antes
+        res.json({ success: true, data: result.recordset });
+
+    } catch (err) {
+        console.error("Error al consultar ejecucionesRealizadas:", err);
+        res.status(500).json({ success: false, error: err.message });
     }
-  });
-
-  const sql = "SELECT * FROM ejecucionesRealizadas ORDER BY id DESC";
-
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      console.error("Error al consultar:", err.message);
-      res.status(500).json({ success: false, error: err.message }); // 🔹 cambio aquí
-    } else {
-      // 🔹 Cambiado de res.json(rows) a res.json({ success: true, data: rows })
-      res.json({ success: true, data: rows });
-    }
-  });
-
-  db.close();
 };
+
