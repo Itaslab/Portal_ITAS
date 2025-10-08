@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
             .request()
             .input("email", sql.VarChar, email)
             .input("password", sql.VarChar, password)
-            .query("SELECT * FROM Usuarios WHERE email = @email AND password = @password");
+            .query("SELECT * FROM Usuarios WHERE EMAIL = @email AND Pass = @password");
 
         if (result.recordset.length > 0) {
             return res.json({ success: true });
