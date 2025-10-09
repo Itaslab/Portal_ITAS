@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/DiseñoGeneral.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+  <title>ABM Usuarios</title>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar position-relative">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+          <a class="navbar-brand nvbar" href="#">
+            <img src="../images/teco.jpg" alt="Logo" width="100" height="30" class="d-inline-block align-text-top">
+            <span class="ms-2">PORTAL ITAS</span>
+          </a>
+          <span class="navbar-text nvbar position-absolute top-50 start-50 translate-middle">ABM de Usuarios</span>
+
+        </div>
+      </nav>
+<div class="container mt-4">
+    <h5 class="mb-3">Alta de Usuario:</h5>
+  <!-- Contenedor del formulario -->
+  <div class="container">
+    <div class="form-container">
+      <h5 class="mb-3"></h5>
+      <form id="userForm">
+        <!-- Primera fila -->
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label">Legajo:</label>
+            <input type="text" class="form-control" id="legajo" placeholder="123456">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Apellido:</label>
+            <input type="text" class="form-control" id="apellido" placeholder="Apellido">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Nombre:</label>
+            <input type="text" class="form-control" id="nombre" placeholder="Nombre">
+          </div>
+        </div>
+
+        <!-- Segunda fila -->
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label">Perfil:</label>
+            <select class="form-select" id="perfil">
+              <option>User</option>
+              <option>Admin</option>
+              <option>SuperAdmin</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Mail:</label>
+            <div class="d-flex align-items-center">
+              <input type="email" class="form-control" id="mail" placeholder="usuario@correo.com">
+              <span class="error-icon" id="mailError"></span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Área:</label>
+            <div class="d-flex align-items-center">
+              <input type="text" class="form-control" id="area" placeholder="Área">
+              <span class="error-icon" id="areaError"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tercera fila -->
+        <div class="row mb-3">
+          <div class="col-md-2">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="activo">
+              <label class="form-check-label" for="activo">Activo</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Permisos -->
+        <h6 class="mt-3">Permisos:</h6>
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="perm1">
+              <label class="form-check-label" for="perm1">Ejecutores y Robot</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="perm2">
+              <label class="form-check-label" for="perm2">ABM Usuarios</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-end">
+          <button type="reset" class="btn btn-secondary me-2">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JS externo -->
+  <script src="../js/abmUsuarios.js"></script>
+</body>
+</html>

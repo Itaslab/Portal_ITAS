@@ -23,7 +23,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         }
  
     } catch(err){
-        alert("Error de conexiÃ³n con el servidor");
+        alert("Error de conexionn con el servidor");
         console.error(err);
     }
 });
