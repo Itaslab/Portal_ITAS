@@ -32,7 +32,6 @@
     <div class="form-container">
       <h5 class="mb-3"></h5>
       <form id="userForm">
-        <!-- Primera fila -->
         <div class="row mb-3">
           <div class="col-md-4">
             <label class="form-label">Legajo:</label>
@@ -48,33 +47,64 @@
           </div>
         </div>
 
-        <!-- Segunda fila -->
+        <!-- Fila 1-->
         <div class="row mb-3">
           <div class="col-md-4">
-            <label class="form-label">Perfil:</label>
-            <select class="form-select" id="perfil">
-              <option>User</option>
-              <option>Admin</option>
-              <option>SuperAdmin</option>
-            </select>
+            <label class="form-label">Email:</label>
+            <input type="email" class="form-control" id="email" placeholder="usuario@correo.com">
           </div>
           <div class="col-md-4">
-            <label class="form-label">Mail:</label>
-            <div class="d-flex align-items-center">
-              <input type="email" class="form-control" id="mail" placeholder="usuario@correo.com">
-              <span class="error-icon" id="mailError"></span>
-            </div>
+            <label class="form-label">Referente:</label>
+            <input type="text" class="form-control" id="referente" placeholder="Referente">
           </div>
           <div class="col-md-4">
-            <label class="form-label">Área:</label>
-            <div class="d-flex align-items-center">
-              <input type="text" class="form-control" id="area" placeholder="Área">
-              <span class="error-icon" id="areaError"></span>
-            </div>
+            <label class="form-label">Fecha de Nacimiento:</label>
+            <input type="date" class="form-control" id="fecha_nacimiento">
           </div>
         </div>
 
-        <!-- Tercera fila -->
+        <!-- Fila 2 -->
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label">Empresa:</label>
+            <select class="form-select" id="empresa">
+              <option value="">Seleccione una empresa</option>
+              <option value="MEGA TECH S.A.">MEGA TECH S.A.</option>
+              <option value="SOFRE DIGITAL S.A.">SOFRE DIGITAL S.A.</option>
+              <option value="TELECOM">TELECOM</option>
+            </select>
+          </div>
+            <div class="col-md-4">
+            <label class="form-label">Convenio:</label>
+            <select class="form-select" id="convenio" required>
+              <option value="">Seleccione un convenio</option>
+              <option value="FC">FC</option>
+              <option value="SAT">SAT</option>
+              <option value="FOETRA">FOETRA</option>
+              <option value="N/A">N/A</option>
+              <option value="FOETRA M">FOETRA M</option>
+              <option value="FOEESITRA">FOEESITRA</option>
+              <option value="FOEESITRA M">FOEESITRA M</option>
+              <option value="FOESSITRA">FOESSITRA</option>
+              <option value="SITRATEL">SITRATEL</option>
+            </select>
+          </div>
+         <div class="col-md-4">
+            <label class="form-label">Ciudad:</label>
+            <select class="form-select" id="ciudad" required>
+              <option value="">Seleccione una ciudad</option>
+              <option value="Bs As">Bs As</option>
+              <option value="Córdoba">Córdoba</option>
+              <option value="Entre Ríos">Entre Ríos</option>
+              <option value="La Pampa">La Pampa</option>
+              <option value="Misiones">Misiones</option>
+              <option value="Rosario">Rosario</option>
+              <option value="Santa Fe">Santa Fe</option>
+            </select>
+          </div>
+        
+        </div>
+        <!-- Fila 3-->
         <div class="row mb-3">
           <div class="col-md-2">
             <div class="form-check">
