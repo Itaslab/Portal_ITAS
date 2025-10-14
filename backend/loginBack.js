@@ -30,8 +30,8 @@ module.exports = async (req, res) => {
         }
 
     } catch (err) {
-        console.error("Error en login:", err);
-        res.status(500).json({ success: false, error: "Error de base de datos" });
-    }
+    console.error("Error en login:", err.message, err);
+    res.status(500).json({ success: false, error: err.message });
+}
 };
 
