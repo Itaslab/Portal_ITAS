@@ -6,19 +6,32 @@ module.exports = async (req, res) => {
 
     try {
         const pool = await poolPromise;
+
         const result = await pool
             .request()
             .input("email", sql.VarChar, email)
-            .input("password", sql.VarChar, password)
-            .query("SELECT * FROM Usuarios WHERE EMAIL = @email AND Pass = @password");
+            .query(`
+                SELECT u.ID_Usuario, w.Password
+                FROM USUARIO u
+                JOIN WEB_PORTAL_ITAS_USR w ON u.ID_Usuario = w.ID_Usuario
+                WHERE u.Email = @email
+            `);
 
-        if (result.recordset.length > 0) {
-            return res.json({ success: true });
-        } else {
-            return res.json({ success: false, error: "Usuario o contraseña incorrectos" });
+        if (result.recordset.length === 0) {
+            return res.json({ success: false, error: "Usuario no encontrado" });
         }
+
+        const user = result.recordset[0];
+
+        if (user.Password === password) {
+            return res.json({ success: true, ID_Usuario: user.ID_Usuario });
+        } else {
+            return res.json({ success: false, error: "Contraseña incorrecta" });
+        }
+
     } catch (err) {
-        console.error(err);
+        console.error("Error en login:", err);
         res.status(500).json({ success: false, error: "Error de base de datos" });
     }
 };
+
