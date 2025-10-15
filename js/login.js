@@ -19,7 +19,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             localStorage.setItem('usuario', email); // Guardar usuario
         } else {
             // Error del backend
-            alert("Error: " + data.error);
+            alert("Error: " );
         }
  
     } catch(err){
