@@ -38,13 +38,18 @@ app.get("/test", async (req, res) => {
 });
 // ---------------------------------------------------
 
+
 // ------------------- SERVIR FRONTEND -------------------
-app.use("/pages", express.static(path.join(__dirname, "../pages")));
-app.use("/js", express.static(path.join(__dirname, "../js")));
-app.use("/css", express.static(path.join(__dirname, "../css")));
-app.use("/images", express.static(path.join(__dirname, "../images")));
-app.use(express.static(path.join(__dirname, "../"))); // fallback
+
+// Archivos estáticos (HTML, JS, CSS, imágenes)
+app.use(express.static(path.join(__dirname, "..")));
+
+// Ruta principal para el frontend
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "index.html"));
+});
 // ------------------------------------------------------
+
 
 // Configuración HTTPS
 const httpsOptions = {

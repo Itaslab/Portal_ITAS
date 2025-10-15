@@ -7,31 +7,28 @@ module.exports = async (req, res) => {
     try {
         const pool = await poolPromise;
 
-        const result = await pool
-            .request()
+        const result = await pool.request()
             .input("email", sql.VarChar, email)
-            .query(`
-                SELECT u.ID_Usuario, w.Password
-                FROM USUARIO u
-                JOIN WEB_PORTAL_ITAS_USR w ON u.ID_Usuario = w.ID_Usuario
-                WHERE u.Email = @email
-            `);
+            .input("password", sql.VarChar, password)
+            .query("SELECT * FROM dbo.USUARIO_WEB WHERE Email = @email AND Password = @password");
 
         if (result.recordset.length === 0) {
-            return res.json({ success: false, error: "Usuario no encontrado" });
+            return res.json({ success: false, error: "Usuario o contraseña incorrectos" });
         }
 
         const user = result.recordset[0];
 
-        if (user.Password === password) {
-            return res.json({ success: true, ID_Usuario: user.ID_Usuario });
-        } else {
-            return res.json({ success: false, error: "Contraseña incorrecta" });
-        }
+        return res.json({
+            success: true,
+            message: "Login correcto",
+            ID_Usuario: user.ID_Usuario || null,
+            Email: user.Email
+        });
 
     } catch (err) {
-    console.error("Error en login:", err.message, err);
-    res.status(500).json({ success: false, error: err.message });
-}
+        console.error("Error en login:", err.message, err);
+        res.status(500).json({ success: false, error: err.message });
+    }
 };
+
 
