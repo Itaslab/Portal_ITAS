@@ -10,7 +10,7 @@ const login = require("./loginBack");
 const listaEjecuciones = require("./listaEjecuciones");
 const crearEjecucion = require("./crearEjecucion");
 const obtenerEjecuciones = require("./galeriaEjecuciones");
-const { sql, poolPromise } = require("./db"); // <-- agregamos db aquí
+const { sql, poolPromise } = require("./db");
 
 const app = express();
 
@@ -18,32 +18,33 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Rutas API
+// ------------------- RUTAS API -------------------
 app.post("/login", login);
 app.get("/flujos", listaEjecuciones);
 app.post("/crearEjecucion", crearEjecucion);
 app.get("/ejecuciones", obtenerEjecuciones);
 
-// ------------------- NUEVA RUTA DE TEST -------------------
+// ------------------- RUTA DE TEST -------------------
 app.get("/test", async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request()
-            .query("SELECT * FROM A002103.USUARIO"); // consulta simple
+            .query("SELECT TOP 1 ID_Usuario, Email FROM A002103.USUARIO"); // simple
         res.json(result.recordset);
     } catch (err) {
         console.error("Error en /test:", err);
         res.status(500).json({ error: "Error de base de datos" });
     }
 });
-// -----------------------------------------------------------
+// ---------------------------------------------------
 
-// Servir frontend
+// ------------------- SERVIR FRONTEND -------------------
 app.use("/pages", express.static(path.join(__dirname, "../pages")));
 app.use("/js", express.static(path.join(__dirname, "../js")));
 app.use("/css", express.static(path.join(__dirname, "../css")));
 app.use("/images", express.static(path.join(__dirname, "../images")));
-app.use(express.static(path.join(__dirname, "../")));
+app.use(express.static(path.join(__dirname, "../"))); // fallback
+// ------------------------------------------------------
 
 // Configuración HTTPS
 const httpsOptions = {
@@ -55,4 +56,5 @@ const PORT = 8080;
 https.createServer(httpsOptions, app).listen(PORT, () => {
     console.log(`Servidor HTTPS corriendo en https://10.4.48.116:${PORT}`);
 });
+
 
