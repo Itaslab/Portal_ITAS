@@ -1,19 +1,20 @@
+// --- solicitarEjecuciones.js ---
 const dropdown = document.getElementById("dropdownFlujos");
 const detalle = document.getElementById("detalleFlujo");
 const instrucciones = document.getElementById("instruccionesFlujo");
 const flujoTipoSpan = document.getElementById("flujoTipo");
 const prioSpan = document.getElementById("prioFlujo");
 const datosSolicitados = document.getElementById("datosSolicitados");
+const inputUsuario = document.getElementById("inputUsuario");
 
-let flujos = []; // Array que se llenará desde la DB
+let flujos = [];
 
-// Traer los flujos desde el backend
-fetch("http://localhost:8000/flujos")
+// Cargar flujos desde backend
+fetch("/flujos")
   .then(res => res.json())
   .then(data => {
-      if(data.success){
-          flujos = data.flujos; // Guardamos los flujos
-          // Poblar dropdown
+      if (data.success) {
+          flujos = data.flujos;
           flujos.forEach(f => {
               const option = document.createElement("option");
               option.value = f.nombre;
@@ -24,10 +25,9 @@ fetch("http://localhost:8000/flujos")
   })
   .catch(err => console.error("Error al cargar flujos:", err));
 
-// Cambiar detalle, instrucciones y demás al seleccionar un flujo
 dropdown.addEventListener("change", () => {
     const flujoSeleccionado = flujos.find(f => f.nombre === dropdown.value);
-    if(flujoSeleccionado){
+    if (flujoSeleccionado) {
         detalle.value = flujoSeleccionado.detalle;
         instrucciones.value = flujoSeleccionado.instrucciones;
         datosSolicitados.textContent = flujoSeleccionado.campos;
@@ -42,23 +42,15 @@ dropdown.addEventListener("change", () => {
     }
 });
 
-
-
-//botones de Enviar y Limpiar 
-
 const btnLimpiar = document.getElementById("btnLimpiar");
 const btnEnviar = document.getElementById("btnEnviar");
 
 btnLimpiar.addEventListener("click", () => {
-    // Limpiar dropdown
     dropdown.value = "";
-    // Limpiar detalle, instrucciones
     detalle.value = "";
     instrucciones.value = "";
-    // Limpiar datos solicitados y texto adicional
-    document.getElementById("datosSolicitados").textContent = "";
-    document.getElementById("inputUsuario").value = "";
-    // Limpiar tipo y prioridad
+    datosSolicitados.textContent = "";
+    inputUsuario.value = "";
     flujoTipoSpan.textContent = "";
     prioSpan.textContent = "";
 });
@@ -66,7 +58,7 @@ btnLimpiar.addEventListener("click", () => {
 btnEnviar.addEventListener("click", () => {
     const flujo = dropdown.value;
     const datosValor = datosSolicitados.textContent;
-    const tipoFlujo = flujoTipo.textContent;
+    const tipoFlujo = flujoTipoSpan.textContent;
     const prioFlujoValor = prioSpan.textContent;
     const solicitante = localStorage.getItem("usuario") || "UsuarioDemo";
     const identificador = inputUsuario.value;
@@ -82,14 +74,14 @@ btnEnviar.addEventListener("click", () => {
         FHInicio: new Date().toLocaleString()
     };
 
-    fetch("http://localhost:8000/crearEjecucion", {
+    fetch("/crearEjecucion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
     })
     .then(res => res.json())
     .then(data => {
-        if(data.success){
+        if (data.success) {
             alert("Ejecución creada correctamente!");
             window.location.href = "EjecucionesPorRobot.html";
         } else {

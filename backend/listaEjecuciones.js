@@ -7,16 +7,16 @@ module.exports = async (req, res) => {
 
         const query = `
             SELECT
-                nombreFlujo AS nombre,
-                descripcion AS detalle,
-                instrucciones AS instrucciones,
-                campos AS campos,
-                tipoFlujo AS flujoTipo,
-                prioridad AS prio,
-                subTipoFlujo AS subTipoFlujo,
-                intentosAutomaticos AS intentos,
-                cantPorLote AS cantidad
-            FROM flujos
+                Titulo AS nombreFlujo,  
+                Descripcion AS descripcion,
+                Instrucciones AS instrucciones,
+                Campos AS campos,
+                Tipo_De_Flujo AS  tipoFlujo,
+                Prioridad AS prioridad,
+                SubTipo_De_Flujo AS subTipoFlujo,
+                Intentos_Automaticos AS intentosAutomaticos,
+                Cant_Por_Lote AS cantPorLote
+            FROM a002103.RPA_FLUJOS;
         `;
 
         const result = await pool.request().query(query);
