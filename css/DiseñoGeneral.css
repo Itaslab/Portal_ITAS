@@ -20,7 +20,7 @@ h1{
 }
 
 h5{
-    font-family: 'Chakra Petch';
+    font-family: 'Chakra Petch' !important;
     font-size: 1.1rem;
 }
 
@@ -30,7 +30,7 @@ p{
 }
 
 div{
-    font-family:'Chakra Petch' ;
+    font-family:'Chakra Petch' !important ;
 
 }
 
