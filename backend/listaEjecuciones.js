@@ -6,17 +6,17 @@ module.exports = async (req, res) => {
         const pool = await poolPromise;
 
         const query = `
-            SELECT
-                Titulo AS nombreFlujo,  
-                Descripcion AS descripcion,
-                Instrucciones AS instrucciones,
-                Campos AS campos,
-                Tipo_De_Flujo AS  tipoFlujo,
-                Prioridad AS prioridad,
-                SubTipo_De_Flujo AS subTipoFlujo,
-                Intentos_Automaticos AS intentosAutomaticos,
-                Cant_Por_Lote AS cantPorLote
-            FROM a002103.RPA_FLUJOS;
+    SELECT
+        Titulo AS nombre,        -- dropdown.value = f.nombre
+        Descripcion AS detalle,  -- textarea detalle = f.detalle
+        Instrucciones AS instrucciones,
+        Campos AS campos,
+        Tipo_De_Flujo AS flujoTipo,
+        Prioridad AS prio,
+        SubTipo_De_Flujo AS subTipoFlujo,
+        Intentos_Automaticos AS intentos,
+        Cant_Por_Lote AS cantidad
+    FROM a002103.RPA_FLUJOS;
         `;
 
         const result = await pool.request().query(query);
