@@ -10,6 +10,7 @@ const login = require("./loginBack");
 const listaEjecuciones = require("./listaEjecuciones");
 const crearEjecucion = require("./crearEjecucion");
 const obtenerEjecuciones = require("./galeriaEjecuciones");
+const generarUsuario = require("./generarUsuario_tbUsuarios");
 const { sql, poolPromise } = require("./db");
 
 const app = express();
@@ -23,6 +24,7 @@ app.post("/login", login);
 app.get("/flujos", listaEjecuciones);
 app.post("/crearEjecucion", crearEjecucion);
 app.get("/ejecuciones", obtenerEjecuciones);
+app.use("/", generarUsuario);
 
 
 // ------------------- SERVIR FRONTEND -------------------

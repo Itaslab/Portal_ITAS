@@ -43,14 +43,48 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Mostrar resultado
-    resultado.textContent = `
-      Usuario guardado:
-      ${valores.nombre} ${valores.apellido}, Legajo: ${valores.legajo}, Email: ${valores.email},
-      Referente: ${valores.referente}, Fecha Nacimiento: ${valores.fecha_nacimiento},
-      Empresa: ${valores.empresa}, Alias: ${valores.alias}, Convenio: ${valores.convenio}, Ciudad: ${valores.ciudad}
-    `;
-    resultado.style.color = 'green';
+    // -------------------- ENVIAR AL BACKEND --------------------
+    try {
+      const res = await fetch('/registrar_usuario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Apellido: valores.apellido,
+          Nombre: valores.nombre,
+          Alias: valores.alias,
+          Legajo: valores.legajo,
+          Email: valores.email,
+          Referente: valores.referente,
+          Fecha_Nacimiento: valores.fecha_nacimiento,
+          Empresa: valores.empresa,
+          Convenio: valores.convenio,
+          Ciudad: valores.ciudad
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.status === 201) {
+        // Usuario registrado correctamente
+        resultado.textContent = `Usuario registrado correctamente: ${valores.nombre} ${valores.apellido}`;
+        resultado.style.color = 'green';
+        form.reset();
+      } else if (res.status === 409) {
+        // Usuario ya existe
+        resultado.textContent = data.mensaje || 'El usuario ya existe';
+        resultado.style.color = 'orange';
+      } else {
+        // Otro error
+        resultado.textContent = data.mensaje || 'Error al registrar usuario';
+        resultado.style.color = 'red';
+      }
+
+    } catch (error) {
+      console.error('Error en la conexión con el servidor:', error);
+      resultado.textContent = 'Error de conexión con el servidor';
+      resultado.style.color = 'red';
+    }
+    // -------------------------------------------------------------
   });
 
   btnCancelar.addEventListener('click', () => {
