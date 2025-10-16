@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: 3, name: "Helix", category: "Telecom", collection: "Gestión", img: "../images/bmx_helix.png" },
     { id: 4, name: "Compartido", category: "Privados", collection: "Gestión", img: "https://img.icons8.com/fluency/48/folder-invoices.png" },
     { id: 5, name: "Itickets", category: "Telecom", collection: "Tickets", img: "../images/itickets.png" },
-    { id: 6, name: "ABM Usuarios", category: "Privado", collection: "Gestión", img: "../images/Abm_Usuarios.png" }
+    { id: 6, name: "ABM Usuarios", category: "Privado", collection: "Gestión", img: "../images/Abm_Usuarios.png",url:"../pages/AbmUsuarios.html" }
   ];
 
   let favorites = new Set();
