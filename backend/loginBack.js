@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
         const result = await pool.request()
             .input("email", sql.VarChar, email)
             .input("password", sql.VarChar, password)
-            .query("SELECT * FROM dbo.USUARIO_WEB WHERE Email = @email AND Password = @password");
+            .query("SELECT u.ID_Usuario, w.Password FROM a002103.USUARIO u inner join  a002103.WEB_PORTAL_ITAS_USR w ON u.ID_Usuario = w.ID_Usuario WHERE u.Email = @email");
 
         if (result.recordset.length === 0) {
             return res.json({ success: false, error: "Usuario o contraseña incorrectos" });

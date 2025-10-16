@@ -24,20 +24,6 @@ app.get("/flujos", listaEjecuciones);
 app.post("/crearEjecucion", crearEjecucion);
 app.get("/ejecuciones", obtenerEjecuciones);
 
-// ------------------- RUTA DE TEST -------------------
-app.get("/test", async (req, res) => {
-    try {
-        const pool = await poolPromise;
-        const result = await pool.request()
-            .query("SELECT TOP 1 ID_Usuario, Email FROM A002103.USUARIO"); // simple
-        res.json(result.recordset);
-    } catch (err) {
-        console.error("Error en /test:", err);
-        res.status(500).json({ error: "Error de base de datos" });
-    }
-});
-// ---------------------------------------------------
-
 
 // ------------------- SERVIR FRONTEND -------------------
 
