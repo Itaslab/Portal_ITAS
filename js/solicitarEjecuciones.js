@@ -1,8 +1,6 @@
-// --- solicitarEjecuciones.js ---
 const dropdown = document.getElementById("dropdownFlujos");
 const detalle = document.getElementById("detalleFlujo");
 const instrucciones = document.getElementById("instruccionesFlujo");
-
 const datosSolicitados = document.getElementById("datosSolicitados");
 const inputUsuario = document.getElementById("inputUsuario");
 
@@ -16,7 +14,7 @@ fetch("/flujos")
           flujos = data.flujos;
           flujos.forEach(f => {
               const option = document.createElement("option");
-              option.value = f.nombre;
+              option.value = f.Id_Flujo; // enviamos el ID, no el nombre
               option.textContent = f.nombre;
               dropdown.appendChild(option);
           });
@@ -25,17 +23,15 @@ fetch("/flujos")
   .catch(err => console.error("Error al cargar flujos:", err));
 
 dropdown.addEventListener("change", () => {
-    const flujoSeleccionado = flujos.find(f => f.nombre === dropdown.value);
+    const flujoSeleccionado = flujos.find(f => f.Id_Flujo == dropdown.value);
     if (flujoSeleccionado) {
         detalle.value = flujoSeleccionado.detalle;
         instrucciones.value = flujoSeleccionado.instrucciones;
         datosSolicitados.textContent = flujoSeleccionado.campos;
-
     } else {
         detalle.value = "";
         instrucciones.value = "";
         datosSolicitados.textContent = "";
-
     }
 });
 
@@ -48,20 +44,17 @@ btnLimpiar.addEventListener("click", () => {
     instrucciones.value = "";
     datosSolicitados.textContent = "";
     inputUsuario.value = "";
-
 });
 
 btnEnviar.addEventListener("click", () => {
-    const flujo = dropdown.value;
+    const flujo = parseInt(dropdown.value); // aseguramos que sea INT
     const datosValor = datosSolicitados.textContent;
-
     const solicitante = parseInt(localStorage.getItem("idUsuario")) || 0;
     const identificador = inputUsuario.value;
 
     const payload = {
         flujoSeleccionado: flujo,
         datos: datosValor,
-
         solicitante,
         identificador,
         estado: "En proceso",
@@ -84,5 +77,3 @@ btnEnviar.addEventListener("click", () => {
     })
     .catch(err => console.error("Error:", err));
 });
-
-

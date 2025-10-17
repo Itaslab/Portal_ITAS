@@ -7,8 +7,9 @@ module.exports = async (req, res) => {
 
         const query = `
             SELECT
-                Titulo AS nombre,        -- dropdown.value = f.nombre
-                Descripcion AS detalle,  -- textarea detalle = f.detalle
+                Id_Flujo,                -- ahora traemos el ID
+                Titulo AS nombre,
+                Descripcion AS detalle,
                 Instrucciones AS instrucciones,
                 Campos AS campos,
                 Tipo_De_Flujo AS flujoTipo,
@@ -21,7 +22,6 @@ module.exports = async (req, res) => {
 
         const result = await pool.request().query(query);
 
-        // 🧹 Limpieza de <br> para mostrar saltos de línea reales en el front
         const flujosLimpios = result.recordset.map(f => ({
             ...f,
             detalle: f.detalle ? f.detalle.replace(/<br\s*\/?>/gi, '\n') : '',

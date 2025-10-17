@@ -1,4 +1,3 @@
-// crearEjecucion.js
 const { sql, poolPromise } = require("./db");
 
 module.exports = async (req, res) => {
@@ -29,7 +28,7 @@ module.exports = async (req, res) => {
         const tasklistResult = await tasklistRequest
             .input("Id_Usuario", sql.Int, solicitante)
             .input("Identificador", sql.VarChar, identificador)
-            .input("Id_Flujo", sql.VarChar, flujoSeleccionado)
+            .input("Id_Flujo", sql.Int, flujoSeleccionado) // ahora es INT
             .input("Titulo_Tasklist", sql.VarChar, tituloTasklist)
             .query(insertTasklistQuery);
 
@@ -38,7 +37,6 @@ module.exports = async (req, res) => {
 
         // --- 2️⃣ Insert en RPA_RESULTADOS ---
         const lineas = datos.split('\n').filter(l => l.trim() !== '');
-
         for (let i = 0; i < lineas.length; i++) {
             const requestResultado = new sql.Request(transaction);
             await requestResultado
@@ -51,7 +49,6 @@ module.exports = async (req, res) => {
                 `);
         }
 
-        // --- 3️⃣ Confirmar transacción ---
         await transaction.commit();
         res.json({ success: true, id_tasklist, tituloTasklist });
 
