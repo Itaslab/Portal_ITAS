@@ -55,7 +55,7 @@ btnEnviar.addEventListener("click", () => {
     const flujo = dropdown.value;
     const datosValor = datosSolicitados.textContent;
 
-    const solicitante = localStorage.getItem("usuario") || "UsuarioDemo";
+    const solicitante = parseInt(localStorage.getItem("idUsuario")) || 0;
     const identificador = inputUsuario.value;
 
     const payload = {

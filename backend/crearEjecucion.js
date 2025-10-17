@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
         `;
 
         const tasklistResult = await tasklistRequest
-            .input("Id_Usuario", sql.VarChar, solicitante)
+            .input("Id_Usuario", sql.Int, solicitante)
             .input("Identificador", sql.VarChar, identificador)
             .input("Id_Flujo", sql.VarChar, flujoSeleccionado)
             .query(insertTasklistQuery);
