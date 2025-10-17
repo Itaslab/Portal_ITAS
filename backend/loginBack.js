@@ -1,4 +1,3 @@
-// loginBack.js
 const { sql, poolPromise } = require("./db");
 
 module.exports = async (req, res) => {
@@ -9,8 +8,7 @@ module.exports = async (req, res) => {
 
         const result = await pool.request()
             .input("email", sql.VarChar, email)
-            .input("password", sql.VarChar, password)
-            .query("SELECT u.ID_Usuario, w.Password FROM a002103.USUARIO u inner join  a002103.WEB_PORTAL_ITAS_USR w ON u.ID_Usuario = w.ID_Usuario WHERE u.Email = @email");
+            .query("SELECT u.ID_Usuario, w.Password FROM a002103.USUARIO u INNER JOIN a002103.WEB_PORTAL_ITAS_USR w ON u.ID_Usuario = w.ID_Usuario WHERE u.Email = @email");
 
         if (result.recordset.length === 0) {
             return res.json({ success: false, error: "Usuario o contraseña incorrectos" });
@@ -18,11 +16,16 @@ module.exports = async (req, res) => {
 
         const user = result.recordset[0];
 
+        // Aquí validamos la contraseña
+        if (user.Password !== password) {
+            return res.json({ success: false, error: "Usuario o contraseña incorrectos" });
+        }
+
         return res.json({
             success: true,
             message: "Login correcto",
             ID_Usuario: user.ID_Usuario || null,
-            Email: user.Email
+            Email: email
         });
 
     } catch (err) {
@@ -30,5 +33,6 @@ module.exports = async (req, res) => {
         res.status(500).json({ success: false, error: err.message });
     }
 };
+
 
 

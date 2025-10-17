@@ -6,26 +6,33 @@ module.exports = async (req, res) => {
         const pool = await poolPromise;
 
         const query = `
-    SELECT
-        Titulo AS nombre,        -- dropdown.value = f.nombre
-        Descripcion AS detalle,  -- textarea detalle = f.detalle
-        Instrucciones AS instrucciones,
-        Campos AS campos,
-        Tipo_De_Flujo AS flujoTipo,
-        Prioridad AS prio,
-        SubTipo_De_Flujo AS subTipoFlujo,
-        Intentos_Automaticos AS intentos,
-        Cant_Por_Lote AS cantidad
-    FROM a002103.RPA_FLUJOS;
+            SELECT
+                Titulo AS nombre,        -- dropdown.value = f.nombre
+                Descripcion AS detalle,  -- textarea detalle = f.detalle
+                Instrucciones AS instrucciones,
+                Campos AS campos,
+                Tipo_De_Flujo AS flujoTipo,
+                Prioridad AS prio,
+                SubTipo_De_Flujo AS subTipoFlujo,
+                Intentos_Automaticos AS intentos,
+                Cant_Por_Lote AS cantidad
+            FROM a002103.RPA_FLUJOS;
         `;
 
         const result = await pool.request().query(query);
 
-        res.json({ success: true, flujos: result.recordset });
+        // 🧹 Limpieza de <br> para mostrar saltos de línea reales en el front
+        const flujosLimpios = result.recordset.map(f => ({
+            ...f,
+            detalle: f.detalle ? f.detalle.replace(/<br\s*\/?>/gi, '\n') : '',
+            instrucciones: f.instrucciones ? f.instrucciones.replace(/<br\s*\/?>/gi, '\n') : '',
+            campos: f.campos ? f.campos.replace(/<br\s*\/?>/gi, '\n') : ''
+        }));
+
+        res.json({ success: true, flujos: flujosLimpios });
 
     } catch (err) {
         console.error("Error al obtener flujos:", err);
         res.status(500).json({ success: false, error: err.message });
     }
 };
-
