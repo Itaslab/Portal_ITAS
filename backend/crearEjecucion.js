@@ -4,27 +4,33 @@ const { sql, poolPromise } = require("./db");
 module.exports = async (req, res) => {
     const { flujoSeleccionado, datos, solicitante, identificador } = req.body;
 
-    let transaction; // importante para poder rollback en cualquier caso
+    let transaction;
 
     try {
         const pool = await poolPromise;
         transaction = new sql.Transaction(pool);
         await transaction.begin();
 
+        // 🔹 Generar título dinámico
+        const ahora = new Date();
+        const fecha = ahora.toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD
+        const hora = ahora.toTimeString().split(' ')[0].replace(/:/g, ''); // HHMMSS
+        const tituloTasklist = `Portal_ITAS_${flujoSeleccionado}_${hora}_${fecha}`;
+
         // --- 1️⃣ Insert en RPA_TASKLIST ---
         const tasklistRequest = new sql.Request(transaction);
-
         const insertTasklistQuery = `
             INSERT INTO a002103.RPA_TASKLIST
-                (Id_Usuario, Identificador, Id_Flujo, Fecha_Pedido, Cant_Reintentos, Indice_Ultimo_Registro, Id_Estado)
+                (Id_Usuario, Identificador, Id_Flujo, Fecha_Pedido, Cant_Reintentos, Indice_Ultimo_Registro, Id_Estado, Titulo_Tasklist)
             OUTPUT INSERTED.id_tasklist
-            VALUES (@Id_Usuario, @Identificador, @Id_Flujo, GETDATE(), 0, 0, 1);
+            VALUES (@Id_Usuario, @Identificador, @Id_Flujo, GETDATE(), 0, 0, 1, @Titulo_Tasklist);
         `;
 
         const tasklistResult = await tasklistRequest
             .input("Id_Usuario", sql.Int, solicitante)
             .input("Identificador", sql.VarChar, identificador)
             .input("Id_Flujo", sql.VarChar, flujoSeleccionado)
+            .input("Titulo_Tasklist", sql.VarChar, tituloTasklist)
             .query(insertTasklistQuery);
 
         const id_tasklist = tasklistResult.recordset[0]?.id_tasklist;
@@ -47,13 +53,14 @@ module.exports = async (req, res) => {
 
         // --- 3️⃣ Confirmar transacción ---
         await transaction.commit();
-        res.json({ success: true, id_tasklist });
+        res.json({ success: true, id_tasklist, tituloTasklist });
 
     } catch (err) {
         if (transaction) {
-            try { await transaction.rollback(); } catch { /* Ignorar rollback doble */ }
+            try { await transaction.rollback(); } catch {}
         }
         console.error("❌ Error en crearEjecucion:", err);
         res.status(500).json({ success: false, error: err.message });
     }
 };
+
