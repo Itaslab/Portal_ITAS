@@ -1,7 +1,7 @@
 const { sql, poolPromise } = require("./db");
 
 module.exports = async (req, res) => {
-    const { flujoSeleccionado, datos, solicitante, identificador, prioridad } = req.body; // ✅ agregamos prioridad
+    const { flujoSeleccionado, nombreFlujo, datos, solicitante, identificador, prioridad } = req.body; // ✅ nombreFlujo agregado
 
     let transaction;
 
@@ -10,11 +10,11 @@ module.exports = async (req, res) => {
         transaction = new sql.Transaction(pool);
         await transaction.begin();
 
-        // 🔹 Generar título dinámico
+        // 🔹 Generar título dinámico con nombre del flujo
         const ahora = new Date();
         const fecha = ahora.toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD
         const hora = ahora.toTimeString().split(' ')[0].replace(/:/g, ''); // HHMMSS
-        const tituloTasklist = `Portal_ITAS_${flujoSeleccionado}_${hora}_${fecha}`;
+        const tituloTasklist = `Portal_ITAS_${nombreFlujo}_${hora}_${fecha}`; // ✅ usamos nombreFlujo
 
         // --- 1️⃣ Insert en RPA_TASKLIST ---
         const tasklistRequest = new sql.Request(transaction);
@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
             .input("Id_Flujo", sql.Int, flujoSeleccionado)
             .input("Titulo_Tasklist", sql.VarChar, tituloTasklist)
             .input("Avance", sql.Int, 0)  // hardcodeamos 0
-            .input("Prioridad", sql.Int, prioridad) // ✅ prioridad dinámica
+            .input("Prioridad", sql.Int, prioridad) // prioridad dinámica
             .query(insertTasklistQuery);
 
         const id_tasklist = tasklistResult.recordset[0]?.id_tasklist;
@@ -46,8 +46,8 @@ module.exports = async (req, res) => {
                 .input("indice_task", sql.Int, i + 1)
                 .input("dato", sql.VarChar, lineas[i])
                 .query(`
-                INSERT INTO a002103.RPA_RESULTADOS (id_tasklist, indice_task, dato, Fecha_Pedido)
-                VALUES (@id_tasklist, @indice_task, @dato, GETDATE());
+                    INSERT INTO a002103.RPA_RESULTADOS (id_tasklist, indice_task, dato, Fecha_Pedido)
+                    VALUES (@id_tasklist, @indice_task, @dato, GETDATE());
                 `);
         }
 

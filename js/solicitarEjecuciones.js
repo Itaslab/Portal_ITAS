@@ -14,7 +14,7 @@ fetch("/flujos")
           flujos = data.flujos;
           flujos.forEach(f => {
               const option = document.createElement("option");
-              option.value = f.Id_Flujo; // enviamos el ID, no el nombre
+              option.value = f.Id_Flujo; // enviamos el ID
               option.textContent = f.nombre;
               dropdown.appendChild(option);
           });
@@ -54,16 +54,18 @@ btnEnviar.addEventListener("click", () => {
     }
 
     const flujo = parseInt(flujoSeleccionadoObj.Id_Flujo);
-    const prioridad = flujoSeleccionadoObj.prio; // ✅ prioridad dinámica desde backend
-    const datosValor = inputUsuario.value; // ✅ ahora tomamos lo que el usuario realmente ingresó
+    const nombreFlujo = flujoSeleccionadoObj.nombre; // ✅ nombre del flujo para el backend
+    const prioridad = flujoSeleccionadoObj.prio; // prioridad dinámica desde backend
+    const datosValor = inputUsuario.value; // ✅ tomamos los datos ingresados por el usuario
     const solicitante = parseInt(localStorage.getItem("idUsuario")) || 0;
-    const identificador = inputUsuario.value;
+    const identificador = inputUsuario.value; // si querés, podés usar otro input para esto
 
     const payload = {
         flujoSeleccionado: flujo,
+        nombreFlujo, // ✅ enviamos nombre del flujo
         datos: datosValor,
         tipoFlujo: flujoSeleccionadoObj.flujoTipo, // opcional, si tu backend lo usa
-        prioridad, // ✅ agregado
+        prioridad,
         solicitante,
         identificador,
         estado: "En proceso",
