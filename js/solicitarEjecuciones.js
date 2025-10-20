@@ -27,7 +27,7 @@ dropdown.addEventListener("change", () => {
     if (flujoSeleccionado) {
         detalle.value = flujoSeleccionado.detalle;
         instrucciones.value = flujoSeleccionado.instrucciones;
-        datosSolicitados.textContent = flujoSeleccionado.campos;
+        datosSolicitados.textContent = flujoSeleccionado.campos; // solo para mostrar al usuario
     } else {
         detalle.value = "";
         instrucciones.value = "";
@@ -55,7 +55,7 @@ btnEnviar.addEventListener("click", () => {
 
     const flujo = parseInt(flujoSeleccionadoObj.Id_Flujo);
     const prioridad = flujoSeleccionadoObj.prio; // ✅ prioridad dinámica desde backend
-    const datosValor = datosSolicitados.textContent;
+    const datosValor = inputUsuario.value; // ✅ ahora tomamos lo que el usuario realmente ingresó
     const solicitante = parseInt(localStorage.getItem("idUsuario")) || 0;
     const identificador = inputUsuario.value;
 
