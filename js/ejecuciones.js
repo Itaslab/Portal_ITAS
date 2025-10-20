@@ -18,15 +18,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
  
-         ejecuciones = data.data.map(item => ({
-        id: item.id,
-        flujo: item.flujo,
+    ejecuciones = data.data.map(item => ({
+        id: item.Id_Tasklist,
+        flujo: item.Flujo,
         usuario: item.Solicitante,
         estado: item.Estado,
-        avance: item.avance,
-        resultado: item.resultado
- 
-      }));
+        avance: item.Avance,
+        resultado: item.Resultado
+    }));
  
       renderTabla();
     } catch (err) {
