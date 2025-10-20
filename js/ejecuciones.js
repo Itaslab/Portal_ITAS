@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
  
     ejecuciones = data.data.map(item => ({
         id: item.Id_Tasklist,
-        flujo: item.Id_Flujo,
+        flujo: item.Titulo_Tasklist,
         usuario: item.Id_Usuario,
         estado: item.Id_Estado,
         avance: item.Avance,
