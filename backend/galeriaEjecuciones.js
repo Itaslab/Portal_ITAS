@@ -6,9 +6,8 @@ module.exports = async (req, res) => {
         const pool = await poolPromise;
 
         const query = `
-            SELECT * 
-            FROM ejecucionesRealizadas
-            ORDER BY id DESC
+            SELECT* FROM a002103.RPA_TASKLIST
+            ORDER BY Id_Tasklist DESC
         `;
 
         const result = await pool.request().query(query);

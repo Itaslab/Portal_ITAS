@@ -47,7 +47,14 @@ btnLimpiar.addEventListener("click", () => {
 });
 
 btnEnviar.addEventListener("click", () => {
-    const flujo = parseInt(dropdown.value); // aseguramos que sea INT
+    const flujoSeleccionadoObj = flujos.find(f => f.Id_Flujo == dropdown.value);
+    if (!flujoSeleccionadoObj) {
+        alert("Debe seleccionar un flujo antes de enviar.");
+        return;
+    }
+
+    const flujo = parseInt(flujoSeleccionadoObj.Id_Flujo);
+    const prioridad = flujoSeleccionadoObj.prio; // ✅ prioridad dinámica desde backend
     const datosValor = datosSolicitados.textContent;
     const solicitante = parseInt(localStorage.getItem("idUsuario")) || 0;
     const identificador = inputUsuario.value;
@@ -55,6 +62,8 @@ btnEnviar.addEventListener("click", () => {
     const payload = {
         flujoSeleccionado: flujo,
         datos: datosValor,
+        tipoFlujo: flujoSeleccionadoObj.flujoTipo, // opcional, si tu backend lo usa
+        prioridad, // ✅ agregado
         solicitante,
         identificador,
         estado: "En proceso",

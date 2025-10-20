@@ -1,7 +1,7 @@
 const { sql, poolPromise } = require("./db");
 
 module.exports = async (req, res) => {
-    const { flujoSeleccionado, datos, solicitante, identificador } = req.body;
+    const { flujoSeleccionado, datos, solicitante, identificador, prioridad } = req.body; // ✅ agregamos prioridad
 
     let transaction;
 
@@ -16,22 +16,23 @@ module.exports = async (req, res) => {
         const hora = ahora.toTimeString().split(' ')[0].replace(/:/g, ''); // HHMMSS
         const tituloTasklist = `Portal_ITAS_${flujoSeleccionado}_${hora}_${fecha}`;
 
-// --- 1️⃣ Insert en RPA_TASKLIST ---
-const tasklistRequest = new sql.Request(transaction);
-const insertTasklistQuery = `
-    INSERT INTO a002103.RPA_TASKLIST
-        (Id_Usuario, Identificador, Id_Flujo, Fecha_Pedido, Cant_Reintentos, Indice_Ultimo_Registro, Id_Estado, Titulo_Tasklist, Avance)
-    OUTPUT INSERTED.id_tasklist
-    VALUES (@Id_Usuario, @Identificador, @Id_Flujo, GETDATE(), 0, 0, 1, @Titulo_Tasklist, @Avance);
-`;
+        // --- 1️⃣ Insert en RPA_TASKLIST ---
+        const tasklistRequest = new sql.Request(transaction);
+        const insertTasklistQuery = `
+            INSERT INTO a002103.RPA_TASKLIST
+                (Id_Usuario, Identificador, Id_Flujo, Fecha_Pedido, Cant_Reintentos, Indice_Ultimo_Registro, Id_Estado, Titulo_Tasklist, Avance, Prioridad)
+            OUTPUT INSERTED.id_tasklist
+            VALUES (@Id_Usuario, @Identificador, @Id_Flujo, GETDATE(), 0, 0, 1, @Titulo_Tasklist, @Avance, @Prioridad);
+        `;
 
-const tasklistResult = await tasklistRequest
-    .input("Id_Usuario", sql.Int, solicitante)
-    .input("Identificador", sql.VarChar, identificador)
-    .input("Id_Flujo", sql.Int, flujoSeleccionado)
-    .input("Titulo_Tasklist", sql.VarChar, tituloTasklist)
-    .input("Avance", sql.Int, 0)  // hardcodeamos 0
-    .query(insertTasklistQuery);
+        const tasklistResult = await tasklistRequest
+            .input("Id_Usuario", sql.Int, solicitante)
+            .input("Identificador", sql.VarChar, identificador)
+            .input("Id_Flujo", sql.Int, flujoSeleccionado)
+            .input("Titulo_Tasklist", sql.VarChar, tituloTasklist)
+            .input("Avance", sql.Int, 0)  // hardcodeamos 0
+            .input("Prioridad", sql.Int, prioridad) // ✅ prioridad dinámica
+            .query(insertTasklistQuery);
 
         const id_tasklist = tasklistResult.recordset[0]?.id_tasklist;
         if (!id_tasklist) throw new Error("No se generó id_tasklist en la inserción.");
@@ -61,4 +62,3 @@ const tasklistResult = await tasklistRequest
         res.status(500).json({ success: false, error: err.message });
     }
 };
-
