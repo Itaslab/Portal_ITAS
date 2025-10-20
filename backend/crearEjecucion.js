@@ -46,8 +46,8 @@ module.exports = async (req, res) => {
                 .input("indice_task", sql.Int, i + 1)
                 .input("dato", sql.VarChar, lineas[i])
                 .query(`
-                    INSERT INTO a002103.RPA_RESULTADOS (id_tasklist, indice_task, dato)
-                    VALUES (@id_tasklist, @indice_task, @dato);
+                INSERT INTO a002103.RPA_RESULTADOS (id_tasklist, indice_task, dato, Fecha_Pedido)
+                VALUES (@id_tasklist, @indice_task, @dato, GETDATE());
                 `);
         }
 
