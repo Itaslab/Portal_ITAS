@@ -20,12 +20,12 @@ module.exports = async (req, res) => {
         const tasklistRequest = new sql.Request(transaction);
         const insertTasklistQuery = `
             INSERT INTO a002103.RPA_TASKLIST
-                (Id_Usuario, Identificador, Id_Flujo, Fecha_Pedido, Cant_Reintentos, Indice_Ultimo_Registro, Id_Estado, Titulo_Tasklist, Avance, Prioridad)
+                (Id_Usuario, Identificador, Id_Flujo, Fecha_Pedido, Cant_Reintentos, Indice_Ultimo_Registro, Id_Estado, 
+                 Titulo_Tasklist, Avance, Prioridad)
             OUTPUT INSERTED.id_tasklist
             VALUES (@Id_Usuario, @Identificador, @Id_Flujo, GETDATE(), 0, 0, 1, @Titulo_Tasklist, @Avance, @Prioridad);
         `;
 
-        // 🔹 Validar que el identificador no sea demasiado largo
         const identificadorSQL = identificador?.substring(0, 100) || "SinIdentificador";
 
         const tasklistResult = await tasklistRequest
@@ -54,6 +54,18 @@ module.exports = async (req, res) => {
                 `);
         }
 
+        // --- 3️⃣ Actualizar Reg_Totales en RPA_TASKLIST ---
+        const updateTasklistRequest = new sql.Request(transaction);
+        await updateTasklistRequest
+            .input("RegTotales", sql.Int, lineas.length)
+            .input("id_tasklist", sql.Int, id_tasklist)
+            .query(`
+                UPDATE a002103.RPA_TASKLIST
+                SET Reg_Totales = @RegTotales
+                WHERE id_tasklist = @id_tasklist;
+            `);
+
+        // --- 4️⃣ Commit final ---
         await transaction.commit();
 
         res.json({
