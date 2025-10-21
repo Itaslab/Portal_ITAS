@@ -2,7 +2,7 @@ const dropdown = document.getElementById("dropdownFlujos");
 const detalle = document.getElementById("detalleFlujo");
 const instrucciones = document.getElementById("instruccionesFlujo");
 const datosSolicitados = document.getElementById("datosSolicitados");
-const inputUsuario = document.getElementById("inputUsuario");
+const identificadorInput = document.getElementById("identificador"); // 👈 renombrado para evitar confusión
 
 let flujos = [];
 
@@ -14,7 +14,7 @@ fetch("/flujos")
           flujos = data.flujos;
           flujos.forEach(f => {
               const option = document.createElement("option");
-              option.value = f.Id_Flujo; // enviamos el ID
+              option.value = f.Id_Flujo; 
               option.textContent = f.nombre;
               dropdown.appendChild(option);
           });
@@ -27,7 +27,7 @@ dropdown.addEventListener("change", () => {
     if (flujoSeleccionado) {
         detalle.value = flujoSeleccionado.detalle;
         instrucciones.value = flujoSeleccionado.instrucciones;
-        datosSolicitados.textContent = flujoSeleccionado.campos; // solo para mostrar al usuario
+        datosSolicitados.textContent = flujoSeleccionado.campos;
     } else {
         detalle.value = "";
         instrucciones.value = "";
@@ -44,6 +44,7 @@ btnLimpiar.addEventListener("click", () => {
     instrucciones.value = "";
     datosSolicitados.textContent = "";
     inputUsuario.value = "";
+    identificadorInput.value = ""; // 👈 limpiar también el identificador
 });
 
 btnEnviar.addEventListener("click", () => {
@@ -54,20 +55,25 @@ btnEnviar.addEventListener("click", () => {
     }
 
     const flujo = parseInt(flujoSeleccionadoObj.Id_Flujo);
-    const nombreFlujo = flujoSeleccionadoObj.nombre; // ✅ nombre del flujo para el backend
-    const prioridad = flujoSeleccionadoObj.prio; // prioridad dinámica desde backend
-    const datosValor = inputUsuario.value; // ✅ tomamos los datos ingresados por el usuario
+    const nombreFlujo = flujoSeleccionadoObj.nombre;
+    const prioridad = flujoSeleccionadoObj.prio;
+    const datosValor = inputUsuario.value;
     const solicitante = parseInt(localStorage.getItem("idUsuario")) || 0;
-    const identificador = inputUsuario.value; // si querés, podés usar otro input para esto
+    const identificador = identificadorInput.value.trim(); // 👈 toma el valor del input correcto
+
+    if (!identificador) {
+        alert("Debe ingresar un identificador para esta ejecución.");
+        return;
+    }
 
     const payload = {
         flujoSeleccionado: flujo,
-        nombreFlujo, // ✅ enviamos nombre del flujo
+        nombreFlujo,
         datos: datosValor,
-        tipoFlujo: flujoSeleccionadoObj.flujoTipo, // opcional, si tu backend lo usa
+        tipoFlujo: flujoSeleccionadoObj.flujoTipo,
         prioridad,
         solicitante,
-        identificador,
+        identificador, // ✅ correcto ahora
         estado: "En proceso",
         FHInicio: new Date().toLocaleString()
     };
