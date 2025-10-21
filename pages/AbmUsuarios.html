@@ -22,7 +22,7 @@
             <span class="ms-2">PORTAL ITAS</span>
           </a>
           <span class="navbar-text nvbar position-absolute top-50 start-50 translate-middle">ABM de Usuarios</span>
-
+ 
         </div>
       </nav>
 <div class="container mt-4">
@@ -35,34 +35,34 @@
         <div class="row mb-3">
           <div class="col-md-4">
             <label class="form-label">Legajo:</label>
-            <input type="text" class="form-control" id="legajo" placeholder="123456">
+            <input type="text" class="form-control" id="legajo" placeholder="123456" maxlength="10">
           </div>
           <div class="col-md-4">
             <label class="form-label">Apellido:</label>
-            <input type="text" class="form-control" id="apellido" placeholder="Apellido">
+            <input type="text" class="form-control" id="apellido" placeholder="Apellido" maxlength="20">
           </div>
           <div class="col-md-4">
             <label class="form-label">Nombre:</label>
-            <input type="text" class="form-control" id="nombre" placeholder="Nombre">
+            <input type="text" class="form-control" id="nombre" placeholder="Nombre" maxlength="15">
           </div>
         </div>
-
+ 
         <!-- Fila 1-->
         <div class="row mb-3">
           <div class="col-md-4">
             <label class="form-label">Email:</label>
-            <input type="email" class="form-control" id="email" placeholder="usuario@correo.com">
+            <input type="email" class="form-control" id="email" placeholder="usuario@correo.com" maxlength="25">
           </div>
           <div class="col-md-4">
             <label class="form-label">Referente:</label>
-            <input type="text" class="form-control" id="referente" placeholder="Referente">
+            <input type="text" class="form-control" id="referente" placeholder="Referente"maxlength="15">
           </div>
           <div class="col-md-4">
             <label class="form-label">Fecha de Nacimiento:</label>
             <input type="date" class="form-control" id="fecha_nacimiento">
           </div>
         </div>
-
+ 
         <!-- Fila 2 -->
         <div class="row mb-3">
           <div class="col-md-4">
@@ -104,9 +104,9 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">Alias:</label>
-            <input type="text" class="form-control" id="alias" placeholder="Alias">
+            <input type="text" class="form-control" id="alias" placeholder="Alias" maxlength="15">
           </div>
-        
+       
         </div>
         <!-- Fila 3-->
         <div class="row mb-3">
@@ -117,7 +117,7 @@
             </div>
           </div>
         </div>
-
+ 
         <!-- Permisos -->
         <h6 class="mt-3">Permisos:</h6>
         <div class="row mb-3">
@@ -134,7 +134,7 @@
             </div>
           </div>
         </div>
-
+ 
         <!-- Botones -->
         <div class="d-flex justify-content-end">
           <button type="reset" class="btn btn-secondary me-2">Cancelar</button>
@@ -143,7 +143,7 @@
       </form>
     </div>
   </div>
-
+ 
   <!-- JS externo -->
   <script src="../js/abmUsuarios.js"></script>
 </body>

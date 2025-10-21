@@ -44,7 +44,7 @@ module.exports = async (req, res) => {
             await requestResultado
                 .input("id_tasklist", sql.Int, id_tasklist)
                 .input("indice_task", sql.Int, i + 1)
-                .input("dato", sql.VarChar, lineas[i].trim())
+                .input("dato", sql.VarChar(sql.MAX), lineas[i].trim())
                 .query(`
                     INSERT INTO a002103.RPA_RESULTADOS (id_tasklist, indice_task, dato, Fecha_Pedido)
                     VALUES (@id_tasklist, @indice_task, @dato, GETDATE());
