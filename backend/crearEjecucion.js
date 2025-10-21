@@ -25,9 +25,12 @@ module.exports = async (req, res) => {
             VALUES (@Id_Usuario, @Identificador, @Id_Flujo, GETDATE(), 0, 0, 1, @Titulo_Tasklist, @Avance, @Prioridad);
         `;
 
+        // 🔹 Validar que el identificador no sea demasiado largo
+        const identificadorSQL = identificador?.substring(0, 100) || "SinIdentificador";
+
         const tasklistResult = await tasklistRequest
             .input("Id_Usuario", sql.Int, solicitante)
-            .input("Identificador", sql.VarChar, identificador)
+            .input("Identificador", sql.VarChar(100), identificadorSQL)
             .input("Id_Flujo", sql.Int, flujoSeleccionado)
             .input("Titulo_Tasklist", sql.VarChar, tituloTasklist)
             .input("Avance", sql.Int, 0)
