@@ -17,6 +17,8 @@ select U.Email,
 	   T.Resultado  from  a002103.USUARIO U, a002103.RPA_TASKLIST_ESTADO TE, a002103.RPA_TASKLIST T
 	   where  T.Id_Usuario = U.Id_Usuario
 	   and T.Id_Estado = TE.Id_Estado
+       ORDER BY 
+        T.Id_Tasklist DESC;
  
     `;
 
