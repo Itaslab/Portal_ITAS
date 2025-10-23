@@ -6,24 +6,17 @@ module.exports = async (req, res) => {
 
     const query = `
 select U.Email,
-
 	   TE.Estado,
-
 	   T.Id_Tasklist,
-
 	   T.Titulo_Tasklist,
-
 	   T.Identificador,
-
 	   T.Id_Estado,
-
 	   T.Fecha_Inicio,
-
 	   T.Fecha_Fin, 
-
 	   T.Avance,
-
-	   T.Resultado  from  a002103.USUARIO U, a002103.RPA_TASKLIST_ESTADO TE, a002103.RPA_TASKLIST T;
+	   T.Resultado  from  a002103.USUARIO U, a002103.RPA_TASKLIST_ESTADO TE, a002103.RPA_TASKLIST T
+	   where  T.Id_Usuario = U.Id_Usuario
+	   and T.Id_Estado = TE.Id_Estado
  
     `;
 
