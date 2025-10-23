@@ -5,17 +5,26 @@ module.exports = async (req, res) => {
     const pool = await poolPromise;
 
     const query = `
-      SELECT 
-          T.Id_Tasklist,
-          T.Titulo_Tasklist,
-          U.Apellido AS Usuario,       -- 🔹 Trae el apellido desde RPA_USUARIOS
-          E.Estado AS Estado,           -- 🔹 Trae el nombre del estado desde RPA_TASKLIST_ESTADOS
-          T.Avance,
-          T.Resultado
-      FROM a002103.RPA_TASKLIST AS T
-      LEFT JOIN a002103.RPA_USUARIOS AS U ON T.Id_Usuario = U.Id_Usuario
-      LEFT JOIN a002103.RPA_TASKLIST_ESTADOS AS E ON T.Id_Estado = E.Id_Estado
-      ORDER BY T.Id_Tasklist DESC
+select U.Email,
+
+	   TE.Estado,
+
+	   T.Id_Tasklist,
+
+	   T.Titulo_Tasklist,
+
+	   T.Identificador,
+
+	   T.Id_Estado,
+
+	   T.Fecha_Inicio,
+
+	   T.Fecha_Fin, 
+
+	   T.Avance,
+
+	   T.Resultado  from  a002103.USUARIO U, a002103.RPA_TASKLIST_ESTADO TE, a002103.RPA_TASKLIST T;
+ 
     `;
 
     const result = await pool.request().query(query);
