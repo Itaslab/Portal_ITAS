@@ -58,9 +58,10 @@ document.addEventListener("DOMContentLoaded", () => {
       .filter(item => {
         const coincideSolicitante = solicitante ? item.usuario.toLowerCase().includes(solicitante) : true;
         const coincideRegistro = registro
-          ? item.id.toString().includes(registro) ||
-            item.usuario.toLowerCase().includes(registro) ||
-            item.flujo.toLowerCase().includes(registro)
+          ? (item.id.toString().toLowerCase().includes(registro) ||
+             (item.identificador || "").toLowerCase().includes(registro) ||
+             (item.usuario || "").toLowerCase().includes(registro) ||
+             (item.flujo || "").toLowerCase().includes(registro))
           : true;
         return coincideSolicitante && coincideRegistro;
       })
