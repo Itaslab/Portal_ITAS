@@ -28,13 +28,26 @@ document.addEventListener("DOMContentLoaded", () => {
         fechaFin: item.Fecha_Fin
       }));
 
+      llenarFiltroSolicitante();
       renderTabla();
     } catch (err) {
       console.error("Error al obtener ejecuciones:", err);
     }
   }
 
-  // 🔹 Renderizar tabla con nuevo formato
+  // 🔹 Llenar select de solicitantes dinámicamente
+  function llenarFiltroSolicitante() {
+    const emailsUnicos = [...new Set(ejecuciones.map(e => e.usuario))].sort();
+    filtroSolicitante.innerHTML = `<option value="">Todos</option>`;
+    emailsUnicos.forEach(email => {
+      const option = document.createElement("option");
+      option.value = email;
+      option.textContent = email;
+      filtroSolicitante.appendChild(option);
+    });
+  }
+
+  // 🔹 Renderizar tabla con filtros
   function renderTabla() {
     const solicitante = filtroSolicitante.value.toLowerCase();
     const registro = filtroRegistro.value.toLowerCase();
@@ -44,7 +57,11 @@ document.addEventListener("DOMContentLoaded", () => {
     ejecuciones
       .filter(item => {
         const coincideSolicitante = solicitante ? item.usuario.toLowerCase().includes(solicitante) : true;
-        const coincideRegistro = registro ? item.id.toString().includes(registro) : true;
+        const coincideRegistro = registro
+          ? item.id.toString().includes(registro) ||
+            item.usuario.toLowerCase().includes(registro) ||
+            item.flujo.toLowerCase().includes(registro)
+          : true;
         return coincideSolicitante && coincideRegistro;
       })
       .forEach(ejec => {
@@ -55,7 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
             <table class="table table-bordered align-middle mb-0">
               <tbody>
                 <tr>
-                  <!-- Columna 1: Identificación -->
                   <td class="text-start">
                     <div class="mb-2">
                       <i class="fas fa-hashtag text-primary me-2" data-bs-toggle="tooltip" title="ID de ejecución"></i>
@@ -83,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                   </td>
 
-                  <!-- Columna 2: Tiempos -->
                   <td class="text-start">
                     <div class="mb-2">
                       <i class="fas fa-play text-primary me-2"></i>
@@ -102,7 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                   </td>
 
-                  <!-- Columna 3: Estado -->
                   <td class="text-start">
                     <div class="small fw-bold mb-1">
                       <i class="fas fa-flag-checkered text-success me-1"></i>
@@ -117,7 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     </button>
                   </td>
 
-                  <!-- Columna 4: Registros -->
                   <td class="text-start">
                     <button class="btn btn-sm btn-outline-info mb-2" onclick="verTotal(${ejec.id})">
                       <i class="fas fa-database me-1"></i> Total
@@ -130,7 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     </button>
                   </td>
 
-                  <!-- Columna 5: Avance -->
                   <td class="text-start">
                     <div class="small fw-semibold mb-1">Avance: ${ejec.avance}%</div>
                     <div class="progress mb-2" style="height: 10px;">
@@ -168,6 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${mins}'${secs < 10 ? "0" : ""}${secs}"`;
   }
 
+  // 🔹 Eventos filtros
   filtroSolicitante.addEventListener("change", renderTabla);
   filtroRegistro.addEventListener("input", renderTabla);
 
