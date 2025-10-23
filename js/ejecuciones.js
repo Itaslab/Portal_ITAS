@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                     <div class="mb-2">
                       <i class="fas fa-id-card text-info me-2" data-bs-toggle="tooltip" title="Identificador interno"></i>
-                      <span class="small">ID:</span>
+                      <span class="small">Identificador:</span>
                       <span class="fw-semibold">${ejec.identificador || "-"}</span>
                     </div>
                     <div class="mb-2">
