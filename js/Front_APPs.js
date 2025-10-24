@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: 2, name: "Ordenes Bot", category: "Telecom", collection: "Bots", img: "../images/robot_01.png" },
     { id: 3, name: "Helix", category: "Telecom", collection: "Gestión", img: "../images/bmx_helix.png" },
     { id: 4, name: "Compartido", category: "Privados", collection: "Gestión", img: "https://img.icons8.com/fluency/48/folder-invoices.png" },
-    { id: 5, name: "Itickets", category: "Telecom", collection: "Tickets", img: "../images/itickets.png" },
+    { id: 5, name: "Grafana", category: "Telecom", collection: "Gestión", img: "../images/Grafana.png",url:"http://10.4.48.116:3000/login" },
     { id: 6, name: "ABM Usuarios", category: "Privado", collection: "Gestión", img: "../images/ABM.jpg",url:"../pages/AbmUsuarios.html" }
   ];
  
