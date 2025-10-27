@@ -6,13 +6,12 @@ const https = require("https");
 const fs = require("fs");
 const session = require("express-session");
 
-// Importar rutas del backend
+// Importar rutas
 const login = require("./loginBack");
 const listaEjecuciones = require("./listaEjecuciones");
 const crearEjecucion = require("./crearEjecucion");
 const obtenerEjecuciones = require("./galeriaEjecuciones");
 const generarUsuario = require("./generarUsuario_tbUsuarios");
-const { sql, poolPromise } = require("./db");
 
 const app = express();
 
@@ -20,16 +19,13 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Configuración de sesiones
+// Configuración de sesión
 app.use(
   session({
-    secret: "clave-super-secreta", // Cambiala por una frase aleatoria
+    secret: "clave-super-secreta",
     resave: false,
-    saveUninitialized: true,
-    cookie: {
-      secure: false, // true si usás HTTPS detrás de Nginx reverse proxy
-      maxAge: 1000 * 60 * 60, // 1 hora
-    },
+    saveUninitialized: false,
+    cookie: { secure: false, maxAge: 1000 * 60 * 60 } // 1 hora
   })
 );
 
@@ -41,32 +37,33 @@ app.get("/ejecuciones", obtenerEjecuciones);
 app.use("/", generarUsuario);
 
 // ------------------- SERVIR FRONTEND -------------------
-
-// Servir todos los archivos estáticos desde la raíz del proyecto
 app.use(express.static(path.join(__dirname, "..")));
 
-// Middleware para proteger las páginas internas
+// Middleware de protección para páginas internas
 app.use((req, res, next) => {
-  const isHTML = req.path.endsWith(".html");
+  const paginasProtegidas = [
+    "/pages/Front_APPs.html",
+    // agregá aquí otras páginas internas que quieras proteger
+  ];
 
-  // Si no está logueado e intenta acceder a cualquier HTML excepto ingreso.html → redirigir
-  if (isHTML && req.path !== "/ingreso.html" && !req.session.user) {
+  // Si la ruta solicitada es interna y no hay sesión iniciada, redirige al login
+  if (paginasProtegidas.some(p => req.path.startsWith(p)) && (!req.session || !req.session.user)) {
     return res.redirect("/ingreso.html");
   }
 
   next();
 });
 
-// Redirigir la raíz o /index.html al login
+// Ruta raíz e index
 app.get("/", (req, res) => {
-  res.redirect("/ingreso.html");
+  res.sendFile(path.join(__dirname, "..", "ingreso.html"));
 });
 
 app.get("/index.html", (req, res) => {
-  res.redirect("/ingreso.html");
+  res.sendFile(path.join(__dirname, "..", "ingreso.html"));
 });
 
-// ------------------- HTTPS -------------------
+// ------------------- CONFIGURACIÓN HTTPS -------------------
 const httpsOptions = {
   key: fs.readFileSync("/etc/nginx/ssl/test-web.key"),
   cert: fs.readFileSync("/etc/nginx/ssl/test-web.crt"),
@@ -74,5 +71,5 @@ const httpsOptions = {
 
 const PORT = 8080;
 https.createServer(httpsOptions, app).listen(PORT, () => {
-  console.log(`✅ Servidor HTTPS corriendo en https://10.4.48.116:${PORT}`);
+  console.log(`Servidor HTTPS corriendo en https://10.4.48.116:${PORT}`);
 });
