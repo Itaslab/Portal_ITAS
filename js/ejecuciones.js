@@ -189,12 +189,44 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(cargarEjecuciones, 10000);
 });
 
-// 🔹 Funciones auxiliares de los botones
-function verDetalles(id) { alert(`Mostrando detalles para ejecución ID: ${id}`); }
-function verTotal(id) { alert(`Total de registros para ejecución ${id}: 2`); }
-function verOk(id) { alert(`Registros OK para ejecución ${id}: 2`); }
-function verErrores(id) { alert(`Registros con error para ejecución ${id}: 0`); }
-function verEstado(id) { alert(`Estado detallado para ejecución ID: ${id}`); }
+// 🔹 Función de alertas Bootstrap
+function mostrarAlerta(tipo, mensaje) {
+  const alertContainer = document.getElementById("alertContainer");
+
+  const iconos = {
+    success: "check-circle-fill",
+    info: "info-fill",
+    warning: "exclamation-triangle-fill",
+    danger: "exclamation-triangle-fill",
+    primary: "info-fill"
+  };
+
+  const alerta = document.createElement("div");
+  alerta.className = `alert alert-${tipo} d-flex align-items-center shadow fade show`;
+  alerta.setAttribute("role", "alert");
+  alerta.innerHTML = `
+    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img">
+      <use xlink:href="#${iconos[tipo]}"/>
+    </svg>
+    <div>${mensaje}</div>
+  `;
+
+  alertContainer.appendChild(alerta);
+
+  // Desaparece después de 3 segundos
+  setTimeout(() => {
+    alerta.classList.remove("show");
+    alerta.classList.add("hide");
+    setTimeout(() => alerta.remove(), 300);
+  }, 3000);
+}
+
+// 🔹 Funciones auxiliares de los botones usando Bootstrap alerts
+function verDetalles(id) { mostrarAlerta("info", `Mostrando detalles para ejecución ID: ${id}`); }
+function verTotal(id) { mostrarAlerta("primary", `Total de registros para ejecución ${id}: 2`); }
+function verOk(id) { mostrarAlerta("success", `Registros OK para ejecución ${id}: 2`); }
+function verErrores(id) { mostrarAlerta("danger", `Registros con error para ejecución ${id}: 0`); }
+function verEstado(id) { mostrarAlerta("warning", `Estado detallado para ejecución ID: ${id}`); }
 
 // 🔹 Botón "Solicitar ejecución"
 const btnSolicitar = document.getElementById("btnSolicitar");
