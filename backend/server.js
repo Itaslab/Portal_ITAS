@@ -6,13 +6,12 @@ const https = require("https");
 const fs = require("fs");
 const session = require("express-session");
 
-// Importar rutas
+// Importar módulos backend
 const login = require("./loginBack");
 const listaEjecuciones = require("./listaEjecuciones");
 const crearEjecucion = require("./crearEjecucion");
 const obtenerEjecuciones = require("./galeriaEjecuciones");
 const generarUsuario = require("./generarUsuario_tbUsuarios");
-const { sql, poolPromise } = require("./db");
 
 const app = express();
 
@@ -23,11 +22,11 @@ app.use(bodyParser.json());
 // Configurar sesiones
 app.use(
   session({
-    secret: "clave-super-secreta", // podés cambiarla
+    secret: "clave-super-secreta",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // si tenés HTTPS con proxy/Nginx, se puede poner true
+      secure: false, // Si usás proxy HTTPS como Nginx, podés poner true
       maxAge: 1000 * 60 * 60, // 1 hora
     },
   })
@@ -35,59 +34,61 @@ app.use(
 
 // ------------------- RUTAS API -------------------
 
-// Ruta de login
+// Login (usa loginBack.js)
 app.post("/login", async (req, res, next) => {
   try {
-    // Ejecuta el login que ya tenés
     await login(req, res);
-
-    // Si loginBack valida correctamente, agregá esto dentro del success de loginBack:
-    // req.session.user = { usuario: req.body.usuario };
-    // res.json({ success: true });
-
   } catch (err) {
     next(err);
   }
 });
 
+// Rutas de tus otros módulos
 app.get("/flujos", listaEjecuciones);
 app.post("/crearEjecucion", crearEjecucion);
 app.get("/ejecuciones", obtenerEjecuciones);
 app.use("/", generarUsuario);
 
-// ------------------- SERVIR FRONTEND -------------------
+// ------------------- FRONTEND -------------------
+
+// Servir archivos estáticos (desde la raíz del proyecto)
 app.use(express.static(path.join(__dirname, "..")));
 
-// Middleware de protección para archivos HTML
+// 🔐 Middleware de protección
 app.use((req, res, next) => {
-  if (
-    req.path.endsWith(".html") &&
-    req.path !== "/Front_APPs.html" &&
-    !req.session.user
-  ) {
-    return res.redirect("/Front_APPs.html");
+  const rutaProtegida = req.path.endsWith("Front_APPs.html");
+
+  if (rutaProtegida && !req.session.user) {
+    console.log("⚠️ Intento de acceso sin login, redirigiendo a ingreso.html");
+    return res.redirect("/ingreso.html");
   }
+
   next();
 });
 
-// Redirigir raíz o index.html al archivo principal
+// 🔹 Ruta raíz → ingreso.html
 app.get("/", (req, res) => {
-  res.redirect("/Front_APPs.html");
+  res.sendFile(path.join(__dirname, "..", "ingreso.html"));
 });
 
-app.get("/index.html", (req, res) => {
-  res.redirect("/Front_APPs.html");
+// 🔹 Asegurar acceso directo a Front_APPs.html (con protección)
+app.get("/pages/Front_APPs.html", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/ingreso.html");
+  }
+  res.sendFile(path.join(__dirname, "..", "pages", "Front_APPs.html"));
 });
 
 // ------------------------------------------------------
-
-// Configuración HTTPS
+// Configuración HTTPS (ajustá paths de tus certificados)
 const httpsOptions = {
   key: fs.readFileSync("/etc/nginx/ssl/test-web.key"),
   cert: fs.readFileSync("/etc/nginx/ssl/test-web.crt"),
 };
 
 const PORT = 8080;
+
 https.createServer(httpsOptions, app).listen(PORT, () => {
-  console.log(`Servidor HTTPS corriendo en https://10.4.48.116:${PORT}`);
+  console.log(`✅ Servidor HTTPS corriendo en https://10.4.48.116:${PORT}`);
 });
+
