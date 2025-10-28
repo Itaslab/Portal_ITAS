@@ -26,7 +26,7 @@ app.use(
     secret: "clave-super-secreta",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }, // si usás HTTPS con proxy nginx, puede ser true
+    cookie: { secure: false },
   })
 );
 
@@ -95,17 +95,17 @@ app.use("/css", express.static(path.join(__dirname, "..", "css")));
 app.use("/js", express.static(path.join(__dirname, "..", "js")));
 app.use("/images", express.static(path.join(__dirname, "..", "images")));
 
-// Páginas internas protegidas
-app.get("/pages/Front_APPs.html", checkAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "pages", "Front_APPs.html"));
-});
-
-// Podés agregar más páginas internas así:
-// app.get("/pages/otraPagina.html", checkAuth, (req, res) => {...})
+// 🔒 Proteger automáticamente todo lo que esté en /pages
+app.use("/pages", checkAuth, express.static(path.join(__dirname, "..", "pages")));
 
 // Ruta principal del login
 app.get("/ingreso.html", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "ingreso.html"));
+});
+
+// También que la raíz `/` lleve al login
+app.get("/", (req, res) => {
+  res.redirect("/ingreso.html");
 });
 
 // ------------------- HTTPS -------------------
@@ -118,4 +118,5 @@ const PORT = 8080;
 https.createServer(httpsOptions, app).listen(PORT, () => {
   console.log(`Servidor HTTPS corriendo en https://10.4.48.116:${PORT}`);
 });
+
 
