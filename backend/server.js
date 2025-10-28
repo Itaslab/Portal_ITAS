@@ -104,8 +104,8 @@ app.get("/pages/Front_APPs.html", checkAuth, (req, res) => {
 // app.get("/pages/otraPagina.html", checkAuth, (req, res) => {...})
 
 // Ruta principal del login
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "index.html"));
+app.get("/ingreso.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "ingreso.html"));
 });
 
 // ------------------- HTTPS -------------------
