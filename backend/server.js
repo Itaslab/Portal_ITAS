@@ -4,7 +4,7 @@ const cors = require("cors");
 const path = require("path");
 const https = require("https");
 const fs = require("fs");
-const session = require("express-session"); // 👈 agregado
+const session = require("express-session");
 const { sql, poolPromise } = require("./db");
 
 // Importar rutas
@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 // 🔐 CONFIGURACIÓN DE SESIÓN
 app.use(
   session({
-    secret: "clave-super-secreta", // Cambiala por algo único de tu empresa
+    secret: "clave-super-secreta",
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false }, // si usás HTTPS con proxy nginx, puede ser true
@@ -32,7 +32,7 @@ app.use(
 
 // ------------------- RUTAS API -------------------
 
-// 🚪 LOGIN: lo manejamos acá directamente para poder guardar la sesión
+// 🚪 LOGIN
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -54,7 +54,6 @@ app.post("/login", async (req, res) => {
       return res.json({ success: false, error: "Usuario o contraseña incorrectos" });
     }
 
-    // ✅ Guardar usuario en sesión
     req.session.user = {
       email,
       ID_Usuario: user.ID_Usuario,
@@ -72,40 +71,44 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// 🚪 LOGOUT (opcional)
+// 🚪 LOGOUT
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/ingreso.html");
   });
 });
 
+// API adicionales
 app.get("/flujos", listaEjecuciones);
 app.post("/crearEjecucion", crearEjecucion);
 app.get("/ejecuciones", obtenerEjecuciones);
 app.use("/", generarUsuario);
 
-// ------------------- BLOQUEO DE PÁGINAS -------------------
+// ------------------- PROTECCIÓN DE PÁGINAS -------------------
 function checkAuth(req, res, next) {
-  if (req.session.user) {
-    return next();
-  }
-  return res.redirect("/ingreso.html");
+  if (req.session.user) return next();
+  res.redirect("/ingreso.html");
 }
 
-// Archivos estáticos (HTML, JS, CSS)
-app.use(express.static(path.join(__dirname, "..")));
+// Archivos estáticos públicos (solo CSS, JS, imágenes)
+app.use("/css", express.static(path.join(__dirname, "..", "css")));
+app.use("/js", express.static(path.join(__dirname, "..", "js")));
+app.use("/images", express.static(path.join(__dirname, "..", "images")));
 
-// Protegemos el Front_APPs.html
+// Páginas internas protegidas
 app.get("/pages/Front_APPs.html", checkAuth, (req, res) => {
   res.sendFile(path.join(__dirname, "..", "pages", "Front_APPs.html"));
 });
 
-// Ruta principal para el login o index
+// Podés agregar más páginas internas así:
+// app.get("/pages/otraPagina.html", checkAuth, (req, res) => {...})
+
+// Ruta principal del login
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "index.html"));
 });
 
-// ------------------- HTTPS CONFIG -------------------
+// ------------------- HTTPS -------------------
 const httpsOptions = {
   key: fs.readFileSync("/etc/nginx/ssl/test-web.key"),
   cert: fs.readFileSync("/etc/nginx/ssl/test-web.crt"),
