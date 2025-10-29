@@ -20,7 +20,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// 🔐 CONFIGURACIÓN DE SESIÓN
+//  CONFIGURACIÓN DE SESIÓN
 app.use(
   session({
     secret: "clave-super-secreta",
@@ -32,7 +32,7 @@ app.use(
 
 // ------------------- RUTAS API -------------------
 
-// 🚪 LOGIN
+//  LOGIN
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -71,7 +71,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// 🚪 LOGOUT
+//  LOGOUT
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/ingreso.html");
@@ -95,7 +95,7 @@ app.use("/css", express.static(path.join(__dirname, "..", "css")));
 app.use("/js", express.static(path.join(__dirname, "..", "js")));
 app.use("/images", express.static(path.join(__dirname, "..", "images")));
 
-// 🔒 Proteger automáticamente todo lo que esté en /pages
+//  Proteger automáticamente todo lo que esté en /pages
 app.use("/pages", checkAuth, express.static(path.join(__dirname, "..", "pages")));
 
 // Ruta principal del login

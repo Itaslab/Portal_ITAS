@@ -16,17 +16,20 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      ejecuciones = data.data.map(item => ({
-        id: item.Id_Tasklist,
-        flujo: item.Titulo_Tasklist,
-        identificador: item.Identificador,
-        usuario: item.Email,
-        estado: item.Estado,
-        avance: item.Avance,
-        resultado: item.Resultado,
-        fechaInicio: item.Fecha_Inicio,
-        fechaFin: item.Fecha_Fin
-      }));
+       ejecuciones = data.data.map(item => ({
+         id: item.Id_Tasklist,
+         flujo: item.Titulo_Tasklist,
+         identificador: item.Identificador,
+         usuario: item.Email,
+         estado: item.Estado,
+         avance: item.Avance,
+         resultado: item.Resultado,
+         fechaInicio: item.Fecha_Inicio,
+         fechaFin: item.Fecha_Fin,
+         total: item.Reg_Totales,
+         ok: item.Reg_Proc_OK,
+         error: item.Reg_Proc_NOK
+       }));
 
       llenarFiltroSolicitante();
       renderTabla();
@@ -132,17 +135,20 @@ document.addEventListener("DOMContentLoaded", () => {
                     </button>
                   </td>
 
-                  <td class="text-start">
-                    <button class="btn btn-sm btn-outline-info mb-2" onclick="verTotal(${ejec.id})">
-                      <i class="fas fa-database me-1"></i> Total
-                    </button><br>
-                    <button class="btn btn-sm btn-outline-success mb-2" onclick="verOk(${ejec.id})">
-                      <i class="fas fa-check-circle me-1"></i> OK
-                    </button><br>
-                    <button class="btn btn-sm btn-outline-danger" onclick="verErrores(${ejec.id})">
-                      <i class="fas fa-exclamation-triangle me-1"></i> Error
-                    </button>
-                  </td>
+                 <td class="text-start">
+                   <div class="small mb-1">
+                     <i class="fas fa-database text-info me-1"></i>
+                     <span class="fw-semibold">Total:</span> ${ejec.total ?? "-"}
+                   </div>
+                                    <div class="small mb-1">
+                     <i class="fas fa-check-circle text-success me-1"></i>
+                     <span class="fw-semibold">Ok:</span> ${ejec.ok ?? "-"}
+                   </div>
+                   <div class="small">
+                     <i class="fas fa-exclamation-triangle text-danger me-1"></i>
+                     <span class="fw-semibold">Error:</span> ${ejec.error ?? "-"}
+                   </div>
+                 </td>
 
                   <td class="text-start">
                     <div class="small fw-semibold mb-1">Avance: ${ejec.avance}%</div>
