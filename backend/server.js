@@ -20,13 +20,21 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+
+app.set("trust proxy", 1); // 🔸 importante si estás detrás de un proxy o usás HTTPS interno
+
+
 //  CONFIGURACIÓN DE SESIÓN
 app.use(
   session({
     secret: "clave-super-secreta",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false },
+    cookie: {
+      secure: false,      // 🔹 permite que funcione en IP y DNS
+      sameSite: "lax",    // 🔹 evita que el navegador bloquee cookies cruzadas
+      maxAge: 1000 * 60 * 60 * 2 // (2 horas) opcional, define duración
+    },
   })
 );
 
