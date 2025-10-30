@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
  
   const apps = [
     { id: 1, name: "Robot Itas", category: "Telecom", collection: "Bots", img: "../images/robot.png" ,url: "../pages/EjecucionesPorRobot.html" },
-    { id: 2, name: "Ordenes Bot", category: "Telecom", collection: "Bots", img: "../images/robot_01.png" },
+    { id: 2, name: "APP Ordenes SF", category: "Telecom", collection: "Bots", img: "../images/robot_01.png",url:"../pages/AppOrdenesSf.html" },
     { id: 3, name: "Helix", category: "Telecom", collection: "Gestión", img: "../images/bmx_helix.png" },
     { id: 4, name: "Compartido", category: "Privados", collection: "Gestión", img: "https://img.icons8.com/fluency/48/folder-invoices.png" },
     { id: 5, name: "Grafana", category: "Telecom", collection: "Gestión", img: "../images/Grafana.png",url:"http://10.4.48.116:3000/login" },
