@@ -1,15 +1,7 @@
-// appOrdenesSF_galeriaUsuariosANmodal.js
 const { sql, poolPromise } = require("./db");
 
 module.exports = async (req, res) => {
   try {
-    // ✅ Tomamos el ID del usuario desde la sesión o del body/query según lo que uses
-    const idUsuario = req.session?.user?.ID_Usuario || req.query.idUsuario || req.body.idUsuario;
-
-    if (!idUsuario) {
-      return res.status(400).json({ success: false, error: "Falta el parámetro idUsuario" });
-    }
-
     const pool = await poolPromise;
 
     const query = `
@@ -30,15 +22,10 @@ module.exports = async (req, res) => {
       FROM 
           a002103.USUARIO u
       INNER JOIN 
-          a002103.APP_ORDENES_USR ap ON u.ID_Usuario = ap.ID_Usuario
-      WHERE
-          u.ID_Usuario = @idUsuario;
+          a002103.APP_ORDENES_USR ap ON u.ID_Usuario = ap.ID_Usuario;
     `;
 
-    const result = await pool
-      .request()
-      .input("idUsuario", sql.Int, idUsuario)
-      .query(query);
+    const result = await pool.request().query(query);
 
     const usuarios = result.recordset.map(u => ({
       nombre: u.Nombre,
