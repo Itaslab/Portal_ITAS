@@ -4,19 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Galería de Usuarios</title>
-
-  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-
-  <!-- Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Estilos -->
   <link rel="stylesheet" href="../css/DiseñoGeneral.css" />
 </head>
-
 <body>
   <!-- Navbar -->
   <nav class="navbar position-relative">
@@ -24,186 +17,179 @@
       <a class="navbar-brand nvbar" href="../pages/Front_APPs.html">
         <span class="ms-2">PORTAL ITAS</span>
       </a>
-      <span class="navbar-text nvbar position-absolute top-50 start-50 translate-middle">APP Ordenes SF</span>
+        <span class="navbar-text nvbar position-absolute top-50 start-50 translate-middle">APP Ordenes SF</span>
     </div>
   </nav>
-
-  <!-- Contenido principal -->
+<!-- Contenido principal -->
   <div class="container mt-5">
     <h2 class="text-center mb-4">Asignación de Órdenes a Usuarios Salesforce</h2>
-
-    <!-- Filtros -->
-    <div class="row mb-4 g-3">
+<!-- Filtros -->
+  <div class="row mb-4 g-3">
       <div class="col-md-4">
-        <label for="filtroGrupo" class="form-label">Grupo</label>
-        <select class="form-select" id="filtroGrupo">
+       <label class="form-label" for="filtroGrupo">Grupo</label>
+        <select class="form-select animated-select" id="filtroGrupo">
           <option value="">Todos</option>
           <option value="Grupo A">Grupo A</option>
           <option value="Grupo B">Grupo B</option>
           <option value="Grupo C">Grupo C</option>
         </select>
       </div>
-      <div class="col-md-4">
-        <label for="filtroNombre" class="form-label">Nombre</label>
-        <input type="text" class="form-control" id="filtroNombre" placeholder="Buscar por nombre...">
-      </div>
-      <div class="col-md-4">
-        <label for="filtroActivo" class="form-label">Estado</label>
-        <select class="form-select" id="filtroActivo">
-          <option value="">Todos</option>
-          <option value="Activo">Activo</option>
-          <option value="Inactivo">Inactivo</option>
-        </select>
-      </div>
+    <div class="col-md-4">
+      <label class="form-label" for="filtroNombre">Nombre</label>
+      <input class="form-control " id="filtroNombre" placeholder="Buscar por nombre..." type="text"/>
     </div>
-
-    <!-- Tabla de usuarios -->
-    <div class="table-responsive">
-      <table class="table table-striped table-hover align-middle">
-        <thead class="table-dark">
-          <tr>
-            <th>Usuario</th>
-            <th>Grupo</th>
-            <th>Grupo BKP</th>
-            <th>Modo</th>
-            <th>Max</th>
-            <th>Desde</th>
-            <th>Hasta</th>
-            <th>Activo</th>
-            <th>Asignar</th>
-            <th>Ver</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Juan Pérez</td>
-            <td>Grupo A</td>
-            <td>Grupo BKP 1</td>
-            <td>Modo 1</td>
-            <td>10</td>
-            <td>08:00 hs</td>
-            <td>18:00 hs</td>
-            <td>Activo</td>
-            <td>
-              <select class="form-select form-select-sm">
-                <option value="asignar">Asignar</option>
-                <option value="no-asignar">No Asignar</option>
-                <option value="automatico">Automático</option>
-              </select>
-            </td>
-            <td><button class="btn btn-secondary btn-sm">Ver</button></td>
-          </tr>
-          <tr>
-            <td>María López</td>
-            <td>Grupo B</td>
-            <td>Grupo BKP 2</td>
-            <td>Modo 2</td>
-            <td>5</td>
-            <td>09:00 hs</td>
-            <td>17:00 hs</td>
-            <td>Inactivo</td>
-            <td>
-              <select class="form-select form-select-sm">
-                <option value="asignar">Asignar</option>
-                <option value="no-asignar">No Asignar</option>
-                <option value="automatico">Automático</option>
-              </select>
-            </td>
-            <td><button class="btn btn-secondary btn-sm">Ver</button></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="col-md-4">
+       <label class="form-label" for="filtroActivo">Estado</label>
+      <select class="form-select animated-select" id="filtroActivo">
+       <option value="">Todos</option>
+       <option value="Activo">Activo</option>
+       <option value="Inactivo">Inactivo</option>
+      </select>
     </div>
   </div>
+<!-- Tabla de usuarios -->
+<div class="table-responsive">
+<table class="table table-striped table-hover align-middle">
+<thead class="table-dark">
+<tr>
+<th>Usuario</th>
+<th>Grupo</th>
+<th>Grupo BKP</th>
+<th>Modo</th>
+<th>Max</th>
+<th>Desde</th>
+<th>Hasta</th>
+<th>Activo</th>
+<th>Asignar</th>
+<th>Ver</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Juan Pérez</td>
+<td>Grupo A</td>
+<td>Grupo BKP 1</td>
+<td>Modo 1</td>
+<td>10</td>
+<td>08:00 hs</td>
+<td>18:00 hs</td>
+<td class="text-success fw-bold">Activo</td>
+<td>
+<select class="form-select form-select-sm">
+<option value="asignar">Asignar</option>
+<option value="no-asignar">No Asignar</option>
+<option value="automatico">Automático</option>
+</select>
+</td>
+<td><button class="btn btn-secondary btn-sm ver-animated">Ver</button></td>
+</tr>
+<tr>
+<td>María López</td>
+<td>Grupo B</td>
+<td>Grupo BKP 2</td>
+<td>Modo 2</td>
+<td>5</td>
+<td>09:00 hs</td>
+<td>17:00 hs</td>
+<td class="text-danger fw-bold">Inactivo</td>
+<td>
+<select class="form-select form-select-sm">
+<option value="asignar">Asignar</option>
+<option value="no-asignar">No Asignar</option>
+<option value="automatico">Automático</option>
+</select>
+</td>
+<td><button class="btn btn-secondary btn-sm ver-animated">Ver</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Modal de detalle de usuario -->
+<div aria-hidden="true" aria-labelledby="usuarioModalLabel" class="modal fade" id="usuarioModal" tabindex="-1">
+<div class="modal-dialog modal-lg modal-dialog-centered">
+<div class="modal-content gradient-modal">
+<div class="modal-header">
+<h5 class="modal-title" id="usuarioModalLabel">Detalles del Usuario</h5>
+<button aria-label="Cerrar" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<div class="row">
+<!-- Lado izquierdo -->
+<div class="col-md-6 modal-left">
+<h6 class="mb-3">Usuario</h6>
+<p><strong>Nombre:</strong> <span id="modalNombre"></span></p>
+<p><strong>Email:</strong> <span id="modalEmail"></span></p>
+<p><strong>Sf User ID:</strong> <span id="modalSfID"></span></p>
+<p><strong>Horario:</strong> <span id="modalDesde"></span> - <span id="modalHasta"></span></p>
+<p><strong>Referente:</strong> <span id="modalReferente"></span></p>
+<p><strong>Activo:</strong> <span id="modalActivo"></span></p>
+</div>
+<!-- Lado derecho -->
+<div class="col-md-6">
+  <h6 class="mb-3">Modo de Trabajo</h6>
 
-  <!-- Modal de detalle de usuario -->
-  <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="usuarioModalLabel">Detalles del Usuario</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <!-- Lado izquierdo -->
-            <div class="col-md-6 border-end">
-              <h6 class="mb-3">Usuario</h6>
-              <p><strong>Nombre:</strong> <span id="modalNombre"></span></p>
-              <p><strong>Email:</strong> <span id="modalEmail"></span></p>
-              <p><strong>Sf User ID:</strong> <span id="modalSfID"></span></p>
-              <p><strong>Horario:</strong> <span id="modalDesde"></span> - <span id="modalHasta"></span></p>
-              <p><strong>Referente:</strong> <span id="modalReferente"></span></p>
-              <p><strong>Activo:</strong> <span id="modalActivo"></span></p>
-            </div>
-
-            <!-- Lado derecho -->
-            <div class="col-md-6 ps-4">
-              <h6 class="mb-3">Modo de Trabajo</h6>
-
-              <div class="mb-3">
-                <label for="modalGrupoEditable" class="form-label">Grupo</label>
-                <select class="form-select" id="modalGrupoEditable">
-                  <option value="ORDEN-POSVENTA_A">ORDEN-POSVENTA_A</option>
-                  <option value="ORDEN-POSVENTA_B">ORDEN-POSVENTA_B</option>
-                  <option value="ORDEN-REJECTED">ORDEN-REJECTED</option>
-                  <option value="INC-NPLAY_ACTIVACIONES">INC-NPLAY_ACTIVACIONES</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label for="modalGrupoBKPEditable" class="form-label">Grupo BKP</label>
-                <select class="form-select" id="modalGrupoBKPEditable">
-                  <option value="BKP 1">BKP 1</option>
-                  <option value="BKP 2">BKP 2</option>
-                  <option value="BKP 3">BKP 3</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label for="modalCantidad" class="form-label">Cantidad</label>
-                <input type="number" class="form-control" id="modalCantidad" min="0">
-              </div>
-
-              <div class="mb-3">
-                <label for="modalFormaEditable" class="form-label">Forma</label>
-                <select class="form-select" id="modalFormaEditable">
-                  <option value="desc">Desc</option>
-                  <option value="asc">Asc</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label for="modalModoEditable" class="form-label">Modo de Asignación</label>
-                <select class="form-select" id="modalModoEditable">
-                  <option value="automatico">SCRIPT</option>
-                  <option value="manual">GRUPO</option>
-                </select>
-              </div>
-
-              <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" id="modalDesasignador">
-                <label class="form-check-label" for="modalDesasignador">Desasignador</label>
-              </div>
-
-              <div class="mb-3">
-                <label for="modalScript" class="form-label">Script</label>
-                <textarea class="form-control" id="modalScript" rows="8"></textarea>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary">Guardar</button>
-        </div>
-      </div>
-    </div>
+  <!-- Grupo y Grupo BKP -->
+  <div class="mb-3 animated-field">
+    <label class="form-label" for="modalGrupoEditable">Grupo</label>
+    <select class="form-select" id="modalGrupoEditable">
+      <!-- Opciones insertadas dinámicamente -->
+    </select>
   </div>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../js/appordenesGaleriausuarios.js"></script>
+  <div class="mb-3 animated-field">
+    <label class="form-label" for="modalGrupoBKPEditable">Grupo BKP</label>
+    <select class="form-select dropend" id="modalGrupoBKPEditable">
+      <!-- Opciones insertadas dinámicamente -->
+    </select>
+  </div>
+
+  <!-- Cantidad -->
+  <div class="mb-3 animated-field">
+    <label class="form-label" for="modalCantidad">Cantidad</label>
+    <input class="form-control" id="modalCantidad" min="0" type="number" />
+  </div>
+
+  <!-- Forma -->
+  <div class="mb-3 animated-field">
+    <label class="form-label" for="modalFormaEditable">Forma</label>
+    <select class="form-select" id="modalFormaEditable">
+      <option value="desc">Desc</option>
+      <option value="asc">Asc</option>
+    </select>
+  </div>
+
+  <!-- Modo de Asignación -->
+  <div class="mb-3 animated-field">
+    <label class="form-label" for="modalModoEditable">Modo de Asignación</label>
+    <select class="form-select" id="modalModoEditable">
+      <option value="automatico">SCRIPT</option>
+      <option value="manual">GRUPO</option>
+    </select>
+  </div>
+
+  <!-- Desasignador -->
+  <div class="form-check mb-3">
+    <input class="form-check-input" id="modalDesasignador" type="checkbox" />
+    <label class="form-check-label" for="modalDesasignador">Desasignador</label>
+  </div>
+
+  <!-- Script -->
+  <div class="mb-3 animated-field">
+    <label class="form-label" for="modalScript">Script</label>
+    <textarea class="form-control" id="modalScript" rows="8"></textarea>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="modal-footer">
+  <button class="btn btn-secondary btn-animated" data-bs-dismiss="modal" type="button">Cancelar</button>
+  <button class="btn btn-primary btn-animated" type="button">Guardar</button>
+</div>
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/appordenesGaleriausuarios.js"></script>
 </body>
+
+
 </html>

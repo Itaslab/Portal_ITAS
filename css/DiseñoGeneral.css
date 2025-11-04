@@ -1,39 +1,36 @@
-.nvbar{
-    font-family: "Orbitron"!important;
-    color: white !important;
-    font-weight: bold;
-    font-size: 1.2rem;
+/* ──────────────── NAVBAR Y ESTILOS BASE ──────────────── */
+.nvbar {
+  font-family: "Orbitron" !important;
+  color: white !important;
+  font-weight: bold;
+  font-size: 1.2rem;
 }
 
-nav{
-    background-color: midnightblue !important;
+nav {
+  background-color: midnightblue !important;
 }
 
-.main{
-    font-family: 'Chakra Petch';
-
+.main,
+h1,
+h5,
+p,
+div {
+  font-family: 'Chakra Petch';
 }
 
-h1{
-    font-family: 'Chakra Petch';
-    font-size: 1.5rem;
+h1 {
+  font-size: 1.5rem;
 }
 
-h5{
-    font-family: 'Chakra Petch' !important;
-    font-size: 1.1rem;
+h5 {
+  font-size: 1.1rem;
 }
 
-p{
-    font-family:'Chakra Petch' ;
-    font-size: 1.0rem;
+p {
+  font-size: 1.0rem;
 }
 
-div{
-    font-family:'Chakra Petch' !important ;
-
-}
-
+/* ──────────────── EFECTOS Y ANIMACIONES GENERALES ──────────────── */
 .card-hover {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -50,4 +47,129 @@ div{
 .active-filter {
   color: midnightblue !important;
   border-bottom: 2px solid midnightblue;
+}
+
+/* ──────────────── CAMPOS DEL MODAL ──────────────── */
+#modalGrupoBKPEditable,
+#modalGrupoEditable,
+#modalCantidad,
+#modalFormaEditable,
+#modalModoEditable,
+#modalDesasignador,
+#modalScript {
+  transition: all 0.3s ease-in-out;
+}
+
+#modalGrupoBKPEditable:focus,
+#modalGrupoEditable:focus,
+#modalCantidad:focus,
+#modalFormaEditable:focus,
+#modalModoEditable:focus,
+#modalDesasignador:focus,
+#modalScript:focus {
+  box-shadow: 0 0 10px rgba(17, 21, 201, 0.5);
+  transform: scale(1.05);
+}
+
+/* ──────────────── SELECTS Y BOTONES ──────────────── */
+.animated-c {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.animated-select:focus {
+  transform: scale(1.03);
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+.btn-animated {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-animated:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+.btn-animated:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* ──────────────── EFECTOS ADICIONALES ──────────────── */
+.ver-animated {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ver-animated:hover {
+  transform: scale(1.5);
+  box-shadow: 0 0 10px rgba(39, 13, 189, 0.5);
+}
+
+/* ──────────────── MODAL Y ANIMACIONES ──────────────── */
+.modal-shadow {
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+}
+
+.modal.fade .modal-dialog {
+  transform: scale(0.9);
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.modal.fade.show .modal-dialog {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.gradient-modal {
+  background: linear-gradient(135deg, #ebecee, #f7f8fa);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+/* ──────────────── ANIMACIÓN SECUENCIAL (MODAL IZQUIERDA) ──────────────── */
+.modal-left p {
+  opacity: 0;
+  transform: translateX(-20px);
+  animation: fadeInLeft 0.5s ease forwards;
+  animation-delay: var(--delay);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.modal-left h6 {
+  opacity: 0;
+  transform: translateX(-20px);
+  animation: fadeInLeft 0.5s ease forwards;
+  animation-delay: 0.1s;
+}
+
+@keyframes fadeInLeft {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ──────────────── ETIQUETA MODAL ACTIVO ──────────────── */
+#modalActivo {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideIn 0.6s ease-out forwards;
+  padding: 4px 8px;
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+  font-weight: bold;
+  transition: box-shadow 0.3s ease;
+}
+
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

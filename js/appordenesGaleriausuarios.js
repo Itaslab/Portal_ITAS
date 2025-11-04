@@ -70,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 💾 Evento para el botón "Guardar" dentro del modal
     document.querySelector("#usuarioModal .btn-primary").addEventListener("click", () => {
+    if (!validarCampos()) return;
         const nombre = document.getElementById("modalNombre").textContent;
         const grupo = document.getElementById("modalGrupoEditable").value;
         const grupoBKP = document.getElementById("modalGrupoBKPEditable").value;
@@ -97,3 +98,50 @@ document.addEventListener("DOMContentLoaded", () => {
         modal.hide();
     });
 });
+
+// ✅ Validaciones antes de guardar
+function validarCampos() {
+    const cantidad = document.getElementById("modalCantidad").value;
+    const script = document.getElementById("modalScript").value;
+    const modo = document.getElementById("modalModoEditable").value;
+
+    if (isNaN(cantidad) || cantidad <= 0) {
+        alert("⚠️ La cantidad debe ser un número positivo.");
+        return false;
+    }
+    if (modo === "automatico" && script.trim() === "") {
+        alert("⚠️ Debes ingresar un script para el modo automático.");
+        return false;
+    }
+    return true;
+}
+document.addEventListener("DOMContentLoaded", () => {
+    const estadoSpan = document.getElementById("modalActivo");
+    if (estadoSpan) {
+        const estado = estadoSpan.textContent.trim().toLowerCase();
+        if (estado === "activo") {
+            estadoSpan.classList.add("bg-success", "text-white", "px-2", "py-1", "rounded", "shadow");
+        } else if (estado === "inactivo") {
+            estadoSpan.classList.add("bg-danger", "text-white", "px-2", "py-1", "rounded", "shadow");
+        }
+    }
+});
+const grupos = [
+  "ORDEN-POSVENTA_A", "ORDEN-POSVENTA_B", "ORDEN-REJECTED",
+  "INC-NPLAY_ACTIVACIONES", "INC-FAN_POSVENTA", "INC-FAN_VENTA",
+  "INC-NPLAY_POSVENTA", "INC-FACOBMOR", "Mesa 1", "Mesa 3",
+  "Mesa 4", "PM", "LEGADO"
+];
+
+function populateSelect(id) {
+  const select = document.getElementById(id);
+  grupos.forEach(grupo => {
+    const option = document.createElement("option");
+    option.value = grupo;
+    option.textContent = grupo;
+    select.appendChild(option);
+  });
+}
+
+populateSelect("modalGrupoEditable");
+populateSelect("modalGrupoBKPEditable");
