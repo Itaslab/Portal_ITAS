@@ -20,60 +20,66 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // 🧾 Renderizar tabla
-function renderTabla(data) {
-  tabla.innerHTML = "";
-  data.forEach(u => {
-    const row = document.createElement("tr");
+  function renderTabla(data) {
+    tabla.innerHTML = "";
+    data.forEach(u => {
+      const row = document.createElement("tr");
 
-    // Generar el dropdown según el valor de Asignar
-    const asignarValor = (u.asignar || "").toLowerCase();
-    const opciones = `
-      <select class="form-select form-select-sm asignar-select">
-        <option value="asignar" ${asignarValor === "asignar" ? "selected" : ""}>Asignar</option>
-        <option value="no-asignar" ${asignarValor === "no-asignar" ? "selected" : ""}>No Asignar</option>
-        <option value="automatico" ${asignarValor === "automatico" ? "selected" : ""}>Automático</option>
-      </select>
-    `;
+      // Normalizar valor del campo Asignar (en caso de mayúsculas o nulos)
+      const asignarValor = (u.asignar || "").trim().toLowerCase();
 
-    row.innerHTML = `
-      <td>${u.nombre}</td>
-      <td>${u.grupo || ""}</td>
-      <td>${u.grupo2 || ""}</td>
-      <td>${u.modo || ""}</td>
-      <td>${u.max || ""}</td>
-      <td>${u.desde || ""}</td>
-      <td>${u.hasta || ""}</td>
-      <td class="${u.activo === 1 ? "text-success fw-bold" : "text-danger fw-bold"}">
-        ${u.activo === 1 ? "Activo" : "Inactivo"}
-      </td>
-      <td>${opciones}</td>
-      <td><button class="btn btn-secondary btn-sm ver-animated">Ver</button></td>
-    `;
+      const opciones = `
+        <select class="form-select form-select-sm asignar-select">
+          <option value="Asignar" ${asignarValor === "asignar" ? "selected" : ""}>Asignar</option>
+          <option value="No Asignar" ${asignarValor === "no asignar" ? "selected" : ""}>No Asignar</option>
+          <option value="Automático" ${asignarValor === "automático" ? "selected" : ""}>Automático</option>
+        </select>
+      `;
 
-    // ✅ Evento para detectar cambio en el dropdown
-    row.querySelector(".asignar-select").addEventListener("change", async (e) => {
-      const nuevoValor = e.target.value;
-      console.log(`Usuario ${u.nombre} cambió Asignar a:`, nuevoValor);
+      row.innerHTML = `
+        <td>${u.nombre}</td>
+        <td>${u.grupo || ""}</td>
+        <td>${u.grupo2 || ""}</td>
+        <td>${u.modo || ""}</td>
+        <td>${u.max || ""}</td>
+        <td>${u.desde || ""}</td>
+        <td>${u.hasta || ""}</td>
+        <td class="${u.activo === 1 ? "text-success fw-bold" : "text-danger fw-bold"}">
+          ${u.activo === 1 ? "Activo" : "Inactivo"}
+        </td>
+        <td>${opciones}</td>
+        <td><button class="btn btn-secondary btn-sm ver-animated">Ver</button></td>
+      `;
 
-      // (opcional) Actualizá en backend:
-      try {
-        await fetch("/usuarios/asignar", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            sf_user_id: u.sf_user_id, // o ID de usuario si tenés
-            asignar: nuevoValor
-          })
-        });
-      } catch (error) {
-        console.error("Error al actualizar Asignar:", error);
-      }
+      // ✅ Evento: actualizar backend al cambiar dropdown
+      row.querySelector(".asignar-select").addEventListener("change", async (e) => {
+        const nuevoValor = e.target.value;
+        console.log(`🔄 Usuario ${u.nombre} cambió Asignar a: ${nuevoValor}`);
+
+        try {
+          const resp = await fetch("/usuarios/asignar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              sf_user_id: u.sf_user_id,
+              asignar: nuevoValor
+            })
+          });
+
+          const result = await resp.json();
+          if (result.success) {
+            console.log(`✅ Actualizado correctamente: ${u.nombre} → ${nuevoValor}`);
+          } else {
+            console.error("❌ Error al actualizar Asignar:", result.error);
+          }
+        } catch (error) {
+          console.error("⚠️ Error de conexión al actualizar Asignar:", error);
+        }
+      });
+
+      tabla.appendChild(row);
     });
-
-    tabla.appendChild(row);
-  });
-}
-
+  }
 
   // 🔍 Filtros
   function filtrarTabla() {
@@ -127,7 +133,7 @@ function renderTabla(data) {
     }
   });
 
-  // 💾 Guardar (solo loguea por ahora)
+  // 💾 Guardar modal
   document.querySelector("#usuarioModal .btn-primary").addEventListener("click", () => {
     if (!validarCampos()) return;
     const nombre = document.getElementById("modalNombre").textContent;
@@ -163,7 +169,7 @@ function validarCampos() {
   return true;
 }
 
-// ✅ Poblado de selects
+// ✅ Poblado de selects del modal
 const grupos = [
   "ORDEN-POSVENTA_A", "ORDEN-POSVENTA_B", "ORDEN-REJECTED",
   "INC-NPLAY_ACTIVACIONES", "INC-FAN_POSVENTA", "INC-FAN_VENTA",

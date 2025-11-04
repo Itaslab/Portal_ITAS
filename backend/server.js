@@ -14,6 +14,7 @@ const crearEjecucion = require("./crearEjecucion");
 const obtenerEjecuciones = require("./galeriaEjecuciones");
 const generarUsuario = require("./generarUsuario_tbUsuarios");
 const appOrdenesSFGaleriaUsuariosANmodal = require("./appOrdenesSF_galeriaUsuariosANmodal");
+const updateAsignar = require("./appOrdenesSF_updateAsignacion");
 
 
 const app = express();
@@ -93,6 +94,8 @@ app.get("/flujos", listaEjecuciones);
 app.post("/crearEjecucion", crearEjecucion);
 app.get("/ejecuciones", obtenerEjecuciones);
 app.get("/usuarios", appOrdenesSFGaleriaUsuariosANmodal);
+app.post("/usuarios/asignar", updateAsignar);
+
 app.use("/", generarUsuario);
 
 // ------------------- PROTECCIÓN DE PÁGINAS -------------------
