@@ -1,9 +1,11 @@
+// appOrdenesSF_galeriaUsuariosANmodal.js
 const { sql, poolPromise } = require("./db");
 
 module.exports = async (req, res) => {
   try {
     const pool = await poolPromise;
 
+    // ✅ Trae TODOS los usuarios (sin filtrar por ID)
     const query = `
       SELECT 
           ISNULL(u.Nombre, '') + ' ' + ISNULL(u.Apellido, '') AS Nombre,
@@ -22,7 +24,8 @@ module.exports = async (req, res) => {
       FROM 
           a002103.USUARIO u
       INNER JOIN 
-          a002103.APP_ORDENES_USR ap ON u.ID_Usuario = ap.ID_Usuario;
+          a002103.APP_ORDENES_USR ap ON u.ID_Usuario = ap.ID_Usuario
+      ORDER BY u.Nombre;
     `;
 
     const result = await pool.request().query(query);
@@ -39,7 +42,7 @@ module.exports = async (req, res) => {
       desde: u.Hora_De,
       hasta: u.Hora_A,
       activo: u.Activo,
-      asignar: u.Asignar,
+      asignar: u.Asignar, // 👈 importante para el dropdown
       horario: u.Horario
     }));
 

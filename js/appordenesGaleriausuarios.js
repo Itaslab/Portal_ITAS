@@ -20,27 +20,60 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // 🧾 Renderizar tabla
-  function renderTabla(data) {
-    tabla.innerHTML = "";
-    data.forEach(u => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${u.nombre}</td>
-        <td>${u.grupo || ""}</td>
-        <td>${u.grupo_bkp || ""}</td>
-        <td>${u.modo || ""}</td>
-        <td>${u.max || ""}</td>
-        <td>${u.desde || ""}</td>
-        <td>${u.hasta || ""}</td>
-        <td class="${u.activo === 1 ? "text-success fw-bold" : "text-danger fw-bold"}">
-          ${u.activo === 1 ? "Activo" : "Inactivo"}
-        </td>
-        <td>${u.asignar || ""}</td>
-        <td><button class="btn btn-secondary btn-sm ver-animated">Ver</button></td>
-      `;
-      tabla.appendChild(row);
+function renderTabla(data) {
+  tabla.innerHTML = "";
+  data.forEach(u => {
+    const row = document.createElement("tr");
+
+    // Generar el dropdown según el valor de Asignar
+    const asignarValor = (u.asignar || "").toLowerCase();
+    const opciones = `
+      <select class="form-select form-select-sm asignar-select">
+        <option value="asignar" ${asignarValor === "asignar" ? "selected" : ""}>Asignar</option>
+        <option value="no-asignar" ${asignarValor === "no-asignar" ? "selected" : ""}>No Asignar</option>
+        <option value="automatico" ${asignarValor === "automatico" ? "selected" : ""}>Automático</option>
+      </select>
+    `;
+
+    row.innerHTML = `
+      <td>${u.nombre}</td>
+      <td>${u.grupo || ""}</td>
+      <td>${u.grupo2 || ""}</td>
+      <td>${u.modo || ""}</td>
+      <td>${u.max || ""}</td>
+      <td>${u.desde || ""}</td>
+      <td>${u.hasta || ""}</td>
+      <td class="${u.activo === 1 ? "text-success fw-bold" : "text-danger fw-bold"}">
+        ${u.activo === 1 ? "Activo" : "Inactivo"}
+      </td>
+      <td>${opciones}</td>
+      <td><button class="btn btn-secondary btn-sm ver-animated">Ver</button></td>
+    `;
+
+    // ✅ Evento para detectar cambio en el dropdown
+    row.querySelector(".asignar-select").addEventListener("change", async (e) => {
+      const nuevoValor = e.target.value;
+      console.log(`Usuario ${u.nombre} cambió Asignar a:`, nuevoValor);
+
+      // (opcional) Actualizá en backend:
+      try {
+        await fetch("/usuarios/asignar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sf_user_id: u.sf_user_id, // o ID de usuario si tenés
+            asignar: nuevoValor
+          })
+        });
+      } catch (error) {
+        console.error("Error al actualizar Asignar:", error);
+      }
     });
-  }
+
+    tabla.appendChild(row);
+  });
+}
+
 
   // 🔍 Filtros
   function filtrarTabla() {
