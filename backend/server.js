@@ -95,7 +95,7 @@ app.get("/flujos", listaEjecuciones);
 app.post("/crearEjecucion", crearEjecucion);
 app.get("/ejecuciones", obtenerEjecuciones);
 app.get("/usuarios", appOrdenesSFgaleriaUsuarios);
-app.get("/usuarios/:id", appOrdenesSFUsuarioDetalle);
+app.get("/usuarios/:id_usuario", appOrdenesSFUsuarioDetalle);
 app.post("/usuarios/:id_usuario/asignar", updateAsignar);
 
 
