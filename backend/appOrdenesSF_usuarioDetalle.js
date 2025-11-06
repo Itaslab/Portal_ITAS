@@ -20,9 +20,9 @@ module.exports = async (req, res) => {
         ap.Grupo,
         ap.Grupo2,
         ap.Max_Por_Trabajar,
-        ap.Forma,            -- asegúrate que exista esa columna
+        ap.Asc_Desc,            -- asegúrate que exista esa columna
         ap.Modo,
-        ap.Desasignador,     -- idem
+        ap.Des_Asignar,     -- idem
         ap.Script            -- idem
       FROM 
         a002103.APP_ORDENES_USR ap
@@ -51,9 +51,9 @@ module.exports = async (req, res) => {
       grupo: u.Grupo,
       grupo2: u.Grupo2,
       max: u.Max_Por_Trabajar,
-      forma: u.Forma,
+      forma: u.Asc_Desc,
       modo: u.Modo,
-      desasignador: u.Desasignador,
+      desasignador: u.Des_Asignar,
       script: u.Script
     };
 
