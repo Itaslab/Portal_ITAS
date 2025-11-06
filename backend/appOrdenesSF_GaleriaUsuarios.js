@@ -13,8 +13,8 @@ SELECT
         ap.Grupo2,
         ap.Modo,
         ap.Max_Por_Trabajar,
-        ISNULL(CONVERT(VARCHAR(8), ap.Hora_De, 108),''),
-        ISNULL(CONVERT(VARCHAR(8), ap.Hora_A, 108),''),
+    ISNULL(CONVERT(VARCHAR(8), ap.Hora_De, 108), '') AS Hora_De,
+    ISNULL(CONVERT(VARCHAR(8), ap.Hora_A, 108), '') AS Hora_A,
         ap.Activo,
         ap.Asignar
       FROM 
