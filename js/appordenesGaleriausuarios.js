@@ -6,10 +6,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   const filtroActivo = document.getElementById("filtroActivo");
   const tabla = document.querySelector("table tbody");
 
-  // 🔹 Modal elementos
-  const modal = document.getElementById("userModal");
-  const modalBody = modal.querySelector(".modal-body");
-  const modalClose = modal.querySelector(".close");
+
+// 🔹 Modal elementos
+const modal = document.getElementById("usuarioModal"); // <-- nombre correcto
+const modalBody = modal.querySelector(".modal-body");
+const modalClose = modal.querySelector(".btn-close"); // <-- en tu HTML el botón usa esta clase
+
 
   // Cerrar modal
   modalClose.addEventListener("click", () => {
