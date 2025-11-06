@@ -41,59 +41,65 @@ const modalClose = modal.querySelector(".btn-close"); // <-- en tu HTML el botó
   }
 
   // 🔹 Renderizar tabla
-  function renderTabla(lista) {
-    tabla.innerHTML = "";
+ // 🔹 Renderizar tabla (reemplazá tu función completa con esta)
+function renderTabla(lista) {
+  tabla.innerHTML = "";
 
-    lista.forEach((u) => {
-      const row = document.createElement("tr");
+  lista.forEach((u) => {
+    const row = document.createElement("tr");
 
-      row.innerHTML = `
-        <td class="nombre-cell">${u.nombre}</td>
-        <td>${u.grupo || ""}</td>
-        <td>${u.grupo2 || ""}</td>
-        <td>${u.modo || ""}</td>
-        <td>${u.max || ""}</td>
-        <td>${u.desde || ""} - ${u.hasta || ""}</td>
-        <td>${u.activo ? "✅" : "❌"}</td>
-        <td>
-          <select class="asignar-select">
-            <option value="Asignar" ${u.asignar === "Asignar" ? "selected" : ""}>Asignar</option>
-            <option value="No Asignar" ${u.asignar === "No Asignar" ? "selected" : ""}>No Asignar</option>
-            <option value="Automático" ${u.asignar === "Automático" ? "selected" : ""}>Automático</option>
-          </select>
-        </td>
-      `;
+    row.innerHTML = `
+      <td class="nombre-cell">${u.Nombre || "-"}</td>
+      <td>${u.Grupo || "-"}</td>
+      <td>${u.Grupo2 || "-"}</td>
+      <td>${u.Modo || "-"}</td>
+      <td>${u.Max_Por_Trabajar || "-"}</td>
+      <td>${u.Hora_De || "-"}</td>
+      <td>${u.Hora_A || "-"}</td>
+      <td>${u.Activo ? "✅ Activo" : "❌ Inactivo"}</td>
+      <td>
+        <select class="asignar-select form-select form-select-sm">
+          <option value="Asignar" ${u.Asignar === "Asignar" ? "selected" : ""}>Asignar</option>
+          <option value="No Asignar" ${u.Asignar === "No Asignar" ? "selected" : ""}>No Asignar</option>
+          <option value="Automático" ${u.Asignar === "Automático" ? "selected" : ""}>Automático</option>
+        </select>
+      </td>
+      <td>
+        <button class="btn btn-primary btn-sm ver-btn">Ver</button>
+      </td>
+    `;
 
-      // 🔸 Click en el nombre → abrir modal
-      row.querySelector(".nombre-cell").addEventListener("click", () => {
-        abrirModal(u.id_usuario);
-      });
-
-      // 🔸 Evento cambio en dropdown Asignar
-      const select = row.querySelector(".asignar-select");
-      select.addEventListener("change", async (e) => {
-        const nuevoValor = e.target.value;
-
-        try {
-          const resp = await fetch(`/usuarios/${u.id_usuario}/asignar`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ asignar: nuevoValor }),
-          });
-
-          const data = await resp.json();
-          if (!data.success) throw new Error(data.error || "Error al actualizar Asignar");
-
-          console.log(`✅ Usuario ${u.nombre}: Asignar actualizado a "${nuevoValor}"`);
-        } catch (err) {
-          console.error("Error al actualizar Asignar:", err);
-          alert("No se pudo actualizar el campo Asignar.");
-        }
-      });
-
-      tabla.appendChild(row);
+    // 🔸 Click en el botón "Ver" → abrir modal
+    row.querySelector(".ver-btn").addEventListener("click", () => {
+      abrirModal(u.ID_Usuario);
     });
-  }
+
+    // 🔸 Evento cambio en dropdown Asignar
+    const select = row.querySelector(".asignar-select");
+    select.addEventListener("change", async (e) => {
+      const nuevoValor = e.target.value;
+
+      try {
+        const resp = await fetch(`/usuarios/${u.ID_Usuario}/asignar`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ asignar: nuevoValor }),
+        });
+
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.error || "Error al actualizar Asignar");
+
+        console.log(`✅ Usuario ${u.Nombre}: Asignar actualizado a "${nuevoValor}"`);
+      } catch (err) {
+        console.error("Error al actualizar Asignar:", err);
+        alert("No se pudo actualizar el campo Asignar.");
+      }
+    });
+
+    tabla.appendChild(row);
+  });
+}
+
 
   // 🔹 Filtrado en tiempo real
   [filtroGrupo, filtroNombre, filtroActivo].forEach((input) => {
