@@ -16,6 +16,8 @@ const generarUsuario = require("./generarUsuario_tbUsuarios");
 const appOrdenesSFgaleriaUsuarios = require("./appOrdenesSF_GaleriaUsuarios");
 const updateAsignar = require("./appOrdenesSF_updateAsignar");
 const appOrdenesSFUsuarioDetalle = require("./appOrdenesSF_usuarioDetalle");
+const actualizarUsuario = require("./appOrdenesSF_actualizarUsuario");
+
 
 const app = express();
 
@@ -97,6 +99,8 @@ app.get("/ejecuciones", obtenerEjecuciones);
 app.get("/usuarios", appOrdenesSFgaleriaUsuarios);
 app.get("/usuarios/:id_usuario", appOrdenesSFUsuarioDetalle);
 app.post("/usuarios/:id_usuario/asignar", updateAsignar);
+app.post("/usuarios/actualizar", actualizarUsuario);
+
 
 
 app.use("/", generarUsuario);

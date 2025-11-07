@@ -213,4 +213,46 @@ document.addEventListener("DOMContentLoaded", async () => {
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
   }
+
+    // --- GUARDAR CAMBIOS ---
+  async function guardarCambiosUsuario() {
+    // Suponemos que el backend espera el ID
+    const id = spanSfID.textContent || spanNombre.dataset.id_usuario; // o el hidden si tenés uno
+
+    const data = {
+      id_usuario: parseInt(id, 10),
+      grupo: selectGrupoEditable.value,
+      grupo2: selectGrupoBKPEditable.value,
+      max_por_trabajar: parseInt(inputCantidad.value || 0, 10),
+      asc_desc: selectForma.value,
+      modo: selectModo.value,
+      script: textareaScript.value,
+      des_asignar: checkboxDesasignador.checked
+    };
+
+    try {
+      const resp = await fetch("/usuarios/actualizar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const result = await resp.json();
+      if (!result.success) throw new Error(result.error);
+
+      alert("✅ Cambios guardados correctamente");
+      bsModal.hide();
+      cargarUsuarios(); // refresca la tabla
+    } catch (err) {
+      console.error("Error al guardar cambios:", err);
+      alert("❌ No se pudieron guardar los cambios.");
+    }
+  }
+
+  // Vincular botón "Guardar" del modal
+  const btnGuardar = document.getElementById("modalBtnGuardar");
+  if (btnGuardar) {
+    btnGuardar.addEventListener("click", guardarCambiosUsuario);
+  }
+
 });
