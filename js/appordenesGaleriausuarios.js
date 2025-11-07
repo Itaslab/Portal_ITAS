@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         <td>${escapeHtml(String(u.max))}</td>
         <td>${escapeHtml(u.desde)}</td> 
         <td>${escapeHtml(u.hasta)}</td>
-        <td>${escapeHtml(u.activo)}</td>
+        <td>${escapeHtml(String(u.activo))}</td>
         <td>
           <select class="asignar-select form-select form-select-sm">
             <option value="Asignar" ${u.asignar === "Asignar" ? "selected" : ""}>Asignar</option>
