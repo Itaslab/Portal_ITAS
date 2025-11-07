@@ -6,15 +6,15 @@ module.exports = async (req, res) => {
     const pool = await poolPromise;
 
     const query = `
-SELECT 
+    SELECT 
         ap.ID_Usuario,
         ISNULL(u.Nombre, '') + ' ' + ISNULL(u.Apellido, '') AS Nombre,
         ap.Grupo,
         ap.Grupo2,
         ap.Modo,
         ap.Max_Por_Trabajar,
-    ISNULL(CONVERT(VARCHAR(8), ap.Hora_De, 108), '') AS Hora_De,
-    ISNULL(CONVERT(VARCHAR(8), ap.Hora_A, 108), '') AS Hora_A,
+        ISNULL(CONVERT(VARCHAR(8), ap.Hora_De, 108), '') AS Hora_De,
+        ISNULL(CONVERT(VARCHAR(8), ap.Hora_A, 108), '') AS Hora_A,
         ap.Activo,
         ap.Asignar
       FROM 
