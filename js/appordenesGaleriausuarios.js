@@ -88,13 +88,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         <td>${escapeHtml(String(u.max))}</td>
         <td>${escapeHtml(u.desde)}</td> 
         <td>${escapeHtml(u.hasta)}</td>
-        <td>
-${
-    u.activo === true || u.activo === 1 || u.activo === "true" || u.activo === "Activo"
-      ? "✅ Activo"
-      : "❌ Inactivo"
-  }
-</td>
+        <td>${u.activo === 'Activo' ? '✅ Activo' : '❌ Inactivo'}</td>
+
 
         <td>
           <select class="asignar-select form-select form-select-sm">
