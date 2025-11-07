@@ -162,48 +162,51 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Abrir modal: pide detalle al backend y rellena los campos del modal (spans/inputs)
   async function abrirModal(id_usuario) {
-    try {
-      const resp = await fetch(`/usuarios/${id_usuario}`);
-      const data = await resp.json();
-      if (!data.success) throw new Error(data.error || "Error al obtener detalle del usuario");
+  try {
+    const resp = await fetch(`/usuarios/${id_usuario}`);
+    const data = await resp.json();
+    if (!data.success) throw new Error(data.error || "Error al obtener detalle del usuario");
 
-      const u = data.usuario || {};
+    const u = data.usuario || {};
 
-      // relleno los spans/inputs del modal
-      spanNombre.textContent = u.nombre ?? "-";
-      spanEmail.textContent = u.email ?? "-";
-      spanSfID.textContent = u.sf_user_id ?? "-";
+    // 🔹 Guardamos el ID real del usuario en el input oculto
+    document.getElementById("modalIdUsuario").value = id_usuario;
 
-      // Si tu backend devuelve horario separado, adaptá; acá usamos horario concatenado si viene
-      if (u.horario) {
-        // si horario viene "HH:MM - HH:MM", intentamos separar
-        const parts = (u.horario || "").split(" - ");
-        spanDesde.textContent = parts[0] || (u.desde ?? "-");
-        spanHasta.textContent = parts[1] || (u.hasta ?? "-");
-      } else {
-        spanDesde.textContent = u.desde ?? "-";
-        spanHasta.textContent = u.hasta ?? "-";
-      }
+    // Rellenar los spans del modal
+    spanNombre.textContent = u.nombre ?? "-";
+    spanEmail.textContent = u.email ?? "-";
+    spanSfID.textContent = u.sf_user_id ?? "-";
 
-      spanReferente.textContent = u.referente ?? "-";
-      spanActivo.textContent = (u.activo == 1 || u.activo === true) ? "Activo" : "Inactivo";
-
-      // rellenar selects/inputs (si existen en u)
-      if (selectGrupoEditable) selectGrupoEditable.value = u.grupo ?? "";
-      if (selectGrupoBKPEditable) selectGrupoBKPEditable.value = u.grupo2 ?? "";
-      if (inputCantidad) inputCantidad.value = u.max ?? "";
-      if (selectForma) selectForma.value = u.forma ?? selectForma.value;
-      if (selectModo) selectModo.value = (u.modo && u.modo.toLowerCase().includes("auto")) ? "automatico" : (u.modo ?? selectModo.value);
-      if (checkboxDesasignador) checkboxDesasignador.checked = !!u.desasignador;
-      if (textareaScript) textareaScript.value = u.script ?? "";
-
-      // mostrar modal
-      bsModal.show();
-    } catch (err) {
-      console.error("Error al cargar detalle del usuario:", err);
-      alert("No se pudo abrir el detalle del usuario.");
+    if (u.horario) {
+      const parts = (u.horario || "").split(" - ");
+      spanDesde.textContent = parts[0] || (u.desde ?? "-");
+      spanHasta.textContent = parts[1] || (u.hasta ?? "-");
+    } else {
+      spanDesde.textContent = u.desde ?? "-";
+      spanHasta.textContent = u.hasta ?? "-";
     }
+
+    spanReferente.textContent = u.referente ?? "-";
+    spanActivo.textContent = (u.activo == 1 || u.activo === true) ? "Activo" : "Inactivo";
+
+    // Rellenar campos editables
+    if (selectGrupoEditable) selectGrupoEditable.value = u.grupo ?? "";
+    if (selectGrupoBKPEditable) selectGrupoBKPEditable.value = u.grupo2 ?? "";
+    if (inputCantidad) inputCantidad.value = u.max ?? "";
+    if (selectForma) selectForma.value = u.forma ?? selectForma.value;
+    if (selectModo)
+      selectModo.value = (u.modo && u.modo.toLowerCase().includes("auto")) ? "automatico" : (u.modo ?? selectModo.value);
+    if (checkboxDesasignador) checkboxDesasignador.checked = !!u.des_asignar;
+    if (textareaScript) textareaScript.value = u.script ?? "";
+
+    // Mostrar modal
+    bsModal.show();
+  } catch (err) {
+    console.error("Error al cargar detalle del usuario:", err);
+    alert("No se pudo abrir el detalle del usuario.");
   }
+}
+
 
   // escape simple para evitar inyección en render (texto plano)
   function escapeHtml(str) {
@@ -215,39 +218,45 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
     // --- GUARDAR CAMBIOS ---
-  async function guardarCambiosUsuario() {
-    // Suponemos que el backend espera el ID
-    const id = spanSfID.textContent || spanNombre.dataset.id_usuario; // o el hidden si tenés uno
+ async function guardarCambiosUsuario() {
+  // 🔹 Obtener ID del input oculto
+  const id = parseInt(document.getElementById("modalIdUsuario").value, 10);
 
-    const data = {
-      id_usuario: parseInt(id, 10),
-      grupo: selectGrupoEditable.value,
-      grupo2: selectGrupoBKPEditable.value,
-      max_por_trabajar: parseInt(inputCantidad.value || 0, 10),
-      asc_desc: selectForma.value,
-      modo: selectModo.value,
-      script: textareaScript.value,
-      des_asignar: checkboxDesasignador.checked
-    };
-
-    try {
-      const resp = await fetch("/usuarios/actualizar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      const result = await resp.json();
-      if (!result.success) throw new Error(result.error);
-
-      alert("✅ Cambios guardados correctamente");
-      bsModal.hide();
-      cargarUsuarios(); // refresca la tabla
-    } catch (err) {
-      console.error("Error al guardar cambios:", err);
-      alert("❌ No se pudieron guardar los cambios.");
-    }
+  if (!id || isNaN(id)) {
+    alert("❌ ID de usuario inválido. No se puede guardar.");
+    return;
   }
+
+  const data = {
+    id_usuario: id,
+    grupo: selectGrupoEditable.value,
+    grupo2: selectGrupoBKPEditable.value,
+    max_por_trabajar: parseInt(inputCantidad.value || 0, 10),
+    asc_desc: selectForma.value,
+    modo: selectModo.value,
+    script: textareaScript.value,
+    des_asignar: checkboxDesasignador.checked
+  };
+
+  try {
+    const resp = await fetch("/usuarios/actualizar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    const result = await resp.json();
+    if (!result.success) throw new Error(result.error);
+
+    alert("✅ Cambios guardados correctamente");
+    bsModal.hide();
+    await cargarUsuarios(); // refresca la tabla
+  } catch (err) {
+    console.error("Error al guardar cambios:", err);
+    alert("❌ No se pudieron guardar los cambios.");
+  }
+}
+
 
   // Vincular botón "Guardar" del modal
   const btnGuardar = document.getElementById("modalBtnGuardar");
