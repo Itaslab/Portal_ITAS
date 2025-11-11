@@ -108,9 +108,9 @@ row.innerHTML = `
 const estadoSpan = row.querySelector(".estado-span");
 if (estadoSpan) {
   const estado = estadoSpan.textContent.trim().toLowerCase();
-  if (estado.includes("activo")) {
+  if (estado.includes("Activo")) {
     estadoSpan.classList.add("bg-success", "text-white", "px-2", "py-1", "rounded", "shadow");
-  } else if (estado.includes("inactivo")) {
+  } else if (estado.includes("Inactivo")) {
     estadoSpan.classList.add("bg-danger", "text-white", "px-2", "py-1", "rounded", "shadow");
   }
 }
