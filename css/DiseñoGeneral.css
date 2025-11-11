@@ -3,7 +3,7 @@
   font-family: "Orbitron" !important;
   color: white !important;
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1.0rem;
 }
 
 nav {
@@ -19,15 +19,15 @@ div {
 }
 
 h1 {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
 }
 
 h5 {
-  font-size: 1.1rem;
+  font-size: 1.0rem;
 }
 
 p {
-  font-size: 1.0rem;
+  font-size: 0.9rem;
 }
 
 /* ──────────────── EFECTOS Y ANIMACIONES GENERALES ──────────────── */
