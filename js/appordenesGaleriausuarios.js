@@ -85,7 +85,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         asignar: uRaw.asignar ?? uRaw.Asignar ?? ""
       };
 const row = document.createElement("tr");
-row.style.fontSize = "0.90rem"; // Ajusta el tamaño para toda la fila
 row.innerHTML = `
   <td class="nombre-cell" style="cursor:pointer">${escapeHtml(u.nombre)}</td>
   <td>${escapeHtml(u.grupo)}</td>
@@ -94,7 +93,7 @@ row.innerHTML = `
   <td>${escapeHtml(String(u.max))}</td>
   <td>${escapeHtml(u.desde)}</td> 
   <td>${escapeHtml(u.hasta)}</td>
-  <td><span class="estado-span">${u.activo === "Activo" ? "✅ Activo" : "❌ Inactivo"}</span></td>
+  <td><span class="estado-span">${u.activo === "Activo" ? "Activo" : "Inactivo"}</span></td>
   <td>
     <select class="asignar-select form-select form-select-sm">
       <option value="Asignar" ${u.asignar === "Asignar" ? "selected" : ""}>Asignar</option>
@@ -105,15 +104,16 @@ row.innerHTML = `
   <td><button class="btn btn-primary btn-sm ver-btn">Ver</button></td>
 `;
 
-// Ajustar también el estado
+// Aplicar estilos al estado
 const estadoSpan = row.querySelector(".estado-span");
 if (estadoSpan) {
-  estadoSpan.classList.add("text-white", "px-2", "py-1", "rounded", "shadow");
-  estadoSpan.style.fontSize = "0.75rem"; // Más chico para el estado
   const texto = estadoSpan.textContent.toLowerCase();
-  if (texto.includes("activo")) {
+  estadoSpan.classList.add("text-white", "px-2", "py-1", "rounded", "shadow");
+  estadoSpan.style.fontSize = "0.90rem"; // letras más chicas
+
+  if (texto === "activo") {
     estadoSpan.classList.add("bg-success");
-  } else if (texto.includes("inactivo")) {
+  } else if (texto === "inactivo") {
     estadoSpan.classList.add("bg-danger");
   }
 }
