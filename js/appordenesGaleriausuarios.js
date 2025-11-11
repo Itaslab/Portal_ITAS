@@ -84,26 +84,36 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         asignar: uRaw.asignar ?? uRaw.Asignar ?? ""
       };
+const row = document.createElement("tr");
+row.innerHTML = `
+  <td class="nombre-cell" style="cursor:pointer">${escapeHtml(u.nombre)}</td>
+  <td>${escapeHtml(u.grupo)}</td>
+  <td>${escapeHtml(u.grupo2)}</td>
+  <td>${escapeHtml(u.modo)}</td>
+  <td>${escapeHtml(String(u.max))}</td>
+  <td>${escapeHtml(u.desde)}</td> 
+  <td>${escapeHtml(u.hasta)}</td>
+  <td><span class="estado-span">${u.activo === "Activo" ? "✅ Activo" : "❌ Inactivo"}</span></td>
+  <td>
+    <select class="asignar-select form-select form-select-sm">
+      <option value="Asignar" ${u.asignar === "Asignar" ? "selected" : ""}>Asignar</option>
+      <option value="No Asignar" ${u.asignar === "No Asignar" ? "selected" : ""}>No Asignar</option>
+      <option value="Automático" ${u.asignar === "Automático" ? "selected" : ""}>Automático</option>
+    </select>
+  </td>
+  <td><button class="btn btn-primary btn-sm ver-btn">Ver</button></td>
+`;
 
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td class="nombre-cell" style="cursor:pointer">${escapeHtml(u.nombre)}</td>
-        <td>${escapeHtml(u.grupo)}</td>
-        <td>${escapeHtml(u.grupo2)}</td>
-        <td>${escapeHtml(u.modo)}</td>
-        <td>${escapeHtml(String(u.max))}</td>
-        <td>${escapeHtml(u.desde)}</td> 
-        <td>${escapeHtml(u.hasta)}</td>
-        <td>${u.activo === "Activo" ? "✅ Activo" : "❌ Inactivo"}</td>
-        <td>
-          <select class="asignar-select form-select form-select-sm">
-            <option value="Asignar" ${u.asignar === "Asignar" ? "selected" : ""}>Asignar</option>
-            <option value="No Asignar" ${u.asignar === "No Asignar" ? "selected" : ""}>No Asignar</option>
-            <option value="Automático" ${u.asignar === "Automático" ? "selected" : ""}>Automático</option>
-          </select>
-        </td>
-        <td><button class="btn btn-primary btn-sm ver-btn">Ver</button></td>
-      `;
+// Aplicar estilos al estado
+const estadoSpan = row.querySelector(".estado-span");
+if (estadoSpan) {
+  const estado = estadoSpan.textContent.trim().toLowerCase();
+  if (estado.includes("activo")) {
+    estadoSpan.classList.add("bg-success", "text-white", "px-2", "py-1", "rounded", "shadow");
+  } else if (estado.includes("inactivo")) {
+    estadoSpan.classList.add("bg-danger", "text-white", "px-2", "py-1", "rounded", "shadow");
+  }
+}
 
       // Ver → abrir modal
       row.querySelector(".ver-btn").addEventListener("click", () => {
