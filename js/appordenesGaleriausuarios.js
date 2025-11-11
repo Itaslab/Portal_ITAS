@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         asignar: uRaw.asignar ?? uRaw.Asignar ?? ""
       };
 const row = document.createElement("tr");
-row.style.fontSize = "0.85rem"; // Ajusta el tamaño para toda la fila
+row.style.fontSize = "0.93rem"; // Ajusta el tamaño para toda la fila
 row.innerHTML = `
   <td class="nombre-cell" style="cursor:pointer">${escapeHtml(u.nombre)}</td>
   <td>${escapeHtml(u.grupo)}</td>
