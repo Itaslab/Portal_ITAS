@@ -1,4 +1,4 @@
-// appordenesGaleriausuarios.js (reemplazar archivo completo)
+// appordenesGaleriausuarios.js (versión corregida)
 
 document.addEventListener("DOMContentLoaded", async () => {
   const filtroGrupo = document.getElementById("filtroGrupo");
@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Modal Bootstrap
   const usuarioModalEl = document.getElementById("usuarioModal");
   const bsModal = new bootstrap.Modal(usuarioModalEl, { backdrop: true });
-  // Referencias dentro del modal (usamos los spans que ya tenés en el HTML)
+  // Referencias dentro del modal
   const spanNombre = document.getElementById("modalNombre");
   const spanEmail = document.getElementById("modalEmail");
   const spanSfID = document.getElementById("modalSfID");
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const checkboxDesasignador = document.getElementById("modalDesasignador");
   const textareaScript = document.getElementById("modalScript");
 
-  // cargar selects del modal (si ya lo haces en otro lado podés omitir)
+  // cargar selects del modal
   const grupos = [
     "ORDEN-POSVENTA_A", "ORDEN-POSVENTA_B", "ORDEN-REJECTED",
     "INC-NPLAY_ACTIVACIONES", "INC-FAN_POSVENTA", "INC-FAN_VENTA",
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   function renderTabla(lista) {
     tabla.innerHTML = "";
     lista.forEach(uRaw => {
-      // normalizar campos (por si vienen con mayúsculas)
+      // 🧠 Normalizamos campos
       const u = {
         id_usuario: uRaw.id_usuario ?? uRaw.ID_Usuario ?? uRaw.id ?? null,
         nombre: uRaw.nombre ?? uRaw.Nombre ?? "-",
@@ -75,7 +75,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         max: uRaw.max ?? uRaw.Max_Por_Trabajar ?? "-",
         desde: uRaw.desde ?? uRaw.Hora_De ?? uRaw.hora_de ?? "-",
         hasta: uRaw.hasta ?? uRaw.Hora_A ?? uRaw.hora_a ?? "-",
-        activo: (typeof uRaw.activo !== "undefined") ? (uRaw.activo == 1 || uRaw.activo === true) : false,
+
+        // 🔧 Corrección del campo ACTIVO
+        activo:
+          typeof uRaw.activo === "string"
+            ? uRaw.activo.trim()
+            : (uRaw.activo == 1 || uRaw.activo === true ? "Activo" : "Inactivo"),
+
         asignar: uRaw.asignar ?? uRaw.Asignar ?? ""
       };
 
@@ -88,9 +94,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         <td>${escapeHtml(String(u.max))}</td>
         <td>${escapeHtml(u.desde)}</td> 
         <td>${escapeHtml(u.hasta)}</td>
-        <td>${u.activo === 'Activo' ? '✅ Activo' : '❌ Inactivo'}</td>
-
-
+        <td>${u.activo === "Activo" ? "✅ Activo" : "❌ Inactivo"}</td>
         <td>
           <select class="asignar-select form-select form-select-sm">
             <option value="Asignar" ${u.asignar === "Asignar" ? "selected" : ""}>Asignar</option>
@@ -101,7 +105,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         <td><button class="btn btn-primary btn-sm ver-btn">Ver</button></td>
       `;
 
-      // Ver → abrir modal con id correcto
+      // Ver → abrir modal
       row.querySelector(".ver-btn").addEventListener("click", () => {
         if (!u.id_usuario) {
           console.error("Falta id_usuario para abrir modal:", u);
@@ -144,73 +148,74 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Filtros (siguen funcionando sobre el array local)
+  // Filtros
   [filtroGrupo, filtroNombre, filtroActivo].forEach(inp => inp.addEventListener("input", aplicarFiltros));
   function aplicarFiltros() {
     const grupo = (filtroGrupo.value || "").toLowerCase();
     const nombre = (filtroNombre.value || "").toLowerCase();
-    const activoVal = (filtroActivo.value || "").toLowerCase(); // en tu HTML filtroActivo es select con values "Activo","Inactivo",""
+    const activoVal = (filtroActivo.value || "").toLowerCase();
+
     const filtrados = usuarios.filter(uRaw => {
       const nombreRaw = (uRaw.nombre ?? uRaw.Nombre ?? "").toString().toLowerCase();
       const grupoRaw = (uRaw.grupo ?? uRaw.Grupo ?? "").toString().toLowerCase();
-      const activoRaw = (typeof uRaw.activo !== "undefined") ? (uRaw.activo == 1 || uRaw.activo === true) : false;
+      const activoTexto =
+        typeof uRaw.activo === "string"
+          ? uRaw.activo.trim().toLowerCase()
+          : (uRaw.activo == 1 || uRaw.activo === true ? "activo" : "inactivo");
+
       const matchGrupo = !grupo || grupoRaw.includes(grupo);
       const matchNombre = !nombre || nombreRaw.includes(nombre);
-      const matchActivo = !activoVal || (activoVal === "activo" ? activoRaw : !activoRaw);
+      const matchActivo = !activoVal || activoTexto === activoVal;
+
       return matchGrupo && matchNombre && matchActivo;
     });
+
     renderTabla(filtrados);
   }
 
-  // Abrir modal: pide detalle al backend y rellena los campos del modal (spans/inputs)
+  // Abrir modal
   async function abrirModal(id_usuario) {
-  try {
-    const resp = await fetch(`/usuarios/${id_usuario}`);
-    const data = await resp.json();
-    if (!data.success) throw new Error(data.error || "Error al obtener detalle del usuario");
+    try {
+      const resp = await fetch(`/usuarios/${id_usuario}`);
+      const data = await resp.json();
+      if (!data.success) throw new Error(data.error || "Error al obtener detalle del usuario");
 
-    const u = data.usuario || {};
+      const u = data.usuario || {};
 
-    // 🔹 Guardamos el ID real del usuario en el input oculto
-    document.getElementById("modalIdUsuario").value = id_usuario;
+      document.getElementById("modalIdUsuario").value = id_usuario;
+      spanNombre.textContent = u.nombre ?? "-";
+      spanEmail.textContent = u.email ?? "-";
+      spanSfID.textContent = u.sf_user_id ?? "-";
 
-    // Rellenar los spans del modal
-    spanNombre.textContent = u.nombre ?? "-";
-    spanEmail.textContent = u.email ?? "-";
-    spanSfID.textContent = u.sf_user_id ?? "-";
+      if (u.horario) {
+        const parts = (u.horario || "").split(" - ");
+        spanDesde.textContent = parts[0] || (u.desde ?? "-");
+        spanHasta.textContent = parts[1] || (u.hasta ?? "-");
+      } else {
+        spanDesde.textContent = u.desde ?? "-";
+        spanHasta.textContent = u.hasta ?? "-";
+      }
 
-    if (u.horario) {
-      const parts = (u.horario || "").split(" - ");
-      spanDesde.textContent = parts[0] || (u.desde ?? "-");
-      spanHasta.textContent = parts[1] || (u.hasta ?? "-");
-    } else {
-      spanDesde.textContent = u.desde ?? "-";
-      spanHasta.textContent = u.hasta ?? "-";
+      spanReferente.textContent = u.referente ?? "-";
+      spanActivo.textContent = u.activo ?? "-";
+
+      if (selectGrupoEditable) selectGrupoEditable.value = u.grupo ?? "";
+      if (selectGrupoBKPEditable) selectGrupoBKPEditable.value = u.grupo2 ?? "";
+      if (inputCantidad) inputCantidad.value = u.max ?? "";
+      if (selectForma) selectForma.value = u.forma ?? selectForma.value;
+      if (selectModo)
+        selectModo.value = (u.modo && u.modo.toLowerCase().includes("auto")) ? "automatico" : (u.modo ?? selectModo.value);
+      if (checkboxDesasignador) checkboxDesasignador.checked = !!u.des_asignar;
+      if (textareaScript) textareaScript.value = u.script ?? "";
+
+      bsModal.show();
+    } catch (err) {
+      console.error("Error al cargar detalle del usuario:", err);
+      alert("No se pudo abrir el detalle del usuario.");
     }
-
-    spanReferente.textContent = u.referente ?? "-";
-    spanActivo.textContent = u.activo ?? "-";
-
-    // Rellenar campos editables
-    if (selectGrupoEditable) selectGrupoEditable.value = u.grupo ?? "";
-    if (selectGrupoBKPEditable) selectGrupoBKPEditable.value = u.grupo2 ?? "";
-    if (inputCantidad) inputCantidad.value = u.max ?? "";
-    if (selectForma) selectForma.value = u.forma ?? selectForma.value;
-    if (selectModo)
-      selectModo.value = (u.modo && u.modo.toLowerCase().includes("auto")) ? "automatico" : (u.modo ?? selectModo.value);
-    if (checkboxDesasignador) checkboxDesasignador.checked = !!u.des_asignar;
-    if (textareaScript) textareaScript.value = u.script ?? "";
-
-    // Mostrar modal
-    bsModal.show();
-  } catch (err) {
-    console.error("Error al cargar detalle del usuario:", err);
-    alert("No se pudo abrir el detalle del usuario.");
   }
-}
 
-
-  // escape simple para evitar inyección en render (texto plano)
+  // escape simple
   function escapeHtml(str) {
     if (str === null || str === undefined) return "";
     return String(str)
@@ -219,51 +224,46 @@ document.addEventListener("DOMContentLoaded", async () => {
       .replace(/>/g, "&gt;");
   }
 
-    // --- GUARDAR CAMBIOS ---
- async function guardarCambiosUsuario() {
-  // 🔹 Obtener ID del input oculto
-  const id = parseInt(document.getElementById("modalIdUsuario").value, 10);
+  // GUARDAR CAMBIOS
+  async function guardarCambiosUsuario() {
+    const id = parseInt(document.getElementById("modalIdUsuario").value, 10);
+    if (!id || isNaN(id)) {
+      alert("❌ ID de usuario inválido. No se puede guardar.");
+      return;
+    }
 
-  if (!id || isNaN(id)) {
-    alert("❌ ID de usuario inválido. No se puede guardar.");
-    return;
+    const data = {
+      id_usuario: id,
+      grupo: selectGrupoEditable.value,
+      grupo2: selectGrupoBKPEditable.value,
+      max_por_trabajar: parseInt(inputCantidad.value || 0, 10),
+      asc_desc: selectForma.value,
+      modo: selectModo.value,
+      script: textareaScript.value,
+      des_asignar: checkboxDesasignador.checked
+    };
+
+    try {
+      const resp = await fetch("/usuarios/actualizar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const result = await resp.json();
+      if (!result.success) throw new Error(result.error);
+
+      alert("✅ Cambios guardados correctamente");
+      bsModal.hide();
+      await cargarUsuarios();
+    } catch (err) {
+      console.error("Error al guardar cambios:", err);
+      alert("❌ No se pudieron guardar los cambios.");
+    }
   }
 
-  const data = {
-    id_usuario: id,
-    grupo: selectGrupoEditable.value,
-    grupo2: selectGrupoBKPEditable.value,
-    max_por_trabajar: parseInt(inputCantidad.value || 0, 10),
-    asc_desc: selectForma.value,
-    modo: selectModo.value,
-    script: textareaScript.value,
-    des_asignar: checkboxDesasignador.checked
-  };
-
-  try {
-    const resp = await fetch("/usuarios/actualizar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
-
-    const result = await resp.json();
-    if (!result.success) throw new Error(result.error);
-
-    alert("✅ Cambios guardados correctamente");
-    bsModal.hide();
-    await cargarUsuarios(); // refresca la tabla
-  } catch (err) {
-    console.error("Error al guardar cambios:", err);
-    alert("❌ No se pudieron guardar los cambios.");
-  }
-}
-
-
-  // Vincular botón "Guardar" del modal
   const btnGuardar = document.getElementById("modalBtnGuardar");
   if (btnGuardar) {
     btnGuardar.addEventListener("click", guardarCambiosUsuario);
   }
-
 });
