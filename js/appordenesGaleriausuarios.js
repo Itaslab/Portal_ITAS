@@ -140,6 +140,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           console.log(`Asignar actualizado: ${u.nombre} → ${nuevoValor}`);
         } catch (err) {
           console.error("Error al actualizar Asignar:", err);
+          await cargarUsuarios();
           alert("No se pudo actualizar el campo Asignar.");
         }
       });
