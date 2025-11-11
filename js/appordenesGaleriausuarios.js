@@ -109,7 +109,7 @@ const estadoSpan = row.querySelector(".estado-span");
 if (estadoSpan) {
   const texto = estadoSpan.textContent.toLowerCase();
   estadoSpan.classList.add("text-white", "px-2", "py-1", "rounded", "shadow");
-  estadoSpan.style.fontSize = "0.90rem"; // letras más chicas
+  estadoSpan.style.fontSize = "0.80rem"; // letras más chicas
 
   if (texto === "activo") {
     estadoSpan.classList.add("bg-success");
