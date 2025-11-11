@@ -26,23 +26,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   const textareaScript = document.getElementById("modalScript");
 
   // cargar selects del modal
-  const grupos = [
-    "ORDEN-POSVENTA_A", "ORDEN-POSVENTA_B", "ORDEN-REJECTED",
-    "INC-NPLAY_ACTIVACIONES", "INC-FAN_POSVENTA", "INC-FAN_VENTA",
-    "INC-NPLAY_POSVENTA", "INC-FACOBMOR", "Mesa 1", "Mesa 3", "Mesa 4", "PM", "LEGADO"
-  ];
-  function populateSelectModal(selectEl) {
-    if (!selectEl) return;
-    selectEl.innerHTML = "";
-    grupos.forEach(g => {
-      const opt = document.createElement("option");
-      opt.value = g;
-      opt.textContent = g;
-      selectEl.appendChild(opt);
-    });
-  }
-  populateSelectModal(selectGrupoEditable);
-  populateSelectModal(selectGrupoBKPEditable);
+ const grupos = [
+  "ORDEN-POSVENTA_A", "ORDEN-POSVENTA_B", "ORDEN-REJECTED",
+  "INC-NPLAY_ACTIVACIONES", "INC-FAN_POSVENTA", "INC-FAN_VENTA",
+  "INC-NPLAY_POSVENTA", "INC-FACOBMOR", "Mesa 1", "Mesa 3", "Mesa 4", "PM", "LEGADO"
+];
+
+function populateSelectModal(selectEl) {
+  if (!selectEl) return;
+  selectEl.innerHTML = "";
+  selectEl.style.fontSize = "0.75rem"; // Achica la letra del select completo
+  grupos.forEach(g => {
+    const opt = document.createElement("option");
+    opt.value = g;
+    opt.textContent = g;
+    opt.style.fontSize = "0.75rem"; // Achica la letra de cada opción
+    selectEl.appendChild(opt);
+  });
+}
+
+populateSelectModal(selectGrupoEditable);
+populateSelectModal(selectGrupoBKPEditable);
 
   // Cargar usuarios
   let usuarios = [];
