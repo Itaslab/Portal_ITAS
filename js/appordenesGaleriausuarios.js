@@ -107,13 +107,15 @@ row.innerHTML = `
 // Aplicar estilos al estado
 const estadoSpan = row.querySelector(".estado-span");
 if (estadoSpan) {
-  const texto = estadoSpan.textContent.toLowerCase();
-  if (texto.includes("activo")) {
+  const texto = estadoSpan.textContent.trim().toLowerCase();
+  
+  if (texto === "✅ activo" || texto === "activo" || texto.includes("activo") && !texto.includes("inactivo")) {
     estadoSpan.classList.add("bg-success", "text-white", "px-2", "py-1", "rounded", "shadow");
-  } else if (texto.includes("inactivo")) {
+  } else if (texto === "❌ inactivo" || texto === "inactivo") {
     estadoSpan.classList.add("bg-danger", "text-white", "px-2", "py-1", "rounded", "shadow");
   }
 }
+
       // Ver → abrir modal
       row.querySelector(".ver-btn").addEventListener("click", () => {
         if (!u.id_usuario) {
