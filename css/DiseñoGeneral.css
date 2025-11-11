@@ -173,3 +173,14 @@ p {
     transform: translateY(0);
   }
 }
+#filtroGrupo {
+  font-size: 0.75rem; /* Achica la letra del select */
+}
+
+#filtroGrupo option {
+  font-size: 0.75rem; /* Achica la letra de cada opción */
+}
+
+.form-label {
+  font-size: 0.75rem; /* Achica la letra del label "Grupo" */
+}
