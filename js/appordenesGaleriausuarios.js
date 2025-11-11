@@ -93,7 +93,7 @@ row.innerHTML = `
   <td>${escapeHtml(String(u.max))}</td>
   <td>${escapeHtml(u.desde)}</td> 
   <td>${escapeHtml(u.hasta)}</td>
-  <td><span class="estado-span">${u.activo === "Activo" ? "✅ Activo" : "❌ Inactivo"}</span></td>
+  <td><span class="estado-span">${u.activo === "Activo" ? "Activo" : "Inactivo"}</span></td>
   <td>
     <select class="asignar-select form-select form-select-sm">
       <option value="Asignar" ${u.asignar === "Asignar" ? "selected" : ""}>Asignar</option>
@@ -107,14 +107,14 @@ row.innerHTML = `
 // Aplicar estilos al estado
 const estadoSpan = row.querySelector(".estado-span");
 if (estadoSpan) {
-  const texto = estadoSpan.textContent.trim().toLowerCase();
-  
-  if (texto === "✅ activo" || texto === "activo" || texto.includes("activo") && !texto.includes("inactivo")) {
+  const texto = estadoSpan.textContent.toLowerCase();
+  if (texto === "activo") {
     estadoSpan.classList.add("bg-success", "text-white", "px-2", "py-1", "rounded", "shadow");
-  } else if (texto === "❌ inactivo" || texto === "inactivo") {
+  } else if (texto === "inactivo") {
     estadoSpan.classList.add("bg-danger", "text-white", "px-2", "py-1", "rounded", "shadow");
   }
 }
+
 
       // Ver → abrir modal
       row.querySelector(".ver-btn").addEventListener("click", () => {
