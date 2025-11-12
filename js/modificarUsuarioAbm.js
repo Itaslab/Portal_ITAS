@@ -8,21 +8,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   form.appendChild(resultado);
 
   // 1. Cargar lista de usuarios en el dropdown
-  try {
-    const res = await fetch("/usuarios");
-    const usuarios = await res.json();
+ try {
+  const res = await fetch("/usuarios");
+  const data = await res.json();
 
-    usuarios.forEach(u => {
+  if (data.success && Array.isArray(data.usuarios)) {
+    data.usuarios.forEach(u => {
       const opt = document.createElement("option");
-      opt.value = u.Legajo;
-      opt.textContent = `${u.Apellido}, ${u.Nombre} (${u.Legajo})`;
+      opt.value = u.id_usuario; // o u.Legajo si es lo que usás
+      opt.textContent = u.nombre;
       selectUsuario.appendChild(opt);
     });
-  } catch (error) {
-    console.error("Error al obtener usuarios:", error);
-    resultado.textContent = "Error cargando lista de usuarios.";
-    resultado.style.color = "red";
+  } else {
+    resultado.textContent = "No se encontraron usuarios.";
+    resultado.style.color = "orange";
   }
+} catch (error) {
+  console.error("Error al obtener usuarios:", error);
+  resultado.textContent = "Error cargando lista de usuarios.";
+  resultado.style.color = "red";
+}
 
   // 2. Cargar datos del usuario seleccionado
   btnCargar.addEventListener("click", async () => {
