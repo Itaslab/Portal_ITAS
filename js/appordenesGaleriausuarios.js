@@ -283,11 +283,3 @@ if (estadoSpan) {
     btnGuardar.addEventListener("click", guardarCambiosUsuario);
   }
 });
-
-const filtroGrupo = document.getElementById("filtroGrupo");
-if (filtroGrupo) {
-  filtroGrupo.querySelectorAll("option").forEach(opt => {
-    opt.textContent = opt.textContent.toLowerCase(); // Convierte el texto a minúsculas
-    opt.value = opt.value.toLowerCase(); // Convierte el value a minúsculas
-  });
-}
