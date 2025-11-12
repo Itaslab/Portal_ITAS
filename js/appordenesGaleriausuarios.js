@@ -101,7 +101,7 @@ row.innerHTML = `
       <option value="Automático" ${u.asignar === "Automático" ? "selected" : ""}>Automático</option>
     </select>
   </td>
-  <td><button class="btn btn-primary btn-sm ver-btn">Ver</button></td>
+  <td><button class="btn btn-primary btn-sm ver-btn ver-animated">Ver</button></td>
 `;
 
 // Aplicar estilos al estado
