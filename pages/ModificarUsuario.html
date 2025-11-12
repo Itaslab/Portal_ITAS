@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../css/DiseñoGeneral.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
   <title>ABM Usuarios</title>
 </head>
@@ -26,7 +27,19 @@
         </div>
       </nav>
 <div class="container mt-4">
-    <h5 class="mb-3">Alta de Usuario:</h5>
+    <div class="row mb-4">
+  <div class="col-md-8">
+    <label class="form-label">Seleccionar usuario:</label>
+    <select id="selectUsuario" class="form-select">
+      <option value="">Seleccione un usuario...</option>
+    </select>
+  </div>
+  <div class="col-md-4 d-flex align-items-end">
+    <button id="btnCargar" type="button" class="btn btn-success w-100">Cargar datos</button>
+  </div>
+</div>
+<hr>
+    <h5 class="mb-3">Modifacion de Usuario:</h5>
   <!-- Contenedor del formulario -->
   <div class="container">
     <div class="form-container">
@@ -155,6 +168,6 @@
   </div>
  
   <!-- JS externo -->
-  <script src="../js/abmUsuarios.js"></script>
+  <script src="../js/modificarUsuarioAbm.js"></script>
 </body>
 </html>
