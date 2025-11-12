@@ -174,9 +174,11 @@ p {
   }
 }
 
+
 /* Aplica a la columna Grupo (2ª) y Grupo BKP (3ª) */
 td:nth-child(2),
 td:nth-child(3) {
-  text-transform: lowercase; /* Convierte todo a minúsculas */
-  font-size: 0.75rem;        /* Achica la letra */
+  text-transform: capitalize; /* Primera letra en mayúscula, resto minúscula */
+  font-size: 0.75rem;         /* Achica la letra */
 }
+
