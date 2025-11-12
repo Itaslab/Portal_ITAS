@@ -101,8 +101,8 @@ p {
 }
 
 .ver-animated:hover {
-  transform: scale(1.5);
-  box-shadow: 0 0 10px rgba(39, 13, 189, 0.5);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(53, 32, 170, 0.5);
 }
 
 /* ──────────────── MODAL Y ANIMACIONES ──────────────── */
