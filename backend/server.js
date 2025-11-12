@@ -103,7 +103,8 @@ app.post("/usuarios/actualizar", actualizarUsuario);
 
 
 
-app.use("/", generarUsuario);
+app.use("/api", generarUsuario);
+
 
 // ------------------- PROTECCIÓN DE PÁGINAS -------------------
 function checkAuth(req, res, next) {

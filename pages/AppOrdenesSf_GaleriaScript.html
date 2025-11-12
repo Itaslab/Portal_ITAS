@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Galería de Usuarios</title>
+
+  <!-- Bootstrap -->
+  <link 
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" 
+    rel="stylesheet" 
+    crossorigin="anonymous"
+  />
+
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Chakra+Petch:wght@300;400;500;600;700&display=swap" 
+    rel="stylesheet"
+  >
+
+  <!-- Estilos -->
+  <link href="/css/DiseñoGeneral.css" rel="stylesheet">
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar position-relative">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+      <a class="navbar-brand nvbar" href="../pages/Front_APPs.html">
+        <span class="ms-2">PORTAL ITAS</span>
+      </a>
+      <span class="navbar-text nvbar position-absolute top-50 start-50 translate-middle">
+        APP Ordenes SF
+      </span>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">Scripts</h2>
+
+    <!-- Tabla de usuarios -->
+    <div class="table-responsive">
+      <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Bajada</th>
+            <th>Negocio</th>
+            <th>Descripcion</th>
+            <th>Prioridad</th>
+            <th>Esq JSON</th>
+            <th>Activar</th>
+            <th>Ver</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>NPlay_Conciliate</td>
+            <td>Hogar</td>
+            <td>Bajada Nplay Conciliaciones</td>
+            <td>Alta</td>
+            <td>B</td>
+            <td>Si</td>
+            <td><button class="btn btn-secondary btn-sm ver-animated">Ver</button></td>
+          </tr>
+          <tr>
+            <td>NPlay_ConCita</td>
+            <td>Movil</td>
+            <td>Bajada Nplay C/Cita Últimos 30 días</td>
+            <td>Media</td>
+            <td>No</td>
+            <td>Si</td>
+            <td><button class="btn btn-secondary btn-sm ver-animated">Ver</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal Scripts -->
+  <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content gradient-modal p-4">
+        <div class="modal-header">
+          <h5 class="modal-title" id="usuarioModalLabel">Detalles del Script</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="row g-4">
+            <!-- Columna izquierda -->
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Bajada:</label>
+                <input type="text" class="form-control" id="inputBajada">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Negocio:</label>
+                <select class="form-select" id="selectNegocio">
+                  <option>Hogar</option>
+                  <option>Movil</option>
+                  <option>Corporativo</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Script:</label>
+                <textarea class="form-control" id="textareaScript" rows="8"></textarea>
+              </div>
+            </div>
+
+            <!-- Columna derecha -->
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Esquema JSON:</label>
+                <select class="form-select" id="selectEsquema">
+                  <option>B</option>
+                  <option>No</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Prioridad:</label>
+                <select class="form-select" id="selectPrioridad">
+                  <option>Alta</option>
+                  <option>Media</option>
+                  <option>Baja</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Asignado:</label>
+                <select class="form-select" id="selectAsignado">
+                  <option>Sin Asignar</option>
+                  <option>Usuario 1</option>
+                  <option>Usuario 2</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Estado:</label>
+                <select class="form-select" id="selectEstado">
+                  <option>Por Trabajar</option>
+                  <option>En Progreso</option>
+                  <option>Finalizado</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Pendiente de:</label>
+                <input type="text" class="form-control" id="inputPendiente">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Activar?:</label>
+                <select class="form-select" id="selectActivar">
+                  <option>Si</option>
+                  <option>No</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btnGuardar">Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/AppOrdenesSf_GaleriaScript.js"></script>
+</body>
+</html>
