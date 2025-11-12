@@ -232,8 +232,7 @@ if (estadoSpan) {
     }
 
       if (selectForma) selectForma.value = u.forma ?? selectForma.value;
-      if (selectModo)
-        selectModo.value = (u.modo && u.modo.toLowerCase().includes("auto")) ? "automatico" : (u.modo ?? selectModo.value);
+      if (selectModo && u.modo) {selectModo.value = u.modo;};
       if (checkboxDesasignador) checkboxDesasignador.checked = !!u.des_asignar;
       if (textareaScript) textareaScript.value = u.script ?? "";
 
