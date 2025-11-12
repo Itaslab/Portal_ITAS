@@ -173,3 +173,10 @@ p {
     transform: translateY(0);
   }
 }
+
+/* Aplica a la columna Grupo (2ª) y Grupo BKP (3ª) */
+td:nth-child(2),
+td:nth-child(3) {
+  text-transform: lowercase; /* Convierte todo a minúsculas */
+  font-size: 0.75rem;        /* Achica la letra */
+}
