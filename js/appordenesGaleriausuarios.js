@@ -217,7 +217,20 @@ if (estadoSpan) {
 
       if (selectGrupoEditable) selectGrupoEditable.value = u.grupo ?? "";
       if (selectGrupoBKPEditable) selectGrupoBKPEditable.value = u.grupo2 ?? "";
-      if (inputCantidad) inputCantidad.value = u.max ?? "";
+	  
+	  
+      
+ // Limitar cantidad a máximo 99
+    if (inputCantidad) {
+      inputCantidad.value = u.max ?? "";
+      inputCantidad.setAttribute("max", "99"); // HTML constraint
+      inputCantidad.addEventListener("input", () => {
+        if (parseInt(inputCantidad.value) > 99) {
+          inputCantidad.value = 99; // Corrige si excede
+        }
+      });
+    }
+
       if (selectForma) selectForma.value = u.forma ?? selectForma.value;
       if (selectModo)
         selectModo.value = (u.modo && u.modo.toLowerCase().includes("auto")) ? "automatico" : (u.modo ?? selectModo.value);
