@@ -18,7 +18,7 @@ router.post("/usuariosordenes", async (req, res) => {
       .input("HoraDe", sql.Time, HoraDe)
       .input("HoraA", sql.Time, HoraA)
       .query(`
-        INSERT INTO a002103.APP_ORDENES_USUARIOS_SF
+        INSERT INTO a002103.APP_ORDENES_USR
         (Nombre, Apellido, Grupo, Grupo2, Modo, Max_Por_Trabajar, Hora_De, Hora_A)
         VALUES (@Nombre, @Apellido, @Grupo, @Grupo_BKP, @Modo, @MaxPorTrabajar, @HoraDe, @HoraA)
       `);
