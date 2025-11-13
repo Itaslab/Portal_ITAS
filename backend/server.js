@@ -17,6 +17,9 @@ const appOrdenesSFgaleriaUsuarios = require("./appOrdenesSF_GaleriaUsuarios");
 const updateAsignar = require("./appOrdenesSF_updateAsignar");
 const appOrdenesSFUsuarioDetalle = require("./appOrdenesSF_usuarioDetalle");
 const actualizarUsuario = require("./appOrdenesSF_actualizarUsuario");
+const modificarUsuario = require("./generarUsuario_modificarTbUsuarios");
+const generarUsuarioOrdenes = require("./appOrdenesSF_AltaUsuario");
+
 
 
 const app = express();
@@ -103,7 +106,10 @@ app.post("/usuarios/actualizar", actualizarUsuario);
 
 
 
-app.use("/api", generarUsuario);
+app.use("/", generarUsuario);
+app.use("/", modificarUsuario);
+app.use("/", generarUsuarioOrdenes);
+
 
 
 // ------------------- PROTECCIÓN DE PÁGINAS -------------------

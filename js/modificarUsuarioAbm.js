@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // 1. Cargar lista de usuarios en el dropdown
  try {
-  const res = await fetch("/usuarios");
+  const res = await fetch("/abm_usuarios");
   const data = await res.json();
 
   if (data.success && Array.isArray(data.usuarios)) {
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-      const res = await fetch(`/usuario/${legajo}`);
+      const res = await fetch(`/abm_usuarios/${legajo}`);
       const data = await res.json();
 
       if (res.ok) {
@@ -86,11 +86,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     try {
-      const res = await fetch(`/actualizar_usuario/${legajo}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+  const res = await fetch(`/abm_usuarios/${legajo}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
 
       const data = await res.json();
       if (res.ok) {
