@@ -22,7 +22,7 @@ const modificarUsuario = require("./generarUsuario_modificarTbUsuarios");
 const generarUsuarioOrdenes = require("./appOrdenesSF_AltaUsuario");
 
 // 🔥 Tu nueva ruta unificada scripts
-const rutasScripts = require("./appOrdenesSF_GaleriaScripts");
+const rutasScripts = require("./appOrdenesSF_GaleriaScript");
 
 const app = express();
 
