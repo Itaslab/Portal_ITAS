@@ -1,7 +1,7 @@
 // appOrdenesSF_GaleriaScripts.js
 const express = require("express");
 const router = express.Router();
-const { sql, poolPromise } = require("../db"); // ajustá la ruta según tu estructura
+const { sql, poolPromise } = require("./db"); // ajustá la ruta según tu estructura
 
 // GET /api/scripts  -> lista
 router.get("/", async (req, res) => {
