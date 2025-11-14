@@ -91,19 +91,18 @@
             <!-- Columna izquierda -->
             <div class="col-md-6">
               <div class="mb-3">
-                <label class="form-label">Bajada:</label>
+                <label for="inputBajada" class="form-label">Bajada:</label>
                 <input type="text" class="form-control" id="inputBajada">
               </div>
               <div class="mb-3">
-                <label class="form-label">Negocio:</label>
+                <label for="selectNegocio" class="form-label">Negocio:</label>
                 <select class="form-select" id="selectNegocio">
-                  <option>Hogar</option>
-                  <option>Movil</option>
-                  <option>Corporativo</option>
+                   <option value="Hogar">Hogar</option>
+              <option value="Movil">Móvil</option>
                 </select>
               </div>
               <div class="mb-3">
-                <label class="form-label">Script:</label>
+                <label for="textareaScript" class="form-label">Script:</label>
                 <textarea class="form-control" id="textareaScript" rows="8"></textarea>
               </div>
             </div>
@@ -111,17 +110,17 @@
             <!-- Columna derecha -->
             <div class="col-md-6">
               <div class="mb-3">
-                <label class="form-label">Esquema JSON:</label>
+                <label for="selectEsquema" class="form-label">Esquema JSON:</label>
                 <select class="form-select" id="selectEsquema">
-                  <option>B</option>
-                  <option>No</option>
+              <option value="B">B</option>
+              <option value="No">No</option>
                 </select>
               </div>
              <div class="mb-3">
-                <label class="form-label">Activar?:</label>
+                <label for="selectActivar" class="form-label">Activar?:</label>
                 <select class="form-select" id="selectActivar">
-                  <option>Si</option>
-                  <option>No</option>
+              <option value="Si">Sí</option>
+              <option value="No">No</option>
                 </select>
               </div>
             </div>
