@@ -3,7 +3,12 @@ const express = require("express");
 const router = express.Router();
 const { sql, poolPromise } = require("./db");
 
-// Obtener lista de usuarios (para el dropdown)
+// Función para evitar "" y convertirlos en NULL
+const clean = (v) => (v === "" || v === undefined ? null : v);
+
+// ---------------------------------------------------------
+// 1️⃣ LISTA DE USUARIOS
+// ---------------------------------------------------------
 router.get('/abm_usuarios', async (req, res) => {
   try {
     const pool = await poolPromise;
@@ -19,7 +24,9 @@ router.get('/abm_usuarios', async (req, res) => {
   }
 });
 
-// Obtener datos de un usuario específico
+// ---------------------------------------------------------
+// 2️⃣ OBTENER UN USUARIO
+// ---------------------------------------------------------
 router.get('/abm_usuarios/:legajo', async (req, res) => {
   const { legajo } = req.params;
   try {
@@ -31,6 +38,7 @@ router.get('/abm_usuarios/:legajo', async (req, res) => {
     if (result.recordset.length === 0) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
     }
+
     res.json(result.recordset[0]);
   } catch (error) {
     console.error('Error al obtener usuario:', error);
@@ -38,9 +46,12 @@ router.get('/abm_usuarios/:legajo', async (req, res) => {
   }
 });
 
-// Actualizar usuario existente
+// ---------------------------------------------------------
+// 3️⃣ ACTUALIZAR USUARIO
+// ---------------------------------------------------------
 router.put('/abm_usuarios/:legajo', async (req, res) => {
   const { legajo } = req.params;
+
   const {
     Apellido, Nombre, Alias, Email, Referente,
     Fecha_Nacimiento, Empresa, Convenio, Ciudad
@@ -48,26 +59,34 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
 
   try {
     const pool = await poolPromise;
+
     await pool.request()
       .input('Legajo', sql.VarChar, legajo)
-      .input('Apellido', sql.VarChar, Apellido)
-      .input('Nombre', sql.VarChar, Nombre)
-      .input('Alias', sql.VarChar, Alias)
-      .input('Email', sql.VarChar, Email)
-      .input('Referente', sql.VarChar, Referente)
-      .input('Fecha_Nacimiento', sql.Date, Fecha_Nacimiento)
-      .input('Empresa', sql.VarChar, Empresa)
-      .input('Convenio', sql.VarChar, Convenio)
-      .input('Ciudad', sql.VarChar, Ciudad)
+      .input('Apellido', sql.VarChar, clean(Apellido))
+      .input('Nombre', sql.VarChar, clean(Nombre))
+      .input('Alias', sql.VarChar, clean(Alias))
+      .input('Email', sql.VarChar, clean(Email))
+      .input('Referente', sql.VarChar, clean(Referente))
+      .input('Fecha_Nacimiento', sql.Date, clean(Fecha_Nacimiento))
+      .input('Empresa', sql.VarChar, clean(Empresa))
+      .input('Convenio', sql.VarChar, clean(Convenio))
+      .input('Ciudad', sql.VarChar, clean(Ciudad))
       .query(`
         UPDATE a002103.USUARIO
-        SET Apellido=@Apellido, Nombre=@Nombre, Alias=@Alias, Email=@Email,
-            Referente=@Referente, Fecha_Nacimiento=@Fecha_Nacimiento,
-            Empresa=@Empresa, Convenio=@Convenio, Ciudad=@Ciudad
+        SET Apellido=@Apellido,
+            Nombre=@Nombre,
+            Alias=@Alias,
+            Email=@Email,
+            Referente=@Referente,
+            Fecha_Nacimiento=@Fecha_Nacimiento,
+            Empresa=@Empresa,
+            Convenio=@Convenio,
+            Ciudad=@Ciudad
         WHERE Legajo=@Legajo
       `);
 
     res.json({ mensaje: 'Usuario actualizado correctamente' });
+
   } catch (error) {
     console.error('Error al actualizar usuario:', error);
     res.status(500).json({ mensaje: 'Error interno del servidor' });
