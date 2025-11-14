@@ -44,7 +44,7 @@
 
     <!-- Tabla de usuarios -->
     <div class="table-responsive">
-      <table class="table table-striped table-hover align-middle">
+      <table class="table table-striped table-hover align-middle" id="tablaScripts">
         <thead class="table-dark">
           <tr>
             <th>Bajada</th>
@@ -56,22 +56,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>NPlay_Conciliate</td>
-            <td>Hogar</td>
-            <td>Bajada Nplay Conciliaciones</td>
-            <td>B</td>
-            <td>Si</td>
-            <td><button class="btn btn-secondary btn-sm ver-animated">Ver</button></td>
-          </tr>
-          <tr>
-            <td>NPlay_ConCita</td>
-            <td>Movil</td>
-            <td>Bajada Nplay C/Cita Últimos 30 días</td>
-            <td>No</td>
-            <td>Si</td>
-            <td><button class="btn btn-secondary btn-sm ver-animated">Ver</button></td>
-          </tr>
+          <!-- se llena por JS -->
         </tbody>
       </table>
     </div>
@@ -87,6 +72,7 @@
         </div>
 
         <div class="modal-body">
+          <input type="hidden" id="inputId">
           <div class="row g-4">
             <!-- Columna izquierda -->
             <div class="col-md-6">
@@ -97,8 +83,9 @@
               <div class="mb-3">
                 <label for="selectNegocio" class="form-label">Negocio:</label>
                 <select class="form-select" id="selectNegocio">
-                   <option value="Hogar">Hogar</option>
-              <option value="Movil">Móvil</option>
+                  <!-- se podrá poblar dinámicamente si querés -->
+                  <option value="Hogar">Hogar</option>
+                  <option value="Movil">Móvil</option>
                 </select>
               </div>
               <div class="mb-3">
@@ -112,22 +99,32 @@
               <div class="mb-3">
                 <label for="selectEsquema" class="form-label">Esquema JSON:</label>
                 <select class="form-select" id="selectEsquema">
-              <option value="B">B</option>
-              <option value="No">No</option>
+                  <option value="B">B</option>
+                  <option value="No">No</option>
                 </select>
               </div>
-             <div class="mb-3">
+              <div class="mb-3">
                 <label for="selectActivar" class="form-label">Activar?:</label>
                 <select class="form-select" id="selectActivar">
-              <option value="Si">Sí</option>
-              <option value="No">No</option>
+                  <option value="1">Sí</option>
+                  <option value="0">No</option>
                 </select>
               </div>
+
+              <div class="mb-3">
+                <label class="form-label">Vigencia Desde / Hasta:</label>
+                <div class="d-flex gap-2">
+                  <input type="date" id="vigFrom" class="form-control"/>
+                  <input type="date" id="vigTo" class="form-control"/>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
 
         <div class="modal-footer">
+          <div id="modalMsg" class="me-auto text-start"></div>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
           <button type="button" class="btn btn-primary" id="btnGuardar">Guardar cambios</button>
         </div>

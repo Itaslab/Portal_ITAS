@@ -1,3 +1,4 @@
+// server.js
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -20,32 +21,31 @@ const actualizarUsuario = require("./appOrdenesSF_actualizarUsuario");
 const modificarUsuario = require("./generarUsuario_modificarTbUsuarios");
 const generarUsuarioOrdenes = require("./appOrdenesSF_AltaUsuario");
 
-
+// 🔥 Tu nueva ruta unificada scripts
+const rutasScripts = require("./appOrdenesSF_GaleriaScripts");
 
 const app = express();
 
 // ------------------- MIDDLEWARE -------------------
 app.use(cors());
 app.use(bodyParser.json());
-app.set("trust proxy", 1); // 🔸 importante si estás detrás de un proxy o usás HTTPS interno
+app.set("trust proxy", 1);
 
-// ------------------- CONFIGURACIÓN DE SESIÓN -------------------
+// ------------------- SESIÓN -------------------
 app.use(
   session({
     secret: "clave-super-secreta",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false,      // 🔹 permite que funcione en IP y DNS
-      sameSite: "lax",    // 🔹 evita que el navegador bloquee cookies cruzadas
-      maxAge: 1000 * 60 * 60 * 2 // (2 horas)
+      secure: false,
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 2
     },
   })
 );
 
-// ------------------- RUTAS API -------------------
-
-// LOGIN
+// ------------------- LOGIN -------------------
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -62,14 +62,12 @@ app.post("/login", async (req, res) => {
         WHERE u.Email = @email
       `);
 
-    if (result.recordset.length === 0) {
+    if (result.recordset.length === 0)
       return res.json({ success: false, error: "Usuario o contraseña incorrectos" });
-    }
 
     const user = result.recordset[0];
-    if (user.Password !== password) {
+    if (user.Password !== password)
       return res.json({ success: false, error: "Usuario o contraseña incorrectos" });
-    }
 
     req.session.user = {
       email,
@@ -80,58 +78,57 @@ app.post("/login", async (req, res) => {
       success: true,
       message: "Login correcto",
       ID_Usuario: user.ID_Usuario,
-      Email: email,
+      Email: email
     });
+
   } catch (err) {
-    console.error("Error en login:", err.message, err);
+    console.error("Error en login:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-// LOGOUT
+// ------------------- LOGOUT -------------------
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/ingreso.html");
   });
 });
 
-// ------------------- API ADICIONALES -------------------
+// ------------------- API REST -------------------
 app.get("/flujos", listaEjecuciones);
 app.post("/crearEjecucion", crearEjecucion);
 app.get("/ejecuciones", obtenerEjecuciones);
+
 app.get("/usuarios", appOrdenesSFgaleriaUsuarios);
 app.get("/usuarios/:id_usuario", appOrdenesSFUsuarioDetalle);
 app.post("/usuarios/:id_usuario/asignar", updateAsignar);
 app.post("/usuarios/actualizar", actualizarUsuario);
 
-
-
 app.use("/", generarUsuario);
 app.use("/", modificarUsuario);
 app.use("/", generarUsuarioOrdenes);
 
+// 🔥 NUEVA API DE SCRIPTS (funciona con tu JS)
+app.use("/api/scripts", rutasScripts);
 
-
-// ------------------- PROTECCIÓN DE PÁGINAS -------------------
+// ------------------- PROTECCIÓN -------------------
 function checkAuth(req, res, next) {
   if (req.session.user) return next();
   res.redirect("/ingreso.html");
 }
 
-// Archivos estáticos públicos (solo CSS, JS, imágenes)
+// Archivos estáticos
 app.use("/css", express.static(path.join(__dirname, "..", "css")));
 app.use("/js", express.static(path.join(__dirname, "..", "js")));
 app.use("/images", express.static(path.join(__dirname, "..", "images")));
 
-// Proteger automáticamente todo lo que esté en /pages
+// Proteger páginas
 app.use("/pages", checkAuth, express.static(path.join(__dirname, "..", "pages")));
 
-// Ruta principal del login
 app.get("/ingreso.html", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "ingreso.html"));
 });
 
-// También que la raíz `/` lleve al login
 app.get("/", (req, res) => {
   res.redirect("/ingreso.html");
 });
@@ -144,5 +141,5 @@ const httpsOptions = {
 
 const PORT = 8080;
 https.createServer(httpsOptions, app).listen(PORT, () => {
-  console.log(`✅ Servidor HTTPS corriendo en https://10.4.48.116:${PORT}`);
+  console.log(`✅ HTTPS corriendo en https://10.4.48.116:${PORT}`);
 });
