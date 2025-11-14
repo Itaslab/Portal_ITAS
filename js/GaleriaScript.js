@@ -1,3 +1,6 @@
+// AppOrdenesSF_GaleriaScripts.js
+
+
 document.addEventListener("DOMContentLoaded", () => {
   const tablaBody = document.querySelector("#tablaScripts tbody");
   const modalEl = document.getElementById("usuarioModal");
