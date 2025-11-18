@@ -89,7 +89,13 @@ populateSelectModal(selectGrupoBKPEditable);
       const data = await resp.json();
       if (!data.success) throw new Error(data.error || "Error al cargar usuarios");
       usuarios = data.usuarios || [];
-      renderTabla(usuarios);
+      // Aplicar filtros actuales después de recargar la lista
+      // (asegura que la vista respete los filtros activos tras un POST)
+      if (typeof aplicarFiltros === 'function') {
+        aplicarFiltros();
+      } else {
+        renderTabla(usuarios);
+      }
     } catch (err) {
       console.error("Error de conexión al backend:", err);
       tabla.innerHTML = `<tr><td colspan="10">Error al cargar datos</td></tr>`;
