@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 const grupos = [
   "ORDEN-POSVENTA_A", "ORDEN-POSVENTA_B", "ORDEN-REJECTED",
   "INC-NPLAY_ACTIVACIONES", "INC-FAN_POSVENTA", "INC-FAN_VENTA",
-  "INC-NPLAY_POSVENTA", "INC-FACOBMOR", "Mesa 1", "Mesa 3", "Mesa 4", "PM", "LEGADO"
+  "INC-NPLAY_POSVENTA", "INC-FACOBMOR", "Mesa 1","Mesa 1 (N1)" ,"Mesa 3","Mesa 3 (N1)" ,"Mesa 4", "PM", "LEGADO"
 ];
 
 function populateSelectModal(selectEl) {
