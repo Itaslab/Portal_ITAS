@@ -1,4 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Llenar el select de referentes al cargar la página
+  const referenteSelect = document.getElementById('referente');
+  fetch('/referentes')
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && Array.isArray(data.referentes)) {
+        data.referentes.forEach(ref => {
+          const opt = document.createElement('option');
+          opt.value = ref.Referente;
+          opt.textContent = ref.NombreCompleto ? `${ref.Referente} - ${ref.NombreCompleto}` : ref.Referente;
+          referenteSelect.appendChild(opt);
+        });
+      }
+    })
+    .catch(err => {
+      console.error('Error al cargar referentes:', err);
+    });
+  // ...sin código de llenado de legajos...
   const form = document.getElementById('userForm');
   const resultado = document.createElement('div');
   resultado.id = 'resultado';

@@ -3,13 +3,46 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("entidadForm");
   const resultado = document.getElementById("resultado");
+  const usuarioBaseSelect = document.getElementById("usuarioBase");
+  const nombreInput = document.getElementById("nombre");
+  const apellidoInput = document.getElementById("apellido");
+
+  // Llenar el select de usuarios base
+  fetch("/usuarios_base")
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && Array.isArray(data.usuarios)) {
+        data.usuarios.forEach(u => {
+          const opt = document.createElement("option");
+          opt.value = u.Legajo;
+          opt.textContent = `${u.Legajo} - ${u.Apellido}, ${u.Nombre}`;
+          opt.dataset.nombre = u.Nombre;
+          opt.dataset.apellido = u.Apellido;
+          usuarioBaseSelect.appendChild(opt);
+        });
+      }
+    });
+
+  // Al seleccionar usuario base, autocompletar nombre y apellido
+  usuarioBaseSelect.addEventListener("change", function() {
+    const selected = usuarioBaseSelect.options[usuarioBaseSelect.selectedIndex];
+    nombreInput.value = selected.dataset.nombre || "";
+    apellidoInput.value = selected.dataset.apellido || "";
+  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    // Validar selección de usuario base
+    const usuarioBase = usuarioBaseSelect.value;
+    if (!usuarioBase) {
+      resultado.innerHTML = `<div class="alert alert-warning">Debe seleccionar un usuario base.</div>`;
+      return;
+    }
+
     // Obtener valores del formulario
-    const nombre = document.getElementById("nombre").value.trim();
-    const apellido = document.getElementById("apellido").value.trim();
+    const nombre = nombreInput.value.trim();
+    const apellido = apellidoInput.value.trim();
     const grupo = document.getElementById("grupo").value;
     const grupo2 = document.getElementById("grupoBkp").value;
     const modo = document.getElementById("modo").value;
@@ -48,6 +81,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (response.ok) {
         resultado.innerHTML = `<div class="alert alert-success">${data.mensaje || "Entidad creada correctamente."}</div>`;
         form.reset();
+        nombreInput.value = "";
+        apellidoInput.value = "";
       } else {
         resultado.innerHTML = `<div class="alert alert-danger">Error: ${data.mensaje || "No se pudo guardar."}</div>`;
       }

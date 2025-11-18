@@ -1,3 +1,55 @@
+// Endpoint para verificar si existe legajo o email en otro usuario
+router.get('/verificar_legajo_email', async (req, res) => {
+  const { legajo, email, actual } = req.query;
+  if (!legajo && !email) {
+    return res.status(400).json({ success: false, mensaje: 'Faltan parámetros' });
+  }
+  try {
+    const pool = await poolPromise;
+    let query = `SELECT Legajo, Email FROM a002103.USUARIO WHERE (Legajo = @Legajo OR Email = @Email)`;
+    if (actual) {
+      query += ' AND Legajo <> @Actual';
+    }
+    const request = pool.request()
+      .input('Legajo', sql.VarChar, legajo || null)
+      .input('Email', sql.VarChar, email || null);
+    if (actual) request.input('Actual', sql.VarChar, actual);
+    const result = await request.query(query);
+    if (result.recordset.length > 0) {
+      return res.json({ success: true, existe: true, coincidencias: result.recordset });
+    }
+    res.json({ success: true, existe: false });
+  } catch (error) {
+    console.error('Error en verificación legajo/email:', error);
+    res.status(500).json({ success: false, mensaje: 'Error interno', error: error.message });
+  }
+});
+// Endpoint GET para obtener todos los referentes únicos
+router.get('/referentes', async (req, res) => {
+  try {
+    const pool = await poolPromise;
+    // Trae Referente y el nombre completo asociado (primera ocurrencia por Referente)
+    const result = await pool.request().query(`
+      SELECT r.Referente, CONCAT(u.Apellido, ', ', u.Nombre) AS NombreCompleto
+      FROM (
+        SELECT DISTINCT Referente FROM a002103.USUARIO
+        WHERE Referente IS NOT NULL AND LTRIM(RTRIM(Referente)) <> ''
+      ) r
+      OUTER APPLY (
+        SELECT TOP 1 Apellido, Nombre FROM a002103.USUARIO u2 WHERE u2.Legajo = r.Referente
+      ) u
+      ORDER BY r.Referente
+    `);
+    const referentes = result.recordset.map(r => ({
+      Referente: r.Referente,
+      NombreCompleto: r.NombreCompleto || ''
+    }));
+    res.json({ success: true, referentes });
+  } catch (error) {
+    console.error('Error al obtener referentes:', error);
+    res.status(500).json({ success: false, mensaje: 'Error al obtener referentes', error: error.message });
+  }
+});
 // backend/generarUsuario_tbUsuarios.js
 const express = require('express');
 const router = express.Router();

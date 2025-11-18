@@ -1,3 +1,16 @@
+// Endpoint para traer usuarios base (de a002103.USUARIO)
+router.get('/usuarios_base', async (req, res) => {
+  try {
+    const pool = await poolPromise;
+    const result = await pool.request().query(`
+      SELECT Legajo, Nombre, Apellido, Email FROM a002103.USUARIO ORDER BY Apellido, Nombre
+    `);
+    res.json({ success: true, usuarios: result.recordset });
+  } catch (error) {
+    console.error('Error al obtener usuarios base:', error);
+    res.status(500).json({ success: false, mensaje: 'Error interno', error: error.message });
+  }
+});
 // Ejemplo: appOrdenesSF_AltaUsuario.js
 const express = require("express");
 const router = express.Router();

@@ -36,7 +36,7 @@
         <div class="row mb-3">
           <div class="col-md-4">
             <label class="form-label">Legajo:</label>
-            <input type="text" class="form-control" id="legajo" placeholder="123456" maxlength="10">
+            <input type="text" class="form-control" id="legajo" placeholder="123456" maxlength="6">
           </div>
           <div class="col-md-4">
             <label class="form-label">Apellido:</label>
@@ -56,15 +56,9 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">Referente:</label>
-              <input 
-                  type="number" 
-                  class="form-control" 
-                  id="referente" 
-                  placeholder="Referente"
-                  inputmode="numeric"
-                  min="0"
-                  max="999999"
-                  oninput="if(this.value.length > 6) this.value = this.value.slice(0,6);">
+            <select class="form-select" id="referente">
+              <option value="">Seleccione un referente</option>
+            </select>
           </div>
           <div class="col-md-4">
             <label class="form-label">Fecha de Nacimiento:</label>

@@ -35,15 +35,24 @@
     <h5 class="mb-3">Alta de Grupo o Script</h5>
 
     <form id="entidadForm">
+      <!-- Selección de usuario base -->
+      <div class="row mb-3">
+        <div class="col-md-12">
+          <label class="form-label">Seleccionar usuario base:</label>
+          <select class="form-select" id="usuarioBase" required>
+            <option value="">Seleccione un usuario...</option>
+          </select>
+        </div>
+      </div>
       <!-- Fila 1 -->
       <div class="row mb-3">
         <div class="col-md-6">
           <label class="form-label">Nombre:</label>
-          <input type="text" class="form-control" id="nombre" placeholder="Nombre" maxlength="50" required>
+          <input type="text" class="form-control" id="nombre" placeholder="Nombre" maxlength="50" readonly>
         </div>
         <div class="col-md-6">
           <label class="form-label">Apellido:</label>
-          <input type="text" class="form-control" id="apellido" placeholder="Apellido" maxlength="50" required>
+          <input type="text" class="form-control" id="apellido" placeholder="Apellido" maxlength="50" readonly>
         </div>
       </div>
 

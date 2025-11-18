@@ -1,6 +1,24 @@
 // modificarUsuarioAbm.js
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // Llenar el select de referentes al cargar la página
+  const referenteSelect = document.getElementById('referente');
+  fetch('/referentes')
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && Array.isArray(data.referentes)) {
+        data.referentes.forEach(ref => {
+          const opt = document.createElement('option');
+          opt.value = ref.Referente;
+          opt.textContent = ref.NombreCompleto ? `${ref.Referente} - ${ref.NombreCompleto}` : ref.Referente;
+          referenteSelect.appendChild(opt);
+        });
+      }
+    })
+    .catch(err => {
+      console.error('Error al cargar referentes:', err);
+    });
+  // ...sin código de llenado de legajos...
   const selectUsuario = document.getElementById("selectUsuario");
   const btnCargar = document.getElementById("btnCargar");
   const form = document.getElementById("userForm");
@@ -85,6 +103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     event.preventDefault();
 
     const legajo = document.getElementById("legajo").value;
+    const email = document.getElementById("email").value;
     if (!legajo) {
       resultado.textContent = "Debe seleccionar un usuario.";
       resultado.style.color = "orange";
@@ -93,6 +112,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Sanitiza vacíos -> null
     const clean = (v) => (v && v.trim() !== "" ? v.trim() : null);
+
+    // Validar legajo/email únicos (excepto el usuario actual)
+    try {
+      const resVerif = await fetch(`/verificar_legajo_email?legajo=${encodeURIComponent(legajo)}&email=${encodeURIComponent(email)}&actual=${encodeURIComponent(selectUsuario.value)}`);
+      const dataVerif = await resVerif.json();
+      if (dataVerif.success && dataVerif.existe) {
+        resultado.textContent = "El legajo o email ya existen en otro usuario.";
+        resultado.style.color = "red";
+        return;
+      }
+    } catch (err) {
+      resultado.textContent = "No se pudo validar legajo/email.";
+      resultado.style.color = "red";
+      return;
+    }
 
     const body = {
       Apellido: clean(document.getElementById("apellido").value),
