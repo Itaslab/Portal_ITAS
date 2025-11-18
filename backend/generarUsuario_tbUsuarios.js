@@ -1,3 +1,7 @@
+const express = require('express');
+const router = express.Router();
+const { sql, poolPromise } = require('./db'); // ajustá la ruta si está en la misma carpeta
+
 // Endpoint para verificar si existe legajo o email en otro usuario
 router.get('/verificar_legajo_email', async (req, res) => {
   const { legajo, email, actual } = req.query;
@@ -50,11 +54,6 @@ router.get('/referentes', async (req, res) => {
     res.status(500).json({ success: false, mensaje: 'Error al obtener referentes', error: error.message });
   }
 });
-// backend/generarUsuario_tbUsuarios.js
-const express = require('express');
-const router = express.Router();
-const { sql, poolPromise } = require('./db'); // ajustá la ruta si está en la misma carpeta
-
 // Ruta POST para registrar un nuevo usuario
 router.post('/registrar_usuario', async (req, res) => {
   try {
