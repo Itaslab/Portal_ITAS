@@ -57,6 +57,32 @@ populateSelectModal(selectGrupoBKPEditable);
   let usuarios = [];
   await cargarUsuarios();
 
+  // Helper de prueba: permite inyectar datos desde la consola del navegador
+  // Uso: window.__testSetUsuarios([{ id_usuario:1, nombre:'Pepe', grupo:'Mesa 1', activo:1, max:5, desde:'09:00', hasta:'18:00' }, ...])
+  window.__testSetUsuarios = function(list) {
+    if (!Array.isArray(list)) return console.error('__testSetUsuarios espera un array');
+    usuarios = list;
+    renderTabla(usuarios);
+  };
+
+  // Debounce util: evita ejecuciones muy frecuentes de los filtros
+  function debounce(fn, wait) {
+    let t = null;
+    return function(...args) {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(this, args), wait);
+    };
+  }
+
+  // Normaliza valores del campo 'activo' para comparar con el filtro
+  function normalizeActivo(val) {
+    if (val === undefined || val === null || val === "") return "";
+    const s = String(val).trim().toLowerCase();
+    if (s === "1" || s === "true" || s === "activo") return "activo";
+    if (s === "0" || s === "false" || s === "inactivo") return "inactivo";
+    return s;
+  }
+
   async function cargarUsuarios() {
     try {
       const resp = await fetch("/usuarios");
@@ -173,20 +199,21 @@ if (estadoSpan) {
     });
   }
 
-  // Filtros
-  [filtroGrupo, filtroNombre, filtroActivo].forEach(inp => inp.addEventListener("input", aplicarFiltros));
+  // Filtros (con debounce y normalización robusta)
+  const debouncedAplicar = debounce(aplicarFiltros, 250);
+  if (filtroGrupo) filtroGrupo.addEventListener("input", debouncedAplicar);
+  if (filtroNombre) filtroNombre.addEventListener("input", debouncedAplicar);
+  if (filtroActivo) filtroActivo.addEventListener("change", debouncedAplicar);
+
   function aplicarFiltros() {
-    const grupo = (filtroGrupo.value || "").toLowerCase();
-    const nombre = (filtroNombre.value || "").toLowerCase();
-    const activoVal = (filtroActivo.value || "").toLowerCase();
+    const grupo = (filtroGrupo && filtroGrupo.value ? filtroGrupo.value : "").toLowerCase();
+    const nombre = (filtroNombre && filtroNombre.value ? filtroNombre.value : "").toLowerCase();
+    const activoVal = normalizeActivo(filtroActivo ? filtroActivo.value : "");
 
     const filtrados = usuarios.filter(uRaw => {
       const nombreRaw = (uRaw.nombre ?? uRaw.Nombre ?? "").toString().toLowerCase();
       const grupoRaw = (uRaw.grupo ?? uRaw.Grupo ?? "").toString().toLowerCase();
-      const activoTexto =
-        typeof uRaw.activo === "string"
-          ? uRaw.activo.trim().toLowerCase()
-          : (uRaw.activo == 1 || uRaw.activo === true ? "activo" : "inactivo");
+      const activoTexto = normalizeActivo(uRaw.activo);
 
       const matchGrupo = !grupo || grupoRaw.includes(grupo);
       const matchNombre = !nombre || nombreRaw.includes(nombre);
