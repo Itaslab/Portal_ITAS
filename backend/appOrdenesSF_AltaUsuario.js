@@ -1,3 +1,7 @@
+const express = require("express");
+const router = express.Router();
+const { sql, poolPromise } = require("./db");
+
 // Endpoint para traer usuarios base (de a002103.USUARIO)
 router.get('/usuarios_base', async (req, res) => {
   try {
@@ -11,10 +15,6 @@ router.get('/usuarios_base', async (req, res) => {
     res.status(500).json({ success: false, mensaje: 'Error interno', error: error.message });
   }
 });
-// Ejemplo: appOrdenesSF_AltaUsuario.js
-const express = require("express");
-const router = express.Router();
-const { sql, poolPromise } = require("./db");
 
 router.post("/usuariosordenes", async (req, res) => {
   const { Nombre, Apellido, Grupo, Grupo_BKP, Modo, MaxPorTrabajar, HoraDe, HoraA } = req.body;
