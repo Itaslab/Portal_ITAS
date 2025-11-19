@@ -102,6 +102,22 @@
         </div>
       </div>
 
+      <!-- SF User ID y Forma -->
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label class="form-label">SF User ID:</label>
+          <input type="text" class="form-control" id="sfUserId" placeholder="SF12345" maxlength="100">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Forma:</label>
+          <select class="form-select" id="forma">
+            <option value="">Seleccione forma</option>
+            <option value="asc">asc</option>
+            <option value="desc">desc</option>
+          </select>
+        </div>
+      </div>
+
       <!-- Fila 3 -->
       <div class="row mb-3">
         <div class="col-md-4">
@@ -127,6 +143,14 @@
         <div class="col-md-3">
           <label class="form-label">Hora a:</label>
           <input type="time" class="form-control" id="horaA" required>
+        </div>
+      </div>
+
+      <!-- Script (solo para Modo = SCRIPT) -->
+      <div class="row mb-3">
+        <div class="col-12">
+          <label class="form-label">Script (obligatorio si Modo = SCRIPT):</label>
+          <textarea id="scriptText" class="form-control" rows="6" placeholder="Pegue aquí el script..." disabled></textarea>
         </div>
       </div>
 

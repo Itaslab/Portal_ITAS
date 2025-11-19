@@ -30,6 +30,31 @@ document.addEventListener("DOMContentLoaded", () => {
     apellidoInput.value = selected.dataset.apellido || "";
   });
 
+  // Referencias a nuevos campos
+  const sfUserIdInput = document.getElementById('sfUserId');
+  const formaSelect = document.getElementById('forma');
+  const modoSelect = document.getElementById('modo');
+  const scriptTextarea = document.getElementById('scriptText');
+
+  // Habilitar/deshabilitar textarea según Modo
+  function updateScriptState() {
+    const modoVal = modoSelect.value;
+    if (modoVal === 'SCRIPT') {
+      scriptTextarea.disabled = false;
+      scriptTextarea.classList.remove('bg-light');
+      scriptTextarea.required = true;
+    } else {
+      scriptTextarea.disabled = true;
+      scriptTextarea.value = '';
+      scriptTextarea.classList.add('bg-light');
+      scriptTextarea.required = false;
+    }
+  }
+
+  modoSelect.addEventListener('change', updateScriptState);
+  // Inicializar estado
+  updateScriptState();
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -56,6 +81,13 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // Si modo = SCRIPT, script es obligatorio
+    const scriptVal = scriptTextarea.value.trim();
+    if (modo === 'SCRIPT' && !scriptVal) {
+      resultado.innerHTML = `<div class="alert alert-warning">Modo SCRIPT requiere que ingrese el script.</div>`;
+      return;
+    }
+
     // Crear objeto para enviar al backend
     const nuevaEntidad = {
       Nombre: nombre,
@@ -65,7 +97,10 @@ document.addEventListener("DOMContentLoaded", () => {
       Modo: modo,
       MaxPorTrabajar: parseInt(Max_Por_Trabajar),
       HoraDe: horaDe,
-      HoraA: horaA
+      HoraA: horaA,
+      SF_UserID: sfUserIdInput?.value?.trim() || null,
+      Asc_desc: formaSelect?.value || null,
+      Script: scriptVal || null
     };
 
     try {
