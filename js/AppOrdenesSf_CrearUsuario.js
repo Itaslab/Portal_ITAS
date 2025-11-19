@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const nuevaEntidad = {
       Nombre: nombre,
       Apellido: apellido,
+      UsuarioBase: usuarioBase,
       Grupo: grupo,
       Grupo_BKP: grupo2,
       Modo: modo,

@@ -19,10 +19,13 @@ router.get('/usuarios_base', async (req, res) => {
 router.post("/usuariosordenes", async (req, res) => {
   const { Nombre, Apellido, Grupo, Grupo_BKP, Modo, MaxPorTrabajar, HoraDe, HoraA, SF_UserID, Asc_desc, Script } = req.body;
 
+  // Obtener pool temprano para poder inspeccionar la tabla y validar campos condicionalmente
+  const pool = await poolPromise;
+
   // Validación básica de entrada para evitar 500 por datos inválidos
+  // Nota: si la tabla APP_ORDENES_USR utiliza ID_Usuario en lugar de Nombre/Apellido,
+  // validaremos la presencia de UsuarioBase (legajo) más abajo.
   const faltantes = [];
-  if (!Nombre) faltantes.push('Nombre');
-  if (!Apellido) faltantes.push('Apellido');
   if (!Grupo) faltantes.push('Grupo');
   if (!Grupo_BKP) faltantes.push('Grupo_BKP');
   if (!Modo) faltantes.push('Modo');
@@ -64,33 +67,86 @@ router.post("/usuariosordenes", async (req, res) => {
   }
 
   try {
-    const pool = await poolPromise;
-    // Verificar si ya existe un usuario con el mismo apellido
-    const existente = await pool.request()
-      .input("Apellido", sql.VarChar, Apellido.trim())
-      .query(`SELECT COUNT(1) AS cnt FROM a002103.APP_ORDENES_USR WHERE Apellido = @Apellido`);
+    // pool ya inicializado arriba
+    // Comprobar si la tabla APP_ORDENES_USR contiene columna ID_Usuario
+    const cols = await pool.request().query(
+      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'a002103' AND TABLE_NAME = 'APP_ORDENES_USR' AND COLUMN_NAME = 'ID_Usuario'`
+    );
 
-    if (existente && existente.recordset && existente.recordset[0] && existente.recordset[0].cnt > 0) {
-      return res.status(409).json({ mensaje: 'Ya existe un usuario con ese apellido.' });
+    const hasIdUsuario = cols && cols.recordset && cols.recordset.length > 0;
+
+    if (hasIdUsuario) {
+      // Debemos recibir UsuarioBase (legajo) para resolver ID_Usuario
+      const usuarioBase = req.body && req.body.UsuarioBase ? String(req.body.UsuarioBase).trim() : null;
+      if (!usuarioBase) {
+        return res.status(400).json({ mensaje: 'Se requiere UsuarioBase (legajo) cuando la tabla usa ID_Usuario.' });
+      }
+
+      // Buscar ID_Usuario en tabla a002103.USUARIO por Legajo
+      const r = await pool.request()
+        .input('Legajo', sql.VarChar, usuarioBase)
+        .query('SELECT TOP 1 ID_Usuario FROM a002103.USUARIO WHERE Legajo = @Legajo');
+
+      const idUsuario = r && r.recordset && r.recordset[0] ? r.recordset[0].ID_Usuario : null;
+      if (!idUsuario) {
+        return res.status(400).json({ mensaje: 'No se encontró ID_Usuario para el UsuarioBase proporcionado.' });
+      }
+
+      // Evitar duplicados por ID_Usuario
+      const existente = await pool.request()
+        .input('ID_Usuario', sql.Int, idUsuario)
+        .query('SELECT COUNT(1) AS cnt FROM a002103.APP_ORDENES_USR WHERE ID_Usuario = @ID_Usuario');
+
+      if (existente && existente.recordset && existente.recordset[0] && existente.recordset[0].cnt > 0) {
+        return res.status(409).json({ mensaje: 'Ya existe un usuario de orden para ese UsuarioBase.' });
+      }
+
+      await pool.request()
+        .input('ID_Usuario', sql.Int, idUsuario)
+        .input('Grupo', sql.VarChar, Grupo)
+        .input('Grupo_BKP', sql.VarChar, Grupo_BKP)
+        .input('Modo', sql.VarChar, Modo)
+        .input('MaxPorTrabajar', sql.Int, maxInt)
+        .input('HoraDe', sql.Time, horaDeNorm)
+        .input('HoraA', sql.Time, horaANorm)
+        .input('SF_UserID', sql.VarChar, SF_UserID || null)
+        .input('Asc_desc', sql.VarChar, Asc_desc || null)
+        .input('Script', sql.NVarChar(sql.MAX), Script || null)
+        .query(`
+          INSERT INTO a002103.APP_ORDENES_USR
+          (ID_Usuario, Grupo, Grupo2, Modo, Max_Por_Trabajar, Hora_De, Hora_A, SF_UserID, Asc_desc, Script)
+          VALUES (@ID_Usuario, @Grupo, @Grupo_BKP, @Modo, @MaxPorTrabajar, @HoraDe, @HoraA, @SF_UserID, @Asc_desc, @Script)
+        `);
+
+    } else {
+      // Fallback: tabla no tiene ID_Usuario — insert por Nombre/Apellido
+      // Verificar si ya existe un usuario con el mismo apellido
+      const existente = await pool.request()
+        .input('Apellido', sql.VarChar, Apellido.trim())
+        .query('SELECT COUNT(1) AS cnt FROM a002103.APP_ORDENES_USR WHERE Apellido = @Apellido');
+
+      if (existente && existente.recordset && existente.recordset[0] && existente.recordset[0].cnt > 0) {
+        return res.status(409).json({ mensaje: 'Ya existe un usuario con ese apellido.' });
+      }
+
+      await pool.request()
+        .input('Nombre', sql.VarChar, Nombre)
+        .input('Apellido', sql.VarChar, Apellido)
+        .input('Grupo', sql.VarChar, Grupo)
+        .input('Grupo_BKP', sql.VarChar, Grupo_BKP)
+        .input('Modo', sql.VarChar, Modo)
+        .input('MaxPorTrabajar', sql.Int, maxInt)
+        .input('HoraDe', sql.Time, horaDeNorm)
+        .input('HoraA', sql.Time, horaANorm)
+        .input('SF_UserID', sql.VarChar, SF_UserID || null)
+        .input('Asc_desc', sql.VarChar, Asc_desc || null)
+        .input('Script', sql.NVarChar(sql.MAX), Script || null)
+        .query(`
+          INSERT INTO a002103.APP_ORDENES_USR
+          (Nombre, Apellido, Grupo, Grupo2, Modo, Max_Por_Trabajar, Hora_De, Hora_A, SF_UserID, Asc_desc, Script)
+          VALUES (@Nombre, @Apellido, @Grupo, @Grupo_BKP, @Modo, @MaxPorTrabajar, @HoraDe, @HoraA, @SF_UserID, @Asc_desc, @Script)
+        `);
     }
-
-    await pool.request()
-      .input("Nombre", sql.VarChar, Nombre)
-      .input("Apellido", sql.VarChar, Apellido)
-      .input("Grupo", sql.VarChar, Grupo)
-      .input("Grupo_BKP", sql.VarChar, Grupo_BKP)
-      .input("Modo", sql.VarChar, Modo)
-      .input("MaxPorTrabajar", sql.Int, maxInt)
-      .input("HoraDe", sql.Time, horaDeNorm)
-      .input("HoraA", sql.Time, horaANorm)
-      .input("SF_UserID", sql.VarChar, SF_UserID || null)
-      .input("Asc_desc", sql.VarChar, Asc_desc || null)
-      .input("Script", sql.NVarChar(sql.MAX), Script || null)
-      .query(`
-        INSERT INTO a002103.APP_ORDENES_USR
-        (Nombre, Apellido, Grupo, Grupo2, Modo, Max_Por_Trabajar, Hora_De, Hora_A, SF_UserID, Asc_desc, Script)
-        VALUES (@Nombre, @Apellido, @Grupo, @Grupo_BKP, @Modo, @MaxPorTrabajar, @HoraDe, @HoraA, @SF_UserID, @Asc_desc, @Script)
-      `);
 
     res.status(201).json({ mensaje: "Usuario de orden creado correctamente." });
   } catch (error) {
