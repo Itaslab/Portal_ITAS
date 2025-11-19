@@ -108,6 +108,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("convenio").value = data.Convenio || "";
       document.getElementById("ciudad").value = data.Ciudad || "";
 
+      // Si el backend devuelve permisos, setear checkboxes (si existen)
+      if (typeof data.Perm_Robot !== 'undefined' && document.getElementById('perm_robot')) {
+        document.getElementById('perm_robot').checked = !!data.Perm_Robot;
+      }
+      if (typeof data.Perm_AppOrdenes !== 'undefined' && document.getElementById('perm_appordenes')) {
+        document.getElementById('perm_appordenes').checked = !!data.Perm_AppOrdenes;
+      }
+      if (typeof data.Perm_Grafana !== 'undefined' && document.getElementById('perm_grafana')) {
+        document.getElementById('perm_grafana').checked = !!data.Perm_Grafana;
+      }
+      if (typeof data.Perm_ABMUsuarios !== 'undefined' && document.getElementById('perm_abm')) {
+        document.getElementById('perm_abm').checked = !!data.Perm_ABMUsuarios;
+      }
+
       resultado.textContent = "Datos cargados correctamente.";
       resultado.style.color = "green";
     } catch (error) {
@@ -173,6 +187,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       Empresa: clean(document.getElementById("empresa").value),
       Convenio: clean(document.getElementById("convenio").value),
       Ciudad: clean(document.getElementById("ciudad").value),
+      // Permisos (front)
+      Perm_Robot: !!document.getElementById('perm_robot')?.checked,
+      Perm_AppOrdenes: !!document.getElementById('perm_appordenes')?.checked,
+      Perm_Grafana: !!document.getElementById('perm_grafana')?.checked,
+      Perm_ABMUsuarios: !!document.getElementById('perm_abm')?.checked,
     };
 
     try {
@@ -187,8 +206,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (res.ok) {
         // Mostrar popup y limpiar mensaje
         if (successModal) {
-          const body = document.getElementById('successModalBody');
-          if (body) body.textContent = `Se actualizó usuario: ${body ? '' : ''}`;
+          const modalBodyEl = document.getElementById('successModalBody');
+          const nombre = document.getElementById('nombre')?.value || '';
+          const apellido = document.getElementById('apellido')?.value || '';
+          if (modalBodyEl) modalBodyEl.textContent = `Se actualizó usuario: ${apellido}, ${nombre}`;
           successModal.show();
         } else {
           alert('Se actualizó usuario');
