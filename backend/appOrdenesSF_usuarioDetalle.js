@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
       max: u.Max_Por_Trabajar,
       forma: u.Asc_Desc,
       modo: u.Modo,
-      desasignador: u.Des_Asignar,
+      des_asignar: !!u.Des_Asignar,
       script: u.Script
     };
 

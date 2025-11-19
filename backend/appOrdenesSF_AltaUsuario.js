@@ -27,7 +27,6 @@ router.post("/usuariosordenes", async (req, res) => {
   // validaremos la presencia de UsuarioBase (legajo) más abajo.
   const faltantes = [];
   if (!Grupo) faltantes.push('Grupo');
-  if (!Grupo_BKP) faltantes.push('Grupo_BKP');
   if (!Modo) faltantes.push('Modo');
   if (typeof MaxPorTrabajar === 'undefined' || MaxPorTrabajar === null) faltantes.push('MaxPorTrabajar');
   if (!HoraDe) faltantes.push('HoraDe');
@@ -112,7 +111,7 @@ router.post("/usuariosordenes", async (req, res) => {
       await pool.request()
         .input('ID_Usuario', sql.Int, idUsuario)
         .input('Grupo', sql.VarChar, Grupo)
-        .input('Grupo_BKP', sql.VarChar, Grupo_BKP)
+        .input('Grupo2', sql.VarChar, Grupo_BKP || null)
         .input('Modo', sql.VarChar, Modo)
         .input('MaxPorTrabajar', sql.Int, maxInt)
         .input('HoraDe', sql.VarChar(32), horaDeNorm)
@@ -123,7 +122,7 @@ router.post("/usuariosordenes", async (req, res) => {
         .query(`
           INSERT INTO a002103.APP_ORDENES_USR
           (ID_Usuario, Grupo, Grupo2, Modo, Max_Por_Trabajar, Hora_De, Hora_A, SF_UserID, Asc_desc, Script)
-          VALUES (@ID_Usuario, @Grupo, @Grupo_BKP, @Modo, @MaxPorTrabajar, @HoraDe, @HoraA, @SF_UserID, @Asc_desc, @Script)
+          VALUES (@ID_Usuario, @Grupo, @Grupo2, @Modo, @MaxPorTrabajar, @HoraDe, @HoraA, @SF_UserID, @Asc_desc, @Script)
         `);
 
     } else {
@@ -141,7 +140,7 @@ router.post("/usuariosordenes", async (req, res) => {
         .input('Nombre', sql.VarChar, Nombre)
         .input('Apellido', sql.VarChar, Apellido)
         .input('Grupo', sql.VarChar, Grupo)
-        .input('Grupo_BKP', sql.VarChar, Grupo_BKP)
+        .input('Grupo2', sql.VarChar, Grupo_BKP || null)
         .input('Modo', sql.VarChar, Modo)
         .input('MaxPorTrabajar', sql.Int, maxInt)
         .input('HoraDe', sql.VarChar(32), horaDeNorm)
@@ -152,7 +151,7 @@ router.post("/usuariosordenes", async (req, res) => {
         .query(`
           INSERT INTO a002103.APP_ORDENES_USR
           (Nombre, Apellido, Grupo, Grupo2, Modo, Max_Por_Trabajar, Hora_De, Hora_A, SF_UserID, Asc_desc, Script)
-          VALUES (@Nombre, @Apellido, @Grupo, @Grupo_BKP, @Modo, @MaxPorTrabajar, @HoraDe, @HoraA, @SF_UserID, @Asc_desc, @Script)
+          VALUES (@Nombre, @Apellido, @Grupo, @Grupo2, @Modo, @MaxPorTrabajar, @HoraDe, @HoraA, @SF_UserID, @Asc_desc, @Script)
         `);
     }
 
