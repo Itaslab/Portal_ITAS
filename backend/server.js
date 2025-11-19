@@ -134,12 +134,20 @@ app.get("/", (req, res) => {
 });
 
 // ------------------- HTTPS -------------------
+//const httpsOptions = {
+//  key: fs.readFileSync("/etc/nginx/ssl/test-web.key"),
+//  cert: fs.readFileSync("/etc/nginx/ssl/test-web.crt"),
+//};
+
 const httpsOptions = {
-  key: fs.readFileSync("/etc/nginx/ssl/test-web.key"),
-  cert: fs.readFileSync("/etc/nginx/ssl/test-web.crt"),
+  key: fs.readFileSync("/app/cert/portal-itas.telecom.com.ar.key"),
+  cert: fs.readFileSync("/app/cert/fullchain.crt"), // certificado + intermedio
 };
 
 const PORT = 8080;
 https.createServer(httpsOptions, app).listen(PORT, () => {
-  console.log(`✅ HTTPS corriendo en https://10.4.48.116:${PORT}`);
+ // console.log(`✅ HTTPS corriendo en https://10.4.48.116:${PORT}`);
+  console.log(`✅ HTTPS corriendo en https://portal-itas.telecom.com.ar:${PORT}`);
 });
+
+
