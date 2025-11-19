@@ -30,6 +30,35 @@ document.addEventListener("DOMContentLoaded", () => {
     apellidoInput.value = selected.dataset.apellido || "";
   });
 
+  // Salto rápido por letra en el select: al presionar una letra va al siguiente apellido que empieza con esa letra
+  usuarioBaseSelect.addEventListener('keydown', function(e) {
+    const key = e.key;
+    if (!key || key.length !== 1) return; // no es una letra simple
+    const ch = key.toUpperCase();
+    if (ch < 'A' || ch > 'Z') return;
+    e.preventDefault();
+    const options = Array.from(usuarioBaseSelect.options);
+    const start = usuarioBaseSelect.selectedIndex >= 0 ? usuarioBaseSelect.selectedIndex + 1 : 0;
+    // buscar desde start hasta final, luego desde 0 hasta start-1
+    let foundIndex = -1;
+    for (let i = start; i < options.length; i++) {
+      const opt = options[i];
+      const apellido = (opt.dataset.apellido || '').toUpperCase();
+      if (apellido.startsWith(ch)) { foundIndex = i; break; }
+    }
+    if (foundIndex === -1) {
+      for (let i = 0; i < start; i++) {
+        const opt = options[i];
+        const apellido = (opt.dataset.apellido || '').toUpperCase();
+        if (apellido.startsWith(ch)) { foundIndex = i; break; }
+      }
+    }
+    if (foundIndex !== -1) {
+      usuarioBaseSelect.selectedIndex = foundIndex;
+      usuarioBaseSelect.dispatchEvent(new Event('change'));
+    }
+  });
+
   // Referencias a nuevos campos
   const sfUserIdInput = document.getElementById('sfUserId');
   const formaSelect = document.getElementById('forma');
@@ -76,8 +105,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const horaA = document.getElementById("horaA").value;
 
     // Validación básica
-    if (!nombre || !apellido || !grupo || !grupo2 || !modo || !horaDe || !horaA) {
-      resultado.innerHTML = `<div class="alert alert-warning">Por favor complete todos los campos obligatorios.</div>`;
+    if (!nombre || !apellido || !grupo || !modo || !horaDe || !horaA) {
+      resultado.innerHTML = `<div class="alert alert-warning">Por favor complete todos los campos obligatorios (Grupo BKP es opcional).</div>`;
       return;
     }
 
@@ -88,15 +117,25 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // Asegurar MaxPorTrabajar como entero y ≤ 99
+    let maxInt = parseInt(Max_Por_Trabajar, 10);
+    if (isNaN(maxInt) || maxInt < 0) maxInt = 0;
+    if (maxInt > 99) {
+      maxInt = 99;
+      // reflejar en el input
+      document.getElementById("maxPorTrabajar").value = maxInt;
+      resultado.innerHTML = `<div class="alert alert-warning">Max por trabajar ajustado a 99.</div>`;
+    }
+
     // Crear objeto para enviar al backend
     const nuevaEntidad = {
       Nombre: nombre,
       Apellido: apellido,
       UsuarioBase: usuarioBase,
       Grupo: grupo,
-      Grupo_BKP: grupo2,
+      Grupo_BKP: grupo2 || null,
       Modo: modo,
-      MaxPorTrabajar: parseInt(Max_Por_Trabajar),
+      MaxPorTrabajar: maxInt,
       HoraDe: horaDe,
       HoraA: horaA,
       SF_UserID: sfUserIdInput?.value?.trim() || null,
