@@ -52,10 +52,18 @@ router.post("/usuariosordenes", async (req, res) => {
   // Normalizar formato de hora: aceptar HH:MM y convertir a HH:MM:00
   function normalizeTime(t) {
     if (typeof t !== 'string') return null;
+    // Aceptar HH:MM, HH:MM:SS, HH:MM:SS.ffffff (fracciones)
     const m1 = t.match(/^\d{2}:\d{2}$/);
-    const m2 = t.match(/^\d{2}:\d{2}:\d{2}$/);
-    if (m2) return t;
-    if (m1) return t + ':00';
+    const m2 = t.match(/^\d{2}:\d{2}:\d{2}(?:\.\d+)?$/);
+    if (m2) {
+      // Normalizar a formato con 7 decimales de subsegundos: HH:MM:SS.fffffff
+      if (t.indexOf('.') === -1) return t + '.0000000';
+      // Si ya tiene fracciones, pad o recortar a 7
+      const parts = t.split('.');
+      const frac = (parts[1] || '').padEnd(7, '0').slice(0,7);
+      return parts[0] + '.' + frac;
+    }
+    if (m1) return t + ':00.0000000';
     return null;
   }
 
@@ -107,8 +115,8 @@ router.post("/usuariosordenes", async (req, res) => {
         .input('Grupo_BKP', sql.VarChar, Grupo_BKP)
         .input('Modo', sql.VarChar, Modo)
         .input('MaxPorTrabajar', sql.Int, maxInt)
-        .input('HoraDe', sql.Time, horaDeNorm)
-        .input('HoraA', sql.Time, horaANorm)
+        .input('HoraDe', sql.VarChar(32), horaDeNorm)
+        .input('HoraA', sql.VarChar(32), horaANorm)
         .input('SF_UserID', sql.VarChar, SF_UserID || null)
         .input('Asc_desc', sql.VarChar, Asc_desc || null)
         .input('Script', sql.NVarChar(sql.MAX), Script || null)
@@ -136,8 +144,8 @@ router.post("/usuariosordenes", async (req, res) => {
         .input('Grupo_BKP', sql.VarChar, Grupo_BKP)
         .input('Modo', sql.VarChar, Modo)
         .input('MaxPorTrabajar', sql.Int, maxInt)
-        .input('HoraDe', sql.Time, horaDeNorm)
-        .input('HoraA', sql.Time, horaANorm)
+        .input('HoraDe', sql.VarChar(32), horaDeNorm)
+        .input('HoraA', sql.VarChar(32), horaANorm)
         .input('SF_UserID', sql.VarChar, SF_UserID || null)
         .input('Asc_desc', sql.VarChar, Asc_desc || null)
         .input('Script', sql.NVarChar(sql.MAX), Script || null)
