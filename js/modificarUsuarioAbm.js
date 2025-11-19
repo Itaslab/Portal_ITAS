@@ -23,11 +23,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnCargar = document.getElementById("btnCargar");
   const form = document.getElementById("userForm");
 
+  // Helper: validaciones de caracteres "no raros"
+  const regexName = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-\.]+$/u; // letras, espacios, guiones, apóstrofe, punto
+  const regexAlias = /^[A-Za-z0-9À-ÖØ-öø-ÿ\s'\-\.]+$/u; // añade números
+  const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // básico
+
+  function validarCamposNoRarosModificar(vals) {
+    const errores = [];
+    if (vals.apellido && !regexName.test(vals.apellido)) errores.push('apellido');
+    if (vals.nombre && !regexName.test(vals.nombre)) errores.push('nombre');
+    if (vals.email && !regexEmail.test(vals.email)) errores.push('email');
+    if (vals.alias && !regexAlias.test(vals.alias)) errores.push('alias');
+    return errores;
+  }
+
   // Crear contenedor para mensajes
   const resultado = document.createElement("div");
   resultado.id = "resultado";
   resultado.className = "mt-3";
   form.appendChild(resultado);
+
+  // Inicializar modal de éxito si existe (Bootstrap debe estar cargado antes)
+  let successModal = null;
+  const successModalEl = document.getElementById('successModal');
+  if (successModalEl && typeof bootstrap !== 'undefined') {
+    successModal = new bootstrap.Modal(successModalEl);
+  }
 
   // ---------------------------------------------------------
   // 1️⃣ CARGAR LISTA DE USUARIOS EN EL SELECT
@@ -110,6 +131,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    // Validación de caracteres no permitidos antes de enviar
+    const valoresAV = {
+      apellido: document.getElementById("apellido").value.trim(),
+      nombre: document.getElementById("nombre").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      alias: document.getElementById("alias").value.trim(),
+    };
+    const camposInvalidos = validarCamposNoRarosModificar(valoresAV);
+    if (camposInvalidos.length > 0) {
+      resultado.textContent = `Campos con caracteres no permitidos: ${camposInvalidos.join(', ')}`;
+      resultado.style.color = 'red';
+      return;
+    }
+
     // Sanitiza vacíos -> null
     const clean = (v) => (v && v.trim() !== "" ? v.trim() : null);
 
@@ -150,7 +185,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       const data = await res.json();
 
       if (res.ok) {
-        resultado.textContent = data.mensaje || "Usuario actualizado.";
+        // Mostrar popup y limpiar mensaje
+        if (successModal) {
+          const body = document.getElementById('successModalBody');
+          if (body) body.textContent = `Se actualizó usuario: ${body ? '' : ''}`;
+          successModal.show();
+        } else {
+          alert('Se actualizó usuario');
+        }
+        resultado.textContent = '';
         resultado.style.color = "green";
       } else {
         resultado.textContent = data.mensaje || "Error al actualizar.";
