@@ -46,6 +46,14 @@ router.get('/abm_usuarios/:legajo', async (req, res) => {
   }
 });
 
+
+// consulta permisos usuario 
+
+
+
+
+
+
 // ---------------------------------------------------------
 // 3️⃣ ACTUALIZAR USUARIO
 // ---------------------------------------------------------
