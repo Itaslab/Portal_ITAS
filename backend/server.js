@@ -20,6 +20,8 @@ const appOrdenesSFUsuarioDetalle = require("./appOrdenesSF_usuarioDetalle");
 const actualizarUsuario = require("./appOrdenesSF_actualizarUsuario");
 const modificarUsuario = require("./generarUsuario_modificarTbUsuarios");
 const generarUsuarioOrdenes = require("./appOrdenesSF_AltaUsuario");
+const { obtenerPermisosUsuario } = require("./appPermisos");
+
 
 // 🔥 Tu nueva ruta unificada scripts
 const rutasScripts = require("./appOrdenesSF_GaleriaScript");
@@ -103,6 +105,10 @@ app.get("/usuarios", appOrdenesSFgaleriaUsuarios);
 app.get("/usuarios/:id_usuario", appOrdenesSFUsuarioDetalle);
 app.post("/usuarios/:id_usuario/asignar", updateAsignar);
 app.post("/usuarios/actualizar", actualizarUsuario);
+
+
+app.get("/permisos/:id_usuario", checkAuth, obtenerPermisosUsuario);
+
 
 app.use("/", generarUsuario);
 app.use("/", modificarUsuario);
