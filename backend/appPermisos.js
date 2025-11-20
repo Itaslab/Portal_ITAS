@@ -1,4 +1,4 @@
-const pool = require("./db"); // o "../db" según dónde esté realmente
+const { sql, poolPromise } = require("./db");
 
 async function obtenerPermisosUsuario(req, res) {
   try {
@@ -7,12 +7,17 @@ async function obtenerPermisosUsuario(req, res) {
     const query = `
       SELECT ID_Aplicacion
       FROM a002103.USUARIO_PERFIL_APP
-      WHERE ID_Usuario = ?
+      WHERE ID_Usuario = @id
     `;
 
-    const [rows] = await pool.query(query, [id_usuario]);
+    // Obtener pool (SQL Server)
+    const pool = await poolPromise;
 
-    const permisos = rows.map(r => r.ID_Aplicacion);
+    const result = await pool.request()
+      .input("id", sql.Int, id_usuario)
+      .query(query);
+
+    const permisos = result.recordset.map(r => r.ID_Aplicacion);
 
     res.json({
       ok: true,
