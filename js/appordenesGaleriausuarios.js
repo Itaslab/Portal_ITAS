@@ -312,13 +312,7 @@ if (estadoSpan) {
       script: textareaScript.value,
       des_asignar: checkboxDesasignador.checked
     };
-       // Si modo = SCRIPT, script es obligatorio
-    const scriptVal = textareaScript.value.trim();
-    if (modo === 'SCRIPT' && !scriptVal) {
-      resultado.innerHTML = `<div class="alert alert-warning">Modo SCRIPT requiere que ingrese el script.</div>`;
-      return;
-    }
-	
+
     try {
       const resp = await fetch("/usuarios/actualizar", {
         method: "POST",
@@ -343,4 +337,3 @@ if (estadoSpan) {
     btnGuardar.addEventListener("click", guardarCambiosUsuario);
   }
 });
-	 
