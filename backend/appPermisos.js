@@ -6,7 +6,7 @@ async function obtenerPermisosUsuario(req, res) {
 
     const query = `
       SELECT ID_Aplicacion
-      FROM USUARIO_PERFIL_APP
+      FROM a002103.USUARIO_PERFIL_APP
       WHERE ID_Usuario = ?
     `;
 
