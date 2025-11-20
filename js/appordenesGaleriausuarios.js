@@ -318,24 +318,7 @@ if (estadoSpan) {
       resultado.innerHTML = `<div class="alert alert-warning">Modo SCRIPT requiere que ingrese el script.</div>`;
       return;
     }
-	 const textareaScript = document.getElementById('modalScript');
-
-  // Habilitar/deshabilitar textarea según Modo
-  function updateScriptState() {
-    const modoVal = modoSelect.value;
-    if (modoVal === 'SCRIPT') {
-      textareaScript.disabled = false;
-      textareaScript.classList.remove('bg-light');
-      textareaScript.required = true;
-    } else {
-      textareaScript.disabled = true;
-      textareaScript.value = '';
-      textareaScript.classList.add('bg-light');
-      textareaScript.required = false;
-    }
-  }
-	  
-
+	
     try {
       const resp = await fetch("/usuarios/actualizar", {
         method: "POST",
