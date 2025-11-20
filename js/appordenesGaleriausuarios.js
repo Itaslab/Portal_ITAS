@@ -277,29 +277,6 @@ if (estadoSpan) {
       if (selectModo && u.modo) {selectModo.value = u.modo;};
       if (checkboxDesasignador) checkboxDesasignador.checked = !!u.des_asignar;
       if (textareaScript) textareaScript.value = u.script ?? "";
-      if (selectModo && textareaScript) {
-    function actualizarEstadoScript() {
-        const modoSeleccionado = selectModo.value;
-        if (modoSeleccionado === "Grupo") {
-            textareaScript.disabled = true;  // grisado
-            textareaScript.required = false; // no obligatorio
-            textareaScript.value = "";        // opcional: limpiar
-        } else if (modoSeleccionado === "SCRIPT") {
-            textareaScript.disabled = false; // habilitado
-            textareaScript.required = true;  // obligatorio
-        } else {
-            textareaScript.disabled = false;
-            textareaScript.required = false;
-        }
-    }
-
-    // Ejecutar al abrir el modal
-    actualizarEstadoScript();
-
-    // Ejecutar cada vez que cambia el select
-    selectModo.addEventListener("change", actualizarEstadoScript);
-}
-
 
       bsModal.show();
     } catch (err) {
