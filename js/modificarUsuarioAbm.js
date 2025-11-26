@@ -114,11 +114,26 @@ btnCargar.addEventListener("click", async () => {
     // 2) Cargar PERMISOS desde SQL (USUARIO_PERFIL_APP)
     // ---------------------------------------------------------
     try {
-      const permisosRes = await fetch(`/permisos/${legajo}`);
+      // Preferimos usar ID_Usuario cuando esté disponible (devuelto por /abm_usuarios/:legajo)
+      const idUsuario = data.ID_Usuario || data.id_usuario || null;
+      const permisosRes = await fetch(`/permisos/${idUsuario || legajo}`);
       const permisosData = await permisosRes.json();
 
-      // Lista de apps asignadas al usuario
-      const appsAsignadas = permisosData.map(p => p.ID_Aplicacion);
+      // Lista de apps asignadas al usuario — manejamos distintos formatos de respuesta
+      let appsAsignadas = [];
+      if (Array.isArray(permisosData)) {
+        // Puede ser un array de objetos { ID_Aplicacion } o un array de números
+        if (permisosData.length > 0 && typeof permisosData[0] === 'object') {
+          appsAsignadas = permisosData.map(p => p.ID_Aplicacion || p.ID_aplicacion || p.id_aplicacion || p.id);
+        } else {
+          appsAsignadas = permisosData.map(p => p);
+        }
+      } else if (permisosData && Array.isArray(permisosData.aplicacionesPermitidas)) {
+        appsAsignadas = permisosData.aplicacionesPermitidas;
+      } else {
+        // Si el backend devolvió un objeto con clave inesperada, intentar extraer números
+        // No hacemos nada; appsAsignadas seguirá como []
+      }
 
       // Relación entre checkbox → ID_Aplicacion
       const permisosMap = {

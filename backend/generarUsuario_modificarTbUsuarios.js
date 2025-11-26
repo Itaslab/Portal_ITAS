@@ -51,12 +51,23 @@ router.get('/abm_usuarios/:legajo', async (req, res) => {
 
 router.get("/permisos/:legajo", async (req, res) => {
   const legajo = req.params.legajo;
-
   try {
     const pool = await poolPromise;
 
+    // Resolver Legajo -> ID_Usuario
+    const rUser = await pool.request()
+      .input('Legajo', sql.VarChar, legajo)
+      .query('SELECT TOP 1 ID_Usuario FROM a002103.USUARIO WHERE Legajo = @Legajo');
+
+    if (!rUser.recordset || rUser.recordset.length === 0) {
+      // Si no existe el legajo, devolver array vacío
+      return res.json([]);
+    }
+
+    const idUsuario = rUser.recordset[0].ID_Usuario;
+
     const result = await pool.request()
-      .input("ID_Usuario", sql.Int, legajo)
+      .input("ID_Usuario", sql.Int, idUsuario)
       .query(`
         SELECT ID_Aplicacion
         FROM a002103.USUARIO_PERFIL_APP
