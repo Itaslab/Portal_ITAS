@@ -49,7 +49,27 @@ router.get('/abm_usuarios/:legajo', async (req, res) => {
 
 // consulta permisos usuario 
 
+router.get("/permisos/:legajo", async (req, res) => {
+  const legajo = req.params.legajo;
 
+  try {
+    const pool = await poolPromise;
+
+    const result = await pool.request()
+      .input("ID_Usuario", sql.Int, legajo)
+      .query(`
+        SELECT ID_Aplicacion
+        FROM a002103.USUARIO_PERFIL_APP
+        WHERE ID_Usuario = @ID_Usuario
+      `);
+
+    res.json(result.recordset);
+
+  } catch (error) {
+    console.error("Error al obtener permisos:", error);
+    res.status(500).send("Error al obtener permisos del usuario");
+  }
+});
 
 
 

@@ -75,61 +75,78 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ---------------------------------------------------------
-  // 2️⃣ CARGAR DATOS DEL USUARIO
-  // ---------------------------------------------------------
-  btnCargar.addEventListener("click", async () => {
-    const legajo = selectUsuario.value;
-    if (!legajo) {
-      resultado.textContent = "Seleccione un usuario.";
-      resultado.style.color = "orange";
+ // ---------------------------------------------------------
+// 2️⃣ CARGAR DATOS DEL USUARIO
+// ---------------------------------------------------------
+btnCargar.addEventListener("click", async () => {
+  const legajo = selectUsuario.value;
+  if (!legajo) {
+    resultado.textContent = "Seleccione un usuario.";
+    resultado.style.color = "orange";
+    return;
+  }
+
+  try {
+    // === 1) Cargar datos básicos del usuario ===
+    const res = await fetch(`/abm_usuarios/${legajo}`);
+    const data = await res.json();
+
+    if (!res.ok) {
+      resultado.textContent = "No se encontró el usuario.";
+      resultado.style.color = "red";
       return;
     }
 
+    // Rellenar formulario
+    document.getElementById("legajo").value = data.Legajo || "";
+    document.getElementById("apellido").value = data.Apellido || "";
+    document.getElementById("nombre").value = data.Nombre || "";
+    document.getElementById("email").value = data.Email || "";
+    document.getElementById("referente").value = data.Referente || "";
+    document.getElementById("fecha_nacimiento").value =
+      data.Fecha_Nacimiento ? data.Fecha_Nacimiento.split("T")[0] : "";
+    document.getElementById("empresa").value = data.Empresa || "";
+    document.getElementById("alias").value = data.Alias || "";
+    document.getElementById("convenio").value = data.Convenio || "";
+    document.getElementById("ciudad").value = data.Ciudad || "";
+
+    // ---------------------------------------------------------
+    // 2) Cargar PERMISOS desde SQL (USUARIO_PERFIL_APP)
+    // ---------------------------------------------------------
     try {
-      const res = await fetch(`/abm_usuarios/${legajo}`);
-      const data = await res.json();
+      const permisosRes = await fetch(`/permisos/${legajo}`);
+      const permisosData = await permisosRes.json();
 
-      if (!res.ok) {
-        resultado.textContent = "No se encontró el usuario.";
-        resultado.style.color = "red";
-        return;
-      }
+      // Lista de apps asignadas al usuario
+      const appsAsignadas = permisosData.map(p => p.ID_Aplicacion);
 
-      // Rellenar formulario
-      document.getElementById("legajo").value = data.Legajo || "";
-      document.getElementById("apellido").value = data.Apellido || "";
-      document.getElementById("nombre").value = data.Nombre || "";
-      document.getElementById("email").value = data.Email || "";
-      document.getElementById("referente").value = data.Referente || "";
-      document.getElementById("fecha_nacimiento").value =
-        data.Fecha_Nacimiento ? data.Fecha_Nacimiento.split("T")[0] : "";
-      document.getElementById("empresa").value = data.Empresa || "";
-      document.getElementById("alias").value = data.Alias || "";
-      document.getElementById("convenio").value = data.Convenio || "";
-      document.getElementById("ciudad").value = data.Ciudad || "";
+      // Relación entre checkbox → ID_Aplicacion
+      const permisosMap = {
+        perm_robot: 3,        // Robot Itas
+        perm_appordenes: 2,   // APP Órdenes
+        perm_grafana: 5,      // Grafana
+        perm_abm: 6           // ABM Usuarios
+      };
 
-      // Si el backend devuelve permisos, setear checkboxes (si existen)
-      if (typeof data.Perm_Robot !== 'undefined' && document.getElementById('perm_robot')) {
-        document.getElementById('perm_robot').checked = !!data.Perm_Robot;
+      // Marcar checkbox según BD
+      for (const [checkboxId, appId] of Object.entries(permisosMap)) {
+        const cb = document.getElementById(checkboxId);
+        if (cb) cb.checked = appsAsignadas.includes(appId);
       }
-      if (typeof data.Perm_AppOrdenes !== 'undefined' && document.getElementById('perm_appordenes')) {
-        document.getElementById('perm_appordenes').checked = !!data.Perm_AppOrdenes;
-      }
-      if (typeof data.Perm_Grafana !== 'undefined' && document.getElementById('perm_grafana')) {
-        document.getElementById('perm_grafana').checked = !!data.Perm_Grafana;
-      }
-      if (typeof data.Perm_ABMUsuarios !== 'undefined' && document.getElementById('perm_abm')) {
-        document.getElementById('perm_abm').checked = !!data.Perm_ABMUsuarios;
-      }
-
-      resultado.textContent = "Datos cargados correctamente.";
-      resultado.style.color = "green";
-    } catch (error) {
-      console.error("Error:", error);
-      resultado.textContent = "Error cargando usuario.";
-      resultado.style.color = "red";
+    } catch (permErr) {
+      console.error("Error obteniendo permisos:", permErr);
     }
-  });
+
+    resultado.textContent = "Datos cargados correctamente.";
+    resultado.style.color = "green";
+
+  } catch (error) {
+    console.error("Error:", error);
+    resultado.textContent = "Error cargando usuario.";
+    resultado.style.color = "red";
+  }
+});
+
 
   // ---------------------------------------------------------
   // 3️⃣ GUARDAR CAMBIOS (PUT)
