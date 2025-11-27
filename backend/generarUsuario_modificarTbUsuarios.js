@@ -150,11 +150,11 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
     const ID_Usuario = resultUser.recordset[0].ID_Usuario;
 
     // MAP de permisos → ID_Aplicacion
-    const permisosMap = {
-      Perm_Robot: 1,
-      Perm_AppOrdenes: 2,
-      Perm_Grafana: 3,
-      Perm_ABMUsuarios: 4,
+  const permisosMap = {
+    Perm_Robot: 3,         // Robot Itas
+    Perm_AppOrdenes: 2,    // APP Ordenes SF
+    Perm_Grafana: 5,       // Grafana
+    Perm_ABMUsuarios: 6,   // ABM Usuarios
     };
 
     // Lista en formato iterable
