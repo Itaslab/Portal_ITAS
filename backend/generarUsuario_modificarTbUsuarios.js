@@ -54,7 +54,6 @@ router.get("/permisos/:legajo", async (req, res) => {
   try {
     const pool = await poolPromise;
 
-    // Resolver Legajo -> ID_Usuario
     const rUser = await pool.request()
       .input('Legajo', sql.VarChar, legajo)
       .query('SELECT TOP 1 ID_Usuario FROM a002103.USUARIO WHERE Legajo = @Legajo');
@@ -65,7 +64,6 @@ router.get("/permisos/:legajo", async (req, res) => {
 
     const idUsuario = rUser.recordset[0].ID_Usuario;
 
-    // Obtener permisos
     const result = await pool.request()
       .input("ID_Usuario", sql.Int, idUsuario)
       .query(`
@@ -82,9 +80,8 @@ router.get("/permisos/:legajo", async (req, res) => {
   }
 });
 
-
 // ============================================================================
-// 3️⃣ ACTUALIZAR USUARIO + ACTUALIZAR PERMISOS
+// 3️⃣ ACTUALIZAR USUARIO + PERMISOS
 // ============================================================================
 router.put('/abm_usuarios/:legajo', async (req, res) => {
   const { legajo } = req.params;
@@ -92,8 +89,6 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
   const {
     Apellido, Nombre, Alias, Email, Referente,
     Fecha_Nacimiento, Empresa, Convenio, Ciudad,
-
-    // 🔹 Permisos agregados desde tu frontend
     Perm_Robot,
     Perm_AppOrdenes,
     Perm_Grafana,
@@ -104,7 +99,7 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
     const pool = await poolPromise;
 
     // -----------------------------------------------------------------------
-    // 3.1️⃣ UPDATE de datos del usuario (esto ya lo tenías)
+    // 3.1️⃣ UPDATE de datos del usuario
     // -----------------------------------------------------------------------
     await pool.request()
       .input('Legajo', sql.VarChar, legajo)
@@ -132,32 +127,28 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
       `);
 
     // -----------------------------------------------------------------------
-    // 3.2️⃣ PERMISOS → requiere lógica extra según tu base:
-    //    1. Buscar ID_Usuario
-    //    2. Crear PERFIL si no existe
-    //    3. Registrar o borrar en USUARIO_PERFIL_APP
+    // 3.2️⃣ PERMISOS
     // -----------------------------------------------------------------------
 
-    // Buscar ID_Usuario
     const resultUser = await pool.request()
       .input("Legajo", sql.VarChar, legajo)
-      .query("SELECT TOP 1 ID_Usuario FROM a002103.USUARIO WHERE Legajo = @Legajo");
+      .query("SELECT TOP 1 ID_Usuario, Nombre, Apellido FROM a002103.USUARIO WHERE Legajo = @Legajo");
 
     if (resultUser.recordset.length === 0) {
-      return res.status(400).json({ mensaje: "No existe el usuario para asignar permisos" });
+      return res.status(400).json({ mensaje: "Usuario no existe" });
     }
 
     const ID_Usuario = resultUser.recordset[0].ID_Usuario;
+    const nombreCompleto = `${resultUser.recordset[0].Nombre} ${resultUser.recordset[0].Apellido}`;
 
-    // MAP de permisos → ID_Aplicacion
-  const permisosMap = {
-    Perm_Robot: 3,         // Robot Itas
-    Perm_AppOrdenes: 2,    // APP Ordenes SF
-    Perm_Grafana: 5,       // Grafana
-    Perm_ABMUsuarios: 6,   // ABM Usuarios
+    // MAP permisos → ID_Aplicacion
+    const permisosMap = {
+      Perm_Robot: 3,
+      Perm_AppOrdenes: 2,
+      Perm_Grafana: 5,
+      Perm_ABMUsuarios: 6,
     };
 
-    // Lista en formato iterable
     const permisosEstado = {
       Perm_Robot,
       Perm_AppOrdenes,
@@ -165,56 +156,61 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
       Perm_ABMUsuarios
     };
 
-    // Recorremos todos los permisos
+    // -------------------------------------------
+    // 🔥 LOGICA CORRECTA DE PERFIL
+    // -------------------------------------------
+    // Buscar si el PERFIL del usuario existe
+    let buscarPerfil = await pool.request()
+      .input("Nombre", sql.VarChar, nombreCompleto)
+      .query(`
+        SELECT ID_Perfil 
+        FROM a002103.PERFIL 
+        WHERE Nombre = @Nombre
+      `);
+
+    let ID_Perfil;
+
+    if (buscarPerfil.recordset.length === 0) {
+      // Crear PERFIL para el usuario
+      const nuevoPerfil = await pool.request()
+        .input("Nombre", sql.VarChar, nombreCompleto)
+        .query(`
+          INSERT INTO a002103.PERFIL (Nombre, ID_Aplicacion)
+          VALUES (@Nombre, 0)
+
+          SELECT SCOPE_IDENTITY() AS ID_Perfil;
+        `);
+
+      ID_Perfil = nuevoPerfil.recordset[0].ID_Perfil;
+    } else {
+      ID_Perfil = buscarPerfil.recordset[0].ID_Perfil;
+    }
+
+    // -------------------------------------------
+    // 🔥 GUARDADO DE PERMISOS DEL USUARIO
+    // -------------------------------------------
     for (const [permisoNombre, activo] of Object.entries(permisosEstado)) {
       const idApp = permisosMap[permisoNombre];
       if (!idApp) continue;
 
       if (activo) {
-        // Si está marcado → debe existir en las tablas PERFIL + USUARIO_PERFIL_APP
-
-        // 1️⃣ Buscar si existe PERFIL con ese ID_Aplicacion
-        const rsPerfil = await pool.request()
-          .input("ID_Aplicacion", sql.Int, idApp)
-          .query(`
-            SELECT TOP 1 ID_Perfil 
-            FROM a002103.PERFIL 
-            WHERE ID_Aplicacion = @ID_Aplicacion
-          `);
-
-        let idPerfil;
-
-        if (rsPerfil.recordset.length === 0) {
-          // 2️⃣ Crear PERFIL si no existe
-          const insertPerfil = await pool.request()
-            .input("ID_Aplicacion", sql.Int, idApp)
-            .query(`
-              INSERT INTO a002103.PERFIL (ID_Aplicacion)
-              OUTPUT INSERTED.ID_Perfil
-              VALUES (@ID_Aplicacion)
-            `);
-
-          idPerfil = insertPerfil.recordset[0].ID_Perfil;
-        } else {
-          idPerfil = rsPerfil.recordset[0].ID_Perfil;
-        }
-
-        // 3️⃣ Insertar en USUARIO_PERFIL_APP si NO existe
+        // Insertar si no existe
         await pool.request()
           .input("ID_Usuario", sql.Int, ID_Usuario)
-          .input("ID_Perfil", sql.Int, idPerfil)
+          .input("ID_Perfil", sql.Int, ID_Perfil)
+          .input("ID_Aplicacion", sql.Int, idApp)
           .query(`
             IF NOT EXISTS (
-                SELECT 1 FROM a002103.USUARIO_PERFIL_APP
-                WHERE ID_Usuario = @ID_Usuario AND ID_Perfil = @ID_Perfil
+              SELECT 1 FROM a002103.USUARIO_PERFIL_APP
+              WHERE ID_Usuario = @ID_Usuario 
+              AND ID_Aplicacion = @ID_Aplicacion
             )
             INSERT INTO a002103.USUARIO_PERFIL_APP (ID_Usuario, ID_Perfil, ID_Aplicacion)
-            VALUES (@ID_Usuario, @ID_Perfil, ${idApp})
+            VALUES (@ID_Usuario, @ID_Perfil, @ID_Aplicacion)
           `);
 
       } else {
-        // Si NO está marcado → BORRAR si existía
-
+        // Eliminar permiso si estaba registrado
         await pool.request()
           .input("ID_Usuario", sql.Int, ID_Usuario)
           .input("ID_Aplicacion", sql.Int, idApp)
