@@ -157,9 +157,8 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
     };
 
     // -------------------------------------------
-    // 🔥 LOGICA CORRECTA DE PERFIL
+    // 🔥 PERFIL DEL USUARIO
     // -------------------------------------------
-    // Buscar si el PERFIL del usuario existe
     let buscarPerfil = await pool.request()
       .input("Nombre", sql.VarChar, nombreCompleto)
       .query(`
@@ -171,7 +170,7 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
     let ID_Perfil;
 
     if (buscarPerfil.recordset.length === 0) {
-      // Crear PERFIL para el usuario
+      // Crear PERFIL
       const nuevoPerfil = await pool.request()
         .input("Nombre", sql.VarChar, nombreCompleto)
         .query(`
@@ -182,12 +181,13 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
         `);
 
       ID_Perfil = nuevoPerfil.recordset[0].ID_Perfil;
+
     } else {
       ID_Perfil = buscarPerfil.recordset[0].ID_Perfil;
     }
 
     // -------------------------------------------
-    // 🔥 GUARDADO DE PERMISOS DEL USUARIO
+    // 🔥 GUARDADO DE PERMISOS
     // -------------------------------------------
     for (const [permisoNombre, activo] of Object.entries(permisosEstado)) {
       const idApp = permisosMap[permisoNombre];
@@ -210,7 +210,7 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
           `);
 
       } else {
-        // Eliminar permiso si estaba registrado
+        // Eliminar si existe
         await pool.request()
           .input("ID_Usuario", sql.Int, ID_Usuario)
           .input("ID_Aplicacion", sql.Int, idApp)
@@ -220,8 +220,6 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
           `);
       }
     }
-
-    // -----------------------------------------------------------------------
 
     res.json({ mensaje: 'Usuario y permisos actualizados correctamente' });
 
