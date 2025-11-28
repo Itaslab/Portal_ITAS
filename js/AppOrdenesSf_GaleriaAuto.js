@@ -7,35 +7,19 @@ const tbody = document.getElementById("autoMQBody");
 function createRow(row, index) {
   return `
     <tr>
-      <td>${row.titulo}</td>
+      <td>${row.autoMQ}</td>
       <td>${row.descripcion}</td>
       <td>${row.inbox}</td>
-      <td>${row.accion}<td>
-        <!-- Ícono Carpeta -->
-        <i class="bi bi-folder-fill text-warning"
-           role="button"
-           data-index="${index}"
-           data-bs-toggle="modal"
-           data-bs-target="#carpetaModal"
-           style="font-size: 1.3rem; margin-right: 10px;"></i>
-
-        <!-- Ícono Lápiz -->
-        <i class="bi bi-pencil-square text-primary"
-           role="button"
-           data-index="${index}"
-           data-bs-toggle="modal"
-           data-bs-target="#lapizModal"
-           style="font-size: 1.3rem;"></i>
-      </td>
-
+      <td>${row.accion}</td>
       <td>
-        <!-- Botón Estado -->
-        <button class="btn btn-sm btn-primary"
-                data-index="${index}"
-                data-bs-toggle="modal"
-                data-bs-target="#estadoModal">
-          Estado
-        </button>
+        <div class="estado-icons">
+          <label class="switch" role="button" data-bs-toggle="modal" data-bs-target="#estadoModal" data-index="${index}">
+            <input type="checkbox" ${row.estado ? "checked" : ""}>
+            <span class="slider"></span>
+          </label>
+          <i class="bi bi-journal-text text-primary" role="button" data-bs-toggle="modal" data-bs-target="#carpetaModal" data-index="${index}"></i>
+          <i class="bi bi-pencil text-success" role="button" data-bs-toggle="modal" data-bs-target="#lapizModal" data-index="${index}"></i>
+        </div>
       </td>
     </tr>
   `;
