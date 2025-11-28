@@ -139,18 +139,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <td class="text-start">
   <div class="small mb-1">
-    <i class="fa-solid fa-eye text-info me-1" data-bs-toggle="tooltip" 
-       title="Total: ${ejec.total ?? '-'}"></i>
-    <span class="fw-semibold">Total:</span> ${ejec.total ?? '-'}
+    <i class="bi bi-eye text-info me-1" data-bs-toggle="tooltip" title="Total: ${ejec.total ?? '-'}"></i>
+     <span class="fw-semibold">Total:</span> ${ejec.total ?? '-'}
   </div>
   <div class="small mb-1">
-    <i class="fa-solid fa-eye text-success me-1" data-bs-toggle="tooltip" 
-       title="Ok: ${ejec.ok ?? '-'}"></i>
+    <i class="bi bi-eye text-success me-1" data-bs-toggle="tooltip" title="Ok: ${ejec.ok ?? '-'}"></i>
     <span class="fw-semibold">Ok:</span> ${ejec.ok ?? '-'}
   </div>
   <div class="small">
-    <i class="fa-solid fa-eye text-danger me-1" data-bs-toggle="tooltip" 
-       title="Error: ${ejec.error ?? '-'}"></i>
+    <i class="bi bi-eye text-danger me-1" data-bs-toggle="tooltip" title="Error: ${ejec.error ?? '-'}"></i>
     <span class="fw-semibold">Error:</span> ${ejec.error ?? '-'}
   </div>
 </td>
@@ -163,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
                       <div class="progress-bar bg-success" role="progressbar" style="width: ${ejec.avance}%;" aria-valuenow="${ejec.avance}" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                     <button class="btn btn-outline-primary btn-sm" onclick="verDetalles(${ejec.id})">
-                      <i class="fas fa-eye me-1"></i> Ver detalles
+                      <i class="bi bi-eye me-1"></i> Ver detalles
                     </button>
                   </td>
                 </tr>
