@@ -10,9 +10,32 @@ function createRow(row, index) {
       <td>${row.titulo}</td>
       <td>${row.descripcion}</td>
       <td>${row.inbox}</td>
-      <td>${row.accion}</td>
+      <td>${row.accion}<td>
+        <!-- Ícono Carpeta -->
+        <i class="bi bi-folder-fill text-warning"
+           role="button"
+           data-index="${index}"
+           data-bs-toggle="modal"
+           data-bs-target="#carpetaModal"
+           style="font-size: 1.3rem; margin-right: 10px;"></i>
+
+        <!-- Ícono Lápiz -->
+        <i class="bi bi-pencil-square text-primary"
+           role="button"
+           data-index="${index}"
+           data-bs-toggle="modal"
+           data-bs-target="#lapizModal"
+           style="font-size: 1.3rem;"></i>
+      </td>
+
       <td>
-        <button class="btn btn-sm btn-primary" data-index="${index}" data-bs-toggle="modal" data-bs-target="#estadoModal">Estado</button>
+        <!-- Botón Estado -->
+        <button class="btn btn-sm btn-primary"
+                data-index="${index}"
+                data-bs-toggle="modal"
+                data-bs-target="#estadoModal">
+          Estado
+        </button>
       </td>
     </tr>
   `;
