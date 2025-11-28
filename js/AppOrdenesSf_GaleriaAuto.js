@@ -7,7 +7,7 @@ const tbody = document.getElementById("autoMQBody");
 function createRow(row, index) {
   return `
     <tr>
-      <td>${row.autoMQ}</td>
+      <td>${row.titulo}</td>
       <td>${row.descripcion}</td>
       <td>${row.inbox}</td>
       <td>${row.accion}</td>
