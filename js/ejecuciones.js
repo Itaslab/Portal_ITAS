@@ -136,23 +136,25 @@ document.addEventListener("DOMContentLoaded", () => {
                   </td>
 
                  
+
 <td class="text-start">
   <div class="small mb-1">
-    <i class="fas fa-eye text-info me-1" data-bs-toggle="tooltip" 
+    <i class="fa-solid fa-eye text-info me-1" data-bs-toggle="tooltip" 
        title="Total: ${ejec.total ?? '-'}"></i>
     <span class="fw-semibold">Total:</span> ${ejec.total ?? '-'}
   </div>
   <div class="small mb-1">
-    <i class="fas fa-eye text-success me-1" data-bs-toggle="tooltip" 
+    <i class="fa-solid fa-eye text-success me-1" data-bs-toggle="tooltip" 
        title="Ok: ${ejec.ok ?? '-'}"></i>
     <span class="fw-semibold">Ok:</span> ${ejec.ok ?? '-'}
   </div>
   <div class="small">
-    <i class="fas fa-eye text-danger me-1" data-bs-toggle="tooltip" 
+    <i class="fa-solid fa-eye text-danger me-1" data-bs-toggle="tooltip" 
        title="Error: ${ejec.error ?? '-'}"></i>
     <span class="fw-semibold">Error:</span> ${ejec.error ?? '-'}
   </div>
 </td>
+
 
 
                   <td class="text-start">
