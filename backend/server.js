@@ -21,6 +21,7 @@ const actualizarUsuario = require("./appOrdenesSF_actualizarUsuario");
 const modificarUsuario = require("./generarUsuario_modificarTbUsuarios");
 const generarUsuarioOrdenes = require("./appOrdenesSF_AltaUsuario");
 const { obtenerPermisosUsuario } = require("./appPermisos");
+const appOrdenesSFGaleriaAuto = require("./appOrdenesSF_galeriaMq");
 
 
 // 🔥 Tu nueva ruta unificada scripts
@@ -105,6 +106,7 @@ app.get("/usuarios", appOrdenesSFgaleriaUsuarios);
 app.get("/usuarios/:id_usuario", appOrdenesSFUsuarioDetalle);
 app.post("/usuarios/:id_usuario/asignar", updateAsignar);
 app.post("/usuarios/actualizar", actualizarUsuario);
+app.use("/api/galeria-auto-mq", appOrdenesSFGaleriaAuto);
 
 
 app.get("/permisos/:id_usuario", checkAuth, obtenerPermisosUsuario);
