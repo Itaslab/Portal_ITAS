@@ -404,12 +404,7 @@ td[colspan="6"] {
     color: #000;
 }
 
-/* Barra de progreso */
-.progress {
-    background-color: #e6e6e6;
-    border-radius: 6px;
-    overflow: hidden;
-}
+
 
 .progress-bar {
     transition: width 0.4s ease;
