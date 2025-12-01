@@ -132,9 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
                       <i class="fas fa-clipboard-check text-success me-1"></i>
                       Resultado: <span class="fw-bold">${ejec.resultado || "-"}</span>
                     </div>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="verEstado(${ejec.id})">
-                      <i class="fas fa-info-circle me-1"></i> Detalles
-                    </button>
+                  
                   </td>
 
                  
@@ -200,9 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div class="progress mb-2" style="height: 10px;">
                       <div class="progress-bar bg-success" role="progressbar" style="width: ${ejec.avance}%;" aria-valuenow="${ejec.avance}" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <button class="btn btn-outline-primary btn-sm" onclick="verDetalles(${ejec.id})">
-                      <i class="fas fa-eye me-1"></i> Ver detalles
-                    </button>
+                    
                     
 <div class="d-flex flex-wrap gap-2 mt-2">
   <!-- Botón con ícono de cruz -->
@@ -301,7 +297,6 @@ function mostrarAlerta(tipo, mensaje) {
 }
 
 // 🔹 Funciones auxiliares de los botones usando Bootstrap alerts
-function verDetalles(id) { mostrarAlerta("info", `Mostrando detalles para ejecución ID: ${id}`); }
 function verTotal(id) { mostrarAlerta("primary", `Total de registros para ejecución ${id}: 2`); }
 function verOk(id) { mostrarAlerta("success", `Registros OK para ejecución ${id}: 2`); }
 function verErrores(id) { mostrarAlerta("danger", `Registros con error para ejecución ${id}: 0`); }
