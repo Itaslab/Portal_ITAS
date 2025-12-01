@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let ejecuciones = [];
 
-  // 🔹 Cargar datos desde backend
+  // Cargar datos desde backend
   async function cargarEjecuciones() {
     try {
       const res = await fetch("/ejecuciones");
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 🔹 Llenar select de solicitantes dinámicamente
+  //  Llenar select de solicitantes dinmicamente
   function llenarFiltroSolicitante() {
     const emailsUnicos = [...new Set(ejecuciones.map(e => e.usuario))].sort();
     filtroSolicitante.innerHTML = `<option value="">Todos</option>`;
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔹 Renderizar tabla con filtros
+  // Renderizar tabla con filtros
   function renderTabla() {
     const solicitante = filtroSolicitante.value.toLowerCase();
     const registro = filtroRegistro.value.toLowerCase();
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <tr>
                   <td class="text-start">
                     <div class="mb-2">
-                      <i class="fas fa-hashtag text-primary me-2" data-bs-toggle="tooltip" title="ID de ejecución"></i>
+                      <i class="fas fa-hashtag text-primary me-2" data-bs-toggle="tooltip" title="ID de ejecuci贸n"></i>
                       <span class="fw-bold text-primary">[${ejec.id}]</span>
                     </div>
                     <div class="mb-2">
@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
                       <span class="fw-semibold">${ejec.usuario}</span>
                     </div>
                     <div>
-                      <i class="fas fa-project-diagram text-success me-2" data-bs-toggle="tooltip" title="Flujo de ejecución"></i>
+                      <i class="fas fa-project-diagram text-success me-2" data-bs-toggle="tooltip" title="Flujo de ejecuci贸n"></i>
                       <span class="small">Flujo:</span>
                       <span class="fw-semibold">${ejec.flujo}</span>
                       <span class="badge bg-secondary ms-2">RPA</span>
@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                     <div>
                       <i class="fas fa-clock text-warning me-2"></i>
-                      <span class="small">Duración:</span>
+                      <span class="small">Duraci贸n:</span>
                       <span class="fw-bold text-dark">${duracion}</span>
                     </div>
                   </td>
@@ -139,15 +139,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <td class="text-start">
   <div class="small mb-1">
-    <i class="bi bi-eye text-info me-1" data-bs-toggle="tooltip" title="Total: ${ejec.total ?? '-'}"></i>
+    <i class="bi bi-eye text-info me-1 eye-hover" data-bs-toggle="tooltip" title="Total: ${ejec.total ?? '-'}"></i>
      <span class="fw-semibold">Total:</span> ${ejec.total ?? '-'}
   </div>
   <div class="small mb-1">
-    <i class="bi bi-eye text-success me-1" data-bs-toggle="tooltip" title="Ok: ${ejec.ok ?? '-'}"></i>
+    <i class="bi bi-eye text-success me-1 eye-hover icon-ok" data-bs-toggle="tooltip" title="Ok: ${ejec.ok ?? '-'}"></i>
     <span class="fw-semibold">Ok:</span> ${ejec.ok ?? '-'}
   </div>
   <div class="small">
-    <i class="bi bi-eye text-danger me-1" data-bs-toggle="tooltip" title="Error: ${ejec.error ?? '-'}"></i>
+    <i class="bi bi-eye-slash text-danger me-1 eye-hover icon-error" data-bs-toggle="tooltip" title="Error: ${ejec.error ?? '-'}"></i>
     <span class="fw-semibold">Error:</span> ${ejec.error ?? '-'}
   </div>
 </td>
@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${mins}'${secs < 10 ? "0" : ""}${secs}"`;
   }
 
-  // 🔹 Eventos filtros
+  // Eventos filtros
   filtroSolicitante.addEventListener("change", renderTabla);
   filtroRegistro.addEventListener("input", renderTabla);
 
@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(cargarEjecuciones, 10000);
 });
 
-// 🔹 Función de alertas Bootstrap
+//  Funcin de alertas Bootstrap
 function mostrarAlerta(tipo, mensaje) {
   const alertContainer = document.getElementById("alertContainer");
 
@@ -223,7 +223,7 @@ function mostrarAlerta(tipo, mensaje) {
 
   alertContainer.appendChild(alerta);
 
-  // Desaparece después de 3 segundos
+  // Desaparece despues de 3 segundos
   setTimeout(() => {
     alerta.classList.remove("show");
     alerta.classList.add("hide");
@@ -231,14 +231,14 @@ function mostrarAlerta(tipo, mensaje) {
   }, 3000);
 }
 
-// 🔹 Funciones auxiliares de los botones usando Bootstrap alerts
-function verDetalles(id) { mostrarAlerta("info", `Mostrando detalles para ejecución ID: ${id}`); }
-function verTotal(id) { mostrarAlerta("primary", `Total de registros para ejecución ${id}: 2`); }
-function verOk(id) { mostrarAlerta("success", `Registros OK para ejecución ${id}: 2`); }
-function verErrores(id) { mostrarAlerta("danger", `Registros con error para ejecución ${id}: 0`); }
-function verEstado(id) { mostrarAlerta("warning", `Estado detallado para ejecución ID: ${id}`); }
+//  Funciones auxiliares de los botones usando Bootstrap alerts
+function verDetalles(id) { mostrarAlerta("info", `Mostrando detalles para ejecuci贸n ID: ${id}`); }
+function verTotal(id) { mostrarAlerta("primary", `Total de registros para ejecuci贸n ${id}: 2`); }
+function verOk(id) { mostrarAlerta("success", `Registros OK para ejecuci贸n ${id}: 2`); }
+function verErrores(id) { mostrarAlerta("danger", `Registros con error para ejecuci贸n ${id}: 0`); }
+function verEstado(id) { mostrarAlerta("warning", `Estado detallado para ejecuci贸n ID: ${id}`); }
 
-// 🔹 Botón "Solicitar ejecución"
+//  Botn "Solicitar ejecucin"
 const btnSolicitar = document.getElementById("btnSolicitar");
 btnSolicitar.addEventListener("click", () => {
   window.location.href = "SolicitarEjecucion.html";

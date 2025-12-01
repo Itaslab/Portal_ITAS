@@ -274,3 +274,9 @@ input:checked + .slider:before {
 
 .eye-hover { transition: transform .15s ease; }
 .eye-hover:hover { transform: scale(1.15); }
+
+/* Estilos para íconos OK y Error */
+.icon-ok { color: #28a745; }
+.icon-error { color: #dc3545; }
+.eye-hover { transition: transform .15s ease; }
+.eye-hover:hover { transform: scale(1.15); }
