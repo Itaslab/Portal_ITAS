@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let ejecuciones = [];
 
-  // 🔹 Cargar datos desde backend
+  // 馃敼 Cargar datos desde backend
   async function cargarEjecuciones() {
     try {
       const res = await fetch("/ejecuciones");
@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 🔹 Llenar select de solicitantes dinámicamente
+  // 馃敼 Llenar select de solicitantes din谩micamente
   function llenarFiltroSolicitante() {
     const emailsUnicos = [...new Set(ejecuciones.map(e => e.usuario))].sort();
     filtroSolicitante.innerHTML = `<option value="">Todos</option>`;
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔹 Renderizar tabla con filtros
+  // 馃敼 Renderizar tabla con filtros
   function renderTabla() {
     const solicitante = filtroSolicitante.value.toLowerCase();
     const registro = filtroRegistro.value.toLowerCase();
@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <tr>
                   <td class="text-start">
                     <div class="mb-2">
-                      <i class="fas fa-hashtag text-primary me-2" data-bs-toggle="tooltip" title="ID de ejecución"></i>
+                      <i class="fas fa-hashtag text-primary me-2" data-bs-toggle="tooltip" title="ID de ejecuci贸n"></i>
                       <span class="fw-bold text-primary">[${ejec.id}]</span>
                     </div>
                     <div class="mb-2">
@@ -98,12 +98,20 @@ document.addEventListener("DOMContentLoaded", () => {
                       <span class="fw-semibold">${ejec.usuario}</span>
                     </div>
                     <div>
-                      <i class="fas fa-project-diagram text-success me-2" data-bs-toggle="tooltip" title="Flujo de ejecución"></i>
+                      <i class="fas fa-project-diagram text-success me-2" data-bs-toggle="tooltip" title="Flujo de ejecuci贸n"></i>
                       <span class="small">Flujo:</span>
                       <span class="fw-semibold">${ejec.flujo}</span>
                       <span class="badge bg-secondary ms-2">RPA</span>
                     </div>
-                  </td>
+                  
+<div class="estado-icons mt-2">
+  <i class="fas fa-times text-danger" data-bs-toggle="tooltip" title="Cancelar"></i>
+  <i class="fas fa-folder-open text-primary" data-bs-toggle="tooltip" title="Abrir carpeta"></i>
+  <i class="fas fa-search text-info" data-bs-toggle="tooltip" title="Buscar"></i>
+  <i class="fas fa-arrow-right text-success" data-bs-toggle="tooltip" title="Avanzar"></i>
+  <i class="fas fa-redo text-warning" data-bs-toggle="tooltip" title="Reenviar"></i>
+</div>
+</td>
 
                   <td class="text-start">
                     <div class="mb-2">
@@ -118,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                     <div>
                       <i class="fas fa-clock text-warning me-2"></i>
-                      <span class="small">Duración:</span>
+                      <span class="small">Duraci贸n:</span>
                       <span class="fw-bold text-dark">${duracion}</span>
                     </div>
                   </td>
@@ -189,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${mins}'${secs < 10 ? "0" : ""}${secs}"`;
   }
 
-  // 🔹 Eventos filtros
+  // 馃敼 Eventos filtros
   filtroSolicitante.addEventListener("change", renderTabla);
   filtroRegistro.addEventListener("input", renderTabla);
 
@@ -197,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(cargarEjecuciones, 10000);
 });
 
-// 🔹 Función de alertas Bootstrap
+// 馃敼 Funci贸n de alertas Bootstrap
 function mostrarAlerta(tipo, mensaje) {
   const alertContainer = document.getElementById("alertContainer");
 
@@ -221,7 +229,7 @@ function mostrarAlerta(tipo, mensaje) {
 
   alertContainer.appendChild(alerta);
 
-  // Desaparece después de 3 segundos
+  // Desaparece despu茅s de 3 segundos
   setTimeout(() => {
     alerta.classList.remove("show");
     alerta.classList.add("hide");
@@ -229,14 +237,14 @@ function mostrarAlerta(tipo, mensaje) {
   }, 3000);
 }
 
-// 🔹 Funciones auxiliares de los botones usando Bootstrap alerts
-function verDetalles(id) { mostrarAlerta("info", `Mostrando detalles para ejecución ID: ${id}`); }
-function verTotal(id) { mostrarAlerta("primary", `Total de registros para ejecución ${id}: 2`); }
-function verOk(id) { mostrarAlerta("success", `Registros OK para ejecución ${id}: 2`); }
-function verErrores(id) { mostrarAlerta("danger", `Registros con error para ejecución ${id}: 0`); }
-function verEstado(id) { mostrarAlerta("warning", `Estado detallado para ejecución ID: ${id}`); }
+// 馃敼 Funciones auxiliares de los botones usando Bootstrap alerts
+function verDetalles(id) { mostrarAlerta("info", `Mostrando detalles para ejecucion ID: ${id}`); }
+function verTotal(id) { mostrarAlerta("primary", `Total de registros para ejecucion ${id}: 2`); }
+function verOk(id) { mostrarAlerta("success", `Registros OK para ejecucion ${id}: 2`); }
+function verErrores(id) { mostrarAlerta("danger", `Registros con error para ejecucion ${id}: 0`); }
+function verEstado(id) { mostrarAlerta("warning", `Estado detallado para ejecucion ID: ${id}`); }
 
-// 🔹 Botón "Solicitar ejecución"
+// 馃敼 Bot贸n "Solicitar ejecuci贸n"
 const btnSolicitar = document.getElementById("btnSolicitar");
 btnSolicitar.addEventListener("click", () => {
   window.location.href = "SolicitarEjecucion.html";
