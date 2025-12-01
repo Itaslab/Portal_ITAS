@@ -26,12 +26,61 @@
       </a>
       <span class="navbar-text nvbar position-absolute top-50 start-50 translate-middle">Aplicaciones</span>
 
+      <!-- Greeting + Dropdown + Botón de Cerrar Sesión -->
+      <div class="d-flex align-items-center gap-3" style="position: absolute; right: 140px; top: 8px;">
+        <div id="userGreetingBar" class="d-flex align-items-center gap-2">
+          <span id="userGreeting" class="text-white"></span>
+          <a id="openProfile" style="cursor:pointer; color: #fff; text-decoration: underline;">Mi perfil</a>
+        </div>
+      </div>
+
       <!-- Botón de Cerrar Sesión -->
       <button id="btnLogout" style="position: absolute; top: 15px; right: 20px;" class="btn btn-danger btn-sm">
         Cerrar sesión
       </button>
     </div>
   </nav>
+
+  <!-- Modal Perfil -->
+  <div class="modal fade" id="perfilModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Mi Perfil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input id="perfilNombre" class="form-control" readonly />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Apellido</label>
+            <input id="perfilApellido" class="form-control" readonly />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input id="perfilEmail" class="form-control" readonly />
+          </div>
+          <hr />
+          <h6>Cambiar contraseña</h6>
+          <div class="mb-3">
+            <label class="form-label">Contraseña actual</label>
+            <input id="perfilCurrentPass" type="password" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nueva contraseña</label>
+            <input id="perfilNewPass" type="password" class="form-control" />
+          </div>
+          <div id="perfilResult" class="mt-2"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button id="perfilSaveBtn" type="button" class="btn btn-primary">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="container mt-4">
     <!-- Filtros -->

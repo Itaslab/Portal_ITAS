@@ -12,6 +12,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   const modal = new bootstrap.Modal(document.getElementById("appModal"));
   const modalMessage = document.querySelector("#modal-message");
 
+  // --- USER PROFILE ---
+  const userGreeting = document.getElementById('userGreeting');
+  const openProfile = document.getElementById('openProfile');
+  const perfilModalEl = document.getElementById('perfilModal');
+  const perfilModal = perfilModalEl ? new bootstrap.Modal(perfilModalEl) : null;
+  const perfilNombre = document.getElementById('perfilNombre');
+  const perfilApellido = document.getElementById('perfilApellido');
+  const perfilEmail = document.getElementById('perfilEmail');
+  const perfilCurrentPass = document.getElementById('perfilCurrentPass');
+  const perfilNewPass = document.getElementById('perfilNewPass');
+  const perfilSaveBtn = document.getElementById('perfilSaveBtn');
+  const perfilResult = document.getElementById('perfilResult');
+
   // ------------------------------
   // 1) OBTENER ID DEL USUARIO
   // ------------------------------
@@ -183,4 +196,67 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateCounters();
     renderApps(appsFiltradas);
   }, 800);
+
+  // ------------------------------
+  // Cargar info del usuario para el greeting y el modal
+  // ------------------------------
+  async function loadProfile() {
+    try {
+      const resp = await fetch('/me');
+      if (!resp.ok) return;
+      const data = await resp.json();
+      if (!data.success || !data.usuario) return;
+      const u = data.usuario;
+      userGreeting.textContent = `Hola! ${u.Nombre || ''}`;
+      if (perfilNombre) perfilNombre.value = u.Nombre || '';
+      if (perfilApellido) perfilApellido.value = u.Apellido || '';
+      if (perfilEmail) perfilEmail.value = u.Email || '';
+    } catch (err) {
+      console.error('Error cargando perfil:', err);
+    }
+  }
+
+  loadProfile();
+
+  if (openProfile && perfilModal) {
+    openProfile.addEventListener('click', () => {
+      perfilResult.textContent = '';
+      perfilCurrentPass.value = '';
+      perfilNewPass.value = '';
+      perfilModal.show();
+    });
+  }
+
+  if (perfilSaveBtn) {
+    perfilSaveBtn.addEventListener('click', async () => {
+      perfilResult.textContent = '';
+      const current = perfilCurrentPass.value.trim();
+      const nw = perfilNewPass.value.trim();
+      if (!current || !nw) {
+        perfilResult.innerHTML = '<div class="text-danger">Complete ambos campos</div>';
+        return;
+      }
+      if (nw.length < 4) {
+        perfilResult.innerHTML = '<div class="text-danger">La contraseña debe tener al menos 4 caracteres</div>';
+        return;
+      }
+      try {
+        const r = await fetch('/me/password', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentPassword: current, newPassword: nw })
+        });
+        const d = await r.json();
+        if (r.ok && d.success) {
+          perfilResult.innerHTML = '<div class="text-success">Contraseña actualizada correctamente</div>';
+          setTimeout(() => { perfilModal.hide(); }, 1200);
+        } else {
+          perfilResult.innerHTML = `<div class="text-danger">${d.error || d.mensaje || 'Error'}</div>`;
+        }
+      } catch (err) {
+        console.error('Error actualizando contraseña:', err);
+        perfilResult.innerHTML = '<div class="text-danger">Error al conectar con servidor</div>';
+      }
+    });
+  }
 });

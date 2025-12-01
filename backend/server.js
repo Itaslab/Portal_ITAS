@@ -20,6 +20,7 @@ const appOrdenesSFUsuarioDetalle = require("./appOrdenesSF_usuarioDetalle");
 const actualizarUsuario = require("./appOrdenesSF_actualizarUsuario");
 const modificarUsuario = require("./generarUsuario_modificarTbUsuarios");
 const generarUsuarioOrdenes = require("./appOrdenesSF_AltaUsuario");
+const usuarioMe = require('./usuarioMe');
 const { obtenerPermisosUsuario } = require("./appPermisos");
 const appOrdenesSFGaleriaAuto = require("./appOrdenesSF_galeriaMq");
 
@@ -115,6 +116,7 @@ app.get("/permisos/:id_usuario", checkAuth, obtenerPermisosUsuario);
 app.use("/", generarUsuario);
 app.use("/", modificarUsuario);
 app.use("/", generarUsuarioOrdenes);
+app.use("/", usuarioMe);
 
 // 🔥 NUEVA API DE SCRIPTS (funciona con tu JS)
 app.use("/api/scripts", rutasScripts);
