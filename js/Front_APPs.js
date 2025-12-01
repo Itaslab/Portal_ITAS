@@ -236,10 +236,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         perfilResult.innerHTML = '<div class="text-danger">Complete ambos campos</div>';
         return;
       }
-      if (nw.length < 4) {
-        perfilResult.innerHTML = '<div class="text-danger">La contraseña debe tener al menos 4 caracteres</div>';
+      if (nw.length < 8) {
+        perfilResult.innerHTML = '<div class="text-danger">La contraseña debe tener al menos 8 caracteres</div>';
         return;
       }
+      if (nw.length > 15) {
+        perfilResult.innerHTML = '<div class="text-danger">La contraseña no debe exceder 15 caracteres</div>';
+        return;
+      }
+      // Ensure any pasted overlong password is clipped clientside (input has maxlength, but defensive)
+      if (nw.length > 15) perfilNewPass.value = nw.slice(0, 15);
       try {
         const r = await fetch('/me/password', {
           method: 'PUT',

@@ -28,7 +28,8 @@ router.put('/me/password', async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     if (!currentPassword || !newPassword) return res.status(400).json({ success: false, error: 'Se requieren currentPassword y newPassword' });
     // validaciones mínimas
-    if (String(newPassword).length < 4) return res.status(400).json({ success: false, error: 'La contraseña debe tener al menos 4 caracteres' });
+    const newLen = String(newPassword).length;
+    if (newLen < 8 || newLen > 15) return res.status(400).json({ success: false, error: 'La contraseña debe tener entre 8 y 15 caracteres' });
 
     const pool = await poolPromise;
     const r = await pool.request()
