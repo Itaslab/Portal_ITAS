@@ -160,6 +160,34 @@ document.addEventListener("DOMContentLoaded", () => {
                     <button class="btn btn-outline-primary btn-sm" onclick="verDetalles(${ejec.id})">
                       <i class="fas fa-eye me-1"></i> Ver detalles
                     </button>
+                    
+<div class="d-flex flex-wrap gap-2 mt-2">
+  <!-- Botón con ícono de cruz -->
+  <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCerrar">
+    <i class="bi bi-x-circle"></i>
+  </button>
+
+  <!-- Botón con ícono de buscar -->
+  <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalBuscar">
+    <i class="bi bi-search"></i>
+  </button>
+
+  <!-- Botón con ícono de flecha -->
+  <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalFlecha">
+    <i class="bi bi-arrow-right"></i>
+  </button>
+
+  <!-- Botón con ícono de carpeta -->
+  <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCarpeta">
+    <i class="bi bi-folder"></i>
+  </button>
+
+  <!-- Botón con ícono de retroceder -->
+  <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalRetroceder">
+    <i class="bi bi-arrow-counterclockwise"></i>
+  </button>
+</div>
+
                   </td>
                 </tr>
               </tbody>
