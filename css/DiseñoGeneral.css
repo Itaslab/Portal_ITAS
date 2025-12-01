@@ -280,3 +280,71 @@ input:checked + .slider:before {
 .icon-error { color: #dc3545; }
 .eye-hover { transition: transform .15s ease; }
 .eye-hover:hover { transform: scale(1.15); }
+
+
+
+/* Contenedor principal */
+td.text-start {
+    padding: 10px 15px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+}
+
+/* Filas de información (Total, OK, Error) */
+td.text-start .d-flex {
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+td.text-start .d-flex:last-child {
+    border-bottom: none;
+}
+
+/* Íconos */
+td.text-start i.fas {
+    font-size: 14px;
+}
+
+/* Texto destacado */
+td.text-start .fw-semibold {
+    color: #333;
+    font-weight: 600;
+}
+
+/* Botones pequeños */
+td.text-start .btn-sm {
+    border-radius: 4px;
+    font-size: 12px;
+    color: #555;
+    transition: all 0.2s ease-in-out;
+}
+
+td.text-start .btn-sm:hover {
+    background-color: #e9ecef;
+    color: #000;
+}
+
+/* Barra de progreso */
+.progress {
+    background-color: #e6e6e6;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 0.4s ease;
+}
+
+/* Colores personalizados para estados */
+.text-info { color: #17a2b8 !important; }
+.text-success { color: #28a745 !important; }
+.text-danger { color: #dc3545 !important; }
+
+/* Grupo de botones inferiores */
+.d-flex.flex-wrap.gap-2 button {
+    border-radius: 6px;
+    font-size: 14px;
+    padding: 4px 8px;
+}
