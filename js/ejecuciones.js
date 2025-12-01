@@ -137,20 +137,63 @@ document.addEventListener("DOMContentLoaded", () => {
                     </button>
                   </td>
 
-                 <td class="text-start">
-                   <div class="small mb-1">
-                     <i class="fas fa-database text-info me-1"></i>
-                     <span class="fw-semibold">Total:</span> ${ejec.total ?? "-"}
-                   </div>
-                                    <div class="small mb-1">
-                     <i class="fas fa-check-circle text-success me-1"></i>
-                     <span class="fw-semibold">Ok:</span> ${ejec.ok ?? "-"}
-                   </div>
-                   <div class="small">
-                     <i class="fas fa-exclamation-triangle text-danger me-1"></i>
-                     <span class="fw-semibold">Error:</span> ${ejec.error ?? "-"}
-                   </div>
-                 </td>
+                 
+<td class="text-start">
+  <div class="small mb-1 d-flex align-items-center gap-2">
+    <span>
+      <i class="fas fa-database text-info me-1"></i>
+      <span class="fw-semibold">Total:</span> ${ejec.total ?? "-"}
+    </span>
+    <!-- Ojo para TOTAL -->
+    <button
+      type="button"
+      class="btn btn-outline-secondary btn-sm p-1"
+      data-bs-toggle="modal"
+      data-bs-target="#detalleItemModal"
+      data-title="Detalle de Total"
+      data-body="Total de items procesados: ${ejec.total ?? '-'}"
+      aria-label="Ver detalle de Total">
+      <i class="bi bi-eye"></i>
+    </button>
+  </div>
+
+  <div class="small mb-1 d-flex align-items-center gap-2">
+    <span>
+      <i class="fas fa-check-circle text-success me-1"></i>
+      <span class="fw-semibold">Ok:</span> ${ejec.ok ?? "-"}
+    </span>
+    <!-- Ojo para OK -->
+    <button
+      type="button"
+      class="btn btn-outline-secondary btn-sm p-1"
+      data-bs-toggle="modal"
+      data-bs-target="#detalleItemModal"
+      data-title="Detalle de Ok"
+      data-body="Cantidad de ejecuciones correctas: ${ejec.ok ?? '-'}"
+      aria-label="Ver detalle de Ok">
+      <i class="bi bi-eye"></i>
+    </button>
+  </div>
+
+  <div class="small mb-2 d-flex align-items-center gap-2">
+    <span>
+      <i class="fas fa-exclamation-triangle text-danger me-1"></i>
+      <span class="fw-semibold">Error:</span> ${ejec.error ?? "-"}
+    </span>
+    <!-- Ojo para ERROR -->
+    <button
+      type="button"
+      class="btn btn-outline-secondary btn-sm p-1"
+      data-bs-toggle="modal"
+      data-bs-target="#detalleItemModal"
+      data-title="Detalle de Error"
+      data-body="Cantidad de ejecuciones con error: ${ejec.error ?? '-'}"
+      aria-label="Ver detalle de Error">
+      <i class="bi bi-eye"></i>
+    </button>
+  </div>
+</td>
+
 
                   <td class="text-start">
                     <div class="small fw-semibold mb-1">Avance: ${ejec.avance}%</div>
