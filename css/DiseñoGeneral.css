@@ -272,8 +272,7 @@ input:checked + .slider:before {
     cursor: pointer;
 }
 
-.eye-hover { transition: transform .15s ease; }
-.eye-hover:hover { transform: scale(1.15); }
+
 
 :root {
   --color-success: #28a745;
