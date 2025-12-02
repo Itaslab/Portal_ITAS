@@ -179,18 +179,17 @@ document.addEventListener("DOMContentLoaded", () => {
       <span class="fw-semibold">Error:</span> ${ejec.error ?? "-"}
     </span>
     <!-- Ojo para ERROR -->
-    <button
-      type="button"
-      class="btn btn-outline-secondary btn-sm p-1"
-      data-bs-toggle="modal"
-      data-bs-target="#detalleItemModal"
-      data-title="Detalle de Error"
-      data-body="Cantidad de ejecuciones con error: ${ejec.error ?? '-'}"
-      aria-label="Ver detalle de Error">
-      data-bs-toggle="tooltip"
+    <button type="button"
+        class="btn btn-outline-secondary btn-sm"
+        data-bs-toggle="modal"
+        data-bs-target="#detalleItemModal"
+        data-title="Detalle de Error"
+        data-body="Cantidad de ejecuciones con error: ${ejec.error ?? '-'}"
+        aria-label="Ver detalle de Error"
+        data-bs-toggle="tooltip"
         data-bs-placement="bottom"
         title="Ver detalle de Error">
-      <i class="bi bi-eye"></i>
+  <i class="bi bi-eye"></i>
     </button>
   </div>
 </td>
