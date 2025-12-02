@@ -125,19 +125,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
                   <td class="text-start">
                     
-<div class="p-2 border rounded bg-light" style="width: 180px;">
+<div class="p-2 border rounded bg-light text-center" style="width: 180px;">
   <div class="mb-2">
-    <div class="small text-muted">Estado:</div>
-    <div class="fw-bold d-flex align-items-center">
-      <i class="bi bi-flag me-2 text-${ejec.estado.includes('Error') ? 'danger' : 'success'}"></i>
-      <span class="text-${ejec.estado.includes('Error') ? 'danger' : 'success'}">${ejec.estado}</span>
-    </div>
+    <span class="badge bg-${ejec.estado.includes('Error') ? 'danger' : 'success'}">
+      ${ejec.estado}
+    </span>
   </div>
   <div>
-    <div class="small text-muted">Resultado:</div>
-    <div class="fw-bold">
-      ${ejec.resultado || '-'}
-    </div>
+    <span class="badge bg-secondary">
+      Resultado: ${ejec.resultado || '-'}
+    </span>
   </div>
 </div>
 
