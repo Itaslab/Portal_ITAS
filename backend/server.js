@@ -12,7 +12,7 @@ const { sql, poolPromise } = require("./db");
 const login = require("./loginBack");
 const listaEjecuciones = require("./listaEjecuciones");
 const crearEjecucion = require("./crearEjecucion");
-const obtenerEjecuciones = require("./galeriaEjecuciones");
+
 const generarUsuario = require("./generarUsuario_tbUsuarios");
 const appOrdenesSFgaleriaUsuarios = require("./appOrdenesSF_GaleriaUsuarios");
 const updateAsignar = require("./appOrdenesSF_updateAsignar");
@@ -23,7 +23,8 @@ const generarUsuarioOrdenes = require("./appOrdenesSF_AltaUsuario");
 const usuarioMe = require('./usuarioMe');
 const { obtenerPermisosUsuario } = require("./appPermisos");
 const appOrdenesSFGaleriaAuto = require("./appOrdenesSF_galeriaMq");
-
+const rutasEjecuciones = require("./galeriaEjecuciones");
+const rutasEjecucionesDetalles = require("./galeriaEjecucionesDetalles");
 
 // 🔥 Tu nueva ruta unificada scripts
 const rutasScripts = require("./appOrdenesSF_GaleriaScript");
@@ -108,6 +109,8 @@ app.get("/usuarios/:id_usuario", appOrdenesSFUsuarioDetalle);
 app.post("/usuarios/:id_usuario/asignar", updateAsignar);
 app.post("/usuarios/actualizar", actualizarUsuario);
 app.use("/api/galeria-auto-mq", appOrdenesSFGaleriaAuto);
+app.use("/api/ejecuciones", rutasEjecuciones);
+app.use("/api/ejecuciones", rutasEjecucionesDetalles);
 
 
 app.get("/permisos/:id_usuario", checkAuth, obtenerPermisosUsuario);
