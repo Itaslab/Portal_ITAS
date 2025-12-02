@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </span>
   </div>
 
-  <div class="small mb-1 d-flex align-items-center gap-2">
+  <div class="small mb-1 d-flex align-items-center justify-content-between border p-2 mb-2" style="width:150px;">
         <!-- Ojo para OK -->
   <button
       type="button"
@@ -179,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </span>
   </div>
 
-  <div class="small mb-2 d-flex align-items-center gap-2">
+  <div class="small mb-2 d-flex align-items-center justify-content-between border p-2 mb-2" style="width:150px;">
         <!-- Ojo para ERROR -->
     <button type="button"
         class="btn btn-outline-secondary btn-sm"
