@@ -138,11 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
                  
 <td class="text-start">
   <div class="small mb-1 d-flex align-items-center gap-2">
-    <span>
-      <i class="fas fa-database text-info me-1"></i>
-      <span class="fw-semibold">Total:</span> ${ejec.total ?? "-"}
-    </span>
-    <!-- Ojo para TOTAL -->
+        <!-- Ojo para TOTAL -->
     <button
       type="button"
       class="btn btn-outline-secondary btn-sm"
@@ -156,6 +152,10 @@ document.addEventListener("DOMContentLoaded", () => {
       title="Ver detalle de Total">
       <i class="bi bi-eye"></i>
     </button>
+    <span>
+      <i class="fas fa-database text-info me-1"></i>
+      <span class="fw-semibold">Total:</span> ${ejec.total ?? "-"}
+    </span>
   </div>
 
   <div class="small mb-1 d-flex align-items-center gap-2">
