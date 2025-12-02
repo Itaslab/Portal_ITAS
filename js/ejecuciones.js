@@ -145,12 +145,15 @@ document.addEventListener("DOMContentLoaded", () => {
     <!-- Ojo para TOTAL -->
     <button
       type="button"
-      class="btn btn-outline-secondary btn-sm p-1"
+      class="btn btn-outline-secondary btn-sm"
       data-bs-toggle="modal"
       data-bs-target="#detalleItemModal"
       data-title="Detalle de Total"
       data-body="Total de items procesados: ${ejec.total ?? '-'}"
-      aria-label="Ver detalle de Total">
+      aria-label="Ver detalle de Total"
+	  data-bs-toggle="tooltip"
+      data-bs-placement="bottom"
+      title="Ver detalle de Total">
       <i class="bi bi-eye"></i>
     </button>
   </div>
