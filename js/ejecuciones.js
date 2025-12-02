@@ -187,6 +187,9 @@ document.addEventListener("DOMContentLoaded", () => {
       data-title="Detalle de Error"
       data-body="Cantidad de ejecuciones con error: ${ejec.error ?? '-'}"
       aria-label="Ver detalle de Error">
+      data-bs-toggle="tooltip"
+        data-bs-placement="bottom"
+        title="Ver detalle de Error">
       <i class="bi bi-eye"></i>
     </button>
   </div>
