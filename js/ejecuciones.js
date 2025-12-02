@@ -124,20 +124,14 @@ document.addEventListener("DOMContentLoaded", () => {
                   </td>
 
                   <td class="text-start">
-                    
-<div class="p-2 border rounded bg-light text-center" style="width: 180px;">
-  <div class="mb-2">
-    <span class="badge bg-${ejec.estado.includes('Error') ? 'danger' : 'success'}">
-      ${ejec.estado}
-    </span>
-  </div>
-  <div>
-    <span class="badge bg-secondary">
-      Resultado: ${ejec.resultado || '-'}
-    </span>
-  </div>
-</div>
-
+                    <div class="small fw-bold mb-1">
+                      <i class="fas fa-flag-checkered text-success me-1"></i>
+                      Estado: <span class="text-success fw-bold">${ejec.estado}</span>
+                    </div>
+                    <div class="small fw-bold mb-2">
+                      <i class="fas fa-clipboard-check text-success me-1"></i>
+                      Resultado: <span class="fw-bold">${ejec.resultado || "-"}</span>
+                    </div>
                   
                   </td>
 

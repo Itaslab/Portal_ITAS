@@ -365,9 +365,3 @@ td.text-start i.fas,
 .d-flex.flex-wrap.gap-2 button:hover i {
   color: var(--color-primary);
 }
-
-.tooltip-inner {
-  white-space: normal; /* Permite que el texto haga wrap */
-  max-width: 250px;    /* Limita el ancho del tooltip */
-  word-break: break-word; /* Rompe palabras largas */
-}
