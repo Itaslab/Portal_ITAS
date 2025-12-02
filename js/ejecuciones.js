@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                  
 <td class="text-start">
-  <div class="small mb-1 d-flex align-items-center gap-2">
+  <div class="small mb-1 d-flex align-items-center justify-content-between border p-2 mb-2" style="width:150px; gap-2">
         <!-- Ojo para TOTAL -->
     <button
       type="button"
