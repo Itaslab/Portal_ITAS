@@ -161,15 +161,18 @@ document.addEventListener("DOMContentLoaded", () => {
       <span class="fw-semibold">Ok:</span> ${ejec.ok ?? "-"}
     </span>
     <!-- Ojo para OK -->
-    <button
+  <button
       type="button"
-      class="btn btn-outline-secondary btn-sm p-1"
+      class="btn btn-outline-secondary btn-sm"
       data-bs-toggle="modal"
       data-bs-target="#detalleItemModal"
       data-title="Detalle de Ok"
       data-body="Cantidad de ejecuciones correctas: ${ejec.ok ?? '-'}"
-      aria-label="Ver detalle de Ok">
-      <i class="bi bi-eye"></i>
+      aria-label="Ver detalle de Ok"
+	  data-bs-toggle="tooltip"
+      data-bs-placement="bottom"
+      title="Ver detalle de OK">
+	        <i class="bi bi-eye"></i>
     </button>
   </div>
 
