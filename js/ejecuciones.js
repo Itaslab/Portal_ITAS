@@ -159,11 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 
   <div class="small mb-1 d-flex align-items-center gap-2">
-    <span>
-      <i class="fas fa-check-circle text-success me-1"></i>
-      <span class="fw-semibold">Ok:</span> ${ejec.ok ?? "-"}
-    </span>
-    <!-- Ojo para OK -->
+        <!-- Ojo para OK -->
   <button
       type="button"
       class="btn btn-outline-secondary btn-sm"
@@ -177,14 +173,14 @@ document.addEventListener("DOMContentLoaded", () => {
       title="Ver detalle de OK">
 	        <i class="bi bi-eye"></i>
     </button>
+    <span>
+      <i class="fas fa-check-circle text-success me-1"></i>
+      <span class="fw-semibold">Ok:</span> ${ejec.ok ?? "-"}
+    </span>
   </div>
 
   <div class="small mb-2 d-flex align-items-center gap-2">
-    <span>
-      <i class="fas fa-exclamation-triangle text-danger me-1"></i>
-      <span class="fw-semibold">Error:</span> ${ejec.error ?? "-"}
-    </span>
-    <!-- Ojo para ERROR -->
+        <!-- Ojo para ERROR -->
     <button type="button"
         class="btn btn-outline-secondary btn-sm"
         data-bs-toggle="modal"
@@ -197,6 +193,10 @@ document.addEventListener("DOMContentLoaded", () => {
         title="Ver detalle de Error">
   <i class="bi bi-eye"></i>
     </button>
+    <span>
+      <i class="fas fa-exclamation-triangle text-danger me-1"></i>
+      <span class="fw-semibold">Error:</span> ${ejec.error ?? "-"}
+    </span>
   </div>
 </td>
 
