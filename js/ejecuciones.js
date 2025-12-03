@@ -408,10 +408,12 @@ $(document).on("click", ".btn-detalle", async function () {
         return `"${s}"`;
       };
 
-      let csv = encabezados.map(escapeCsv).join(",") + "\n";
-      filas.forEach(f => {
-        csv += f.map(escapeCsv).join(",") + "\n";
-      });
+      
+let csv = encabezados.map(escapeCsv).join(";") + "\n";
+filas.forEach(f => {
+  csv += f.map(escapeCsv).join(";") + "\n";
+});
+
 
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
