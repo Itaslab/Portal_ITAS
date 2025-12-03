@@ -23,6 +23,8 @@ const generarUsuarioOrdenes = require("./appOrdenesSF_AltaUsuario");
 const usuarioMe = require('./usuarioMe');
 const { obtenerPermisosUsuario } = require("./appPermisos");
 const appOrdenesSFGaleriaAuto = require("./appOrdenesSF_galeriaMq");
+const ejecucionesDetalle = require("./galeriaEjecucionesDetalles");
+
  
  
 // 🔥 Tu nueva ruta unificada scripts
@@ -102,7 +104,7 @@ app.get("/logout", (req, res) => {
 app.get("/flujos", listaEjecuciones);
 app.post("/crearEjecucion", crearEjecucion);
 app.get("/ejecuciones", obtenerEjecuciones);
- 
+app.use("/api/ejecuciones", ejecucionesDetalle);
 app.get("/usuarios", appOrdenesSFgaleriaUsuarios);
 app.get("/usuarios/:id_usuario", appOrdenesSFUsuarioDetalle);
 app.post("/usuarios/:id_usuario/asignar", updateAsignar);

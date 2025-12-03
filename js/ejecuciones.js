@@ -317,3 +317,70 @@ const btnSolicitar = document.getElementById("btnSolicitar");
 btnSolicitar.addEventListener("click", () => {
   window.location.href = "SolicitarEjecucion.html";
 });
+
+
+// -------------------------------------------
+// -------------------------------------------
+// BOTÓN OJO → DETALLE DEL BACKEND (SOLO TOTAL)
+// -------------------------------------------
+$(document).on("click", ".btn-detalle", async function () {
+
+    const id = $(this).data("idtasklist");
+
+    // Mostrar cargando
+    $("#detalleItemModalTitle").text("Cargando...");
+    $("#detalleItemModalBody").html(`
+        <div class="text-center p-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Obteniendo datos...</p>
+        </div>
+    `);
+
+    const modal = new bootstrap.Modal(document.getElementById("detalleItemModal"));
+    modal.show();
+
+    // Pedido al backend
+    const res = await fetch(`/api/ejecuciones/detalle/${id}`);
+    const data = await res.json();
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+        $("#detalleItemModalTitle").text("Sin datos");
+        $("#detalleItemModalBody").html("<p>No hay información disponible para este registro.</p>");
+        return;
+    }
+
+    const first = data[0];
+
+    // Nombres de columnas dinámicas
+    const col1 = first.Campos || "Columna 1";
+    const col2 = first.Campos_Accion || "Columna 2";
+    const col3 = first.Campos_Resultado || "Columna 3";
+
+    let html = `
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>${col1}</th>
+            <th>${col2}</th>
+            <th>${col3}</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    // Datos dinámicos
+    data.forEach(r => {
+      html += `
+        <tr>
+          <td>${r.Dato ?? "-"}</td>
+          <td>${r.Accion ?? "-"}</td>
+          <td>${r.Resultado ?? "-"}</td>
+        </tr>`;
+    });
+
+    html += "</tbody></table>";
+
+    $("#detalleItemModalTitle").text("Detalle TOTAL");
+    $("#detalleItemModalBody").html(html);
+});
+
