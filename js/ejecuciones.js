@@ -273,58 +273,70 @@ btnSolicitar.addEventListener("click", () => {
 $(document).on("click", ".btn-detalle", async function () {
   const id = $(this).data("idtasklist");
 
+  // Limpiar cualquier backdrop residual
+  $(".modal-backdrop").remove();
+  $("body").removeClass("modal-open");
+
   // Mostrar cargando
   $("#detalleItemModalTitle").text("Cargando...");
   $("#detalleItemModalBody").html(`
-      <div class="text-center p-4">
-          <div class="spinner-border text-primary" role="status"></div>
-          <p class="mt-2">Obteniendo datos...</p>
-      </div>
+    <div class="text-center p-4">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Obteniendo datos...</p>
+    </div>
   `);
 
-  const modal = new bootstrap.Modal(document.getElementById("detalleItemModal"));
+  // Mostrar modal (reutilizando instancia)
+  const modalEl = document.getElementById("detalleItemModal");
+  const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
   modal.show();
 
   // Pedido al backend
-  const res = await fetch(`/api/ejecuciones/detalle/${id}`);
-  const data = await res.json();
+  try {
+    const res = await fetch(`/api/ejecuciones/detalle/${id}`);
+    const data = await res.json();
 
-  if (!data || !Array.isArray(data) || data.length === 0) {
+    if (!data || !Array.isArray(data) || data.length === 0) {
       $("#detalleItemModalTitle").text("Sin datos");
       $("#detalleItemModalBody").html("<p>No hay información disponible para este registro.</p>");
       return;
-  }
+    }
 
-  const first = data[0];
+    const first = data[0];
 
-  // Nombres de columnas dinámicas
-  const col1 = first.Campos || "Columna 1";
-  const col2 = first.Campos_Accion || "Columna 2";
-  const col3 = first.Campos_Resultado || "Columna 3";
+    const col1 = first.Campos || "Columna 1";
+    const col2 = first.Campos_Accion || "Columna 2";
+    const col3 = first.Campos_Resultado || "Columna 3";
 
-  let html = `
-    <table class="table table-bordered table-striped">
-      <thead class="table-dark">
+    let html = `
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>${col1}</th>
+            <th>${col2}</th>
+            <th>${col3}</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    data.forEach(r => {
+      html += `
         <tr>
-          <th>${col1}</th>
-          <th>${col2}</th>
-          <th>${col3}</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
+          <td>${r.Dato ?? "-"}</td>
+          <td>${r.Accion ?? "-"}</td>
+          <td>${r.Resultado ?? "-"}</td>
+        </tr>`;
+    });
 
-  data.forEach(r => {
-    html += `
-      <tr>
-        <td>${r.Dato ?? "-"}</td>
-        <td>${r.Accion ?? "-"}</td>
-        <td>${r.Resultado ?? "-"}</td>
-      </tr>`;
-  });
+    html += "</tbody></table>";
 
-  html += "</tbody></table>";
-
-  $("#detalleItemModalTitle").text("Detalle TOTAL");
-  $("#detalleItemModalBody").html(html);
+    $("#detalleItemModalTitle").text("Detalle TOTAL");
+    $("#detalleItemModalBody").html(html);
+  } catch (err) {
+    $("#detalleItemModalTitle").text("Error");
+    $("#detalleItemModalBody").html("<p>No se pudo obtener la información.</p>");
+    console.error(err);
+  }
 });
+
