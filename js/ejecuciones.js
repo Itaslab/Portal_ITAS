@@ -141,19 +141,16 @@ document.addEventListener("DOMContentLoaded", () => {
 <td class="text-start">
   <div class="small mb-1 d-flex align-items-center justify-content-between border p-2 mb-2" style="width:150px;">
         <!-- Ojo para TOTAL -->
-    <button
-      type="button"
-      class="btn btn-outline-secondary btn-sm"
-      data-bs-toggle="modal"
-      data-bs-target="#detalleItemModal"
-      data-title="Detalle de Total"
-      data-body="Total de items procesados: ${ejec.total ?? '-'}"
-      aria-label="Ver detalle de Total"
-    data-bs-toggle="tooltip"
-      data-bs-placement="bottom"
-      title="Ver detalle de Total">
-      <i class="bi bi-eye"></i>
-    </button>
+<button
+  type="button"
+  class="btn btn-outline-secondary btn-sm btn-detalle"
+  data-idtasklist="${ejec.id}"
+  data-bs-toggle="modal"
+  data-bs-target="#detalleItemModal"
+  title="Ver detalle de Total"
+>
+  <i class="bi bi-eye"></i>
+</button>
     <span>
       <i class="fas fa-database text-info me-1"></i>
       <span class="fw-semibold">Total:</span> ${ejec.total ?? "-"}

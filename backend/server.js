@@ -123,6 +123,8 @@ app.use("/", usuarioMe);
 // 🔥 NUEVA API DE SCRIPTS (funciona con tu JS)
 app.use("/api/scripts", rutasScripts);
  
+
+
 // ------------------- PROTECCIÓN -------------------
 function checkAuth(req, res, next) {
   if (req.session.user) return next();
