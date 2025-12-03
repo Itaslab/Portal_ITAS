@@ -140,15 +140,18 @@ document.addEventListener("DOMContentLoaded", () => {
                  
 <td class="text-start">
   <div class="small mb-1 d-flex align-items-center justify-content-between border p-2 mb-2" style="width:150px;">
-        <!-- Ojo para TOTAL -->
+     
+  <!-- Ojo para TOTAL -->
 <button
   type="button"
-  class="btn btn-outline-secondary btn-sm btn-detalle"
-  data-idtasklist="${ejec.id}"
+  class="btn btn-outline-secondary btn-sm"
   data-bs-toggle="modal"
   data-bs-target="#detalleItemModal"
-  title="Ver detalle de Total"
->
+  data-title="Detalle de Ok"
+  data-body="Cantidad de ejecuciones correctas: ${ejec.ok ?? '-'}"
+  aria-label="Ver detalle de Ok"
+  data-bs-placement="bottom"
+  title="Ver detalle de OK">
   <i class="bi bi-eye"></i>
 </button>
     <span>
@@ -159,19 +162,18 @@ document.addEventListener("DOMContentLoaded", () => {
  
   <div class="small mb-1 d-flex align-items-center justify-content-between border p-2 mb-2" style="width:150px;">
         <!-- Ojo para OK -->
-  <button
-      type="button"
-      class="btn btn-outline-secondary btn-sm"
-      data-bs-toggle="modal"
-      data-bs-target="#detalleItemModal"
-      data-title="Detalle de Ok"
-      data-body="Cantidad de ejecuciones correctas: ${ejec.ok ?? '-'}"
-      aria-label="Ver detalle de Ok"
-    data-bs-toggle="tooltip"
-      data-bs-placement="bottom"
-      title="Ver detalle de OK">
-          <i class="bi bi-eye"></i>
-    </button>
+<button
+  type="button"
+  class="btn btn-outline-secondary btn-sm"
+  data-bs-toggle="modal"
+  data-bs-target="#detalleItemModal"
+  data-title="Detalle de Ok"
+  data-body="Cantidad de ejecuciones correctas: ${ejec.ok ?? '-'}"
+  aria-label="Ver detalle de Ok"
+  data-bs-placement="bottom"
+  title="Ver detalle de OK">
+    <i class="bi bi-eye"></i>
+</button>
     <span>
       <i class="fas fa-check-circle text-success me-1"></i>
       <span class="fw-semibold">Ok:</span> ${ejec.ok ?? "-"}
@@ -180,18 +182,18 @@ document.addEventListener("DOMContentLoaded", () => {
  
   <div class="small mb-2 d-flex align-items-center justify-content-between border p-2 mb-2" style="width:150px;">
         <!-- Ojo para ERROR -->
-    <button type="button"
-        class="btn btn-outline-secondary btn-sm"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        data-title="Detalle de Error"
-        data-body="Cantidad de ejecuciones con error: ${ejec.error ?? '-'}"
-        aria-label="Ver detalle de Error"
-        data-bs-toggle="tooltip"
-        data-bs-placement="bottom"
-        title="Ver detalle de Error">
-  <i class="bi bi-eye"></i>
-    </button>
+<button 
+  type="button"
+  class="btn btn-outline-secondary btn-sm"
+  data-bs-toggle="modal"
+  data-bs-target="#detalleItemModal"
+  data-title="Detalle de Error"
+  data-body="Cantidad de ejecuciones con error: ${ejec.error ?? '-'}"
+  aria-label="Ver detalle de Error"
+  data-bs-placement="bottom"
+  title="Ver detalle de Error">
+    <i class="bi bi-eye"></i>
+</button>
     <span>
       <i class="fas fa-exclamation-triangle text-danger me-1"></i>
       <span class="fw-semibold">Error:</span> ${ejec.error ?? "-"}
