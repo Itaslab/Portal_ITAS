@@ -308,17 +308,18 @@ $(document).on("click", ".btn-detalle", async function () {
     const col2 = first.Campos_Accion || "Columna 2";
     const col3 = first.Campos_Resultado || "Columna 3";
 
-    let html = `
-      <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-          <tr>
-            <th>${col1}</th>
-            <th>${col2}</th>
-            <th>${col3}</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
+ let html = `
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>${col1}</th>
+          <th>${col2}</th>
+          <th>${col3}</th>
+        </tr>
+      </thead>
+      <tbody>
+`;
 
     data.forEach(r => {
       html += `
