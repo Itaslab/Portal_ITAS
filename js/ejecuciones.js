@@ -137,20 +137,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
                   <td class="text-start">
                     <div class="small mb-1 d-flex align-items-center gap-1 border p-2 mb-2">
-                      <!-- OJO TOTAL -->
-                      <button type="button" class="btn btn-outline-secondary btn-sm btn-detalle" data-idtasklist="${ejec.id}" data-bs-toggle="modal" data-bs-target="#detalleItemModal">
-                        <i class="bi bi-eye"></i>
-                      </button>
+                      
+<!-- OJO TOTAL -->
+<button type="button"
+        class="btn btn-outline-secondary btn-sm btn-detalle"
+        data-idtasklist="${ejec.id}"
+        data-detalle="total"
+        data-bs-toggle="modal"
+        data-bs-target="#detalleItemModal">
+  <i class="bi bi-eye"></i>
+</button>
 
-                      <!-- OJO OK -->
-                      <button type="button" class="btn btn-outline-secondary btn-sm btn-detalle" data-idtasklist="${ejec.id}" data-bs-toggle="modal" data-bs-target="#detalleItemModal">
-                        <i class="bi bi-eye"></i>
-                      </button>
+<!-- OJO OK -->
+<button type="button"
+        class="btn btn-outline-secondary btn-sm btn-detalle"
+        data-idtasklist="${ejec.id}"
+        data-detalle="ok"
+        data-bs-toggle="modal"
+        data-bs-target="#detalleItemModal">
+  <i class="bi bi-eye"></i>
+</button>
 
-                      <!-- OJO ERROR -->
-                      <button type="button" class="btn btn-outline-secondary btn-sm btn-detalle" data-idtasklist="${ejec.id}" data-bs-toggle="modal" data-bs-target="#detalleItemModal">
-                        <i class="bi bi-eye"></i>
-                      </button>
+<!-- OJO ERROR -->
+<button type="button"
+        class="btn btn-outline-secondary btn-sm btn-detalle"
+        data-idtasklist="${ejec.id}"
+        data-detalle="error"
+        data-bs-toggle="modal"
+        data-bs-target="#detalleItemModal">
+  <i class="bi bi-eye"></i>
+</button>
+
                     </div>
                   </td>
 
@@ -270,28 +287,29 @@ btnSolicitar.addEventListener("click", () => {
 // -------------------------------------------
 // BOTÓN OJO → DETALLE DEL BACKEND (SOLO TOTAL)
 // -------------------------------------------
+
 $(document).on("click", ".btn-detalle", async function () {
   const id = $(this).data("idtasklist");
+  const tipoDetalle = $(this).data("detalle"); // "total" | "ok" | "error"
 
-  // Limpiar cualquier backdrop residual
+  // Limpiar backdrops residuales
   $(".modal-backdrop").remove();
   $("body").removeClass("modal-open");
 
-  // Mostrar cargando
+  // Spinner
   $("#detalleItemModalTitle").text("Cargando...");
   $("#detalleItemModalBody").html(`
     <div class="text-center p-4">
-        <div class="spinner-border text-primary" role="status"></div>
-        <p class="mt-2">Obteniendo datos...</p>
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2">Obteniendo datos...</p>
     </div>
   `);
 
   // Mostrar modal (reutilizando instancia)
   const modalEl = document.getElementById("detalleItemModal");
-  const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+  const modal = bootstrap.Modal.getInstance(modalEl) ?? new bootstrap.Modal(modalEl);
   modal.show();
 
-  // Pedido al backend
   try {
     const res = await fetch(`/api/ejecuciones/detalle/${id}`);
     const data = await res.json();
@@ -302,26 +320,43 @@ $(document).on("click", ".btn-detalle", async function () {
       return;
     }
 
-    const first = data[0];
+    // >>> NUEVO: Filtrar según el botón pulsado
+    let filtrados = data;
+    if (tipoDetalle === "ok") {
+      // Ajustá la condición a tu forma real de marcar OK
+      filtrados = data.filter(r => (r.Resultado ?? "").toLowerCase().includes("ok"));
+    } else if (tipoDetalle === "error") {
+      filtrados = data.filter(r => (r.Resultado ?? "").toLowerCase().includes("error")
+                                || (r.Resultado ?? "").toLowerCase().includes("nok"));
+    }
 
-    const col1 = first.Campos || "Columna 1";
-    const col2 = first.Campos_Accion || "Columna 2";
-    const col3 = first.Campos_Resultado || "Columna 3";
+    // Si no hay registros bajo ese filtro, lo indicamos
+    if (!filtrados.length) {
+      const titulo = tipoDetalle === "ok" ? "Detalle OK" :
+                     tipoDetalle === "error" ? "Detalle ERROR" : "Detalle TOTAL";
+      $("#detalleItemModalTitle").text(titulo);
+      $("#detalleItemModalBody").html("<p>No hay registros para este filtro.</p>");
+      return;
+    }
 
- let html = `
-  <div class="table-responsive">
-    <table class="table table-bordered table-striped">
-      <thead class="table-dark">
-        <tr>
-          <th>${col1}</th>
-          <th>${col2}</th>
-          <th>${col3}</th>
-        </tr>
-      </thead>
-      <tbody>
-`;
+    const first = filtrados[0];
+    const col1 = first.Campos ?? "Columna 1";
+    const col2 = first.Campos_Accion ?? "Columna 2";
+    const col3 = first.Campos_Resultado ?? "Columna 3";
 
-    data.forEach(r => {
+    let html = `
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>${col1}</th>
+            <th>${col2}</th>
+            <th>${col3}</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    filtrados.forEach(r => {
       html += `
         <tr>
           <td>${r.Dato ?? "-"}</td>
@@ -330,9 +365,11 @@ $(document).on("click", ".btn-detalle", async function () {
         </tr>`;
     });
 
-    html += "</tbody></table>";
+    html += `</tbody></table>`;
 
-    $("#detalleItemModalTitle").text("Detalle TOTAL");
+    const titulo = tipoDetalle === "ok" ? "Detalle OK" :
+                   tipoDetalle === "error" ? "Detalle ERROR" : "Detalle TOTAL";
+    $("#detalleItemModalTitle").text(titulo);
     $("#detalleItemModalBody").html(html);
   } catch (err) {
     $("#detalleItemModalTitle").text("Error");
@@ -340,4 +377,3 @@ $(document).on("click", ".btn-detalle", async function () {
     console.error(err);
   }
 });
-
