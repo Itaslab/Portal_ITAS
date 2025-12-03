@@ -392,39 +392,45 @@ $(document).on("click", ".btn-detalle", async function () {
       </div>
     `);
 
-    // Evento descarga CSV
-    $("#btnDescargarCSV").on("click", function () {
-      // Encabezados fijos: si querés usar los "nombres" dinámicos, podés reemplazarlos por col1/col2/col3
-      const encabezados = ["Dato", "Accion", "Resultado"];
-      const filas = filtrados.map(r => [
-        r.Dato ?? "-",
-        r.Accion ?? "-",
-        r.Resultado ?? "-"
-      ]);
+    
+// Evento descarga CSV
+$("#btnDescargarCSV").on("click", function () {
+  // Si el backend ya trae los encabezados y datos con ';', los usamos tal cual
+  const encabezados = [col1, col2, col3]; // O si tu backend trae un string con todos los nombres, usalo directamente
+  // Pero en tu caso, parece que cada registro ya tiene los datos concatenados con ';'
+  // Entonces armamos el CSV sin modificar el separador
 
-      // Escapar comillas y separar por comas
-      const escapeCsv = (v) => {
-        const s = String(v).replace(/"/g, '""'); // escape de comillas
-        return `"${s}"`;
-      };
+  let csv = "";
+  // Si el backend trae los nombres en un solo string (como en tu imagen), usalo:
+  // Ejemplo: "CARGNUSE;CARGCONC;CARGCODO;CARGCUCO;CARGSIGN;CARGVALO"
+  if (first.CamposEncabezado) {
+    csv += first.CamposEncabezado + "\n";
+  } else {
+    // Si no, usamos los 3 campos como antes
+    csv += `${col1};${col2};${col3}\n`;
+  }
 
-      
-let csv = encabezados.map(escapeCsv).join(";") + "\n";
-filas.forEach(f => {
-  csv += f.map(escapeCsv).join(";") + "\n";
+  filtrados.forEach(r => {
+    // Si el backend ya trae la fila lista (ej: "61689135;9207;43362515;2006377963;CR;1178.72")
+    if (r.FilaCompleta) {
+      csv += r.FilaCompleta + "\n";
+    } else {
+      // Si no, concatenamos los campos manualmente
+      csv += `${r.Dato ?? "-"};${r.Accion ?? "-"};${r.Resultado ?? "-"}\n`;
+    }
+  });
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `detalle_${tipoDetalle}_${id}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 });
 
-
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `detalle_${tipoDetalle}_${id}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    });
   } catch (err) {
     $("#detalleItemModalTitle").text("Error");
     $("#detalleItemModalBody").html("<p>No se pudo obtener la información.</p>");
