@@ -284,19 +284,18 @@ btnSolicitar.addEventListener("click", () => {
   window.location.href = "SolicitarEjecucion.html";
 });
 
-// -------------------------------------------
-// BOTÓN OJO → DETALLE DEL BACKEND (SOLO TOTAL)
-// -------------------------------------------
-
+// ------------------------------
+// BOTÓN OJO → DETALLE (TOTAL/OK/ERROR) + DESCARGA CSV
+// ------------------------------
 $(document).on("click", ".btn-detalle", async function () {
   const id = $(this).data("idtasklist");
   const tipoDetalle = $(this).data("detalle"); // "total" | "ok" | "error"
 
-  // Limpiar backdrops residuales
+  // Limpiar cualquier backdrop residual
   $(".modal-backdrop").remove();
   $("body").removeClass("modal-open");
 
-  // Spinner
+  // Mostrar cargando
   $("#detalleItemModalTitle").text("Cargando...");
   $("#detalleItemModalBody").html(`
     <div class="text-center p-4">
@@ -310,6 +309,7 @@ $(document).on("click", ".btn-detalle", async function () {
   const modal = bootstrap.Modal.getInstance(modalEl) ?? new bootstrap.Modal(modalEl);
   modal.show();
 
+  // Pedido al backend
   try {
     const res = await fetch(`/api/ejecuciones/detalle/${id}`);
     const data = await res.json();
@@ -320,30 +320,41 @@ $(document).on("click", ".btn-detalle", async function () {
       return;
     }
 
-    // >>> NUEVO: Filtrar según el botón pulsado
+    // --- Filtrado según el tipo de detalle ---
+    // Ajustá estas condiciones a tu esquema real de datos.
     let filtrados = data;
     if (tipoDetalle === "ok") {
-      // Ajustá la condición a tu forma real de marcar OK
+      // Ejemplos de match: "OK", "Ok", "ok", "proceso ok"
       filtrados = data.filter(r => (r.Resultado ?? "").toLowerCase().includes("ok"));
     } else if (tipoDetalle === "error") {
-      filtrados = data.filter(r => (r.Resultado ?? "").toLowerCase().includes("error")
-                                || (r.Resultado ?? "").toLowerCase().includes("nok"));
+      // Ejemplos de match: "ERROR", "error", "NOK"
+      const val = (s) => (s ?? "").toLowerCase();
+      filtrados = data.filter(r => {
+        const res = val(r.Resultado);
+        return res.includes("error") || res.includes("nok");
+      });
     }
+    // Si es "total", no se cambia nada.
 
     // Si no hay registros bajo ese filtro, lo indicamos
+    const tituloBase =
+      tipoDetalle === "ok" ? "Detalle OK" :
+      tipoDetalle === "error" ? "Detalle ERROR" :
+      "Detalle TOTAL";
+
     if (!filtrados.length) {
-      const titulo = tipoDetalle === "ok" ? "Detalle OK" :
-                     tipoDetalle === "error" ? "Detalle ERROR" : "Detalle TOTAL";
-      $("#detalleItemModalTitle").text(titulo);
+      $("#detalleItemModalTitle").text(`${tituloBase} (0)`);
       $("#detalleItemModalBody").html("<p>No hay registros para este filtro.</p>");
       return;
     }
 
+    // Encabezados (provenientes del primer registro)
     const first = filtrados[0];
     const col1 = first.Campos ?? "Columna 1";
     const col2 = first.Campos_Accion ?? "Columna 2";
     const col3 = first.Campos_Resultado ?? "Columna 3";
 
+    // Render tabla
     let html = `
       <table class="table table-bordered table-striped">
         <thead class="table-dark">
@@ -367,10 +378,51 @@ $(document).on("click", ".btn-detalle", async function () {
 
     html += `</tbody></table>`;
 
-    const titulo = tipoDetalle === "ok" ? "Detalle OK" :
-                   tipoDetalle === "error" ? "Detalle ERROR" : "Detalle TOTAL";
-    $("#detalleItemModalTitle").text(titulo);
+    $("#detalleItemModalTitle").text(`${tituloBase} (${filtrados.length})`);
     $("#detalleItemModalBody").html(html);
+
+    // --------------------------
+    // Botón para descargar CSV
+    // --------------------------
+    $("#detalleItemModalBody").append(`
+      <div class="text-end mt-3">
+        <button id="btnDescargarCSV" class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-download"></i> Descargar CSV
+        </button>
+      </div>
+    `);
+
+    // Evento descarga CSV
+    $("#btnDescargarCSV").on("click", function () {
+      // Encabezados fijos: si querés usar los "nombres" dinámicos, podés reemplazarlos por col1/col2/col3
+      const encabezados = ["Dato", "Accion", "Resultado"];
+      const filas = filtrados.map(r => [
+        r.Dato ?? "-",
+        r.Accion ?? "-",
+        r.Resultado ?? "-"
+      ]);
+
+      // Escapar comillas y separar por comas
+      const escapeCsv = (v) => {
+        const s = String(v).replace(/"/g, '""'); // escape de comillas
+        return `"${s}"`;
+      };
+
+      let csv = encabezados.map(escapeCsv).join(",") + "\n";
+      filas.forEach(f => {
+        csv += f.map(escapeCsv).join(",") + "\n";
+      });
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `detalle_${tipoDetalle}_${id}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    });
   } catch (err) {
     $("#detalleItemModalTitle").text("Error");
     $("#detalleItemModalBody").html("<p>No se pudo obtener la información.</p>");
