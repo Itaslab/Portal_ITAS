@@ -144,7 +144,9 @@ document.addEventListener("DOMContentLoaded", () => {
         data-idtasklist="${ejec.id}"
         data-detalle="total"
         data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal">
+        data-bs-target="#detalleItemModal"
+        title="Ver registros Total">
+>
   <i class="bi bi-eye"></i>
 </button>
 
@@ -213,8 +215,10 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
     // inicializa tooltips
-    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+    
+const tooltipTriggerList = Array.from(document.querySelectorAll('[title]'));
+tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el))
+
   }
 
   function formatearFecha(fecha) {
