@@ -338,7 +338,7 @@ $(document).on("click", ".btn-detalle", async function () {
         // Filtrado según botón
         let filtrados = data;
         if (tipoDetalle === "ok") filtrados = data.filter(r => r.Ok === 1);
-        if (tipoDetalle === "error") filtrados = data.filter(r => r.Ok === 0 || r.Ok === null);
+        if (tipoDetalle === "error") filtrados = data.filter(r => r.Ok === 0);
 
         const tituloBase =
             tipoDetalle === "ok" ? "Detalle OK" :
