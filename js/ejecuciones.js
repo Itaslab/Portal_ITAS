@@ -291,151 +291,143 @@ btnSolicitar.addEventListener("click", () => {
 });
  
 // ------------------------------
-// BOTÓN OJO → DETALLE (TOTAL/OK/ERROR) + DESCARGA CSV
-// ------------------------------
+// -----------------------------------------------------
+// BOTÓN OJO → DETALLE (TOTAL | OK | ERROR) + DESCARGA CSV
+// -----------------------------------------------------
 $(document).on("click", ".btn-detalle", async function () {
-  const id = $(this).data("idtasklist");
-  const tipoDetalle = $(this).data("detalle"); // "total" | "ok" | "error"
- 
-  // Limpiar cualquier backdrop residual
-  $(".modal-backdrop").remove();
-  $("body").removeClass("modal-open");
- 
-  // Mostrar cargando
-  $("#detalleItemModalTitle").text("Cargando...");
-  $("#detalleItemModalBody").html(`
-    <div class="text-center p-4">
-      <div class="spinner-border text-primary" role="status"></div>
-      <p class="mt-2">Obteniendo datos...</p>
-    </div>
-  `);
- 
-  // Mostrar modal (reutilizando instancia)
-  const modalEl = document.getElementById("detalleItemModal");
-  const modal = bootstrap.Modal.getInstance(modalEl) ?? new bootstrap.Modal(modalEl);
-  modal.show();
- 
-  // Pedido al backend
-  try {
-    const res = await fetch(`/api/ejecuciones/detalle/${id}`);
-    const data = await res.json();
- 
-    if (!data || !Array.isArray(data) || data.length === 0) {
-      $("#detalleItemModalTitle").text("Sin datos");
-      $("#detalleItemModalBody").html("<p>No hay información disponible para este registro.</p>");
-      return;
-    }
- 
-    // --- Filtrado según el tipo de detalle ---
-    // Ajustá estas condiciones a tu esquema real de datos.
-let filtrados = data;
 
-if (tipoDetalle === "ok") {
-  filtrados = data.filter(r => r.Ok === 1);
-} 
-else if (tipoDetalle === "error") {
-  filtrados = data.filter(r => r.Ok === 0 || r.Ok === null);
-}
-    // Si es "total", no se cambia nada.
- 
-    // Si no hay registros bajo ese filtro, lo indicamos
-    const tituloBase =
-      tipoDetalle === "ok" ? "Detalle OK" :
-      tipoDetalle === "error" ? "Detalle ERROR" :
-      "Detalle TOTAL";
- 
-    if (!filtrados.length) {
-      $("#detalleItemModalTitle").text(`${tituloBase} (0)`);
-      $("#detalleItemModalBody").html("<p>No hay registros para este filtro.</p>");
-      return;
-    }
- 
-    // Encabezados (provenientes del primer registro)
-    const first = filtrados[0];
-    const col1 = first.Campos ?? "Columna 1";
-    const col2 = first.Campos_Accion ?? "Columna 2";
-    const col3 = first.Campos_Resultado ?? "Columna 3";
- 
-    // Render tabla
-    let html = `
-      <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-          <tr>
-            <th>${col1}</th>
-            <th>${col2}</th>
-            <th>${col3}</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
- 
-    filtrados.forEach(r => {
-      html += `
-        <tr>
-          <td>${r.Dato ?? "-"}</td>
-          <td>${r.Accion ?? "-"}</td>
-          <td>${r.Resultado ?? "-"}</td>
-        </tr>`;
-    });
- 
-    html += `</tbody></table>`;
- 
-    $("#detalleItemModalTitle").text(`${tituloBase} (${filtrados.length})`);
-    $("#detalleItemModalBody").html(html);
- 
-    // --------------------------
-    // Botón para descargar CSV
-    // --------------------------
-    $("#detalleItemModalBody").append(`
-      <div class="text-end mt-3">
-        <button id="btnDescargarCSV" class="btn btn-outline-primary btn-sm">
-          <i class="bi bi-download"></i> Descargar CSV
-        </button>
-      </div>
+    const id = $(this).data("idtasklist");
+    const tipoDetalle = $(this).data("detalle"); // total | ok | error
+
+    // Limpiar backdrop trabado
+    $(".modal-backdrop").remove();
+    $("body").removeClass("modal-open");
+
+    // Mostrar cargando
+    $("#detalleItemModalTitle").text("Cargando...");
+    $("#detalleItemModalBody").html(`
+        <div class="text-center p-4">
+            <div class="spinner-border text-primary"></div>
+            <p class="mt-2">Obteniendo datos...</p>
+        </div>
     `);
- 
-   
-// Evento descarga CSV
-$("#btnDescargarCSV").on("click", function () {
-  // Si el backend ya trae los encabezados y datos con ';', los usamos tal cual
-  const encabezados = [col1, col2, col3]; // O si tu backend trae un string con todos los nombres, usalo directamente
-  // Pero en tu caso, parece que cada registro ya tiene los datos concatenados con ';'
-  // Entonces armamos el CSV sin modificar el separador
- 
-  let csv = "";
-  // Si el backend trae los nombres en un solo string (como en tu imagen), usalo:
-  // Ejemplo: "CARGNUSE;CARGCONC;CARGCODO;CARGCUCO;CARGSIGN;CARGVALO"
-  if (first.CamposEncabezado) {
-    csv += first.CamposEncabezado + "\n";
-  } else {
-    // Si no, usamos los 3 campos como antes
-    csv += `${col1};${col2};${col3}\n`;
-  }
- 
-  filtrados.forEach(r => {
-    // Si el backend ya trae la fila lista (ej: "61689135;9207;43362515;2006377963;CR;1178.72")
-    if (r.FilaCompleta) {
-      csv += r.FilaCompleta + "\n";
-    } else {
-      // Si no, concatenamos los campos manualmente
-      csv += `${r.Dato ?? "-"};${r.Accion ?? "-"};${r.Resultado ?? "-"}\n`;
+
+    // Mostrar modal
+    const modalEl = document.getElementById("detalleItemModal");
+    const modal = bootstrap.Modal.getInstance(modalEl) ?? new bootstrap.Modal(modalEl);
+    modal.show();
+
+    try {
+        const res = await fetch(`/api/ejecuciones/detalle/${id}`);
+        const data = await res.json();
+
+        if (!data || !Array.isArray(data) || data.length === 0) {
+            $("#detalleItemModalTitle").text("Sin datos");
+            $("#detalleItemModalBody").html("<p>No hay registros para este detalle.</p>");
+            return;
+        }
+
+        // Normalizar OK
+        function normalizarOK(v) {
+            if (v === 1 || v === "1" || v === true || v === "true") return 1;
+            if (v === 0 || v === "0" || v === false || v === "false") return 0;
+            return null;
+        }
+        data.forEach(r => r.Ok = normalizarOK(r.Ok));
+
+        // Filtrado según botón
+        let filtrados = data;
+        if (tipoDetalle === "ok") filtrados = data.filter(r => r.Ok === 1);
+        if (tipoDetalle === "error") filtrados = data.filter(r => r.Ok === 0 || r.Ok === null);
+
+        const tituloBase =
+            tipoDetalle === "ok" ? "Detalle OK" :
+            tipoDetalle === "error" ? "Detalle ERROR" :
+            "Detalle TOTAL";
+
+        if (filtrados.length === 0) {
+            $("#detalleItemModalTitle").text(`${tituloBase} (0)`);
+            $("#detalleItemModalBody").html(`<p>No hay registros para mostrar.</p>`);
+            return;
+        }
+
+        // Encabezados desde backend
+        const first = filtrados[0];
+        const col1 = first.Campos ?? "Columna 1";
+        const col2 = first.Campos_Accion ?? "Columna 2";
+        const col3 = first.Campos_Resultado ?? "Columna 3";
+
+        // Render tabla
+        let html = `
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>${col1}</th>
+                    <th>${col2}</th>
+                    <th>${col3}</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        filtrados.forEach(r => {
+            html += `
+                <tr>
+                    <td>${r.Dato ?? "-"}</td>
+                    <td>${r.Accion ?? "-"}</td>
+                    <td>${r.Resultado ?? "-"}</td>
+                </tr>
+            `;
+        });
+
+        html += "</tbody></table>";
+
+        $("#detalleItemModalTitle").text(`${tituloBase} (${filtrados.length})`);
+        $("#detalleItemModalBody").html(html);
+
+        // Botón CSV
+        $("#detalleItemModalBody").append(`
+            <div class="text-end mt-3">
+                <button id="btnDescargarCSV" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-download"></i> Descargar CSV
+                </button>
+            </div>
+        `);
+
+        // Evento para descargar CSV
+        $("#btnDescargarCSV").on("click", function () {
+
+            let csv = "";
+
+            // Si backend manda encabezado ya concatenado
+            if (first.CamposEncabezado) {
+                csv += first.CamposEncabezado + "\n";
+            } else {
+                csv += `${col1};${col2};${col3}\n`;
+            }
+
+            filtrados.forEach(r => {
+                if (r.FilaCompleta) {
+                    csv += r.FilaCompleta + "\n";
+                } else {
+                    csv += `${r.Dato ?? "-"};${r.Accion ?? "-"};${r.Resultado ?? "-"}\n`;
+                }
+            });
+
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `detalle_${tipoDetalle}_${id}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        });
+
+    } catch (err) {
+        $("#detalleItemModalTitle").text("Error");
+        $("#detalleItemModalBody").html("<p>No se pudo obtener la información.</p>");
+        console.error(err);
     }
-  });
- 
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `detalle_${tipoDetalle}_${id}.csv`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-});
- 
-  } catch (err) {
-    $("#detalleItemModalTitle").text("Error");
-    $("#detalleItemModalBody").html("<p>No se pudo obtener la información.</p>");
-    console.error(err);
-  }
 });
