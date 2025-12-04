@@ -156,6 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
         data-detalle="ok"
         data-bs-toggle="modal"
         data-bs-target="#detalleItemModal">
+        title="Ver registros OK">
   <i class="bi bi-eye"></i>
 </button>
  
@@ -166,6 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
         data-detalle="error"
         data-bs-toggle="modal"
         data-bs-target="#detalleItemModal">
+        title="Ver registros con Error">
   <i class="bi bi-eye"></i>
 </button>
  
