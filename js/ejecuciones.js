@@ -104,36 +104,40 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                   </td>
  
-                  <td class="text-start">
-                    <div class="mb-2">
-                      <i class="fas fa-play text-primary me-2"></i>
-                      <span class="small">Inicio:</span>
-                      <span class="fw-semibold">${formatearFecha(ejec.fechaInicio)}</span>
-                    </div>
-                    <div class="mb-2">
-                      <i class="fas fa-stop text-danger me-2"></i>
-                      <span class="small">Fin:</span>
-                      <span class="fw-semibold">${formatearFecha(ejec.fechaFin)}</span>
-                    </div>
-                    <div>
-                      <i class="fas fa-clock text-warning me-2"></i>
-                      <span class="small">Duración:</span>
-                      <span class="fw-bold text-dark">${duracion}</span>
-                    </div>
-                  </td>
- 
-                  <td class="text-start">
-                    <div class="p-2 border rounded bg-light" style="width: 200px;">
-                      <div class="mb-2">
-                        <span class="badge bg-${ejec.estado.includes('Error') ? 'danger' : 'success'}">
-                          ${ejec.estado}
-                        </span>
-                      </div>
-                      <div class="text-truncate small" style="max-width: 180px;" title="${ejec.resultado || '-'}">
-                        Resultado: <span class="fw-bold">${ejec.resultado || '-'}</span>
-                      </div>
-                    </div>
-                  </td>
+                  
+<td class="text-start">
+  <div class="p-3 border rounded bg-light" style="width: 280px;">
+    <!-- Estado -->
+    <div class="mb-3 text-center">
+      <span class="badge bg-${ejec.estado.includes('Error') ? 'danger' : 'success'} px-3 py-2">
+        ${ejec.estado}
+      </span>
+    </div>
+
+    <!-- Fechas y duración -->
+    <div class="mb-2">
+      <i class="fas fa-play text-primary me-2"></i>
+      <span class="small">Inicio:</span>
+      <span class="fw-semibold">${formatearFecha(ejec.fechaInicio)}</span>
+    </div>
+    <div class="mb-2">
+      <i class="fas fa-stop text-danger me-2"></i>
+      <span class="small">Fin:</span>
+      <span class="fw-semibold">${formatearFecha(ejec.fechaFin)}</span>
+    </div>
+    <div class="mb-3">
+      <i class="fas fa-clock text-warning me-2"></i>
+      <span class="small">Duración:</span>
+      <span class="fw-bold text-dark">${duracion}</span>
+    </div>
+
+    <!-- Resultado -->
+    <div class="text-truncate small" style="max-width: 240px;" title="${ejec.resultado || '-'}">
+      Resultado: <span class="fw-bold">${ejec.resultado || '-'}</span>
+    </div>
+  </div>
+</td>
+
  
                   <td class="text-start">
                     <div class="small mb-1 d-flex align-items-center gap-1 border p-2 mb-2">
