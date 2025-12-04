@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
         data-detalle="total"
         data-bs-toggle="modal"
         data-bs-target="#detalleItemModal"
-        data-bs-original-title="Ver registros Total">
+        title="Ver registros Total">
   <i class="bi bi-eye"></i>
 </button>
 
@@ -213,10 +213,24 @@ document.addEventListener("DOMContentLoaded", () => {
         tabla.appendChild(row);
       });
 
-    // inicializa tooltips
     
-const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-original-title]'));
-tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el))
+// 1) Disponer instancias anteriores (por si renderTabla() se ejecuta varias veces)
+document.querySelectorAll('[title]').forEach(el => {
+  const inst = bootstrap.Tooltip.getInstance(el);
+  if (inst) inst.dispose();
+});
+
+// 2) Remover cualquier elemento tooltip residual del DOM (defensivo)
+document.querySelectorAll('.tooltip').forEach(el => el.remove());
+
+// 3) Inicializar tooltips para los elementos con atributo title
+const tooltipTriggerList = Array.from(document.querySelectorAll('[title]'));
+tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el, {
+  container: 'body',        // evita problemas dentro de tablas/modales
+  trigger: 'hover focus',   // accesible con teclado
+  placement: 'top'          // ajustá 'bottom' si te conviene
+}));
+
 
   }
 
