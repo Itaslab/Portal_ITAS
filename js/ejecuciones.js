@@ -26,9 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
         resultado: item.Resultado,
         fechaInicio: item.Fecha_Inicio,
         fechaFin: item.Fecha_Fin,
-        total: item.Reg_Totales,
-        ok: item.Reg_Proc_OK,
-        error: item.Reg_Proc_NOK
+        total: item.Reg_Totales ?? 0,
+        ok: item.Reg_Proc_OK ?? 0,
+        error: item.Reg_Proc_NOK ?? 0
       }));
 
       llenarFiltroSolicitante();
@@ -50,6 +50,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 🔹 Inicializar tooltips (seguro)
+  function inicializarTooltips() {
+    // 1) destruir instancias previas
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+      const inst = bootstrap.Tooltip.getInstance(el);
+      if (inst) inst.dispose();
+    });
+    // 2) eliminar restos en DOM (defensivo)
+    document.querySelectorAll('.tooltip').forEach(el => el.remove());
+    // 3) crear nuevas instancias
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+      new bootstrap.Tooltip(el, {
+        container: 'body',
+        trigger: 'hover focus',
+        placement: 'top'
+      });
+    });
+  }
+
   // 🔹 Renderizar tabla con filtros
   function renderTabla() {
     const solicitante = filtroSolicitante.value.toLowerCase();
@@ -59,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     ejecuciones
       .filter(item => {
-        const coincideSolicitante = solicitante ? item.usuario.toLowerCase().includes(solicitante) : true;
+        const coincideSolicitante = solicitante ? (item.usuario || "").toLowerCase().includes(solicitante) : true;
         const coincideRegistro = registro
           ? (item.id.toString().toLowerCase().includes(registro) ||
              (item.identificador || "").toLowerCase().includes(registro) ||
@@ -72,6 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const duracion = calcularDuracion(ejec.fechaInicio, ejec.fechaFin);
         const row = document.createElement("tr");
 
+        // NOTE: usamos data-bs-title para que bootstrap administre el tooltip internamente
         row.innerHTML = `
           <td colspan="6">
             <table class="table table-bordered align-middle mb-0">
@@ -79,27 +99,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 <tr>
                   <td class="text-start">
                     <div class="mb-2">
-                      <i class="fas fa-hashtag text-primary me-2" data-bs-toggle="tooltip" title="ID de ejecución"></i>
+                      <i class="fas fa-hashtag text-primary me-2" data-bs-toggle="tooltip" data-bs-title="ID de ejecución"></i>
                       <span class="fw-bold text-primary">[${ejec.id}]</span>
                     </div>
                     <div class="mb-2">
-                      <i class="fas fa-terminal text-secondary me-2" data-bs-toggle="tooltip" title="Nombre del proceso"></i>
-                      <span class="small">${ejec.flujo}</span>
+                      <i class="fas fa-terminal text-secondary me-2" data-bs-toggle="tooltip" data-bs-title="Nombre del proceso"></i>
+                      <span class="small">${escapeHtml(ejec.flujo)}</span>
                     </div>
                     <div class="mb-2">
-                      <i class="fas fa-id-card text-info me-2" data-bs-toggle="tooltip" title="Identificador interno"></i>
+                      <i class="fas fa-id-card text-info me-2" data-bs-toggle="tooltip" data-bs-title="Identificador interno"></i>
                       <span class="small">Identificador:</span>
-                      <span class="fw-semibold">${ejec.identificador || "-"}</span>
+                      <span class="fw-semibold">${escapeHtml(ejec.identificador || "-")}</span>
                     </div>
                     <div class="mb-2">
-                      <i class="fas fa-envelope text-warning me-2" data-bs-toggle="tooltip" title="Usuario solicitante"></i>
+                      <i class="fas fa-envelope text-warning me-2" data-bs-toggle="tooltip" data-bs-title="Usuario solicitante"></i>
                       <span class="small">De:</span>
-                      <span class="fw-semibold">${ejec.usuario}</span>
+                      <span class="fw-semibold">${escapeHtml(ejec.usuario || "-")}</span>
                     </div>
                     <div>
-                      <i class="fas fa-project-diagram text-success me-2" data-bs-toggle="tooltip" title="Flujo de ejecución"></i>
+                      <i class="fas fa-project-diagram text-success me-2" data-bs-toggle="tooltip" data-bs-title="Flujo de ejecución"></i>
                       <span class="small">Flujo:</span>
-                      <span class="fw-semibold">${ejec.flujo}</span>
+                      <span class="fw-semibold">${escapeHtml(ejec.flujo)}</span>
                       <span class="badge bg-secondary ms-2">RPA</span>
                     </div>
                   </td>
@@ -125,27 +145,27 @@ document.addEventListener("DOMContentLoaded", () => {
                   <td class="text-start">
                     <div class="p-2 border rounded bg-light" style="width: 200px;">
                       <div class="mb-2">
-                        <span class="badge bg-${ejec.estado.includes('Error') ? 'danger' : 'success'}">
-                          ${ejec.estado}
+                        <span class="badge bg-${(ejec.estado || "").includes('Error') ? 'danger' : 'success'}">
+                          ${escapeHtml(ejec.estado || "")}
                         </span>
                       </div>
-                      <div class="text-truncate small" style="max-width: 180px;" title="${ejec.resultado || '-'}">
-                        Resultado: <span class="fw-bold">${ejec.resultado || '-'}</span>
+                      <div class="text-truncate small" style="max-width: 180px;" data-bs-toggle="tooltip" data-bs-title="${escapeHtml(ejec.resultado || '-')}">
+                        Resultado: <span class="fw-bold">${escapeHtml(ejec.resultado || '-')}</span>
                       </div>
                     </div>
                   </td>
 
                   <td class="text-start">
                     <div class="small mb-1 d-flex align-items-center gap-1 border p-2 mb-2">
-                      
+
 <!-- OJO TOTAL -->
 <button type="button"
         class="btn btn-outline-secondary btn-sm btn-detalle"
         data-idtasklist="${ejec.id}"
         data-detalle="total"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        title="Total (${ejec.total})">
+        data-bs-toggle="tooltip"
+        data-bs-title="Total (${ejec.total})"
+        data-bs-target="#detalleItemModal">
   <i class="bi bi-eye"></i> <span class="ms-1">${ejec.total}</span>
 </button>
 
@@ -154,9 +174,9 @@ document.addEventListener("DOMContentLoaded", () => {
         class="btn btn-outline-success btn-sm btn-detalle"
         data-idtasklist="${ejec.id}"
         data-detalle="ok"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        title="OK (${ejec.ok})">
+        data-bs-toggle="tooltip"
+        data-bs-title="OK (${ejec.ok})"
+        data-bs-target="#detalleItemModal">
   <i class="bi bi-eye"></i> <span class="ms-1">${ejec.ok}</span>
 </button>
 
@@ -165,9 +185,9 @@ document.addEventListener("DOMContentLoaded", () => {
         class="btn btn-outline-danger btn-sm btn-detalle"
         data-idtasklist="${ejec.id}"
         data-detalle="error"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        title="Error (${ejec.error})">
+        data-bs-toggle="tooltip"
+        data-bs-title="Error (${ejec.error})"
+        data-bs-target="#detalleItemModal">
   <i class="bi bi-eye"></i> <span class="ms-1">${ejec.error}</span>
 </button>
 
@@ -177,31 +197,23 @@ document.addEventListener("DOMContentLoaded", () => {
                   <td class="text-start">
                     <div class="small fw-semibold mb-1">Avance: ${ejec.avance}%</div>
                     <div class="progress mb-2" style="height: 10px;">
-                      <div class="progress-bar bg-success" role="progressbar" style="width: ${ejec.avance}%;" aria-valuenow="${ejec.avance}" aria-valuemin="0" aria-valuemax="100"></div>
+                      <div class="progress-bar bg-success" role="progressbar" style="width: ${ejec.avance}%" aria-valuenow="${ejec.avance}" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
 
                     <div class="d-flex flex-wrap gap-2 mt-2">
-                      <!-- Botón con ícono de cruz -->
+                      <!-- Botones adicionales -->
                       <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCerrar">
                         <i class="bi bi-x-circle"></i>
                       </button>
-
-                      <!-- Botón con ícono de buscar -->
                       <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalBuscar">
                         <i class="bi bi-search"></i>
                       </button>
-
-                      <!-- Botón con ícono de flecha -->
                       <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalFlecha">
                         <i class="bi bi-arrow-right"></i>
                       </button>
-
-                      <!-- Botón con ícono de carpeta -->
                       <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCarpeta">
                         <i class="bi bi-folder"></i>
                       </button>
-
-                      <!-- Botón con ícono de retroceder -->
                       <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalRetroceder">
                         <i class="bi bi-arrow-counterclockwise"></i>
                       </button>
@@ -212,28 +224,12 @@ document.addEventListener("DOMContentLoaded", () => {
             </table>
           </td>
         `;
+
         tabla.appendChild(row);
       });
 
-    
-// 1) Disponer instancias anteriores (por si renderTabla() se ejecuta varias veces)
-document.querySelectorAll('[title]').forEach(el => {
-  const inst = bootstrap.Tooltip.getInstance(el);
-  if (inst) inst.dispose();
-});
-
-// 2) Remover cualquier elemento tooltip residual del DOM (defensivo)
-document.querySelectorAll('.tooltip').forEach(el => el.remove());
-
-// 3) Inicializar tooltips para los elementos con atributo title
-const tooltipTriggerList = Array.from(document.querySelectorAll('[title]'));
-tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el, {
-  container: 'body',        // evita problemas dentro de tablas/modales
-  trigger: 'hover focus',   // accesible con teclado
-  placement: 'top'          // ajustá 'bottom' si te conviene
-}));
-
-
+    // Inicializar tooltips solo para los elementos creados en esta renderización
+    inicializarTooltips();
   }
 
   function formatearFecha(fecha) {
@@ -249,6 +245,17 @@ tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el, {
     const mins = Math.floor(diff / 60000);
     const secs = Math.floor((diff % 60000) / 1000);
     return `${mins}'${secs < 10 ? "0" : ""}${secs}"`;
+  }
+
+  // escape básico para evitar que contenido en strings rompa el HTML
+  function escapeHtml(str) {
+    if (str == null) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
   // 🔹 Eventos filtros
@@ -278,7 +285,7 @@ function mostrarAlerta(tipo, mensaje) {
     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img">
       <use xlink:href="#${iconos[tipo]}"/>
     </svg>
-    <div>${mensaje}</div>
+    <div>${escapeHtml(mensaje)}</div>
   `;
 
   alertContainer.appendChild(alerta);
@@ -291,17 +298,13 @@ function mostrarAlerta(tipo, mensaje) {
   }, 3000);
 }
 
-// 🔹 Funciones auxiliares de los botones usando Bootstrap alerts
-function verTotal(id) { mostrarAlerta("primary", `Total de registros para ejecución ${id}: 2`); }
-function verOk(id) { mostrarAlerta("success", `Registros OK para ejecución ${id}: 2`); }
-function verErrores(id) { mostrarAlerta("danger", `Registros con error para ejecución ${id}: 0`); }
-function verEstado(id) { mostrarAlerta("warning", `Estado detallado para ejecución ID: ${id}`); }
-
 // 🔹 Botón "Solicitar ejecución"
 const btnSolicitar = document.getElementById("btnSolicitar");
-btnSolicitar.addEventListener("click", () => {
-  window.location.href = "SolicitarEjecucion.html";
-});
+if (btnSolicitar) {
+  btnSolicitar.addEventListener("click", () => {
+    window.location.href = "SolicitarEjecucion.html";
+  });
+}
 
 // ------------------------------
 // BOTÓN OJO → DETALLE (TOTAL/OK/ERROR) + DESCARGA CSV
@@ -339,23 +342,17 @@ $(document).on("click", ".btn-detalle", async function () {
       return;
     }
 
-    // --- Filtrado según el tipo de detalle ---
-    // Ajustá estas condiciones a tu esquema real de datos.
-// --- Filtrado según tipoDetalle (OK / ERROR / TOTAL) ---
-let filtrados = data;
+    // --- Filtrado según tipoDetalle (OK / ERROR / TOTAL) ---
+    let filtrados = data;
 
-if (tipoDetalle === "ok") {
-  // Filtrar por bit = 1
-  filtrados = data.filter(r => r.Ok === 1);
-}
-
-else if (tipoDetalle === "error") {
-  // Filtrar por bit = 0 o valores nulos
-  filtrados = data.filter(r => r.Ok === 0 || r.Ok === null || r.Ok === undefined);
-}
-
-// TOTAL → no se filtra
-    // Si es "total", no se cambia nada.
+    if (tipoDetalle === "ok") {
+      // r.Ok viene como 0 o 1
+      filtrados = data.filter(r => r.Ok === 1);
+    } else if (tipoDetalle === "error") {
+      // explícito: 0 (o null si existiera)
+      filtrados = data.filter(r => r.Ok === 0 || r.Ok === null || r.Ok === undefined);
+    }
+    // total => no filtra
 
     // Si no hay registros bajo ese filtro, lo indicamos
     const tituloBase =
@@ -380,9 +377,9 @@ else if (tipoDetalle === "error") {
       <table class="table table-bordered table-striped">
         <thead class="table-dark">
           <tr>
-            <th>${col1}</th>
-            <th>${col2}</th>
-            <th>${col3}</th>
+            <th>${escapeHtml(col1)}</th>
+            <th>${escapeHtml(col2)}</th>
+            <th>${escapeHtml(col3)}</th>
           </tr>
         </thead>
         <tbody>
@@ -390,10 +387,10 @@ else if (tipoDetalle === "error") {
 
     filtrados.forEach(r => {
       html += `
-        <tr>
-          <td>${r.Dato ?? "-"}</td>
-          <td>${r.Accion ?? "-"}</td>
-          <td>${r.Resultado ?? "-"}</td>
+        <tr class="${r.Ok === 1 ? "table-success" : "table-danger"}">
+          <td>${escapeHtml(r.Dato ?? "-")}</td>
+          <td>${escapeHtml(r.Accion ?? "-")}</td>
+          <td>${escapeHtml(r.Resultado ?? "-")}</td>
         </tr>`;
     });
 
@@ -413,44 +410,33 @@ else if (tipoDetalle === "error") {
       </div>
     `);
 
-    
-// Evento descarga CSV
-$("#btnDescargarCSV").on("click", function () {
-  // Si el backend ya trae los encabezados y datos con ';', los usamos tal cual
-  const encabezados = [col1, col2, col3]; // O si tu backend trae un string con todos los nombres, usalo directamente
-  // Pero en tu caso, parece que cada registro ya tiene los datos concatenados con ';'
-  // Entonces armamos el CSV sin modificar el separador
+    // Evento descarga CSV
+    $("#btnDescargarCSV").off("click").on("click", function () {
+      let csv = "";
+      if (first.CamposEncabezado) {
+        csv += first.CamposEncabezado + "\n";
+      } else {
+        csv += `${col1};${col2};${col3}\n`;
+      }
 
-  let csv = "";
-  // Si el backend trae los nombres en un solo string (como en tu imagen), usalo:
-  // Ejemplo: "CARGNUSE;CARGCONC;CARGCODO;CARGCUCO;CARGSIGN;CARGVALO"
-  if (first.CamposEncabezado) {
-    csv += first.CamposEncabezado + "\n";
-  } else {
-    // Si no, usamos los 3 campos como antes
-    csv += `${col1};${col2};${col3}\n`;
-  }
+      filtrados.forEach(r => {
+        if (r.FilaCompleta) {
+          csv += r.FilaCompleta + "\n";
+        } else {
+          csv += `${r.Dato ?? "-"};${r.Accion ?? "-"};${r.Resultado ?? "-"}\n`;
+        }
+      });
 
-  filtrados.forEach(r => {
-    // Si el backend ya trae la fila lista (ej: "61689135;9207;43362515;2006377963;CR;1178.72")
-    if (r.FilaCompleta) {
-      csv += r.FilaCompleta + "\n";
-    } else {
-      // Si no, concatenamos los campos manualmente
-      csv += `${r.Dato ?? "-"};${r.Accion ?? "-"};${r.Resultado ?? "-"}\n`;
-    }
-  });
-
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `detalle_${tipoDetalle}_${id}.csv`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-});
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `detalle_${tipoDetalle}_${id}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    });
 
   } catch (err) {
     $("#detalleItemModalTitle").text("Error");
