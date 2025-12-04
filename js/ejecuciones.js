@@ -146,7 +146,6 @@ document.addEventListener("DOMContentLoaded", () => {
         data-bs-toggle="modal"
         data-bs-target="#detalleItemModal"
         title="Ver registros Total">
->
   <i class="bi bi-eye"></i>
 </button>
 
