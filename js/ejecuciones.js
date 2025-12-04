@@ -328,18 +328,14 @@ $(document).on("click", ".btn-detalle", async function () {
  
     // --- Filtrado según el tipo de detalle ---
     // Ajustá estas condiciones a tu esquema real de datos.
-    let filtrados = data;
-    if (tipoDetalle === "ok") {
-      // Ejemplos de match: "OK", "Ok", "ok", "proceso ok"
-      filtrados = data.filter(r => (r.Resultado ?? "").toLowerCase().includes("ok"));
-    } else if (tipoDetalle === "error") {
-      // Ejemplos de match: "ERROR", "error", "NOK"
-      const val = (s) => (s ?? "").toLowerCase();
-      filtrados = data.filter(r => {
-        const res = val(r.Resultado);
-        return res.includes("error") || res.includes("nok");
-      });
-    }
+let filtrados = data;
+
+if (tipoDetalle === "ok") {
+  filtrados = data.filter(r => r.Ok === 1);
+} 
+else if (tipoDetalle === "error") {
+  filtrados = data.filter(r => r.Ok === 0 || r.Ok === null);
+}
     // Si es "total", no se cambia nada.
  
     // Si no hay registros bajo ese filtro, lo indicamos
