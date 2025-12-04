@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
         data-detalle="total"
         data-bs-toggle="modal"
         data-bs-target="#detalleItemModal"
-        title="Ver registros Total">
+        data-bs-original-title="Ver registros Total">
   <i class="bi bi-eye"></i>
 </button>
 
@@ -215,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // inicializa tooltips
     
-const tooltipTriggerList = Array.from(document.querySelectorAll('[title]'));
+const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-original-title]'));
 tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el))
 
   }
