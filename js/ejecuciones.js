@@ -145,28 +145,30 @@ document.addEventListener("DOMContentLoaded", () => {
         data-detalle="total"
         data-bs-toggle="modal"
         data-bs-target="#detalleItemModal"
-        title="Ver registros Total">
-  <i class="bi bi-eye"></i>
+        title="Total (${ejec.total})">
+  <i class="bi bi-eye"></i> <span class="ms-1">${ejec.total}</span>
 </button>
 
 <!-- OJO OK -->
 <button type="button"
-        class="btn btn-outline-secondary btn-sm btn-detalle"
+        class="btn btn-outline-success btn-sm btn-detalle"
         data-idtasklist="${ejec.id}"
         data-detalle="ok"
         data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal">
-  <i class="bi bi-eye"></i>
+        data-bs-target="#detalleItemModal"
+        title="OK (${ejec.ok})">
+  <i class="bi bi-eye"></i> <span class="ms-1">${ejec.ok}</span>
 </button>
 
 <!-- OJO ERROR -->
 <button type="button"
-        class="btn btn-outline-secondary btn-sm btn-detalle"
+        class="btn btn-outline-danger btn-sm btn-detalle"
         data-idtasklist="${ejec.id}"
         data-detalle="error"
         data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal">
-  <i class="bi bi-eye"></i>
+        data-bs-target="#detalleItemModal"
+        title="Error (${ejec.error})">
+  <i class="bi bi-eye"></i> <span class="ms-1">${ejec.error}</span>
 </button>
 
                     </div>
@@ -339,18 +341,20 @@ $(document).on("click", ".btn-detalle", async function () {
 
     // --- Filtrado según el tipo de detalle ---
     // Ajustá estas condiciones a tu esquema real de datos.
-    let filtrados = data;
-    if (tipoDetalle === "ok") {
-      // Ejemplos de match: "OK", "Ok", "ok", "proceso ok"
-      filtrados = data.filter(r => (r.Resultado ?? "").toLowerCase().includes("ok"));
-    } else if (tipoDetalle === "error") {
-      // Ejemplos de match: "ERROR", "error", "NOK"
-      const val = (s) => (s ?? "").toLowerCase();
-      filtrados = data.filter(r => {
-        const res = val(r.Resultado);
-        return res.includes("error") || res.includes("nok");
-      });
-    }
+// --- Filtrado según tipoDetalle (OK / ERROR / TOTAL) ---
+let filtrados = data;
+
+if (tipoDetalle === "ok") {
+  // Filtrar por bit = 1
+  filtrados = data.filter(r => r.Ok === 1);
+}
+
+else if (tipoDetalle === "error") {
+  // Filtrar por bit = 0 o valores nulos
+  filtrados = data.filter(r => r.Ok === 0 || r.Ok === null || r.Ok === undefined);
+}
+
+// TOTAL → no se filtra
     // Si es "total", no se cambia nada.
 
     // Si no hay registros bajo ese filtro, lo indicamos

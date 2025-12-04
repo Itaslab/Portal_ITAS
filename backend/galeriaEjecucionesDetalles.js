@@ -17,7 +17,8 @@ router.get("/detalle/:id", async (req, res) => {
             r.Resultado,
             rf.Campos,
             rf.Campos_Accion,
-            rf.Campos_Resultado
+            rf.Campos_Resultado,
+            r.Ok
         FROM a002103.RPA_RESULTADOS r
         INNER JOIN a002103.RPA_TASKLIST t ON r.Id_Tasklist = t.Id_Tasklist
         INNER JOIN a002103.RPA_FLUJOS rf ON t.Id_Flujo = rf.Id_Flujo
