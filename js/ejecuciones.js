@@ -163,8 +163,8 @@ document.addEventListener("DOMContentLoaded", () => {
         data-bs-target="#detalleItemModal"
         title="Ver registros OK">
   <i class="bi bi-eye"></i>
-   <span> OK:</span>
-      <span class="fw-bold">${ejec.ok ?? 0}</span>
+   <span>     OK:</span>
+      <span class="fw-bold">${ejec.verOk ?? 0}</span>
 </button>
  
 <!-- OJO ERROR -->
