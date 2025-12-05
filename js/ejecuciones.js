@@ -188,6 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
             data-bs-target="#modalBuscar"
             title="Buscar en log">
       <i class="bi-clipboard-data"></i>
+       <span class="text-dark fw-semibold">Ver Log</span>
     </button>
   </div>
 </td>
