@@ -367,7 +367,7 @@ td.text-start i.fas,
 }
 
 .d-flex.gap-2 button {
-  min-width: 100px; /* ancho mínimo para uniformidad */
+  min-width: 20px; /* ancho mínimo para uniformidad */
   justify-content: center; /* centra contenido */
 }
 
