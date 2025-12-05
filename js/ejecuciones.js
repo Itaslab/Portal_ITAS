@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
                      
 <!-- OJO TOTAL -->
 <button type="button"
-        class="btn btn-outline-secondary btn-sm btn-detalle"
+        class="text-primary btn btn-outline-secondary btn-sm btn-detalle"
         data-idtasklist="${ejec.id}"
         data-detalle="total"
         data-bs-toggle="modal"
@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
  
 <!-- OJO OK -->
 <button type="button"
-        class="btn btn-outline-secondary btn-sm btn-detalle"
+        class=" text-success btn btn-outline-secondary btn-sm btn-detalle"
         data-idtasklist="${ejec.id}"
         data-detalle="ok"
         data-bs-toggle="modal"
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title="Ver registros con Error">
   <i class="bi bi-eye"></i>
       <span>Error:</span>
-      <span class="fw-bold">${ejec.error ?? 0}</span>
+      <span class="text-danger">${ejec.error ?? 0}</span>
 
 </button>
  
