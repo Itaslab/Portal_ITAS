@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
  
 <!-- OJO ERROR -->
 <button type="button"
-        class="btn btn-outline-secondary btn-sm btn-detalle"
+        class="text-danger btn btn-outline-secondary btn-sm btn-detalle"
         data-idtasklist="${ejec.id}"
         data-detalle="error"
         data-bs-toggle="modal"
