@@ -366,11 +366,14 @@ td.text-start i.fas,
   color: var(--color-primary);
 }
 
-.d-flex.gap-2 button {
-  min-width: 10px; /* ancho mínimo para uniformidad */
-  justify-content: center; /* centra contenido */
+
+.d-flex.flex-column.gap-2 button {
+  justify-content: flex-start; /* ícono + texto alineados a la izquierda */
+  width: 100%; /* ocupa todo el ancho del contenedor */
 }
 
-.d-flex.gap-2 button i {
-  font-size: 1rem;
+.d-flex.flex-column.gap-2 {
+  background-color: #f8f9fa; /* fondo claro */
+  border: 1px solid #dee2e6;
 }
+
