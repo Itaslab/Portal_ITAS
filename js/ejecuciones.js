@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title="Ver registros Total">
   <i class="bi bi-eye"></i>
    <span class="etiqueta">Total:</span>
-      <span class="valor">${ejec.total ?? 0}</span>
+      <span class="valor">${ejec.id}</span>
 </button>
  
 <!-- OJO OK -->
@@ -164,6 +164,8 @@ document.addEventListener("DOMContentLoaded", () => {
         data-bs-target="#detalleItemModal"
         title="Ver registros OK">
   <i class="bi bi-eye"></i>
+   <span class="etiqueta">Reg. Proc. OK:</span>
+      <span class="valor">${ejec.id}</span>
 </button>
  
 <!-- OJO ERROR -->
@@ -175,6 +177,8 @@ document.addEventListener("DOMContentLoaded", () => {
         data-bs-target="#detalleItemModal"
         title="Ver registros con Error">
   <i class="bi bi-eye"></i>
+     <span class="etiqueta">Reg con Error:</span>
+      <span class="valor">${ejec.id}</span>
 </button>
  
                     </div>
