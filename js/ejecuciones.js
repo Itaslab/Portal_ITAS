@@ -139,21 +139,13 @@ document.addEventListener("DOMContentLoaded", () => {
 </td>
  
  
-                  <td class="text-start">
+                <td class="text-start">
                     <div class="small mb-1 d-flex align-items-center gap-1 border p-2 mb-2">
-                     
-<!-- OJO TOTAL -->
-<button type="button"
-        class="registro-item btn btn-outline-secondary text-start p-0"
-        data-idtasklist="${ejec.id}"
-        data-detalle="total"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        title="Ver registros Total">
-  <i class="bi bi-eye"></i>
-   <span class="etiqueta">Total:</span>
-      <span class="valor">${ejec.total}</span>
-</button>
+                      <!-- OJO TOTAL -->
+                      <button type="button" class="btn btn-outline-secondary btn-sm btn-detalle"
+					  data-idtasklist="${ejec.id}" data-bs-toggle="modal" data-bs-target="#detalleItemModal">
+                        <i class="bi bi-eye"></i>
+                      </button>
  
 <!-- OJO OK -->
 <button type="button"
