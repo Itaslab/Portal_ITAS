@@ -180,7 +180,10 @@ document.addEventListener("DOMContentLoaded", () => {
       <span class="text-danger">${ejec.error ?? 0}</span>
 
 </button>
-                      <div class="small mb-1 d-flex align-items-center gap-1 border p-2 mb-2">
+                    
+                 <td class="text-start">
+
+<div class="small mb-1 d-flex align-items-center gap-1 border p-2 mb-2">
 
                       <!-- Botón con ícono de buscar -->
                      
@@ -189,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
         data-bs-toggle="modal"
         data-bs-target="#modalBuscar">
   <i class="bi bi-search"></i>
-</button> </div>
+</button> </div>   </td>
                     </div>
                   </td>
  
