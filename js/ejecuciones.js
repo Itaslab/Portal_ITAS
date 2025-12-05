@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title="Ver registros Total">
      <i class="bi bi-eye"></i>
       <span>Total:</span>
-      <span class="fw-bold">${ejec.total ?? 0}</span>
+      <span class="text-primary">${ejec.total ?? 0}</span>
 </button>
  
 <!-- OJO OK -->
@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title="Ver registros OK">
   <i class="bi bi-eye"></i>
    <span>     OK:</span>
-      <span class="fw-bold">${ejec.Reg_Proc_OK ?? 0}</span>
+      <span class="text-success">${ejec.ok ?? 0}</span>
 </button>
  
 <!-- OJO ERROR -->
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title="Ver registros con Error">
   <i class="bi bi-eye"></i>
       <span>Error:</span>
-      <span class="fw-bold">${ejec.error ?? 0}</span>
+      <span class="text-danger">${ejec.error ?? 0}</span>
 
 </button>
  
