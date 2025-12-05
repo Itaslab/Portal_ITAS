@@ -180,7 +180,15 @@ document.addEventListener("DOMContentLoaded", () => {
       <span class="text-danger">${ejec.error ?? 0}</span>
 
 </button>
- 
+  
+                      <!-- Botón con ícono de buscar -->
+                     
+<button class="btn btn-outline-secondary btn-sm btn-log"
+        data-idtasklist="${ejec.id}"
+        data-bs-toggle="modal"
+        data-bs-target="#modalBuscar">
+  <i class="bi bi-search"></i>
+</button>
                     </div>
                   </td>
  
@@ -195,15 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
                       <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCerrar">
                         <i class="bi bi-x-circle"></i>
                       </button>
- 
-                      <!-- Botón con ícono de buscar -->
-                     
-<button class="btn btn-outline-secondary btn-sm btn-log"
-        data-idtasklist="${ejec.id}"
-        data-bs-toggle="modal"
-        data-bs-target="#modalBuscar">
-  <i class="bi bi-search"></i>
-</button>
+
  
                      
  
