@@ -287,7 +287,7 @@ function mostrarAlerta(tipo, mensaje) {
 // 🔹 Funciones auxiliares de los botones usando Bootstrap alerts
 function verTotal(id) { mostrarAlerta("primary", `Total de registros para ejecución ${id}: 2`); }
 function verOk(id) { mostrarAlerta("success", `Registros OK para ejecución ${id}: 2`); }
-function verErrores(id) { mostrarAlerta("danger", `Registros con error para ejecución ${id}: 0`); }
+function error(id) { mostrarAlerta("danger", `Registros con error para ejecución ${id}: 0`); }
 function verEstado(id) { mostrarAlerta("warning", `Estado detallado para ejecución ID: ${id}`); }
  
 // 🔹 Botón "Solicitar ejecución"
