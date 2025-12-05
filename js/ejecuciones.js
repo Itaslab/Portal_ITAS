@@ -151,6 +151,8 @@ document.addEventListener("DOMContentLoaded", () => {
         data-bs-target="#detalleItemModal"
         title="Ver registros Total">
   <i class="bi bi-eye"></i>
+   <span class="etiqueta">Total:</span>
+      <span class="valor">${ejec.total ?? 0}</span>
 </button>
  
 <!-- OJO OK -->
