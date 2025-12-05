@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title="Ver registros OK">
   <i class="bi bi-eye"></i>
    <span>     OK:</span>
-      <span class="fw-bold">${ejec.verOk ?? 0}</span>
+      <span class="fw-bold">${ejec.Reg_Proc_OK ?? 0}</span>
 </button>
  
 <!-- OJO ERROR -->
