@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title="Ver registros con Error">
   <i class="bi bi-eye"></i>
       <span>Error:</span>
-      <span class="text-danger">${ejec.error ?? 0}</span>
+      <span class="fw-bold">${ejec.error ?? 0}</span>
 
 </button>
  
