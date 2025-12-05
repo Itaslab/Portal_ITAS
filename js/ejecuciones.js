@@ -178,19 +178,10 @@ document.addEventListener("DOMContentLoaded", () => {
   <i class="bi bi-eye"></i>
       <span>Error:</span>
       <span class="text-danger">${ejec.error ?? 0}</span>
-                     </button>
 
- <!-- Botón con ícono de buscar -->
-<button class="text-dark btn btn-outline-secondary btn-sm btn-detalle"
-        data-idtasklist="${ejec.id}"
-        data-bs-toggle="modal"
-        data-bs-target="#modalBuscar">
-  <i class="bi bi-search"></i>
 </button>
-
  
                     </div>
-
                   </td>
  
                   <td class="text-start">
@@ -205,7 +196,15 @@ document.addEventListener("DOMContentLoaded", () => {
                         <i class="bi bi-x-circle"></i>
                       </button>
  
-       
+                      <!-- Botón con ícono de buscar -->
+                     
+<button class="btn btn-outline-secondary btn-sm btn-log"
+        data-idtasklist="${ejec.id}"
+        data-bs-toggle="modal"
+        data-bs-target="#modalBuscar">
+  <i class="bi bi-search"></i>
+</button>
+ 
                      
  
                       <!-- Botón con ícono de flecha -->
