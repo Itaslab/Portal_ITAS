@@ -138,62 +138,60 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 </td>
  
-                 <td class="text-start">
-                    <div class="small mb-1 d-flex align-items-center gap-1 border p-2 mb-2">
-                     
-<!-- OJO TOTAL -->
-<button type="button"
-        class="text-primary btn btn-outline-secondary btn-sm btn-detalle"
-        data-idtasklist="${ejec.id}"
-        data-detalle="total"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        title="Ver registros Total">
-     <i class="bi bi-eye"></i>
-      <span>Total:</span>
-      <span class="text-primary">${ejec.total ?? 0}</span>
-</button>
- 
-<!-- OJO OK -->
-<button type="button"
-        class=" text-success btn btn-outline-secondary btn-sm btn-detalle"
-        data-idtasklist="${ejec.id}"
-        data-detalle="ok"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        title="Ver registros OK">
-  <i class="bi bi-eye"></i>
-   <span>     OK:</span>
-      <span class="text-success">${ejec.ok ?? 0}</span>
-</button>
- 
-<!-- OJO ERROR -->
-<button type="button"
-        class="text-danger btn btn-outline-secondary btn-sm btn-detalle"
-        data-idtasklist="${ejec.id}"
-        data-detalle="error"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        title="Ver registros con Error">
-  <i class="bi bi-eye"></i>
-      <span>Error:</span>
-      <span class="text-danger">${ejec.error ?? 0}</span>
 
-</button>
-                    
-              
+<td class="text-start">
+  <div class="d-flex gap-2 border rounded p-2 bg-light justify-content-start">
+    
+    <!-- Total -->
+    <button type="button"
+            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 btn-detalle"
+            data-idtasklist="${ejec.id}"
+            data-detalle="total"
+            data-bs-toggle="modal"
+            data-bs-target="#detalleItemModal"
+            title="Ver registros Total">
+      <i class="bi bi-eye text-primary"></i>
+      <span class="text-primary fw-semibold">Total:</span>
+      <span class="text-primary fw-bold">${ejec.total ?? 0}</span>
+    </button>
 
+    <!-- OK -->
+    <button type="button"
+            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 btn-detalle"
+            data-idtasklist="${ejec.id}"
+            data-detalle="ok"
+            data-bs-toggle="modal"
+            data-bs-target="#detalleItemModal"
+            title="Ver registros OK">
+      <i class="bi bi-eye text-success"></i>
+      <span class="text-success fw-semibold">OK:</span>
+      <span class="text-success fw-bold">${ejec.ok ?? 0}</span>
+    </button>
 
-                      <!-- Botón con ícono de buscar -->
-                     
-<button class="btn btn-outline-secondary btn-sm btn-log"
-        data-idtasklist="${ejec.id}"
-        data-bs-toggle="modal"
-        data-bs-target="#modalBuscar">
-  <i class="bi bi-search"></i>
-</button> 
-                    </div>
-                  </td>
+    <!-- Error -->
+    <button type="button"
+            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 btn-detalle"
+            data-idtasklist="${ejec.id}"
+            data-detalle="error"
+            data-bs-toggle="modal"
+            data-bs-target="#detalleItemModal"
+            title="Ver registros con Error">
+      <i class="bi bi-eye text-danger"></i>
+      <span class="text-danger fw-semibold">Error:</span>
+      <span class="text-danger fw-bold">${ejec.error ?? 0}</span>
+    </button>
+
+    <!-- Buscar -->
+    <button class="btn btn-outline-secondary btn-sm btn-log"
+            data-idtasklist="${ejec.id}"
+            data-bs-toggle="modal"
+            data-bs-target="#modalBuscar"
+            title="Buscar en log">
+      <i class="bi bi-search"></i>
+    </button>
+  </div>
+</td>
+
  
                   <td class="text-start">
                     <div class="small fw-semibold mb-1">Avance: ${ejec.avance}%</div>
