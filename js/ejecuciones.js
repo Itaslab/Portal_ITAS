@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
             data-bs-toggle="modal"
             data-bs-target="#modalBuscar"
             title="Buscar en log">
-      <i class="bi bi-search"></i>
+      <i class="bi-journal-text"></i>
     </button>
   </div>
 </td>
