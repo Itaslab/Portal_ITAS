@@ -140,11 +140,11 @@ document.addEventListener("DOMContentLoaded", () => {
  
 
 <td class="text-start">
-  <div class="d-flex gap-2 border rounded p-2 bg-light justify-content-start">
+  <div class="d-flex flex-column gap-2 border rounded p-2 bg-light">
     
     <!-- Total -->
     <button type="button"
-            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 btn-detalle"
+            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
             data-idtasklist="${ejec.id}"
             data-detalle="total"
             data-bs-toggle="modal"
@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <!-- OK -->
     <button type="button"
-            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 btn-detalle"
+            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
             data-idtasklist="${ejec.id}"
             data-detalle="ok"
             data-bs-toggle="modal"
@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <!-- Error -->
     <button type="button"
-            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 btn-detalle"
+            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
             data-idtasklist="${ejec.id}"
             data-detalle="error"
             data-bs-toggle="modal"
