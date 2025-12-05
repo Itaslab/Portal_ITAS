@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title="Ver registros Total">
   <i class="bi bi-eye"></i>
    <span class="etiqueta">Total:</span>
-      <span class="valor">${ejec.id}</span>
+      <span class="valor">${ejec.total}</span>
 </button>
  
 <!-- OJO OK -->
