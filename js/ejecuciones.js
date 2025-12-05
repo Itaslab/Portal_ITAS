@@ -139,50 +139,44 @@ document.addEventListener("DOMContentLoaded", () => {
 </td>
  
  
-                 
-<td class="text-start">
-  <div class="panel-registros rounded p-2">
-    <!-- Total -->
-    <button type="button"
-            class="registro-item btn btn-link text-start p-0"
-            data-idtasklist="${ejec.id}"
-            data-detalle="total"
-            data-bs-toggle="modal"
-            data-bs-target="#detalleItemModal"
-            title="Ver registros Total">
-      <i class="bi bi-broadcast me-2 icono"></i>
-      <span class="etiqueta">Total:</span>
-      <span class="valor">${ejec.total ?? 0}</span>
-    </button>
-
-    <!-- OK -->
-    <button type="button"
-            class="registro-item btn btn-link text-start p-0"
-            data-idtasklist="${ejec.id}"
-            data-detalle="ok"
-            data-bs-toggle="modal"
-            data-bs-target="#detalleItemModal"
-            title="Ver registros OK">
-      <i class="bi bi-broadcast me-2 icono"></i>
-      <span class="etiqueta">Reg. Proc. OK:</span>
-      <span class="valor">${ejec.ok ?? 0}</span>
-    </button>
-
-    <!-- Error -->
-    <button type="button"
-            class="registro-item btn btn-link text-start p-0"
-            data-idtasklist="${ejec.id}"
-            data-detalle="error"
-            data-bs-toggle="modal"
-            data-bs-target="#detalleItemModal"
-            title="Ver registros con Error">
-      <i class="bi bi-broadcast me-2 icono"></i>
-      <span class="etiqueta">Reg con Error:</span>
-      <span class="valor">${ejec.error ?? 0}</span>
-    </button>
-  </div>
-</td>
-
+                  <td class="text-start">
+                    <div class="small mb-1 d-flex align-items-center gap-1 border p-2 mb-2">
+                     
+<!-- OJO TOTAL -->
+<button type="button"
+        class="btn btn-outline-secondary btn-sm btn-detalle"
+        data-idtasklist="${ejec.id}"
+        data-detalle="total"
+        data-bs-toggle="modal"
+        data-bs-target="#detalleItemModal"
+        title="Ver registros Total">
+  <i class="bi bi-eye"></i>
+</button>
+ 
+<!-- OJO OK -->
+<button type="button"
+        class="btn btn-outline-secondary btn-sm btn-detalle"
+        data-idtasklist="${ejec.id}"
+        data-detalle="ok"
+        data-bs-toggle="modal"
+        data-bs-target="#detalleItemModal"
+        title="Ver registros OK">
+  <i class="bi bi-eye"></i>
+</button>
+ 
+<!-- OJO ERROR -->
+<button type="button"
+        class="btn btn-outline-secondary btn-sm btn-detalle"
+        data-idtasklist="${ejec.id}"
+        data-detalle="error"
+        data-bs-toggle="modal"
+        data-bs-target="#detalleItemModal"
+        title="Ver registros con Error">
+  <i class="bi bi-eye"></i>
+</button>
+ 
+                    </div>
+                  </td>
  
                   <td class="text-start">
                     <div class="small fw-semibold mb-1">Avance: ${ejec.avance}%</div>
