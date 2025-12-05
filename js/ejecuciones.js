@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
                      
 <!-- OJO TOTAL -->
 <button type="button"
-        class="btn btn-outline-secondary btn-sm btn-detalle"
+        class="registro-item btn btn-link text-start p-0"
         data-idtasklist="${ejec.id}"
         data-detalle="total"
         data-bs-toggle="modal"
