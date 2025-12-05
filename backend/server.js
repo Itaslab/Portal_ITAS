@@ -24,6 +24,7 @@ const usuarioMe = require('./usuarioMe');
 const { obtenerPermisosUsuario } = require("./appPermisos");
 const appOrdenesSFGaleriaAuto = require("./appOrdenesSF_galeriaMq");
 const ejecucionesDetalle = require("./galeriaEjecucionesDetalles");
+const logs = require("./logs"); // <-- importar el nuevo router
 
  
  
@@ -110,6 +111,7 @@ app.get("/usuarios/:id_usuario", appOrdenesSFUsuarioDetalle);
 app.post("/usuarios/:id_usuario/asignar", updateAsignar);
 app.post("/usuarios/actualizar", actualizarUsuario);
 app.use("/api/galeria-auto-mq", appOrdenesSFGaleriaAuto);
+app.use("/api/logs", logs);
  
  
 app.get("/permisos/:id_usuario", checkAuth, obtenerPermisosUsuario);
