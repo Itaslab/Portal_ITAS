@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title="Ver registros OK">
   <i class="bi bi-eye"></i>
    <span class="etiqueta">Reg. Proc. OK:</span>
-      <span class="valor">${ejec.id}</span>
+      <span class="valor">${ejec.ok}</span>
 </button>
  
 <!-- OJO ERROR -->
@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
         title="Ver registros con Error">
   <i class="bi bi-eye"></i>
      <span class="etiqueta">Reg con Error:</span>
-      <span class="valor">${ejec.id}</span>
+      <span class="valor">${ejec.error}</span>
 </button>
  
                     </div>
