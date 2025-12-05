@@ -149,9 +149,9 @@ document.addEventListener("DOMContentLoaded", () => {
         data-bs-toggle="modal"
         data-bs-target="#detalleItemModal"
         title="Ver registros Total">
-     <i class="bi bi-broadcast"></i>
+     <i class="bi bi-eye"></i>
       <span>Total:</span>
-      <span class="fw-bold">${ejec.id ?? 0}</span>
+      <span class="fw-bold">${ejec.total ?? 0}</span>
 </button>
  
 <!-- OJO OK -->
@@ -163,6 +163,8 @@ document.addEventListener("DOMContentLoaded", () => {
         data-bs-target="#detalleItemModal"
         title="Ver registros OK">
   <i class="bi bi-eye"></i>
+   <span> OK:</span>
+      <span class="fw-bold">${ejec.ok ?? 0}</span>
 </button>
  
 <!-- OJO ERROR -->
@@ -174,6 +176,9 @@ document.addEventListener("DOMContentLoaded", () => {
         data-bs-target="#detalleItemModal"
         title="Ver registros con Error">
   <i class="bi bi-eye"></i>
+      <span>Error:</span>
+      <span class="fw-bold">${ejec.error ?? 0}</span>
+
 </button>
  
                     </div>
