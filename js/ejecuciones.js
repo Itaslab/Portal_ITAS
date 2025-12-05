@@ -181,16 +181,17 @@ document.addEventListener("DOMContentLoaded", () => {
                      <!-- Botón con ícono de buscar -->
                      </button>
 
+ 
+
+ 
+                    </div>
+                    
 <button class="btn btn-outline-secondary btn-sm btn-log"
         data-idtasklist="${ejec.id}"
         data-bs-toggle="modal"
         data-bs-target="#modalBuscar">
   <i class="bi bi-search"></i>
 </button>
- 
-
- 
-                    </div>
                   </td>
  
                   <td class="text-start">
