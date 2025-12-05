@@ -179,7 +179,8 @@ document.addEventListener("DOMContentLoaded", () => {
       <span>Error:</span>
       <span class="text-danger">${ejec.error ?? 0}</span>
                      <!-- Botón con ícono de buscar -->
-                     
+                     </button>
+
 <button class="btn btn-outline-secondary btn-sm btn-log"
         data-idtasklist="${ejec.id}"
         data-bs-toggle="modal"
@@ -188,7 +189,6 @@ document.addEventListener("DOMContentLoaded", () => {
 </button>
  
 
-</button>
  
                     </div>
                   </td>
