@@ -6,38 +6,71 @@ document.addEventListener("DOMContentLoaded", () => {
  
   let ejecuciones = [];
  
-  // 🔹 Cargar datos desde backend
-  async function cargarEjecuciones() {
-    try {
-      const res = await fetch("/ejecuciones");
-      const data = await res.json();
- 
-      if (!data.success) {
-        console.error("Error en backend:", data.error);
-        return;
-      }
- 
-      ejecuciones = data.data.map(item => ({
-        id: item.Id_Tasklist,
-        flujo: item.Titulo_Tasklist,
-        identificador: item.Identificador,
-        usuario: item.Email,
-        estado: item.Estado,
-        avance: item.Avance,
-        resultado: item.Resultado,
-        fechaInicio: item.Fecha_Inicio,
-        fechaFin: item.Fecha_Fin,
-        total: item.Reg_Totales,
-        ok: item.Reg_Proc_OK,
-        error: item.Reg_Proc_NOK
-      }));
- 
-      llenarFiltroSolicitante();
-      renderTabla();
-    } catch (err) {
-      console.error("Error al obtener ejecuciones:", err);
+  // 🔹 Funciones para calcular OK y ERROR según tus datos
+function calcularOk(item) {
+  // Cuenta todos los registros que serían OK (puedes adaptarlo a tu estructura)
+  // Aquí simulamos que "Dato" = 1 → OK
+  if (!item.Detalle) return 0; // si no hay detalle, 0 OK
+  return item.Detalle.filter(r => r.Dato == 1 || r.Dato === "1" || r.Dato === true || r.Dato === "true").length;
+}
+
+function calcularError(item) {
+  // Cuenta todos los registros que serían ERROR
+  if (!item.Detalle) return 0;
+  return item.Detalle.filter(r => r.Dato == 0 || r.Dato === "0" || r.Dato === false || r.Dato === "false" || r.Dato == null).length;
+}
+
+async function cargarEjecuciones() {
+  try {
+    const res = await fetch("/ejecuciones");
+    const data = await res.json();
+
+    if (!data.success) {
+      console.error("Error en backend:", data.error);
+      return;
     }
+
+    // 🔹 VALIDACIÓN PREVIA DE OK / ERROR
+    data.data = data.data.map(item => {
+      let ok = item.Reg_Proc_OK;
+      let error = item.Reg_Proc_NOK;
+
+      // si ok o error vienen null, undefined o vacíos → los recalculo
+      if (ok == null || error == null) {
+        ok = calcularOk(item);
+        error = calcularError(item);
+      }
+
+      return {
+        ...item,
+        Reg_Proc_OK: ok,
+        Reg_Proc_NOK: error
+      };
+    });
+
+    // 🔹 Mapeo para la tabla
+    ejecuciones = data.data.map(item => ({
+      id: item.Id_Tasklist,
+      flujo: item.Titulo_Tasklist,
+      identificador: item.Identificador,
+      usuario: item.Email,
+      estado: item.Estado,
+      avance: item.Avance,
+      resultado: item.Resultado,
+      fechaInicio: item.Fecha_Inicio,
+      fechaFin: item.Fecha_Fin,
+      total: item.Reg_Totales,
+      ok: item.Reg_Proc_OK,       // ya viene corregido
+      error: item.Reg_Proc_NOK    // ya viene corregido
+    }));
+
+    llenarFiltroSolicitante();
+    renderTabla();
+
+  } catch (err) {
+    console.error("Error al obtener ejecuciones:", err);
   }
+}
  
   // 🔹 Llenar select de solicitantes dinámicamente
   function llenarFiltroSolicitante() {
