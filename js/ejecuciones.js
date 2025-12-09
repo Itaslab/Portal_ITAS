@@ -2,6 +2,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabla = document.getElementById("tablaEjecuciones");
   const filtroSolicitante = document.getElementById("filtroSolicitante");
   const filtroRegistro = document.getElementById("filtroRegistro");
+  document.getElementById("cantTotal").innerText = total;
+document.getElementById("cantOk").innerText = ok;
+document.getElementById("cantError").innerText = error;
  
   let ejecuciones = [];
  
@@ -571,6 +574,25 @@ function descargarCSV(csv, nombre) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+
+function actualizarEstadoBotones() {
+    const btnTotal = document.getElementById("btnTotal");
+    const btnOk = document.getElementById("btnOk");
+    const btnError = document.getElementById("btnError");
+
+    const total = parseInt(document.querySelector("#cantTotal").innerText);
+    const ok = parseInt(document.querySelector("#cantOk").innerText);
+    const error = parseInt(document.querySelector("#cantError").innerText);
+
+    btnTotal.disabled = (total === 0);
+    btnOk.disabled = (ok === 0);
+    btnError.disabled = (error === 0);
+}
+
+actualizarEstadoBotones();
+
+
 
 // BOTONES DE ACCION (HANDLERS)
 
