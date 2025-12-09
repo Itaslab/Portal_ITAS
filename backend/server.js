@@ -25,7 +25,8 @@ const { obtenerPermisosUsuario } = require("./appPermisos");
 const appOrdenesSFGaleriaAuto = require("./appOrdenesSF_galeriaMq");
 const ejecucionesDetalle = require("./galeriaEjecucionesDetalles");
 const logs = require("./logs"); // <-- importar el nuevo router
-const cancelarTarea = require("./cancelarTarea");
+const cancelarTarea = require("./galeriaEjecuciones_acciones");
+
 
 
  
