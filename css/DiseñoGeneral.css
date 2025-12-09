@@ -377,3 +377,12 @@ td.text-start i.fas,
   border: 1px solid #dee2e6;
 }
 
+#btnLogout {
+  color: white !important;
+}
+
+
+#userGreetingBar * {
+  font-family: 'Chakra Petch' !important;
+}
+
