@@ -232,6 +232,19 @@ document.addEventListener("DOMContentLoaded", () => {
           </td>
         `;
         tabla.appendChild(row);
+        row.querySelectorAll(".btn-detalle").forEach(btn => {
+        const valor = Number(btn.querySelector("span.fw-bold")?.textContent 
+        || btn.querySelector("span.text-primary.fw-bold")?.textContent
+        || btn.querySelector("span.text-success.fw-bold")?.textContent
+        || btn.querySelector("span.text-danger.fw-bold")?.textContent
+        || 0);
+        if (valor === 0) {
+        btn.classList.add("disabled");      // aspecto visual bootstrap
+        btn.style.pointerEvents = "none";   // evita click
+        btn.style.opacity = "0.5";          // se ve gris
+        }
+        });
+        
       });
  
    
