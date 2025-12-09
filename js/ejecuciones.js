@@ -335,117 +335,125 @@ $(document).on("click", ".btn-detalle", async function (e) {
     </div>
   `);
 
-  // Mostrar modal (reutilizando instancia)
-  const modalEl = document.getElementById("detalleItemModal");
-  const modal = bootstrap.Modal.getInstance(modalEl) ?? new bootstrap.Modal(modalEl);
-  modal.show();
+     // Mostrar modal
+    const modalEl = document.getElementById("detalleItemModal");
+    const modal = bootstrap.Modal.getInstance(modalEl) ?? new bootstrap.Modal(modalEl);
+    modal.show();
 
-  try {
-    const res = await fetch(`/api/ejecuciones/detalle/${id}`);
-    const data = await res.json();
+    try {
+        const res = await fetch(`/api/ejecuciones/detalle/${id}`);
+        const data = await res.json();
 
-    if (!data || !Array.isArray(data) || data.length === 0) {
-      $("#detalleItemModalTitle").text("Sin datos");
-      $("#detalleItemModalBody").html("<p>No hay información disponible para este registro.</p>");
-      return;
-    }
-
-    let filtrados = data;
-    if (tipoDetalle === "ok") {
-      filtrados = data.filter(r => (r.Resultado ?? "").toLowerCase().includes("ok"));
-    } else if (tipoDetalle === "error") {
-      filtrados = data.filter(r => {
-        const res = (r.Resultado ?? "").toLowerCase();
-        return res.includes("error") || res.includes("nok");
-      });
-    }
-
-    const tituloBase =
-      tipoDetalle === "ok" ? "Detalle OK" :
-      tipoDetalle === "error" ? "Detalle ERROR" :
-      "Detalle TOTAL";
-
-    if (!filtrados.length) {
-      $("#detalleItemModalTitle").text(`${tituloBase} (0)`);
-      $("#detalleItemModalBody").html("<p>No hay registros para este filtro.</p>");
-      return;
-    }
-
-    const first = filtrados[0];
-    const col1 = first.Campos ?? "Columna 1";
-    const col2 = first.Campos_Accion ?? "Columna 2";
-    const col3 = first.Campos_Resultado ?? "Columna 3";
-
-    let html = `
-      <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-          <tr>
-            <th>${col1}</th>
-            <th>${col2}</th>
-            <th>${col3}</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
-
-    filtrados.forEach(r => {
-      html += `
-        <tr>
-          <td>${r.Dato ?? "-"}</td>
-          <td>${r.Accion ?? "-"}</td>
-          <td>${r.Resultado ?? "-"}</td>
-        </tr>`;
-    });
-
-    html += `</tbody></table>`;
-
-    $("#detalleItemModalTitle").text(`${tituloBase} (${filtrados.length})`);
-    $("#detalleItemModalBody").html(html);
-
-    $("#detalleItemModalBody").append(`
-      <div class="text-end mt-3">
-        <button id="btnDescargarCSV" class="btn btn-outline-primary btn-sm">
-          <i class="bi bi-download"></i> Descargar CSV
-        </button>
-      </div>
-    `);
-
-    $("#btnDescargarCSV").on("click", function () {
-      let csv = "";
-
-      if (first.CamposEncabezado) {
-        csv += first.CamposEncabezado + "\n";
-      } else {
-        csv += `${col1};${col2};${col3}\n`;
-      }
-
-      filtrados.forEach(r => {
-        if (r.FilaCompleta) {
-          csv += r.FilaCompleta + "\n";
-        } else {
-          csv += `${r.Dato ?? "-"};${r.Accion ?? "-"};${r.Resultado ?? "-"}\n`;
+        if (!data || !Array.isArray(data) || data.length === 0) {
+            $("#detalleItemModalTitle").text("Sin datos");
+            $("#detalleItemModalBody").html("<p>No hay registros para este detalle.</p>");
+            return;
         }
-      });
 
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `detalle_${tipoDetalle}_${id}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    });
+        // Normalizar OK
+        function normalizarOK(v) {
+            if (v === 1 || v === "1" || v === true || v === "true") return 1;
+            if (v === 0 || v === "0" || v === false || v === "false") return 0;
+            return null;
+        }
+        data.forEach(r => r.Ok = normalizarOK(r.Ok));
 
-  } catch (err) {
-    $("#detalleItemModalTitle").text("Error");
-    $("#detalleItemModalBody").html("<p>No se pudo obtener la información.</p>");
-    console.error(err);
-  }
-});
+        // Filtrado según botón
+        let filtrados = data;
+        if (tipoDetalle === "ok") filtrados = data.filter(r => r.Ok === 1);
+        if (tipoDetalle === "error") filtrados = data.filter(r => r.Ok === 0 || r.Ok === null);
 
- 
+        const tituloBase =
+            tipoDetalle === "ok" ? "Detalle OK" :
+            tipoDetalle === "error" ? "Detalle ERROR" :
+            "Detalle TOTAL";
+
+        if (filtrados.length === 0) {
+            $("#detalleItemModalTitle").text(`${tituloBase} (0)`);
+            $("#detalleItemModalBody").html(`<p>No hay registros para mostrar.</p>`);
+            return;
+        }
+
+        // Encabezados desde backend
+        const first = filtrados[0];
+        const col1 = first.Campos ?? "Columna 1";
+        const col2 = first.Campos_Accion ?? "Columna 2";
+        const col3 = first.Campos_Resultado ?? "Columna 3";
+
+        // Render tabla
+        let html = `
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>${col1}</th>
+                    <th>${col2}</th>
+                    <th>${col3}</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        filtrados.forEach(r => {
+            html += `
+                <tr>
+                    <td>${r.Dato ?? "-"}</td>
+                    <td>${r.Accion ?? "-"}</td>
+                    <td>${r.Resultado ?? "-"}</td>
+                </tr>
+            `;
+        });
+
+        html += "</tbody></table>";
+
+        $("#detalleItemModalTitle").text(`${tituloBase} (${filtrados.length})`);
+        $("#detalleItemModalBody").html(html);
+
+        // Botón CSV
+        $("#detalleItemModalBody").append(`
+            <div class="text-end mt-3">
+                <button id="btnDescargarCSV" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-download"></i> Descargar CSV
+                </button>
+            </div>
+        `);
+
+        // Evento para descargar CSV
+        $("#btnDescargarCSV").on("click", function () {
+
+            let csv = "";
+
+            // Si backend manda encabezado ya concatenado
+            if (first.CamposEncabezado) {
+                csv += first.CamposEncabezado + "\n";
+            } else {
+                csv += `${col1};${col2};${col3}\n`;
+            }
+
+            filtrados.forEach(r => {
+                if (r.FilaCompleta) {
+                    csv += r.FilaCompleta + "\n";
+                } else {
+                    csv += `${r.Dato ?? "-"};${r.Accion ?? "-"};${r.Resultado ?? "-"}\n`;
+                }
+            });
+
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `detalle_${tipoDetalle}_${id}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        });
+
+    } catch (err) {
+        $("#detalleItemModalTitle").text("Error");
+        $("#detalleItemModalBody").html("<p>No se pudo obtener la información.</p>");
+        console.error(err);
+    }
+  });
  
  
 // Delegación: al click del botón .btn-log abrimos modal y pedimos el log
