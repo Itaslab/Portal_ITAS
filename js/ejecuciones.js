@@ -572,13 +572,11 @@ $(document).on("click", ".btn-cancelar", async function () {
     const id = $(this).data("idtasklist");
     const mail = usuarioLogueadoEmail; // o desde tu login
 
-    const res = await fetch("/api/ejecuciones/cancelar", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ idTasklist: id, mail })
-    });
+const res = await fetch("/api/cancelar/cancelar", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ idTasklist: id, mail })
+});
 
     const data = await res.json();
 
