@@ -322,9 +322,7 @@ $(document).on("click", ".btn-detalle", async function (e) {
   const id = $(this).data("idtasklist");
   const tipoDetalle = $(this).data("detalle"); // "total" | "ok" | "error"
 
-  // Limpiar cualquier backdrop residual
-  $(".modal-backdrop").remove();
-  $("body").removeClass("modal-open");
+
 
   // Mostrar cargando
   $("#detalleItemModalTitle").text("Cargando...");
