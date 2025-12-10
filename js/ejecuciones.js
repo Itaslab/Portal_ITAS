@@ -2,97 +2,42 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabla = document.getElementById("tablaEjecuciones");
   const filtroSolicitante = document.getElementById("filtroSolicitante");
   const filtroRegistro = document.getElementById("filtroRegistro");
-
+ 
  
   let ejecuciones = [];
-
-function actualizarContadores(ejecuciones) {
-  // calculamos las cantidades
-  const total = ejecuciones.length;
-  const ok = ejecuciones.filter(e => e.Reg_Proc_OK > 0).length;
-  const error = ejecuciones.filter(e => e.Reg_Proc_NOK > 0).length;
-
-  // actualizamos los spans en los botones
-  document.getElementById("countTotal").textContent = total;
-  document.getElementById("countOk").textContent = ok;
-  document.getElementById("countError").textContent = error;
-}
-
-
  
-
-async function cargarEjecuciones() {
-  try {
-    const res = await fetch("/ejecuciones");
-    const data = await res.json();
-
-
-    if (!data.success) {
-      console.error("Error en backend:", data.error);
-      return;
+  // 🔹 Cargar datos desde backend
+  async function cargarEjecuciones() {
+    try {
+      const res = await fetch("/ejecuciones");
+      const data = await res.json();
+ 
+      if (!data.success) {
+        console.error("Error en backend:", data.error);
+        return;
+      }
+ 
+      ejecuciones = data.data.map(item => ({
+        id: item.Id_Tasklist,
+        flujo: item.Titulo_Tasklist,
+        identificador: item.Identificador,
+        usuario: item.Email,
+        estado: item.Estado,
+        avance: item.Avance,
+        resultado: item.Resultado,
+        fechaInicio: item.Fecha_Inicio,
+        fechaFin: item.Fecha_Fin,
+        total: item.Reg_Totales,
+        ok: item.Reg_Proc_OK,
+        error: item.Reg_Proc_NOK
+      }));
+ 
+      llenarFiltroSolicitante();
+      renderTabla();
+    } catch (err) {
+      console.error("Error al obtener ejecuciones:", err);
     }
-
-
-
-
-    // 🔹 Normalizamos y calculamos total, ok y error
-    data.data = data.data.map(item => {
-      const detalle = Array.isArray(item.Detalle) ? item.Detalle : [];
-      
-      // Normalizar OK
-      const normalizarOK = v => {
-        if (v === 1 || v === "1" || v === true || v === "true") return 1;
-        if (v === 0 || v === "0" || v === false || v === "false") return 0;
-        return null;
-      };
-
-      const ok = detalle.filter(r => normalizarOK(r.Dato) === 1).length;
-      const error = detalle.filter(r => normalizarOK(r.Dato) === 0 || normalizarOK(r.Dato) === null).length;
-      const total = detalle.length;
-
-      return {
-        ...item,
-        ok,
-        error,
-        total
-      };
-    });
-
-    // 🔹 Mapear para la tabla
-    ejecuciones = data.data.map(item => ({
-      id: item.Id_Tasklist,
-      flujo: item.Titulo_Tasklist,
-      identificador: item.Identificador,
-      usuario: item.Email,
-      estado: item.Estado,
-      avance: item.Avance,
-      resultado: item.Resultado,
-      fechaInicio: item.Fecha_Inicio,
-      fechaFin: item.Fecha_Fin,
-      total: item.total,
-      ok: item.ok,
-      error: item.error
-    }));
-    actualizarContadores(ejecuciones);
-    llenarFiltroSolicitante();
-    renderTabla();
-
-    // Al final de cargarEjecuciones(), después de renderTabla():
-const total = ejecuciones.reduce((acc, e) => acc + (e.total || 0), 0);
-const ok = ejecuciones.reduce((acc, e) => acc + (e.ok || 0), 0);
-const error = ejecuciones.reduce((acc, e) => acc + (e.error || 0), 0);
-
-document.getElementById("cantTotal").innerText = total;
-document.getElementById("cantOk").innerText = ok;
-document.getElementById("cantError").innerText = error;
-
-
-
-
-  } catch (err) {
-    console.error("Error al obtener ejecuciones:", err);
   }
-}
  
   // 🔹 Llenar select de solicitantes dinámicamente
   function llenarFiltroSolicitante() {
@@ -194,10 +139,10 @@ document.getElementById("cantError").innerText = error;
   </div>
 </td>
  
-
+ 
 <td class="text-start">
   <div class="d-flex flex-column gap-2 border rounded p-2 bg-light">
-    
+   
     <!-- Total -->
     <button type="button"
             class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
@@ -210,7 +155,7 @@ document.getElementById("cantError").innerText = error;
       <span class="text-primary fw-semibold">Total:</span>
       <span class="text-primary fw-bold">${ejec.total ?? 0}</span>
     </button>
-
+ 
     <!-- OK -->
     <button type="button"
             class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
@@ -223,7 +168,7 @@ document.getElementById("cantError").innerText = error;
       <span class="text-success fw-semibold">OK:</span>
       <span class="text-success fw-bold">${ejec.ok ?? 0}</span>
     </button>
-
+ 
     <!-- Error -->
     <button type="button"
             class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
@@ -236,7 +181,7 @@ document.getElementById("cantError").innerText = error;
       <span class="text-danger fw-semibold">Error:</span>
       <span class="text-danger fw-bold">${ejec.error ?? 0}</span>
     </button>
-
+ 
     <!-- Buscar -->
     <button class="btn btn-outline-secondary btn-sm btn-log"
             data-idtasklist="${ejec.id}"
@@ -248,7 +193,7 @@ document.getElementById("cantError").innerText = error;
     </button>
   </div>
 </td>
-
+ 
  
                   <td class="text-start">
                     <div class="small fw-semibold mb-1">Avance: ${ejec.avance}%</div>
@@ -261,7 +206,7 @@ document.getElementById("cantError").innerText = error;
                       <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCerrar">
                         <i class="bi bi-x-circle"></i>
                       </button>
-
+ 
  
                      
  
@@ -287,16 +232,19 @@ document.getElementById("cantError").innerText = error;
           </td>
         `;
         tabla.appendChild(row);
-row.querySelectorAll(".btn-detalle").forEach(btn => {
-  const spans = btn.querySelectorAll("span");
-  const numero = Number(spans[spans.length - 1].textContent.trim());
-        if (numero === 0) {
+        row.querySelectorAll(".btn-detalle").forEach(btn => {
+        const valor = Number(btn.querySelector("span.fw-bold")?.textContent
+        || btn.querySelector("span.text-primary.fw-bold")?.textContent
+        || btn.querySelector("span.text-success.fw-bold")?.textContent
+        || btn.querySelector("span.text-danger.fw-bold")?.textContent
+        || 0);
+        if (valor === 0) {
         btn.classList.add("disabled");      // aspecto visual bootstrap
         btn.style.pointerEvents = "none";   // evita click
         btn.style.opacity = "0.5";          // se ve gris
         }
         });
-        
+       
       });
  
    
@@ -373,23 +321,23 @@ btnSolicitar.addEventListener("click", () => {
 // ------------------------------
 // BOTÓN OJO → DETALLE (TOTAL/OK/ERROR) + DESCARGA CSV
 // ------------------------------
-
-
-
+ 
+ 
+ 
 $(document).on("click", ".btn-detalle", async function (e) {
-
+ 
   // 🚫 NUEVO: si el valor es 0 no abrimos nada
   const total = Number($(this).find("span.fw-bold").text() || 0);
   if (total === 0) {
     e.stopImmediatePropagation(); // frena cualquier otra acción
     return; // no abrir modal
   }
-
+ 
   const id = $(this).data("idtasklist");
   const tipoDetalle = $(this).data("detalle"); // "total" | "ok" | "error"
-
-
-
+ 
+ 
+ 
   // Mostrar cargando
   $("#detalleItemModalTitle").text("Cargando...");
   $("#detalleItemModalBody").html(`
@@ -398,22 +346,22 @@ $(document).on("click", ".btn-detalle", async function (e) {
       <p class="mt-2">Obteniendo datos...</p>
     </div>
   `);
-
+ 
      // Mostrar modal
     const modalEl = document.getElementById("detalleItemModal");
     const modal = bootstrap.Modal.getInstance(modalEl) ?? new bootstrap.Modal(modalEl);
     modal.show();
-
+ 
     try {
         const res = await fetch(`/api/ejecuciones/detalle/${id}`);
         const data = await res.json();
-
+ 
         if (!data || !Array.isArray(data) || data.length === 0) {
             $("#detalleItemModalTitle").text("Sin datos");
             $("#detalleItemModalBody").html("<p>No hay registros para este detalle.</p>");
             return;
         }
-
+ 
         // Normalizar OK
         function normalizarOK(v) {
             if (v === 1 || v === "1" || v === true || v === "true") return 1;
@@ -421,29 +369,29 @@ $(document).on("click", ".btn-detalle", async function (e) {
             return null;
         }
         data.forEach(r => r.Ok = normalizarOK(r.Ok));
-
+ 
         // Filtrado según botón
         let filtrados = data;
         if (tipoDetalle === "ok") filtrados = data.filter(r => r.Ok === 1);
         if (tipoDetalle === "error") filtrados = data.filter(r => r.Ok === 0 || r.Ok === null);
-
+ 
         const tituloBase =
             tipoDetalle === "ok" ? "Detalle OK" :
             tipoDetalle === "error" ? "Detalle ERROR" :
             "Detalle TOTAL";
-
+ 
         if (filtrados.length === 0) {
             $("#detalleItemModalTitle").text(`${tituloBase} (0)`);
             $("#detalleItemModalBody").html(`<p>No hay registros para mostrar.</p>`);
             return;
         }
-
+ 
         // Encabezados desde backend
         const first = filtrados[0];
         const col1 = first.Campos ?? "Columna 1";
         const col2 = first.Campos_Accion ?? "Columna 2";
         const col3 = first.Campos_Resultado ?? "Columna 3";
-
+ 
         // Render tabla
         let html = `
         <table class="table table-bordered table-striped">
@@ -456,7 +404,7 @@ $(document).on("click", ".btn-detalle", async function (e) {
             </thead>
             <tbody>
         `;
-
+ 
         filtrados.forEach(r => {
             html += `
                 <tr>
@@ -466,12 +414,12 @@ $(document).on("click", ".btn-detalle", async function (e) {
                 </tr>
             `;
         });
-
+ 
         html += "</tbody></table>";
-
+ 
         $("#detalleItemModalTitle").text(`${tituloBase} (${filtrados.length})`);
         $("#detalleItemModalBody").html(html);
-
+ 
         // Botón CSV
         $("#detalleItemModalBody").append(`
             <div class="text-end mt-3">
@@ -480,19 +428,19 @@ $(document).on("click", ".btn-detalle", async function (e) {
                 </button>
             </div>
         `);
-
+ 
         // Evento para descargar CSV
         $("#btnDescargarCSV").on("click", function () {
-
+ 
             let csv = "";
-
+ 
             // Si backend manda encabezado ya concatenado
             if (first.CamposEncabezado) {
                 csv += first.CamposEncabezado + "\n";
             } else {
                 csv += `${col1};${col2};${col3}\n`;
             }
-
+ 
             filtrados.forEach(r => {
                 if (r.FilaCompleta) {
                     csv += r.FilaCompleta + "\n";
@@ -500,7 +448,7 @@ $(document).on("click", ".btn-detalle", async function (e) {
                     csv += `${r.Dato ?? "-"};${r.Accion ?? "-"};${r.Resultado ?? "-"}\n`;
                 }
             });
-
+ 
             const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
@@ -511,7 +459,7 @@ $(document).on("click", ".btn-detalle", async function (e) {
             a.remove();
             URL.revokeObjectURL(url);
         });
-
+ 
     } catch (err) {
         $("#detalleItemModalTitle").text("Error");
         $("#detalleItemModalBody").html("<p>No se pudo obtener la información.</p>");
@@ -637,44 +585,44 @@ function descargarCSV(csv, nombre) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
-
-
+ 
+ 
 document.getElementById("cantTotal").innerText = total;
 document.getElementById("cantOk").innerText = ok;
 document.getElementById("cantError").innerText = error;
-
+ 
 function actualizarEstadoBotones() {
     const btnTotal = document.getElementById("btnTotal");
     const btnOk = document.getElementById("btnOk");
     const btnError = document.getElementById("btnError");
-
+ 
     const total = parseInt(document.querySelector("#cantTotal").innerText);
     const ok = parseInt(document.querySelector("#cantOk").innerText);
     const error = parseInt(document.querySelector("#cantError").innerText);
-
+ 
     btnTotal.disabled = (total === 0);
     btnOk.disabled = (ok === 0);
     btnError.disabled = (error === 0);
 }
-
+ 
 actualizarEstadoBotones();
-
-
-
+ 
+ 
+ 
 // BOTONES DE ACCION (HANDLERS)
-
+ 
 $(document).on("click", ".btn-cancelar", async function () {
     const id = $(this).data("idtasklist");
     const mail = usuarioLogueadoEmail; // o desde tu login
-
+ 
 const res = await fetch("/api/cancelar/cancelar", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ idTasklist: id, mail })
 });
-
+ 
     const data = await res.json();
-
+ 
     if (data.success) {
         alert("Tarea cancelada correctamente");
         cargarEjecuciones(); // refrescar grilla si querés
