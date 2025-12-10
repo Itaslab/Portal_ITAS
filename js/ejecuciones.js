@@ -6,19 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
  
   let ejecuciones = [];
  
-  // 🔹 Funciones para calcular OK y ERROR según tus datos
-function calcularOk(item) {
-  // Cuenta todos los registros que serían OK (puedes adaptarlo a tu estructura)
-  // Aquí simulamos que "Dato" = 1 → OK
-  if (!item.Detalle) return 0; // si no hay detalle, 0 OK
-  return item.Detalle.filter(r => r.Dato == 1 || r.Dato === "1" || r.Dato === true || r.Dato === "true").length;
-}
-
-function calcularError(item) {
-  // Cuenta todos los registros que serían ERROR
-  if (!item.Detalle) return 0;
-  return item.Detalle.filter(r => r.Dato == 0 || r.Dato === "0" || r.Dato === false || r.Dato === "false" || r.Dato == null).length;
-}
 
 async function cargarEjecuciones() {
   try {
@@ -30,37 +17,50 @@ async function cargarEjecuciones() {
       return;
     }
 
-    
-  // 🔹 VALIDACIÓN PREVIA DE OK / ERROR
+    // 🔹 Normalizamos y calculamos total, ok y error
     data.data = data.data.map(item => {
-      const ok = calcularOk(item);       // siempre recalculamos
-      const error = calcularError(item); // siempre recalculamos
+      const detalle = Array.isArray(item.Detalle) ? item.Detalle : [];
+      
+      // Normalizar OK
+      const normalizarOK = v => {
+        if (v === 1 || v === "1" || v === true || v === "true") return 1;
+        if (v === 0 || v === "0" || v === false || v === "false") return 0;
+        return null;
+      };
 
-    return {
-      ...item,
-      ok,    // estas son las que usamos en la tabla
-      error  // estas son las que usamos en la tabla
-    };
-  });
+      const ok = detalle.filter(r => normalizarOK(r.Dato) === 1).length;
+      const error = detalle.filter(r => normalizarOK(r.Dato) === 0 || normalizarOK(r.Dato) === null).length;
+      const total = detalle.length;
 
-// 🔹 Mapeo para la tabla
-  ejecuciones = data.data.map(item => ({
-  id: item.Id_Tasklist,
-  flujo: item.Titulo_Tasklist,
-  identificador: item.Identificador,
-  usuario: item.Email,
-  estado: item.Estado,
-  avance: item.Avance,
-  resultado: item.Resultado,
-  fechaInicio: item.Fecha_Inicio,
-  fechaFin: item.Fecha_Fin,
-  total: item.Reg_Totales,
-  ok: item.ok,       // ya viene recalculado
-  error: item.error  // ya viene recalculado
-}));
+      return {
+        ...item,
+        ok,
+        error,
+        total
+      };
+    });
+
+    // 🔹 Mapear para la tabla
+    ejecuciones = data.data.map(item => ({
+      id: item.Id_Tasklist,
+      flujo: item.Titulo_Tasklist,
+      identificador: item.Identificador,
+      usuario: item.Email,
+      estado: item.Estado,
+      avance: item.Avance,
+      resultado: item.Resultado,
+      fechaInicio: item.Fecha_Inicio,
+      fechaFin: item.Fecha_Fin,
+      total: item.total,
+      ok: item.ok,
+      error: item.error
+    }));
 
     llenarFiltroSolicitante();
     renderTabla();
+
+    // 🔹 Actualizamos los botones globales si existen
+    actualizarEstadoBotones();
 
   } catch (err) {
     console.error("Error al obtener ejecuciones:", err);
