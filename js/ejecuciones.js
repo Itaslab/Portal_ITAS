@@ -433,7 +433,12 @@ $(document).on("click", ".btn-detalle", async function (e) {
         const col1 = first.Campos ?? "Columna 1";
         const col2 = first.Campos_Accion ?? "Columna 2";
         const col3 = first.Campos_Resultado ?? "Columna 3";
- 
+        const col4 = first.Fecha_Hora ?? "Columna 4";
+        const col5 = first.Status ?? "Columna 5";
+        const col6 = first.Status_Anterior ?? "Columna 6";
+        const col7 = first.Intentos ?? "Columna 7";
+        const col8 = first.Ultimo_Error ?? "Columna 8";
+
         // Render tabla
         let html = `
         <table class="table table-bordered table-striped">
@@ -442,6 +447,11 @@ $(document).on("click", ".btn-detalle", async function (e) {
                     <th>${col1}</th>
                     <th>${col2}</th>
                     <th>${col3}</th>
+                    <th>${col4}</th>
+                    <th>${col5}</th>
+                    <th>${col6}</th>
+                    <th>${col7}</th>
+                    <th>${col8}</th>
                 </tr>
             </thead>
             <tbody>
@@ -453,6 +463,11 @@ $(document).on("click", ".btn-detalle", async function (e) {
                     <td>${r.Dato ?? "-"}</td>
                     <td>${r.Accion ?? "-"}</td>
                     <td>${r.Resultado ?? "-"}</td>
+                    <td>${r.Fecha_Hora ?? "-"}</td>
+                    <td>${r.Status ?? "-"}</td>
+                    <td>${r.Status_Anterior ?? "-"}</td>
+                    <td>${r.Intentos ?? "-"}</td>
+                    <td>${r.Ultimo_Error ?? "-"}</td>
                 </tr>
             `;
         });
