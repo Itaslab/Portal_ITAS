@@ -12,6 +12,7 @@ async function cargarEjecuciones() {
     const res = await fetch("/ejecuciones");
     const data = await res.json();
 
+
     if (!data.success) {
       console.error("Error en backend:", data.error);
       return;
@@ -55,7 +56,7 @@ async function cargarEjecuciones() {
       ok: item.ok,
       error: item.error
     }));
-
+    actualizarContadores();
     llenarFiltroSolicitante();
     renderTabla();
 
@@ -70,8 +71,6 @@ document.getElementById("cantError").innerText = error;
 
 actualizarEstadoBotones();
 
-    // 🔹 Actualizamos los botones globales si existen
-    actualizarEstadoBotones();
 
   } catch (err) {
     console.error("Error al obtener ejecuciones:", err);
