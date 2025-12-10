@@ -5,39 +5,81 @@ document.addEventListener("DOMContentLoaded", () => {
  
  
   let ejecuciones = [];
+
+    // ⬇️ PRIMERO: función obtenerContadores
+    async function obtenerContadores(id) {
+        try {
+            const res = await fetch(`/api/ejecuciones/detalle/${id}`);
+            const data = await res.json();
+
+            if (!Array.isArray(data)) return { total: 0, ok: 0, error: 0 };
+
+            // Normalizar OK igual que el modal
+            function normalizarOK(v) {
+                if (v === 1 || v === "1" || v === true || v === "true") return 1;
+                if (v === 0 || v === "0" || v === false || v === "false") return 0;
+                return null;
+            }
+
+            data.forEach(r => r.Ok = normalizarOK(r.Ok));
+
+            const ok = data.filter(r => r.Ok === 1).length;
+            const error = data.filter(r => r.Ok === 0).length;
+            const total = data.length;
+
+            return { total, ok, error };
+
+        } catch (e) {
+            console.error("Error obteniendo contadores:", e);
+            return { total: 0, ok: 0, error: 0 };
+        }
+    }
+
  
   // 🔹 Cargar datos desde backend
-  async function cargarEjecuciones() {
+async function cargarEjecuciones() {
     try {
-      const res = await fetch("/ejecuciones");
-      const data = await res.json();
- 
-      if (!data.success) {
-        console.error("Error en backend:", data.error);
-        return;
-      }
- 
-      ejecuciones = data.data.map(item => ({
-        id: item.Id_Tasklist,
-        flujo: item.Titulo_Tasklist,
-        identificador: item.Identificador,
-        usuario: item.Email,
-        estado: item.Estado,
-        avance: item.Avance,
-        resultado: item.Resultado,
-        fechaInicio: item.Fecha_Inicio,
-        fechaFin: item.Fecha_Fin,
-        total: item.Reg_Totales,
-        ok: item.Reg_Proc_OK,
-        error: item.Reg_Proc_NOK
-      }));
- 
-      llenarFiltroSolicitante();
-      renderTabla();
+        const res = await fetch("/ejecuciones");
+        const data = await res.json();
+
+        if (!data.success) {
+            console.error("Error en backend:", data.error);
+            return;
+        }
+
+        // 1) Primero mapeamos los datos base
+        ejecuciones = await Promise.all(
+            data.data.map(async item => {
+                // Pedimos el detalle y calculamos contadores reales
+                const { total, ok, error } = await obtenerContadores(item.Id_Tasklist);
+
+                return {
+                    id: item.Id_Tasklist,
+                    flujo: item.Titulo_Tasklist,
+                    identificador: item.Identificador,
+                    usuario: item.Email,
+                    estado: item.Estado,
+                    avance: item.Avance,
+                    resultado: item.Resultado,
+                    fechaInicio: item.Fecha_Inicio,
+                    fechaFin: item.Fecha_Fin,
+
+                    // 🔥 Ahora sí: valores REALES
+                    total: total,
+                    ok: ok,
+                    error: error
+                };
+            })
+        );
+
+        // 2) Mantengo tus funciones tal cual
+        llenarFiltroSolicitante();
+        renderTabla();
+
     } catch (err) {
-      console.error("Error al obtener ejecuciones:", err);
+        console.error("Error al obtener ejecuciones:", err);
     }
-  }
+}
  
   // 🔹 Llenar select de solicitantes dinámicamente
   function llenarFiltroSolicitante() {
@@ -373,7 +415,7 @@ $(document).on("click", ".btn-detalle", async function (e) {
         // Filtrado según botón
         let filtrados = data;
         if (tipoDetalle === "ok") filtrados = data.filter(r => r.Ok === 1);
-        if (tipoDetalle === "error") filtrados = data.filter(r => r.Ok === 0 || r.Ok === null);
+        if (tipoDetalle === "error") filtrados = data.filter(r => r.Ok === 0 );
  
         const tituloBase =
             tipoDetalle === "ok" ? "Detalle OK" :
