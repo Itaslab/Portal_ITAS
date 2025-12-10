@@ -40,12 +40,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 2) ARRAY ORIGINAL DE APPS
   // ------------------------------
   const apps = [
-    { id: 3, name: "Robot Itas", category: "Telecom", collection: "Bots", img: "../images/robot.png", url: "../pages/EjecucionesPorRobot.html" },
-    { id: 2, name: "APP Ordenes SF", category: "Telecom", collection: "Bots", img: "../images/robot_01.png", url: "../pages/AppOrdenesSf.html" },
+    { id: 4, name: "Robot Itas", category: "Telecom", collection: "Bots", img: "../images/robot.png", url: "../pages/EjecucionesPorRobot.html" },
+    { id: 3, name: "APP Ordenes SF", category: "Telecom", collection: "Bots", img: "../images/robot_01.png", url: "../pages/AppOrdenesSf.html" },
     { id: 7, name: "Helix", category: "Telecom", collection: "Gestión", img: "../images/bmx_helix.png" },
-    { id: 4, name: "Compartido", category: "Privados", collection: "Gestión", img: "https://img.icons8.com/fluency/48/folder-invoices.png" },
-    { id: 5, name: "Grafana", category: "Telecom", collection: "Gestión", img: "../images/Grafana.png", url: "https://portal-itas.telecom.com.ar:3000/grafana/login" },
-    { id: 6, name: "ABM Usuarios", category: "Privado", collection: "Gestión", img: "../images/ABM.jpg", url: "../pages/ModulosAbmUsuarios.html" }
+    { id: 9, name: "Compartido", category: "Privados", collection: "Gestión", img: "https://img.icons8.com/fluency/48/folder-invoices.png" },
+    { id: 8, name: "Grafana", category: "Telecom", collection: "Gestión", img: "../images/Grafana.png", url: "https://portal-itas.telecom.com.ar:3000/grafana/login" },
+    { id: 1, name: "ABM Usuarios", category: "Privado", collection: "Gestión", img: "../images/ABM.jpg", url: "../pages/ModulosAbmUsuarios.html" }
   ];
 
   // ------------------------------
