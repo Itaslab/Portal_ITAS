@@ -1,3 +1,4 @@
+//galeriaEjecuciones.js
 const { sql, poolPromise } = require("./db");
  
 module.exports = async (req, res) => {

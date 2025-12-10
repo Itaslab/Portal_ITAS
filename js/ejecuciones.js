@@ -18,6 +18,9 @@ async function cargarEjecuciones() {
       return;
     }
 
+
+
+
     // 🔹 Normalizamos y calculamos total, ok y error
     data.data = data.data.map(item => {
       const detalle = Array.isArray(item.Detalle) ? item.Detalle : [];
@@ -69,7 +72,7 @@ document.getElementById("cantTotal").innerText = total;
 document.getElementById("cantOk").innerText = ok;
 document.getElementById("cantError").innerText = error;
 
-actualizarEstadoBotones();
+
 
 
   } catch (err) {
@@ -270,13 +273,10 @@ actualizarEstadoBotones();
           </td>
         `;
         tabla.appendChild(row);
-        row.querySelectorAll(".btn-detalle").forEach(btn => {
-        const valor = Number(btn.querySelector("span.fw-bold")?.textContent 
-        || btn.querySelector("span.text-primary.fw-bold")?.textContent
-        || btn.querySelector("span.text-success.fw-bold")?.textContent
-        || btn.querySelector("span.text-danger.fw-bold")?.textContent
-        || 0);
-        if (valor === 0) {
+row.querySelectorAll(".btn-detalle").forEach(btn => {
+  const spans = btn.querySelectorAll("span");
+  const numero = Number(spans[spans.length - 1].textContent.trim());
+        if (numero === 0) {
         btn.classList.add("disabled");      // aspecto visual bootstrap
         btn.style.pointerEvents = "none";   // evita click
         btn.style.opacity = "0.5";          // se ve gris
