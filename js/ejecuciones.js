@@ -30,39 +30,34 @@ async function cargarEjecuciones() {
       return;
     }
 
-    // 🔹 VALIDACIÓN PREVIA DE OK / ERROR
+    
+  // 🔹 VALIDACIÓN PREVIA DE OK / ERROR
     data.data = data.data.map(item => {
-      let ok = item.Reg_Proc_OK;
-      let error = item.Reg_Proc_NOK;
+      const ok = calcularOk(item);       // siempre recalculamos
+      const error = calcularError(item); // siempre recalculamos
 
-      // si ok o error vienen null, undefined o vacíos → los recalculo
-      if (ok == null || error == null) {
-        ok = calcularOk(item);
-        error = calcularError(item);
-      }
+    return {
+      ...item,
+      ok,    // estas son las que usamos en la tabla
+      error  // estas son las que usamos en la tabla
+    };
+  });
 
-      return {
-        ...item,
-        Reg_Proc_OK: ok,
-        Reg_Proc_NOK: error
-      };
-    });
-
-    // 🔹 Mapeo para la tabla
-    ejecuciones = data.data.map(item => ({
-      id: item.Id_Tasklist,
-      flujo: item.Titulo_Tasklist,
-      identificador: item.Identificador,
-      usuario: item.Email,
-      estado: item.Estado,
-      avance: item.Avance,
-      resultado: item.Resultado,
-      fechaInicio: item.Fecha_Inicio,
-      fechaFin: item.Fecha_Fin,
-      total: item.Reg_Totales,
-      ok: item.Reg_Proc_OK,       // ya viene corregido
-      error: item.Reg_Proc_NOK    // ya viene corregido
-    }));
+// 🔹 Mapeo para la tabla
+  ejecuciones = data.data.map(item => ({
+  id: item.Id_Tasklist,
+  flujo: item.Titulo_Tasklist,
+  identificador: item.Identificador,
+  usuario: item.Email,
+  estado: item.Estado,
+  avance: item.Avance,
+  resultado: item.Resultado,
+  fechaInicio: item.Fecha_Inicio,
+  fechaFin: item.Fecha_Fin,
+  total: item.Reg_Totales,
+  ok: item.ok,       // ya viene recalculado
+  error: item.error  // ya viene recalculado
+}));
 
     llenarFiltroSolicitante();
     renderTabla();
