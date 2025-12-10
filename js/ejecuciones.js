@@ -511,14 +511,14 @@ $(document).on("click", ".btn-detalle", async function (e) {
             if (first.CamposEncabezado) {
                 csv += first.CamposEncabezado + "\n";
             } else {
-                csv += `${col1};${col2};${col3}\n`;
+                csv += `${col1};${col2};${col3};${col4};${col5};${col6};${col7};${col8}\n`;
             }
  
             filtrados.forEach(r => {
                 if (r.FilaCompleta) {
                     csv += r.FilaCompleta + "\n";
                 } else {
-                    csv += `${r.Dato ?? "-"};${r.Accion ?? "-"};${r.Resultado ?? "-"}\n`;
+                    csv += `${r.Dato ?? "-"};${r.Accion ?? "-"};${r.Resultado ?? "-"};${r.Fecha_Hora ?? "-"};${r.Status ?? "-"};${r.Status_Anterior ?? "-"};${r.Intentos ?? "-"};${r.Ultimo_Error ?? "-"}\n`;
                 }
             });
  
