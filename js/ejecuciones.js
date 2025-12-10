@@ -433,11 +433,11 @@ $(document).on("click", ".btn-detalle", async function (e) {
         const col1 = first.Campos ?? "Columna 1";
         const col2 = first.Campos_Accion ?? "Columna 2";
         const col3 = first.Campos_Resultado ?? "Columna 3";
-        const col4 = first.Fecha_Hora ?? "Columna 4";
-        const col5 = first.Status ?? "Columna 5";
-        const col6 = first.Status_Anterior ?? "Columna 6";
-        const col7 = first.Intentos ?? "Columna 7";
-        const col8 = first.Ultimo_Error ?? "Columna 8";
+        const col4 = Fecha_Hora ?? "Columna 4";
+        const col5 = Status ?? "Columna 5";
+        const col6 = Status_Anterior ?? "Columna 6";
+        const col7 = Intentos ?? "Columna 7";
+        const col8 = Ultimo_Error ?? "Columna 8";
 
         // Render tabla
         let html = `
