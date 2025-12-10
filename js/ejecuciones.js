@@ -5,6 +5,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
  
   let ejecuciones = [];
+
+function actualizarContadores(ejecuciones) {
+  // calculamos las cantidades
+  const total = ejecuciones.length;
+  const ok = ejecuciones.filter(e => e.Reg_Proc_OK > 0).length;
+  const error = ejecuciones.filter(e => e.Reg_Proc_NOK > 0).length;
+
+  // actualizamos los spans en los botones
+  document.getElementById("countTotal").textContent = total;
+  document.getElementById("countOk").textContent = ok;
+  document.getElementById("countError").textContent = error;
+}
+
+
  
 
 async function cargarEjecuciones() {
@@ -59,7 +73,7 @@ async function cargarEjecuciones() {
       ok: item.ok,
       error: item.error
     }));
-    actualizarContadores();
+    actualizarContadores(ejecuciones);
     llenarFiltroSolicitante();
     renderTabla();
 
