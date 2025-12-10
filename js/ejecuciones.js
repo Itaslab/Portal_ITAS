@@ -439,7 +439,21 @@ $(document).on("click", ".btn-detalle", async function (e) {
         const col6 = "Status Anterior";
         const col7 = "Intentos";
         const col8 = "Último Error";
+      
 
+      function formatearFecha(fechaISO) {
+         if (!fechaISO) return "-";
+         const d = new Date(fechaISO);
+
+         const dia = String(d.getDate()).padStart(2, "0");
+         const mes = String(d.getMonth() + 1).padStart(2, "0");
+         const año = d.getFullYear();
+
+         const horas = String(d.getHours()).padStart(2, "0");
+         const minutos = String(d.getMinutes()).padStart(2, "0");
+
+         return `${dia}/${mes}/${año} ${horas}:${minutos}`;
+     }
 
         // Render tabla
         let html = `
@@ -465,7 +479,7 @@ $(document).on("click", ".btn-detalle", async function (e) {
                     <td>${r.Dato ?? "-"}</td>
                     <td>${r.Accion ?? "-"}</td>
                     <td>${r.Resultado ?? "-"}</td>
-                    <td>${r.Fecha_Hora ?? "-"}</td>
+                    <td>${formatearFecha(r.Fecha_Hora)}</td>
                     <td>${r.Status ?? "-"}</td>
                     <td>${r.Status_Anterior ?? "-"}</td>
                     <td>${r.Intentos ?? "-"}</td>
