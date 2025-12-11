@@ -20,20 +20,42 @@ async function ejecutarSP(nombreSP, idTasklist, idUsuario) {
 // --------------------- ENDPOINTS ----------------------
 
 // CANCELAR
+//router.post("/cancelar", async (req, res) => {
+//  const { idTasklist, idUsuario } = req.body;
+
+//  console.log("🔥 RECIBIDO:", { idTasklist, idUsuario });
+
+
+ // try {
+ //   await ejecutarSP("a002103.PortalRPABotonCancelarTarea", idTasklist, idUsuario);
+ //   res.json({ success: true, message: "Tarea cancelada correctamente" });
+//  } catch (err) {
+//    console.error("Error cancelar tarea:", err);
+//    res.status(500).json({ success: false, error: err.message });
+//  }
+//});
+
 router.post("/cancelar", async (req, res) => {
   const { idTasklist, idUsuario } = req.body;
 
   console.log("🔥 RECIBIDO:", { idTasklist, idUsuario });
 
-
   try {
     await ejecutarSP("a002103.PortalRPABotonCancelarTarea", idTasklist, idUsuario);
-    res.json({ success: true, message: "Tarea cancelada correctamente" });
+
+    return res.json({
+      debug: { idTasklist, idUsuario },
+      success: true,
+      message: "Tarea cancelada correctamente"
+    });
+
   } catch (err) {
     console.error("Error cancelar tarea:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
+
 
 // PAUSAR
 router.post("/pausar", async (req, res) => {
