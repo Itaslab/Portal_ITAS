@@ -1,29 +1,86 @@
+// galeriaEjecuciones_acciones.js 
+
+// galeriaEjecuciones_acciones.js
 const express = require("express");
 const router = express.Router();
 const { sql, poolPromise } = require("./db");
 
-// Ruta para cancelar tarea
+// 🔥 Función genérica para ejecutar SP
+async function ejecutarSP(nombreSP, idTasklist, idUsuario) {
+  const pool = await poolPromise;
+
+  const result = await pool.request()
+    .input("Id_Tasklist", sql.Int, idTasklist)
+    .input("id_usuario", sql.Int, idUsuario)
+    .execute(nombreSP);
+
+  return result;
+}
+
+// --------------------- ENDPOINTS ----------------------
+
+// CANCELAR
 router.post("/cancelar", async (req, res) => {
+  const { idTasklist, idUsuario } = req.body;
+
   try {
-    const { idTasklist, mail } = req.body;
-
-    if (!idTasklist || !mail) {
-      return res.status(400).json({ success: false, error: "Faltan parámetros" });
-    }
-
-    const pool = await poolPromise;
-
-    await pool
-      .request()
-      .input("Id_Tasklist", sql.Int, idTasklist)
-      .input("mail", sql.VarChar, mail)
-      .execute("a002103.PortalRPABotonCancelarTarea");
-
+    await ejecutarSP("a002103.PortalRPABotonCancelarTarea", idTasklist, idUsuario);
     res.json({ success: true, message: "Tarea cancelada correctamente" });
+  } catch (err) {
+    console.error("Error cancelar tarea:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
-  } catch (error) {
-    console.error("Error ejecutando SP:", error);
-    res.status(500).json({ success: false, error: error.message });
+// PAUSAR
+router.post("/pausar", async (req, res) => {
+  const { idTasklist, idUsuario } = req.body;
+
+  try {
+    await ejecutarSP("a002103.PortalRPABotonPausarTarea", idTasklist, idUsuario);
+    res.json({ success: true, message: "Tarea pausada correctamente" });
+  } catch (err) {
+    console.error("Error pausar tarea:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// REANUDAR
+router.post("/reanudar", async (req, res) => {
+  const { idTasklist, idUsuario } = req.body;
+
+  try {
+    await ejecutarSP("a002103.PortalRPABotonReanudarTarea", idTasklist, idUsuario);
+    res.json({ success: true, message: "Tarea reanudada correctamente" });
+  } catch (err) {
+    console.error("Error reanudar tarea:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// REENVIAR TODO
+router.post("/reenviar-todo", async (req, res) => {
+  const { idTasklist, idUsuario } = req.body;
+
+  try {
+    await ejecutarSP("a002103.PortalRPABotonReenviarTodo", idTasklist, idUsuario);
+    res.json({ success: true, message: "Reenvío total ejecutado" });
+  } catch (err) {
+    console.error("Error reenviar todo:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// REENVIAR FALLIDOS
+router.post("/reenviar-fallidos", async (req, res) => {
+  const { idTasklist, idUsuario } = req.body;
+
+  try {
+    await ejecutarSP("a002103.PortalRPABotonReenviarFallidos", idTasklist, idUsuario);
+    res.json({ success: true, message: "Reenvío de fallidos ejecutado" });
+  } catch (err) {
+    console.error("Error reenviar fallidos:", err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

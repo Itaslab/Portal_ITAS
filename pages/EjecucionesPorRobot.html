@@ -102,7 +102,7 @@
   </div>
 </div>
  
-<!-- Modal Buscar -->
+<!-- Modal Log -->
  
 <div class="modal fade" id="modalBuscar" tabindex="-1" aria-labelledby="modalBuscarLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -125,58 +125,102 @@
 </div>
  
  
-<!-- Modal Flecha -->
-<div class="modal fade" id="modalFlecha" tabindex="-1" aria-hidden="true">
+<!-- Modal Reanudar -->
+<div class="modal fade" id="modalReanudar" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
+      
       <div class="modal-header">
-        <h5 class="modal-title">Acción siguiente</h5>
+        <h5 class="modal-title">
+          <i class="bi bi-play-fill"></i> Reanudar proceso
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
-        ¿Deseas continuar con el siguiente paso?
+        ¿Deseas reanudar la ejecución?
       </div>
+
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button class="btn btn-success">Continuar</button>
+        <button class="btn btn-success" id="btnConfirmarReanudar">Reanudar</button>
       </div>
+
     </div>
   </div>
 </div>
  
-<!-- Modal Carpeta -->
-<div class="modal fade" id="modalCarpeta" tabindex="-1" aria-hidden="true">
+<!-- Modal Pausar -->
+<div class="modal fade" id="modalPausar" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
+      
       <div class="modal-header">
-        <h5 class="modal-title">Abrir carpeta</h5>
+        <h5 class="modal-title">
+          <i class="bi bi-pause-fill"></i> Pausar proceso
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
-        Aquí puedes mostrar archivos relacionados.
+        ¿Deseas pausar la ejecución ahora?
       </div>
+
       <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-warning" id="btnConfirmarPausar">Pausar</button>
       </div>
+
     </div>
   </div>
 </div>
  
-<!-- Modal Retroceder -->
-<div class="modal fade" id="modalRetroceder" tabindex="-1" aria-hidden="true">
+<!-- Modal Reenviar -->
+<div class="modal fade" id="modalReenviar" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
+
       <div class="modal-header">
-        <h5 class="modal-title">Retroceder acción</h5>
+        <h5 class="modal-title">
+          <i class="bi bi-arrow-repeat"></i> Reenviar proceso
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
-        ¿Seguro que deseas volver al paso anterior?
+        ¿Deseas reenviar esta ejecución?
       </div>
+
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button class="btn btn-warning">Retroceder</button>
+        <button class="btn btn-primary" id="btnConfirmarReenviar">Reenviar</button>
       </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal Reenviar Fallidos -->
+<div class="modal fade" id="modalReenviarFallidos" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-exclamation-triangle-fill"></i> Reenviar fallidos
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        ¿Deseas reenviar únicamente los registros que fallaron?
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-danger" id="btnConfirmarReenviarFallidos">Reenviar fallidos</button>
+      </div>
+
     </div>
   </div>
 </div>
@@ -203,5 +247,7 @@
  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/ejecuciones.js"></script>
+<script src="../js/ejecucionesAux.js"></script>
+
 </body>
 </html>

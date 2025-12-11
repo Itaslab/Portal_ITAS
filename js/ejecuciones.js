@@ -1,3 +1,5 @@
+//ejecuciones.js
+
 document.addEventListener("DOMContentLoaded", () => {
   const tabla = document.getElementById("tablaEjecuciones");
   const filtroSolicitante = document.getElementById("filtroSolicitante");
@@ -684,22 +686,3 @@ actualizarEstadoBotones();
  
 // BOTONES DE ACCION (HANDLERS)
  
-$(document).on("click", ".btn-cancelar", async function () {
-    const id = $(this).data("idtasklist");
-    const mail = usuarioLogueadoEmail; // o desde tu login
- 
-const res = await fetch("/api/cancelar/cancelar", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ idTasklist: id, mail })
-});
- 
-    const data = await res.json();
- 
-    if (data.success) {
-        alert("Tarea cancelada correctamente");
-        cargarEjecuciones(); // refrescar grilla si querés
-    } else {
-        alert("Error: " + data.error);
-    }
-});
