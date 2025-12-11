@@ -187,44 +187,47 @@ async function cargarEjecuciones() {
 <td class="text-start">
   <div class="d-flex flex-column gap-2 border rounded p-2 bg-light">
    
-    <!-- Total -->
-    <button type="button"
-            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
-            data-idtasklist="${ejec.id}"
-            data-detalle="total"
-            data-bs-toggle="modal"
-            data-bs-target="#detalleItemModal"
-            title="Ver registros Total">
-      <i class="bi bi-eye text-primary"></i>
-      <span class="text-primary fw-semibold">Total:</span>
-      <span class="text-primary fw-bold">${ejec.total ?? 0}</span>
-    </button>
- 
-    <!-- OK -->
-    <button type="button"
-            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
-            data-idtasklist="${ejec.id}"
-            data-detalle="ok"
-            data-bs-toggle="modal"
-            data-bs-target="#detalleItemModal"
-            title="Ver registros OK">
-      <i class="bi bi-eye text-success"></i>
-      <span class="text-success fw-semibold">OK:</span>
-      <span class="text-success fw-bold">${ejec.ok ?? 0}</span>
-    </button>
- 
-    <!-- Error -->
-    <button type="button"
-            class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
-            data-idtasklist="${ejec.id}"
-            data-detalle="error"
-            data-bs-toggle="modal"
-            data-bs-target="#detalleItemModal"
-            title="Ver registros con Error">
-      <i class="bi bi-eye text-danger"></i>
-      <span class="text-danger fw-semibold">Error:</span>
-      <span class="text-danger fw-bold">${ejec.error ?? 0}</span>
-    </button>
+<!-- Total -->
+<button type="button"
+        class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
+        data-idtasklist="${ejec.id}"
+        data-detalle="total"
+        data-valor="${ejec.total ?? 0}"
+        data-bs-toggle="modal"
+        data-bs-target="#detalleItemModal"
+        title="Ver registros Total">
+  <i class="bi bi-eye text-primary"></i>
+  <span class="text-primary fw-semibold">Total:</span>
+  <span class="text-primary fw-bold">${ejec.total ?? 0}</span>
+</button>
+
+<!-- OK -->
+<button type="button"
+        class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
+        data-idtasklist="${ejec.id}"
+        data-detalle="ok"
+        data-valor="${ejec.ok ?? 0}"
+        data-bs-toggle="modal"
+        data-bs-target="#detalleItemModal"
+        title="Ver registros OK">
+  <i class="bi bi-eye text-success"></i>
+  <span class="text-success fw-semibold">OK:</span>
+  <span class="text-success fw-bold">${ejec.ok ?? 0}</span>
+</button>
+
+<!-- Error -->
+<button type="button"
+        class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
+        data-idtasklist="${ejec.id}"
+        data-detalle="error"
+        data-valor="${ejec.error ?? 0}"
+        data-bs-toggle="modal"
+        data-bs-target="#detalleItemModal"
+        title="Ver registros con Error">
+  <i class="bi bi-eye text-danger"></i>
+  <span class="text-danger fw-semibold">Error:</span>
+  <span class="text-danger fw-bold">${ejec.error ?? 0}</span>
+</button>
  
     <!-- Buscar -->
     <button class="btn btn-outline-secondary btn-sm btn-log"
@@ -238,38 +241,35 @@ async function cargarEjecuciones() {
   </div>
 </td>
  
- 
-                  <td class="text-start">
-                    <div class="small fw-semibold mb-1">Avance: ${ejec.avance}%</div>
-                    <div class="progress mb-2" style="height: 10px;">
-                      <div class="progress-bar bg-success" role="progressbar" style="width: ${ejec.avance}%;" aria-valuenow="${ejec.avance}" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
- 
-                    <div class="d-flex flex-wrap gap-2 mt-2">
-                      <!-- Botón con ícono de cruz -->
-                      <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCerrar">
-                        <i class="bi bi-x-circle"></i>
-                      </button>
- 
- 
-                     
- 
-                      <!-- Botón con ícono de flecha -->
-                      <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalFlecha">
-                        <i class="bi bi-arrow-right"></i>
-                      </button>
- 
-                      <!-- Botón con ícono de carpeta -->
-                      <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCarpeta">
-                        <i class="bi bi-folder"></i>
-                      </button>
- 
-                      <!-- Botón con ícono de retroceder -->
-                      <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalRetroceder">
-                        <i class="bi bi-arrow-counterclockwise"></i>
-                      </button>
-                    </div>
-                  </td>
+<td class="text-center">
+  <!-- Cancelar -->
+  <button class="btn btn-outline-secondary btn-sm" 
+          data-bs-toggle="modal" 
+          data-bs-target="#modalCancelar">
+    <i class="bi bi-x-circle"></i>
+  </button>
+
+  <!-- Reanudar -->
+  <button class="btn btn-outline-secondary btn-sm" 
+          data-bs-toggle="modal" 
+          data-bs-target="#modalReanudar">
+    <i class="bi bi-arrow-clockwise"></i>
+  </button>
+
+  <!-- Reenviar -->
+  <button class="btn btn-outline-secondary btn-sm" 
+          data-bs-toggle="modal" 
+          data-bs-target="#modalReenviar">
+    <i class="bi bi-send"></i>
+  </button>
+
+  <!-- Reenviar Fallidos -->
+  <button class="btn btn-outline-secondary btn-sm" 
+          data-bs-toggle="modal" 
+          data-bs-target="#modalReenviarFallidos">
+    <i class="bi bi-arrow-counterclockwise"></i>
+  </button>
+</td>
                 </tr>
               </tbody>
             </table>
@@ -277,16 +277,12 @@ async function cargarEjecuciones() {
         `;
         tabla.appendChild(row);
         row.querySelectorAll(".btn-detalle").forEach(btn => {
-        const valor = Number(btn.querySelector("span.fw-bold")?.textContent
-        || btn.querySelector("span.text-primary.fw-bold")?.textContent
-        || btn.querySelector("span.text-success.fw-bold")?.textContent
-        || btn.querySelector("span.text-danger.fw-bold")?.textContent
-        || 0);
-        if (valor === 0) {
-        btn.classList.add("disabled");      // aspecto visual bootstrap
-        btn.style.pointerEvents = "none";   // evita click
-        btn.style.opacity = "0.5";          // se ve gris
-        }
+const valor = Number(btn.dataset.valor || 0);
+if (valor === 0) {
+  btn.classList.add("disabled");
+  btn.style.pointerEvents = "none";
+  btn.style.opacity = "0.5";
+}
         });
        
       });
@@ -686,7 +682,7 @@ actualizarEstadoBotones();
  
 // BOTONES DE ACCION (HANDLERS)
 
-// ejecucionesAux.js
+
 // VARIABLES GLOBALES
 // =========================
 let ejecucionSeleccionada = null;
