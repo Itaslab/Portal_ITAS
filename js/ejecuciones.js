@@ -657,11 +657,7 @@ function descargarCSV(csv, nombre) {
   URL.revokeObjectURL(url);
 }
  
- 
-document.getElementById("cantTotal").innerText = total;
-document.getElementById("cantOk").innerText = ok;
-document.getElementById("cantError").innerText = error;
- 
+  
 function actualizarEstadoBotones() {
     const btnTotal = document.getElementById("btnTotal");
     const btnOk = document.getElementById("btnOk");
