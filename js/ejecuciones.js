@@ -718,20 +718,9 @@ function abrirModalReenviarFallidos(id) {
 // =========================
 
 // CANCELAR
-//async function confirmarCancelar() {
-//  await ejecutarAccionBackend("cancelar");
-//}
-
-
-const r = await fetch("/acciones/cancelar", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ idTasklist, idUsuario })
-});
-
-const data = await r.json();
-console.log("DEBUG DESDE BACKEND:", data.debug);
-
+async function confirmarCancelar() {
+  await ejecutarAccionBackend("cancelar");
+}
 
 
 
