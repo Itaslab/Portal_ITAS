@@ -658,21 +658,14 @@ function descargarCSV(csv, nombre) {
 }
  
   
-function actualizarEstadoBotones() {
-    const btnTotal = document.getElementById("btnTotal");
-    const btnOk = document.getElementById("btnOk");
-    const btnError = document.getElementById("btnError");
- 
-    const total = parseInt(document.querySelector("#cantTotal").innerText);
-    const ok = parseInt(document.querySelector("#cantOk").innerText);
-    const error = parseInt(document.querySelector("#cantError").innerText);
- 
-    btnTotal.disabled = (total === 0);
-    btnOk.disabled = (ok === 0);
-    btnError.disabled = (error === 0);
-}
- 
-actualizarEstadoBotones();
+
+
+
+
+
+
+
+
  
  
  
