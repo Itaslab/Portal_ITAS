@@ -186,6 +186,10 @@ async function cargarEjecuciones() {
  
 <td class="text-start">
   <div class="d-flex flex-column gap-2 border rounded p-2 bg-light">
+                      <div class="small fw-semibold mb-1">Avance: ${ejec.avance}%</div>
+                    <div class="progress mb-2" style="height: 10px;">
+                      <div class="progress-bar bg-success" role="progressbar" style="width: ${ejec.avance}%;" aria-valuenow="${ejec.avance}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
    
 <!-- Total -->
 <button type="button"
