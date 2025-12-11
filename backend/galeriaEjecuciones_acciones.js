@@ -23,6 +23,9 @@ async function ejecutarSP(nombreSP, idTasklist, idUsuario) {
 router.post("/cancelar", async (req, res) => {
   const { idTasklist, idUsuario } = req.body;
 
+  console.log("🔥 RECIBIDO:", { idTasklist, idUsuario });
+
+
   try {
     await ejecutarSP("a002103.PortalRPABotonCancelarTarea", idTasklist, idUsuario);
     res.json({ success: true, message: "Tarea cancelada correctamente" });
