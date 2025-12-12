@@ -1,11 +1,14 @@
 //ejecuciones.js
 
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
   const tabla = document.getElementById("tablaEjecuciones");
   const filtroSolicitante = document.getElementById("filtroSolicitante");
   const filtroRegistro = document.getElementById("filtroRegistro");
  
- 
+
   let ejecuciones = [];
 
     // ⬇️ PRIMERO: función obtenerContadores
@@ -441,7 +444,7 @@ $(document).on("click", ".btn-detalle", async function (e) {
         const col5 = "Status";
         const col6 = "Status Anterior";
         const col7 = "Intentos";
-        const col8 = "Último Error";
+        const col8 = "Ultimo Error";
       
 
       function formatearFecha(fechaISO) {
@@ -619,12 +622,12 @@ $(document).on("click", ".btn-log", async function () {
 });
  
 // Utilidades (colocalas cerca de tus helpers existentes)
-function formatearFecha(fecha) {
-  if (!fecha) return "-";
-  const d = new Date(fecha);
+//function formatearFecha(fecha) {
+//  if (!fecha) return "-";
+//  const d = new Date(fecha);
   // tu función ya existe con este estilo en ejecuciones.js
-  return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
-}
+//  return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
+//}
  
 function escapeHtml(str) {
   return String(str)
@@ -663,97 +666,87 @@ function descargarCSV(csv, nombre) {
 }
  
   
-
-
-
-
-
-
-
-
  
- 
- 
-// BOTONES DE ACCION (HANDLERS)
 
-
+// =====================================
 // VARIABLES GLOBALES
-// =========================
+// =====================================
 let ejecucionSeleccionada = null;
-let usuarioActual = null; // esto lo tenés definido en tu login
+let usuarioActual = null;
 
-// =========================
+
+// =====================================
 // HANDLERS PARA ABRIR MODALES
 // (los llamás desde botones de la tabla)
-// =========================
+// =====================================
 
 function abrirModalCancelar(id) {
   ejecucionSeleccionada = id;
-  const modal = new bootstrap.Modal(document.getElementById("modalCancelar"));
-  modal.show();
+  new bootstrap.Modal(document.getElementById("modalCancelar")).show();
 }
 
 function abrirModalPausar(id) {
   ejecucionSeleccionada = id;
-  const modal = new bootstrap.Modal(document.getElementById("modalPausar"));
-  modal.show();
+  new bootstrap.Modal(document.getElementById("modalPausar")).show();
 }
 
 function abrirModalReanudar(id) {
   ejecucionSeleccionada = id;
-  const modal = new bootstrap.Modal(document.getElementById("modalReanudar"));
-  modal.show();
+  new bootstrap.Modal(document.getElementById("modalReanudar")).show();
 }
 
 function abrirModalReenviar(id) {
   ejecucionSeleccionada = id;
-  const modal = new bootstrap.Modal(document.getElementById("modalReenviar"));
-  modal.show();
+  new bootstrap.Modal(document.getElementById("modalReenviar")).show();
 }
 
 function abrirModalReenviarFallidos(id) {
   ejecucionSeleccionada = id;
-  const modal = new bootstrap.Modal(document.getElementById("modalReenviarFallidos"));
-  modal.show();
+  new bootstrap.Modal(document.getElementById("modalReenviarFallidos")).show();
 }
 
 
-// =========================
-// HANDLERS DE CONFIRMAR (BOTONES DEL MODAL)
-// =========================
+// =====================================
+// CAPTURAR ID CUANDO HACEN CLIC EN BOTONES
+// =====================================
 
-// CANCELAR
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-id]");
+  if (btn) {
+    ejecucionSeleccionada = btn.getAttribute("data-id");
+    console.log("👉 ID seleccionado:", ejecucionSeleccionada);
+  }
+});
+
+
+// =====================================
+// HANDLERS DE CONFIRMAR (BOTONES DENTRO DEL MODAL)
+// =====================================
+
 async function confirmarCancelar() {
   await ejecutarAccionBackend("cancelar");
 }
 
-
-
-
-// PAUSAR
 async function confirmarPausar() {
   await ejecutarAccionBackend("pausar");
 }
 
-// REANUDAR
 async function confirmarReanudar() {
   await ejecutarAccionBackend("reanudar");
 }
 
-// REENVIAR TODO
 async function confirmarReenviar() {
   await ejecutarAccionBackend("reenviar-todo");
 }
 
-// REENVIAR FALLIDOS
 async function confirmarReenviarFallidos() {
   await ejecutarAccionBackend("reenviar-fallidos");
 }
 
 
-// =========================
-// FUNCIÓN CENTRAL: LLAMAR AL BACKEND
-// =========================
+// =====================================
+// FUNCIÓN CENTRAL QUE LLAMA AL BACKEND
+// =====================================
 
 async function ejecutarAccionBackend(accion) {
   try {
@@ -767,13 +760,17 @@ async function ejecutarAccionBackend(accion) {
     });
 
     const data = await res.json();
+    console.log("Respuesta backend:", data);
 
     if (data.success) {
-      // Cerrar todos los modales abiertos
-      const modals = document.querySelectorAll(".modal.show");
-      modals.forEach(m => bootstrap.Modal.getInstance(m)?.hide());
 
-      // Refrescar la tabla
+      // Cerrar modales abiertos
+      document.querySelectorAll(".modal.show").forEach(m => {
+        const instance = bootstrap.Modal.getInstance(m);
+        if (instance) instance.hide();
+      });
+
+      // Recargar tabla si existe
       if (typeof cargarEjecuciones === "function") {
         cargarEjecuciones();
       }
@@ -790,13 +787,18 @@ async function ejecutarAccionBackend(accion) {
 }
 
 
-// =============================================
-// INIT — REGISTRAR HANDLERS DE LOS BOTONES
-// =============================================
+// =====================================
+// INIT
+// =====================================
+
 document.addEventListener("DOMContentLoaded", () => {
-  
-  // usuarioActual viene del login
-  usuarioActual = window.UsuarioActual || null;
+
+  usuarioActual = localStorage.getItem("idUsuario") || window.UsuarioActual;
+
+  if (!usuarioActual) {
+    alert("Error: no se encontró el usuario logueado");
+    console.error("Usuario no detectado");
+  }
 
   document.getElementById("btnCancelarConfirmar")
     .addEventListener("click", confirmarCancelar);
@@ -812,6 +814,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("btnConfirmarReenviarFallidos")
     .addEventListener("click", confirmarReenviarFallidos);
-
 });
- 
