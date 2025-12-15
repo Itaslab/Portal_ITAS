@@ -1,4 +1,3 @@
-// galeriaEjecuciones_acciones.js 
 
 // galeriaEjecuciones_acciones.js
 const express = require("express");

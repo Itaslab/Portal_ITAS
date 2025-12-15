@@ -255,6 +255,14 @@ async function cargarEjecuciones() {
     <i class="bi bi-x-circle"></i>
   </button>
 
+  <!-- Pausar -->
+<button class="btn btn-outline-secondary btn-sm btn-accion"
+        data-idtasklist="${ejec.id}"
+        data-bs-toggle="modal"
+        data-bs-target="#modalPausar">
+  <i class="bi bi-pause-circle"></i>
+</button>
+
   <!-- Reanudar -->
   <button class="btn btn-outline-secondary btn-sm btn-accion" 
           data-idtasklist="${ejec.id}"
@@ -773,7 +781,8 @@ async function ejecutarAccionBackend(accion) {
         cargarEjecuciones();
       }
 
-      alert("Operación realizada correctamente.");
+      mostrarAlerta("success", data.message);
+
     } else {
       alert("Error: " + data.error);
     }
