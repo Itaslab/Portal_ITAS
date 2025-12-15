@@ -1,4 +1,20 @@
 //ejecuciones.js
+  
+
+function formatearFecha(fechaISO) {
+         if (!fechaISO) return "-";
+         const d = new Date(fechaISO);
+
+         const dia = String(d.getDate()).padStart(2, "0");
+         const mes = String(d.getMonth() + 1).padStart(2, "0");
+         const año = d.getFullYear();
+
+         const horas = String(d.getHours()).padStart(2, "0");
+         const minutos = String(d.getMinutes()).padStart(2, "0");
+
+         return `${dia}/${mes}/${año} ${horas}:${minutos}`;
+     }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const tabla = document.getElementById("tablaEjecuciones");
@@ -307,13 +323,7 @@ if (valor === 0) {
    
  
   }
- 
-  function formatearFecha(fecha) {
-    if (!fecha) return "-";
-    const d = new Date(fecha);
-    return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
-  }
- 
+  
   function calcularDuracion(inicio, fin) {
     if (!inicio || !fin) return "-";
     const diff = new Date(fin) - new Date(inicio);
@@ -486,21 +496,8 @@ $(document).on("click", ".btn-detalle", async function (e) {
         const col8 = "Ultimo Error";
       
 
-      function formatearFecha(fechaISO) {
-         if (!fechaISO) return "-";
-         const d = new Date(fechaISO);
 
-         const dia = String(d.getDate()).padStart(2, "0");
-         const mes = String(d.getMonth() + 1).padStart(2, "0");
-         const año = d.getFullYear();
-
-         const horas = String(d.getHours()).padStart(2, "0");
-         const minutos = String(d.getMinutes()).padStart(2, "0");
-
-         return `${dia}/${mes}/${año} ${horas}:${minutos}`;
-     }
-
-        // Render tabla
+// Render tabla
         let html = `
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
