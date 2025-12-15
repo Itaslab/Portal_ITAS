@@ -1,8 +1,5 @@
 //ejecuciones.js
 
-
-
-
 document.addEventListener("DOMContentLoaded", () => {
   const tabla = document.getElementById("tablaEjecuciones");
   const filtroSolicitante = document.getElementById("filtroSolicitante");
@@ -251,28 +248,32 @@ async function cargarEjecuciones() {
                       <div class="progress-bar bg-success" role="progressbar" style="width: ${ejec.avance}%;" aria-valuenow="${ejec.avance}" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
   <!-- Cancelar -->
-  <button class="btn btn-outline-secondary btn-sm" 
+  <button class="btn btn-outline-secondary btn-sm btn-accion"
+          data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
           data-bs-target="#modalCancelar">
     <i class="bi bi-x-circle"></i>
   </button>
 
   <!-- Reanudar -->
-  <button class="btn btn-outline-secondary btn-sm" 
+  <button class="btn btn-outline-secondary btn-sm btn-accion" 
+          data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
           data-bs-target="#modalReanudar">
     <i class="bi bi-arrow-clockwise"></i>
   </button>
 
   <!-- Reenviar -->
-  <button class="btn btn-outline-secondary btn-sm" 
+  <button class="btn btn-outline-secondary btn-sm btn-accion" 
+        data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
           data-bs-target="#modalReenviar">
     <i class="bi bi-send"></i>
   </button>
 
   <!-- Reenviar Fallidos -->
-  <button class="btn btn-outline-secondary btn-sm" 
+  <button class="btn btn-outline-secondary btn-sm btn-accion" 
+        data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
           data-bs-target="#modalReenviarFallidos">
     <i class="bi bi-arrow-counterclockwise"></i>
@@ -320,6 +321,36 @@ if (valor === 0) {
  
   cargarEjecuciones();
   setInterval(cargarEjecuciones, 10000);
+
+  usuarioActual = localStorage.getItem("idUsuario") || window.UsuarioActual;
+
+  if (!usuarioActual) {
+    alert("Error: no se encontró el usuario logueado");
+    console.error("Usuario no detectado");
+  }
+
+  document.getElementById("btnCancelarConfirmar")
+    .addEventListener("click", confirmarCancelar);
+
+  document.getElementById("btnConfirmarPausar")
+    .addEventListener("click", confirmarPausar);
+
+  document.getElementById("btnConfirmarReanudar")
+    .addEventListener("click", confirmarReanudar);
+
+  document.getElementById("btnConfirmarReenviar")
+    .addEventListener("click", confirmarReenviar);
+
+  document.getElementById("btnConfirmarReenviarFallidos")
+    .addEventListener("click", confirmarReenviarFallidos);
+
+
+
+
+
+
+
+
 });
  
 // 🔹 Función de alertas Bootstrap
@@ -674,48 +705,9 @@ function descargarCSV(csv, nombre) {
 let ejecucionSeleccionada = null;
 let usuarioActual = null;
 
-
-// =====================================
-// HANDLERS PARA ABRIR MODALES
-// (los llamás desde botones de la tabla)
-// =====================================
-
-function abrirModalCancelar(id) {
-  ejecucionSeleccionada = id;
-  new bootstrap.Modal(document.getElementById("modalCancelar")).show();
-}
-
-function abrirModalPausar(id) {
-  ejecucionSeleccionada = id;
-  new bootstrap.Modal(document.getElementById("modalPausar")).show();
-}
-
-function abrirModalReanudar(id) {
-  ejecucionSeleccionada = id;
-  new bootstrap.Modal(document.getElementById("modalReanudar")).show();
-}
-
-function abrirModalReenviar(id) {
-  ejecucionSeleccionada = id;
-  new bootstrap.Modal(document.getElementById("modalReenviar")).show();
-}
-
-function abrirModalReenviarFallidos(id) {
-  ejecucionSeleccionada = id;
-  new bootstrap.Modal(document.getElementById("modalReenviarFallidos")).show();
-}
-
-
-// =====================================
-// CAPTURAR ID CUANDO HACEN CLIC EN BOTONES
-// =====================================
-
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest("[data-id]");
-  if (btn) {
-    ejecucionSeleccionada = btn.getAttribute("data-id");
-    console.log("👉 ID seleccionado:", ejecucionSeleccionada);
-  }
+$(document).on("click", ".btn-accion", function () {
+  ejecucionSeleccionada = $(this).data("idtasklist");
+  console.log("👉 Ejecución seleccionada:", ejecucionSeleccionada);
 });
 
 
@@ -749,6 +741,14 @@ async function confirmarReenviarFallidos() {
 // =====================================
 
 async function ejecutarAccionBackend(accion) {
+
+  // 🔴 VALIDACIÓN CLAVE
+  if (!ejecucionSeleccionada) {
+    alert("No hay ejecución seleccionada");
+    console.error("ID Tasklist inválido:", ejecucionSeleccionada);
+    return;
+  }
+
   try {
     const res = await fetch(`/api/acciones/${accion}`, {
       method: "POST",
@@ -764,13 +764,11 @@ async function ejecutarAccionBackend(accion) {
 
     if (data.success) {
 
-      // Cerrar modales abiertos
       document.querySelectorAll(".modal.show").forEach(m => {
         const instance = bootstrap.Modal.getInstance(m);
         if (instance) instance.hide();
       });
 
-      // Recargar tabla si existe
       if (typeof cargarEjecuciones === "function") {
         cargarEjecuciones();
       }
@@ -786,32 +784,3 @@ async function ejecutarAccionBackend(accion) {
   }
 }
 
-
-// =====================================
-// INIT
-// =====================================
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  usuarioActual = localStorage.getItem("idUsuario") || window.UsuarioActual;
-
-  if (!usuarioActual) {
-    alert("Error: no se encontró el usuario logueado");
-    console.error("Usuario no detectado");
-  }
-
-  document.getElementById("btnCancelarConfirmar")
-    .addEventListener("click", confirmarCancelar);
-
-  document.getElementById("btnConfirmarPausar")
-    .addEventListener("click", confirmarPausar);
-
-  document.getElementById("btnConfirmarReanudar")
-    .addEventListener("click", confirmarReanudar);
-
-  document.getElementById("btnConfirmarReenviar")
-    .addEventListener("click", confirmarReenviar);
-
-  document.getElementById("btnConfirmarReenviarFallidos")
-    .addEventListener("click", confirmarReenviarFallidos);
-});
