@@ -352,7 +352,7 @@ async function cargarEjecuciones() {
   filtroRegistro.addEventListener("input", renderTabla);
  
   cargarEjecuciones();
-  setInterval(cargarEjecuciones, 10000);
+  setInterval(cargarEjecuciones, 4000);
 
   usuarioActual = localStorage.getItem("idUsuario") || window.UsuarioActual;
 
