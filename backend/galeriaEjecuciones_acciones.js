@@ -8,12 +8,23 @@ const { sql, poolPromise } = require("./db");
 async function ejecutarSP(nombreSP, idTasklist, idUsuario) {
   const pool = await poolPromise;
 
-  const result = await pool.request()
-    .input("Id_Tasklist", sql.Int, idTasklist)
-    .input("id_usuario", sql.Int, idUsuario)
-    .execute(nombreSP);
+  let mensajes = [];
 
-  return result;
+  const request = pool.request()
+    .input("Id_Tasklist", sql.Int, idTasklist)
+    .input("id_usuario", sql.Int, idUsuario);
+
+  // 👂 Escuchamos mensajes del SQL (PRINT / RAISERROR < 11)
+  request.on("info", info => {
+    mensajes.push(info.message);
+  });
+
+  const result = await request.execute(nombreSP);
+
+  return {
+    result,
+    mensajes
+  };
 }
 
 // --------------------- ENDPOINTS ----------------------
@@ -41,11 +52,23 @@ router.post("/pausar", async (req, res) => {
   const { idTasklist, idUsuario } = req.body;
 
   try {
-    await ejecutarSP("a002103.PortalRPABotonPausarTarea", idTasklist, idUsuario);
-    res.json({ success: true, message: "Tarea pausada correctamente" });
+    const { mensajes } = await ejecutarSP(
+      "a002103.PortalRPABotonPausarTarea",
+      idTasklist,
+      idUsuario
+    );
+
+    res.json({
+      success: true,
+      message: mensajes.length ? mensajes.join(" | ") : "Tarea pausada correctamente"
+    });
+
   } catch (err) {
     console.error("Error pausar tarea:", err);
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
   }
 });
 
