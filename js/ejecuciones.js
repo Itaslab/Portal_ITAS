@@ -14,6 +14,8 @@ function formatearFecha(fechaISO) {
 
          return `${dia}/${mes}/${año} ${horas}:${minutos}`;
      }
+let cargandoEjecuciones = false;
+const cacheContadores = {};
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -25,38 +27,58 @@ document.addEventListener("DOMContentLoaded", () => {
   let ejecuciones = [];
 
     // ⬇️ PRIMERO: función obtenerContadores
-    async function obtenerContadores(id) {
-        try {
-            const res = await fetch(`/api/ejecuciones/detalle/${id}`);
-            const data = await res.json();
+async function obtenerContadores(id) {
 
-            if (!Array.isArray(data)) return { total: 0, ok: 0, error: 0 };
+    // 🔹 si ya lo pedimos antes, devolvemos cache
+    if (cacheContadores[id]) {
+        return cacheContadores[id];
+    }
 
-            // Normalizar OK igual que el modal
-            function normalizarOK(v) {
-                if (v === 1 || v === "1" || v === true || v === "true") return 1;
-                if (v === 0 || v === "0" || v === false || v === "false") return 0;
-                return null;
-            }
+    try {
+        const res = await fetch(`/api/ejecuciones/detalle/${id}`);
+        const data = await res.json();
 
-            data.forEach(r => r.Ok = normalizarOK(r.Ok));
-
-            const ok = data.filter(r => r.Ok === 1).length;
-            const error = data.filter(r => r.Ok === 0).length;
-            const total = data.length;
-
-            return { total, ok, error };
-
-        } catch (e) {
-            console.error("Error obteniendo contadores:", e);
+        if (!Array.isArray(data)) {
             return { total: 0, ok: 0, error: 0 };
         }
+
+        // Normalizar OK igual que el modal
+        function normalizarOK(v) {
+            if (v === 1 || v === "1" || v === true || v === "true") return 1;
+            if (v === 0 || v === "0" || v === false || v === "false") return 0;
+            return null;
+        }
+
+        data.forEach(r => r.Ok = normalizarOK(r.Ok));
+
+        const ok = data.filter(r => r.Ok === 1).length;
+        const error = data.filter(r => r.Ok === 0).length;
+        const total = data.length;
+
+        const contadores = { total, ok, error };
+
+        // 🔹 guardamos en cache
+        cacheContadores[id] = contadores;
+
+        return contadores;
+
+    } catch (e) {
+        console.error("Error obteniendo contadores:", e);
+        return { total: 0, ok: 0, error: 0 };
     }
+}
 
  
   // 🔹 Cargar datos desde backend
 async function cargarEjecuciones() {
+
+    if (cargandoEjecuciones) return;
+    cargandoEjecuciones = true;
+
     try {
+
+        Object.keys(cacheContadores).forEach(k => delete cacheContadores[k]);
+
         const res = await fetch("/ejecuciones");
         const data = await res.json();
 
@@ -65,11 +87,11 @@ async function cargarEjecuciones() {
             return;
         }
 
-        // 1) Primero mapeamos los datos base
         ejecuciones = await Promise.all(
             data.data.map(async item => {
-                // Pedimos el detalle y calculamos contadores reales
-                const { total, ok, error } = await obtenerContadores(item.Id_Tasklist);
+
+                const { total, ok, error } =
+                    await obtenerContadores(item.Id_Tasklist);
 
                 return {
                     id: item.Id_Tasklist,
@@ -81,25 +103,25 @@ async function cargarEjecuciones() {
                     resultado: item.Resultado,
                     fechaInicio: item.Fecha_Inicio,
                     fechaFin: item.Fecha_Fin,
-
-                    // 🔥 Ahora sí: valores REALES
-                    total: total,
-                    ok: ok,
-                    error: error
+                    total,
+                    ok,
+                    error
                 };
             })
         );
 
-        // 2) Mantengo tus funciones tal cual
         llenarFiltroSolicitante();
         renderTabla();
 
     } catch (err) {
         console.error("Error al obtener ejecuciones:", err);
+
+    } finally {
+        cargandoEjecuciones = false;
     }
 }
  
-  // 🔹 Llenar select de solicitantes dinámicamente
+ 
   function llenarFiltroSolicitante() {
     const emailsUnicos = [...new Set(ejecuciones.map(e => e.usuario))].sort();
     filtroSolicitante.innerHTML = `<option value="">Todos</option>`;
@@ -111,7 +133,7 @@ async function cargarEjecuciones() {
     });
   }
  
-  // 🔹 Renderizar tabla con filtros
+  
   function renderTabla() {
     const solicitante = filtroSolicitante.value.toLowerCase();
     const registro = filtroRegistro.value.toLowerCase();
@@ -163,17 +185,15 @@ async function cargarEjecuciones() {
                       <span class="fw-semibold">${ejec.flujo}</span>
                       <span class="badge bg-secondary ms-2">RPA</span>
                     </div>
-                  </td>
- 
-                 
-<td class="text-start">
-  <div class="p-3 border rounded bg-light" style="width: 280px;">
-    <!-- Estado -->
-    <div class="mb-3 text-center">
-      <span class="badge bg-${ejec.estado.includes('Error') ? 'danger' : 'success'} px-3 py-2">
-        ${ejec.estado}
-      </span>
-    </div>
+                  </td>          
+      <td class="text-start">
+        <div class="p-3 border rounded bg-light" style="width: 280px;">
+          <!-- Estado -->
+          <div class="mb-3 text-center">
+            <span class="badge bg-${ejec.estado.includes('Error') ? 'danger' : 'success'} px-3 py-2">
+              ${ejec.estado}
+            </span>
+          </div>
  
     <!-- Fechas y duración -->
     <div class="mb-2">
@@ -198,12 +218,10 @@ async function cargarEjecuciones() {
     </div>
   </div>
 </td>
- 
- 
+  
 <td class="text-start">
   <div class="d-flex flex-column gap-2 border rounded p-2 bg-light">
-
-   
+  
 <!-- Total -->
 <button type="button"
         class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
@@ -258,7 +276,7 @@ async function cargarEjecuciones() {
   </div>
 </td>
  
-<td class="text-center">
+            <td class="text-center">
                       <div class="small fw-semibold mb-1">Avance: ${ejec.avance}%</div>
                     <div class="progress mb-2" style="height: 10px;">
                       <div class="progress-bar bg-success" role="progressbar" style="width: ${ejec.avance}%;" aria-valuenow="${ejec.avance}" aria-valuemin="0" aria-valuemax="100"></div>
@@ -310,19 +328,15 @@ async function cargarEjecuciones() {
         `;
         tabla.appendChild(row);
         row.querySelectorAll(".btn-detalle").forEach(btn => {
-const valor = Number(btn.dataset.valor || 0);
-if (valor === 0) {
-  btn.classList.add("disabled");
-  btn.style.pointerEvents = "none";
-  btn.style.opacity = "0.5";
-}
+    const valor = Number(btn.dataset.valor || 0);
+      if (valor === 0) {
+        btn.classList.add("disabled");
+        btn.style.pointerEvents = "none";
+        btn.style.opacity = "0.5";
+        }
         });
-       
       });
- 
-   
- 
-  }
+ }
   
   function calcularDuracion(inicio, fin) {
     if (!inicio || !fin) return "-";
