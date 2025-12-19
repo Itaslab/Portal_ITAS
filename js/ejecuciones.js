@@ -416,6 +416,34 @@ function mostrarAlerta(tipo, mensaje) {
     setTimeout(() => alerta.remove(), 300);
   }, 3000);
 }
+
+//mensaje de @msg desde el servidor 
+
+function mostrarMensajeModal(tipo, mensaje) {
+  const titulo = document.getElementById("modalMensajeTitulo");
+  const body = document.getElementById("modalMensajeBody");
+
+  const iconos = {
+    success: "bi-check-circle-fill text-success",
+    error: "bi-x-circle-fill text-danger",
+    warning: "bi-exclamation-triangle-fill text-warning",
+    info: "bi-info-circle-fill text-primary"
+  };
+
+  titulo.innerHTML = `
+    <i class="bi ${iconos[tipo] || iconos.info} me-2"></i>
+    Mensaje
+  `;
+
+  body.innerHTML = `<p class="mb-0">${mensaje}</p>`;
+
+  const modalEl = document.getElementById("modalMensaje");
+  const modal = new bootstrap.Modal(modalEl);
+  modal.show();
+}
+
+
+
  
 // 🔹 Funciones auxiliares de los botones usando Bootstrap alerts
 function verTotal(id) { mostrarAlerta("primary", `Total de registros para ejecución ${id}: 2`); }
@@ -671,14 +699,7 @@ $(document).on("click", ".btn-log", async function () {
   }
 });
  
-// Utilidades (colocalas cerca de tus helpers existentes)
-//function formatearFecha(fecha) {
-//  if (!fecha) return "-";
-//  const d = new Date(fecha);
-  // tu función ya existe con este estilo en ejecuciones.js
-//  return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
-//}
- 
+
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, "&amp;")
@@ -763,7 +784,7 @@ async function ejecutarAccionBackend(accion) {
 
   // 🔴 VALIDACIÓN CLAVE
   if (!ejecucionSeleccionada) {
-    alert("No hay ejecución seleccionada");
+    mostrarMensajeModal("error", "No hay ejecución seleccionada");
     console.error("ID Tasklist inválido:", ejecucionSeleccionada);
     return;
   }
@@ -792,15 +813,16 @@ async function ejecutarAccionBackend(accion) {
         cargarEjecuciones();
       }
 
-      mostrarAlerta("success", data.message);
+        mostrarMensajeModal("success", data.message);
+
 
     } else {
-      alert("Error: " + data.error);
+      mostrarMensajeModal("error", data.error || "Ocurrió un error");
     }
 
   } catch (err) {
     console.error("Error ejecutando acción:", err);
-    alert("Error al ejecutar la acción.");
+    mostrarMensajeModal("error", "No se pudo ejecutar la acción. Intente nuevamente o contacte a soporte.");
   }
 }
 
