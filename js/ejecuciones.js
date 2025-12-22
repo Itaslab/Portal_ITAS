@@ -68,6 +68,7 @@ async function obtenerContadores(id) {
     }
 }
 
+
  
   // 🔹 Cargar datos desde backend
 async function cargarEjecuciones() {
