@@ -4,6 +4,8 @@
 *.sqlite3
 # Node.js
 node_modules/
+backend/node_modules/
 npm-debug.log*
 .env
+.env*
 

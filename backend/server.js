@@ -1,4 +1,12 @@
 // server.js
+
+require("dotenv").config({
+  path: process.env.NODE_ENV === "production"
+    ? ".env.production"
+    : ".env.development"
+});
+
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -159,13 +167,20 @@ app.get("/", (req, res) => {
 //  cert: fs.readFileSync("/etc/nginx/ssl/test-web.crt"),
 //};
  
-const httpsOptions = {
-  key: fs.readFileSync("/app/cert/portal-itas.telecom.com.ar.key"),
-  cert: fs.readFileSync("/app/cert/fullchain.crt"), // certificado + intermedio
-};
- 
-const PORT = 8080;
-https.createServer(httpsOptions, app).listen(PORT, () => {
- // console.log(`✅ HTTPS corriendo en https://10.4.48.116:${PORT}`);
-  console.log(`✅ HTTPS corriendo en https://portal-itas.telecom.com.ar:${PORT}`);
-});
+const PORT = process.env.PORT || 8080;
+
+if (process.env.NODE_ENV === "production") {
+  const httpsOptions = {
+    key: fs.readFileSync(process.env.SSL_KEY_PATH),
+    cert: fs.readFileSync(process.env.SSL_CERT_PATH)
+  };
+
+  https.createServer(httpsOptions, app).listen(PORT, () => {
+    console.log(`🔐 HTTPS PROD corriendo en https://portal-itas.telecom.com.ar:${PORT}`);
+  });
+
+} else {
+  app.listen(PORT, () => {
+    console.log(`🌐 HTTP DEV corriendo en http://localhost:${PORT}`);
+  });
+}

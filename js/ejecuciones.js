@@ -122,16 +122,33 @@ async function cargarEjecuciones() {
 }
  
  
-  function llenarFiltroSolicitante() {
-    const emailsUnicos = [...new Set(ejecuciones.map(e => e.usuario))].sort();
-    filtroSolicitante.innerHTML = `<option value="">Todos</option>`;
-    emailsUnicos.forEach(email => {
-      const option = document.createElement("option");
-      option.value = email;
-      option.textContent = email;
-      filtroSolicitante.appendChild(option);
-    });
+let cacheSolicitantes = [];
+
+function llenarFiltroSolicitante() {
+
+  const emailsUnicos = [...new Set(ejecuciones.map(e => e.usuario))].sort();
+
+  // si no cambió, no tocar el select
+  if (JSON.stringify(emailsUnicos) === JSON.stringify(cacheSolicitantes)) {
+    return;
   }
+
+  cacheSolicitantes = emailsUnicos;
+
+  const seleccionado = filtroSolicitante.value;
+  filtroSolicitante.innerHTML = `<option value="">Todos</option>`;
+
+  emailsUnicos.forEach(email => {
+    const option = document.createElement("option");
+    option.value = email;
+    option.textContent = email;
+    filtroSolicitante.appendChild(option);
+  });
+
+  if (emailsUnicos.includes(seleccionado)) {
+    filtroSolicitante.value = seleccionado;
+  }
+}
  
   
   function renderTabla() {
@@ -375,13 +392,6 @@ async function cargarEjecuciones() {
 
   document.getElementById("btnConfirmarReenviarFallidos")
     .addEventListener("click", confirmarReenviarFallidos);
-
-
-
-
-
-
-
 
 });
  

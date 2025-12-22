@@ -143,10 +143,10 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
 
     // MAP permisos → ID_Aplicacion
     const permisosMap = {
-      Perm_Robot: 3,
-      Perm_AppOrdenes: 2,
-      Perm_Grafana: 5,
-      Perm_ABMUsuarios: 6,
+      Perm_Robot: 4,
+      Perm_AppOrdenes: 3,
+      Perm_Grafana: 8,
+      Perm_ABMUsuarios: 1,
     };
 
     const permisosEstado = {
