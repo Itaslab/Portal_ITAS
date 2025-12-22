@@ -1,9 +1,10 @@
 // server.js
+const path = require("path");
 
 require("dotenv").config({
   path: process.env.NODE_ENV === "production"
-    ? ".env.production"
-    : ".env.development"
+    ? path.join(__dirname, '.env.production')  // Para producción
+    : path.join(__dirname, '.env.development')  // Para desarrollo
 });
 
 
