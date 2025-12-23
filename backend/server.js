@@ -13,7 +13,6 @@ const schema = process.env.DB_SCHEMA;
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const path = require("path");
 const https = require("https");
 const fs = require("fs");
 const session = require("express-session");
