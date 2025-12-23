@@ -10,7 +10,7 @@ require("dotenv").config({
 const schema = process.env.DB_SCHEMA;
 
 
-const express = require("express");
+
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const https = require("https");
@@ -182,7 +182,7 @@ if (process.env.NODE_ENV === "production") {
   });
 
 } else {
-  app.listen(PORT, () => {
-    console.log(`🌐 HTTP DEV corriendo en http://localhost:${PORT}`);
+  app.listen(PORT,"0.0.0.0",() => {
+    console.log(`🌐 HTTP TEST corriendo en http://localhost:${PORT}`);
   });
 }
