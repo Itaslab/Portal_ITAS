@@ -6,7 +6,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
     try {
      //   const res = await fetch("https://10.4.48.116:8080/login", {
-        const res = await fetch("https://portal-itas.telecom.com.ar:8080/login", {
+        const res = await fetch(basePath + "/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
@@ -20,7 +20,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             localStorage.setItem("idUsuario", data.ID_Usuario);
 
             // Redirigir a la página principal
-            window.location.href = "pages/Front_APPs.html";
+            window.location.href = `${basePath}/pages/Front_APPs.html`;
         } else {
             alert("Error: " + data.error);
         }

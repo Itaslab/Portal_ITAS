@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const apellidoInput = document.getElementById("apellido");
 
   // Llenar el select de usuarios base
-  fetch("/usuarios_base")
+  fetch(basePath + "/usuarios_base")
     .then(res => res.json())
     .then(data => {
       if (data.success && Array.isArray(data.usuarios)) {
@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       // Petición al backend
-      const response = await fetch("/usuariosordenes", { 
+      const response = await fetch(basePath + "/usuariosordenes", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(nuevaEntidad)

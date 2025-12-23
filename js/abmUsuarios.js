@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Llenar el select de referentes al cargar la página
   const referenteSelect = document.getElementById('referente');
-  fetch('/referentes')
+  fetch(basePath + '/referentes')
     .then(res => res.json())
     .then(data => {
       if (data.success && Array.isArray(data.referentes)) {
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // -------------------- ENVIAR AL BACKEND --------------------
     try {
-      const res = await fetch('/registrar_usuario', {
+      const res = await fetch(basePath + '/registrar_usuario', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

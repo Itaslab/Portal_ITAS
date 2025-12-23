@@ -35,7 +35,7 @@ async function obtenerContadores(id) {
     }
 
     try {
-        const res = await fetch(`/api/ejecuciones/detalle/${id}`);
+        const res = await fetch(`${basePath}/api/ejecuciones/detalle/${id}`);
         const data = await res.json();
 
         if (!Array.isArray(data)) {
@@ -79,7 +79,7 @@ async function cargarEjecuciones() {
 
         Object.keys(cacheContadores).forEach(k => delete cacheContadores[k]);
 
-        const res = await fetch("/ejecuciones");
+        const res = await fetch(basePath + "/ejecuciones");
         const data = await res.json();
 
         if (!data.success) {
@@ -502,7 +502,7 @@ $(document).on("click", ".btn-detalle", async function (e) {
     modal.show();
  
     try {
-        const res = await fetch(`/api/ejecuciones/detalle/${id}`);
+        const res = await fetch(`${basePath}/api/ejecuciones/detalle/${id}`);
         const data = await res.json();
  
         if (!data || !Array.isArray(data) || data.length === 0) {
@@ -650,7 +650,7 @@ $(document).on("click", ".btn-log", async function () {
  
   try {
     // Llamada al backend nuevo
-    const res = await fetch(`/api/logs/${idTasklist}`);
+    const res = await fetch(`${basePath}/api/logs/${idTasklist}`);
     const json = await res.json();
  
     if (!json.success || !Array.isArray(json.data) || json.data.length === 0) {
@@ -800,7 +800,7 @@ async function ejecutarAccionBackend(accion) {
   }
 
   try {
-    const res = await fetch(`/api/acciones/${accion}`, {
+    const res = await fetch(`${basePath}/api/acciones/${accion}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

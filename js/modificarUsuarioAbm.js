@@ -3,7 +3,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
   // Llenar el select de referentes al cargar la página
   const referenteSelect = document.getElementById('referente');
-  fetch('/referentes')
+  fetch(basePath + '/referentes')
     .then(res => res.json())
     .then(data => {
       if (data.success && Array.isArray(data.referentes)) {
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 1️⃣ CARGAR LISTA DE USUARIOS EN EL SELECT
   // ---------------------------------------------------------
   try {
-    const res = await fetch("/abm_usuarios");
+    const res = await fetch(basePath + "/abm_usuarios");
     const data = await res.json();
 
     if (res.ok && data.usuarios) {

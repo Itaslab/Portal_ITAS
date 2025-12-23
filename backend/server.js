@@ -184,7 +184,7 @@ if (process.env.NODE_ENV === "production") {
   });
 
 } else {
-  app.listen(PORT,"0.0.0.0",() => {
-    console.log(`🌐 HTTP TEST corriendo en http://localhost:${PORT}`);
+  app.listen(PORT,"127.0.0.1",() => {
+    console.log(`🌐 HTTP TEST corriendo en http://127.0.0.1:${PORT}`);
   });
 }
