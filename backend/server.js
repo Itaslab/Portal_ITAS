@@ -4,8 +4,10 @@ const path = require("path");
 require("dotenv").config({
   path: process.env.NODE_ENV === "production"
     ? path.join(__dirname, '.env.production')  // Para producción
-    : path.join(__dirname, '.env.development')  // Para desarrollo
+    : path.join(__dirname, '.env.test')  // Para test/local
 });
+
+const schema = process.env.DB_SCHEMA;
 
 
 const express = require("express");
@@ -75,8 +77,8 @@ app.post("/login", async (req, res) => {
       .input("email", sql.VarChar, email)
       .query(`
         SELECT u.ID_Usuario, w.Password
-        FROM a002103.USUARIO u
-        INNER JOIN a002103.WEB_PORTAL_ITAS_USR w
+        FROM ${schema}.USUARIO u
+        INNER JOIN ${schema}.WEB_PORTAL_ITAS_USR w
         ON u.ID_Usuario = w.ID_Usuario
         WHERE u.Email = @email
       `);

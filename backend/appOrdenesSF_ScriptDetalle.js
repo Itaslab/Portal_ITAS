@@ -1,4 +1,6 @@
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
 
 module.exports = async (req, res) => {
   try {
@@ -11,7 +13,7 @@ module.exports = async (req, res) => {
         Script,
         Esquema_JSON,
         Activo
-      FROM a002103.APP_ORDENES_BAJADA
+      FROM ${schema}.APP_ORDENES_BAJADA
       ORDER BY Nombre;
     `;
 

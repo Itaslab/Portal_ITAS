@@ -1,4 +1,6 @@
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
  
 module.exports = async (req, res) => {
     const { email, password } = req.body;
@@ -8,7 +10,7 @@ module.exports = async (req, res) => {
  
         const result = await pool.request()
             .input("email", sql.VarChar, email)
-            .query("SELECT u.ID_Usuario, w.Password FROM a002103.USUARIO u INNER JOIN a002103.WEB_PORTAL_ITAS_USR w ON u.ID_Usuario = w.ID_Usuario WHERE u.Email = @email");
+            .query("SELECT u.ID_Usuario, w.Password FROM ${schema}.USUARIO u INNER JOIN ${schema}.WEB_PORTAL_ITAS_USR w ON u.ID_Usuario = w.ID_Usuario WHERE u.Email = @email");
  
         if (result.recordset.length === 0) {
             return res.json({ success: false, error: "Usuario o contraseña incorrectos" });

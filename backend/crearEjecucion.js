@@ -1,4 +1,6 @@
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
 
 module.exports = async (req, res) => {
     const { flujoSeleccionado, nombreFlujo, datos, solicitante, identificador, prioridad } = req.body;
@@ -19,7 +21,7 @@ module.exports = async (req, res) => {
         // --- 1️⃣ Insert en RPA_TASKLIST ---
         const tasklistRequest = new sql.Request(transaction);
         const insertTasklistQuery = `
-            INSERT INTO a002103.RPA_TASKLIST
+            INSERT INTO ${schema}.RPA_TASKLIST
                 (Id_Usuario, Identificador, Id_Flujo, Fecha_Pedido, Cant_Reintentos, Indice_Ultimo_Registro, Id_Estado, 
                  Titulo_Tasklist, Avance, Prioridad)
             OUTPUT INSERTED.id_tasklist
@@ -49,7 +51,7 @@ module.exports = async (req, res) => {
                 .input("indice_task", sql.Int, i + 1)
                 .input("dato", sql.VarChar(sql.MAX), lineas[i].trim())
                 .query(`
-                    INSERT INTO a002103.RPA_RESULTADOS (id_tasklist, indice_task, dato, Fecha_Pedido)
+                    INSERT INTO ${schema}.RPA_RESULTADOS (id_tasklist, indice_task, dato, Fecha_Pedido)
                     VALUES (@id_tasklist, @indice_task, @dato, GETDATE());
                 `);
         }
@@ -60,7 +62,7 @@ module.exports = async (req, res) => {
             .input("RegTotales", sql.Int, lineas.length)
             .input("id_tasklist", sql.Int, id_tasklist)
             .query(`
-                UPDATE a002103.RPA_TASKLIST
+                UPDATE ${schema}.RPA_TASKLIST
                 SET Reg_Totales = @RegTotales
                 WHERE id_tasklist = @id_tasklist;
             `);

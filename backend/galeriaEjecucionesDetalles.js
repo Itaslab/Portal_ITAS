@@ -3,6 +3,9 @@
 const express = require("express");
 const router = express.Router();
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
+
 
 // Ruta para el botón OJO
 router.get("/detalle/:id", async (req, res) => {
@@ -24,9 +27,9 @@ router.get("/detalle/:id", async (req, res) => {
             r.Status_Anterior,
             r.Intentos,
             r.Ultimo_Error
-        FROM a002103.RPA_RESULTADOS r
-        INNER JOIN a002103.RPA_TASKLIST t ON r.Id_Tasklist = t.Id_Tasklist
-        INNER JOIN a002103.RPA_FLUJOS rf ON t.Id_Flujo = rf.Id_Flujo
+        FROM ${schema}.RPA_RESULTADOS r
+        INNER JOIN ${schema}.RPA_TASKLIST t ON r.Id_Tasklist = t.Id_Tasklist
+        INNER JOIN ${schema}.RPA_FLUJOS rf ON t.Id_Flujo = rf.Id_Flujo
         WHERE t.Id_Tasklist = @idTasklist
     `;
 

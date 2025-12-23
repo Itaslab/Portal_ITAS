@@ -3,6 +3,8 @@
 const express = require("express");
 const router = express.Router();
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
 
 router.get("/", async (req, res) => {
   try {
@@ -16,9 +18,9 @@ router.get("/", async (req, res) => {
         AM.Inbox,
         AA.Accion
       FROM 
-        a002103.RPA_AUTO_MQ AM
+        ${schema}.RPA_AUTO_MQ AM
       INNER JOIN 
-        a002103.RPA_AMQ_ACCION AA ON AA.Id_AMQ_Accion = AM.Id_AMQ_Accion
+        ${schema}.RPA_AMQ_ACCION AA ON AA.Id_AMQ_Accion = AM.Id_AMQ_Accion
       ORDER BY AM.Titulo_AMQ;
     `;
 

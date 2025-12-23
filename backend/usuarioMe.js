@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { sql, poolPromise } = require('./db');
+const schema = process.env.DB_SCHEMA;
+
 
 // Devuelve info del usuario logueado (según session)
 router.get('/me', async (req, res) => {
@@ -10,7 +12,7 @@ router.get('/me', async (req, res) => {
     const pool = await poolPromise;
     const r = await pool.request()
       .input('id', sql.Int, idUsuario)
-      .query('SELECT ID_Usuario, Legajo, Nombre, Apellido, Email FROM a002103.USUARIO WHERE ID_Usuario = @id');
+      .query('SELECT ID_Usuario, Legajo, Nombre, Apellido, Email FROM ${schema}.USUARIO WHERE ID_Usuario = @id');
     if (!r.recordset || r.recordset.length === 0) return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
     const u = r.recordset[0];
     res.json({ success: true, usuario: { ID_Usuario: u.ID_Usuario, Legajo: u.Legajo, Nombre: u.Nombre, Apellido: u.Apellido, Email: u.Email } });
@@ -34,7 +36,7 @@ router.put('/me/password', async (req, res) => {
     const pool = await poolPromise;
     const r = await pool.request()
       .input('id', sql.Int, idUsuario)
-      .query('SELECT Password FROM a002103.WEB_PORTAL_ITAS_USR WHERE ID_Usuario = @id');
+      .query('SELECT Password FROM ${schema}.WEB_PORTAL_ITAS_USR WHERE ID_Usuario = @id');
 
     if (!r.recordset || r.recordset.length === 0) return res.status(404).json({ success: false, error: 'Registro WEB no encontrado' });
 
@@ -46,7 +48,7 @@ router.put('/me/password', async (req, res) => {
     await pool.request()
       .input('id', sql.Int, idUsuario)
       .input('newPass', sql.VarChar, newPassword)
-      .query('UPDATE a002103.WEB_PORTAL_ITAS_USR SET Password = @newPass WHERE ID_Usuario = @id');
+      .query('UPDATE ${schema}.WEB_PORTAL_ITAS_USR SET Password = @newPass WHERE ID_Usuario = @id');
 
     res.json({ success: true, mensaje: 'Contraseña actualizada' });
   } catch (err) {

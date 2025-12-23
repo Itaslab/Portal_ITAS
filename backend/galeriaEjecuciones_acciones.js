@@ -3,6 +3,8 @@
 const express = require("express");
 const router = express.Router();
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
 
 // 🔥 Función genérica para ejecutar SP
 async function ejecutarSP(nombreSP, idTasklist, idUsuario) {
@@ -35,7 +37,7 @@ router.post("/cancelar", async (req, res) => {
 
   try {
     const { mensajes } = await ejecutarSP(
-      "a002103.PortalRPABotonCancelarTarea",
+      "${schema}.PortalRPABotonCancelarTarea",
       idTasklist,
       idUsuario
     );
@@ -64,7 +66,7 @@ router.post("/pausar", async (req, res) => {
 
   try {
     const { mensajes } = await ejecutarSP(
-      "a002103.PortalRPABotonPausarTarea",
+      "${schema}.PortalRPABotonPausarTarea",
       idTasklist,
       idUsuario
     );
@@ -89,7 +91,7 @@ router.post("/reanudar", async (req, res) => {
 
   try {
     const { mensajes } = await ejecutarSP(
-      "a002103.PortalRPABotonReanudarTarea",
+      "${schema}.PortalRPABotonReanudarTarea",
       idTasklist,
       idUsuario
     );
@@ -116,7 +118,7 @@ router.post("/reenviar-todo", async (req, res) => {
 
   try {
     const { mensajes } = await ejecutarSP(
-      "a002103.PortalRPABotonReenviarTodo",
+      "${schema}.PortalRPABotonReenviarTodo",
       idTasklist,
       idUsuario
     );
@@ -143,7 +145,7 @@ router.post("/reenviar-fallidos", async (req, res) => {
 
   try {
     const { mensajes } = await ejecutarSP(
-      "a002103.PortalRPABotonReenviarFallidos",
+      "${schema}.PortalRPABotonReenviarFallidos",
       idTasklist,
       idUsuario
     );

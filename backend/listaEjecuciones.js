@@ -1,5 +1,7 @@
 // listaEjecuciones.js
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
 
 module.exports = async (req, res) => {
     try {
@@ -17,7 +19,7 @@ module.exports = async (req, res) => {
                 SubTipo_De_Flujo AS subTipoFlujo,
                 Intentos_Automaticos AS intentos,
                 Cant_Por_Lote AS cantidad
-            FROM a002103.RPA_FLUJOS;
+            FROM ${schema}.RPA_FLUJOS;
         `;
 
         const result = await pool.request().query(query);

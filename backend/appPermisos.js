@@ -1,4 +1,7 @@
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
+
 
 async function obtenerPermisosUsuario(req, res) {
   try {
@@ -6,7 +9,7 @@ async function obtenerPermisosUsuario(req, res) {
 
     const query = `
       SELECT ID_Aplicacion
-      FROM a002103.USUARIO_PERFIL_APP
+      FROM ${schema}.USUARIO_PERFIL_APP
       WHERE ID_Usuario = @id
     `;
 

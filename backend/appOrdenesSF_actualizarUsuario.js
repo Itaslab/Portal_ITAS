@@ -1,5 +1,7 @@
 // appOrdenesSF_actualizarUsuario.js
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
 
 module.exports = async (req, res) => {
   try {
@@ -20,7 +22,7 @@ module.exports = async (req, res) => {
     const pool = await poolPromise;
 
     const query = `
-      UPDATE a002103.APP_ORDENES_USR
+      UPDATE ${schema}.APP_ORDENES_USR
       SET 
         Grupo = @grupo,
         Grupo2 = @grupo2,

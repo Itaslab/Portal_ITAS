@@ -2,6 +2,8 @@
 const express = require("express");
 const router = express.Router();
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
  
 // Devuelve el log de orquestación por Id_Tasklist
 router.get("/:idTasklist", async (req, res) => {
@@ -14,7 +16,7 @@ router.get("/:idTasklist", async (req, res) => {
     const pool = await poolPromise;
     const query = `
       SELECT Fecha_Hora, Detalle
-      FROM a002103.RPA_LOG_ORQ_X_TASK
+      FROM ${schema}.RPA_LOG_ORQ_X_TASK
       WHERE Id_Tasklist = @Id_Tasklist
       ORDER BY Id_Log ASC
     `;
