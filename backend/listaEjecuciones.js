@@ -19,7 +19,8 @@ module.exports = async (req, res) => {
                 SubTipo_De_Flujo AS subTipoFlujo,
                 Intentos_Automaticos AS intentos,
                 Cant_Por_Lote AS cantidad
-            FROM ${schema}.RPA_FLUJOS;
+            FROM ${schema}.RPA_FLUJOS
+            WHERE Activo = 1;
         `;
 
         const result = await pool.request().query(query);

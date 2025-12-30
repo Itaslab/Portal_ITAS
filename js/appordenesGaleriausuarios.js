@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const nombreRaw = (uRaw.nombre ?? uRaw.Nombre ?? "").toString().toLowerCase();
             const grupoRaw = (uRaw.grupo ?? uRaw.Grupo ?? "").toString().toLowerCase();
             const activoTexto = normalizeActivo(uRaw.activo);
-            return (!grupo || grupoRaw.includes(grupo)) &&
+            return (!grupo || grupoRaw === grupo) &&
                 (!nombre || nombreRaw.includes(nombre)) &&
                 (!activoVal || activoTexto === activoVal);
         });

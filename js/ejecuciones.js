@@ -4,6 +4,9 @@
 function formatearFecha(fechaISO) {
          if (!fechaISO) return "-";
          const d = new Date(fechaISO);
+         
+         // Sumar 3 horas para ajuste de zona horaria
+         d.setHours(d.getHours() + 3);
 
          const dia = String(d.getDate()).padStart(2, "0");
          const mes = String(d.getMonth() + 1).padStart(2, "0");
@@ -14,6 +17,7 @@ function formatearFecha(fechaISO) {
 
          return `${dia}/${mes}/${año} ${horas}:${minutos}`;
      }
+     
 let cargandoEjecuciones = false;
 const cacheContadores = {};
 
@@ -110,7 +114,16 @@ async function cargarEjecuciones() {
             })
         );
 
+        // Guardar el filtro actual ANTES de actualizar las opciones
+        const filtroSolicitanteActual = filtroSolicitante.value;
+        
         llenarFiltroSolicitante();
+        
+        // Restaurar el filtro DESPUÉS de llenar las opciones
+        if (filtroSolicitanteActual) {
+            filtroSolicitante.value = filtroSolicitanteActual;
+        }
+        
         renderTabla();
 
     } catch (err) {
