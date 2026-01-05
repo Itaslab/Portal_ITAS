@@ -1,4 +1,8 @@
 // server.js
+
+console.log("🔥 SERVER REAL:", __filename);
+
+
 const path = require("path");
 const express = require("express");
 
