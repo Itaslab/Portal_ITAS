@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
         res.json({ success: true, flujos: flujosLimpios });
 
     } catch (err) {
-        console.error("Error al obtener flujos:", err);
+        console.error("Error al obtener :", err);
         res.status(500).json({ success: false, error: err.message });
     }
 };
