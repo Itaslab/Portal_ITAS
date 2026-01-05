@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test node server.js",
+    "test": "cross-env NODE_ENV=test nodemon server.js",
     "prod": "cross-env NODE_ENV=production node server.js"
   },
   "keywords": [],
