@@ -1,11 +1,11 @@
 const sql = require("mssql");
 
 const config = {
-    user: "a002103",
-    password: "6uaE4aZS9hZf_",
-    server: "10.4.48.173",   // ejemplo "192.168.0.105"
-    port:1433,
-    database: "OCTOPUSPROD",
+    user: process.env.DB_USER || "a002103",
+    password: process.env.DB_PASS || "6uaE4aZS9hZf_",
+    server: process.env.DB_HOST || "10.4.48.173",   // ejemplo "192.168.0.105"
+    port: process.env.DB_PORT || 1433,
+    database: process.env.DB_NAME || "OCTOPUSPROD",
     options: {
         encrypt: false,
         trustServerCertificate: true

@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function cargarTabla() {
     tablaBody.innerHTML = "<tr><td colspan='6'>Cargando...</td></tr>";
     try {
-      const resp = await fetch("/api/scripts");
+      const resp = await fetch(basePath + "/api/scripts");
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const data = await resp.json();
       if (!data.success) throw new Error(data.error || "No success");

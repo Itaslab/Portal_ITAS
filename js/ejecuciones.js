@@ -4,6 +4,9 @@
 function formatearFecha(fechaISO) {
          if (!fechaISO) return "-";
          const d = new Date(fechaISO);
+         
+         // Sumar 3 horas para ajuste de zona horaria
+         d.setHours(d.getHours() + 3);
 
          const dia = String(d.getDate()).padStart(2, "0");
          const mes = String(d.getMonth() + 1).padStart(2, "0");
@@ -14,6 +17,7 @@ function formatearFecha(fechaISO) {
 
          return `${dia}/${mes}/${año} ${horas}:${minutos}`;
      }
+     
 let cargandoEjecuciones = false;
 const cacheContadores = {};
 
@@ -35,7 +39,7 @@ async function obtenerContadores(id) {
     }
 
     try {
-        const res = await fetch(`/api/ejecuciones/detalle/${id}`);
+        const res = await fetch(`${basePath}/api/ejecuciones/detalle/${id}`);
         const data = await res.json();
 
         if (!Array.isArray(data)) {
@@ -80,7 +84,7 @@ async function cargarEjecuciones() {
 
         Object.keys(cacheContadores).forEach(k => delete cacheContadores[k]);
 
-        const res = await fetch("/ejecuciones");
+        const res = await fetch(basePath + "/ejecuciones");
         const data = await res.json();
 
         if (!data.success) {
@@ -111,7 +115,16 @@ async function cargarEjecuciones() {
             })
         );
 
+        // Guardar el filtro actual ANTES de actualizar las opciones
+        const filtroSolicitanteActual = filtroSolicitante.value;
+        
         llenarFiltroSolicitante();
+        
+        // Restaurar el filtro DESPUÉS de llenar las opciones
+        if (filtroSolicitanteActual) {
+            filtroSolicitante.value = filtroSolicitanteActual;
+        }
+        
         renderTabla();
 
     } catch (err) {
@@ -123,16 +136,33 @@ async function cargarEjecuciones() {
 }
  
  
-  function llenarFiltroSolicitante() {
-    const emailsUnicos = [...new Set(ejecuciones.map(e => e.usuario))].sort();
-    filtroSolicitante.innerHTML = `<option value="">Todos</option>`;
-    emailsUnicos.forEach(email => {
-      const option = document.createElement("option");
-      option.value = email;
-      option.textContent = email;
-      filtroSolicitante.appendChild(option);
-    });
+let cacheSolicitantes = [];
+
+function llenarFiltroSolicitante() {
+
+  const emailsUnicos = [...new Set(ejecuciones.map(e => e.usuario))].sort();
+
+  // si no cambió, no tocar el select
+  if (JSON.stringify(emailsUnicos) === JSON.stringify(cacheSolicitantes)) {
+    return;
   }
+
+  cacheSolicitantes = emailsUnicos;
+
+  const seleccionado = filtroSolicitante.value;
+  filtroSolicitante.innerHTML = `<option value="">Todos</option>`;
+
+  emailsUnicos.forEach(email => {
+    const option = document.createElement("option");
+    option.value = email;
+    option.textContent = email;
+    filtroSolicitante.appendChild(option);
+  });
+
+  if (emailsUnicos.includes(seleccionado)) {
+    filtroSolicitante.value = seleccionado;
+  }
+}
  
   
   function renderTabla() {
@@ -377,13 +407,6 @@ async function cargarEjecuciones() {
   document.getElementById("btnConfirmarReenviarFallidos")
     .addEventListener("click", confirmarReenviarFallidos);
 
-
-
-
-
-
-
-
 });
  
 // 🔹 Función de alertas Bootstrap
@@ -493,7 +516,7 @@ $(document).on("click", ".btn-detalle", async function (e) {
     modal.show();
  
     try {
-        const res = await fetch(`/api/ejecuciones/detalle/${id}`);
+        const res = await fetch(`${basePath}/api/ejecuciones/detalle/${id}`);
         const data = await res.json();
  
         if (!data || !Array.isArray(data) || data.length === 0) {
@@ -641,7 +664,7 @@ $(document).on("click", ".btn-log", async function () {
  
   try {
     // Llamada al backend nuevo
-    const res = await fetch(`/api/logs/${idTasklist}`);
+    const res = await fetch(`${basePath}/api/logs/${idTasklist}`);
     const json = await res.json();
  
     if (!json.success || !Array.isArray(json.data) || json.data.length === 0) {
@@ -791,7 +814,7 @@ async function ejecutarAccionBackend(accion) {
   }
 
   try {
-    const res = await fetch(`/api/acciones/${accion}`, {
+    const res = await fetch(`${basePath}/api/acciones/${accion}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

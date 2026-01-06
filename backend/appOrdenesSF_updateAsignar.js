@@ -1,5 +1,7 @@
 // appOrdenesSF_updateAsignar.js
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
 
 module.exports = async (req, res) => {
   try {
@@ -23,7 +25,7 @@ module.exports = async (req, res) => {
       .input("id", sql.Int, id)
       .input("asignar", sql.VarChar(50), asignar)
       .query(`
-        UPDATE a002103.APP_ORDENES_USR
+        UPDATE ${schema}.APP_ORDENES_USR
         SET Asignar = @asignar
         WHERE ID_Usuario = @id;
       `);

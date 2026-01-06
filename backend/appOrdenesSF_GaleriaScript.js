@@ -2,6 +2,8 @@
 const express = require("express");
 const router = express.Router();
 const { sql, poolPromise } = require("./db"); // ajustá la ruta según tu estructura
+const schema = process.env.DB_SCHEMA;
+
 
 // GET /api/scripts  -> lista
 router.get("/", async (req, res) => {
@@ -19,7 +21,7 @@ router.get("/", async (req, res) => {
         ISNULL(CONVERT(VARCHAR(10), Vigencia_Desde, 120), '') AS Vigencia_Desde,
         ISNULL(CONVERT(VARCHAR(10), Vigencia_Hasta, 120), '') AS Vigencia_Hasta,
         Activo
-      FROM a002103.APP_ORDENES_BAJADA
+      FROM ${schema}.APP_ORDENES_BAJADA
       ORDER BY Nombre;
     `;
     const result = await pool.request().query(query);
@@ -61,7 +63,7 @@ router.get("/:id", async (req, res) => {
           ISNULL(CONVERT(VARCHAR(10), Vigencia_Desde, 120), '') AS Vigencia_Desde,
           ISNULL(CONVERT(VARCHAR(10), Vigencia_Hasta, 120), '') AS Vigencia_Hasta,
           Activo
-        FROM a002103.APP_ORDENES_BAJADA
+        FROM ${schema}.APP_ORDENES_BAJADA
         WHERE ID = @id;
       `);
 
@@ -118,7 +120,7 @@ router.put("/:id", async (req, res) => {
       .input("id", sql.Int, id);
 
     const query = `
-      UPDATE a002103.APP_ORDENES_BAJADA
+      UPDATE ${schema}.APP_ORDENES_BAJADA
       SET 
         Nombre = COALESCE(@nombre, Nombre),
         Negocio = COALESCE(@negocio, Negocio),

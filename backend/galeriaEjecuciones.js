@@ -1,5 +1,7 @@
 //galeriaEjecuciones.js
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
  
 module.exports = async (req, res) => {
   try {
@@ -20,9 +22,9 @@ module.exports = async (req, res) => {
            T.Reg_Totales,
            T.Reg_Proc_OK,
            T.Reg_Proc_NOK
-           FROM a002103.USUARIO U
-           JOIN a002103.RPA_TASKLIST T ON T.Id_Usuario = U.Id_Usuario
-           JOIN a002103.RPA_TASKLIST_ESTADO TE ON T.Id_Estado = TE.Id_Estado
+           FROM ${schema}.USUARIO U
+           JOIN ${schema}.RPA_TASKLIST T ON T.Id_Usuario = U.Id_Usuario
+           JOIN ${schema}.RPA_TASKLIST_ESTADO TE ON T.Id_Estado = TE.Id_Estado
            ORDER BY T.Id_Tasklist DESC;
            `;
  

@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { sql, poolPromise } = require('./db'); // ajustá la ruta si está en la misma carpeta
+const schema = process.env.DB_SCHEMA;
+
 
 // Endpoint para verificar si existe legajo o email en otro usuario
 router.get('/verificar_legajo_email', async (req, res) => {
@@ -10,7 +12,7 @@ router.get('/verificar_legajo_email', async (req, res) => {
   }
   try {
     const pool = await poolPromise;
-    let query = `SELECT Legajo, Email FROM a002103.USUARIO WHERE (Legajo = @Legajo OR Email = @Email)`;
+    let query = `SELECT Legajo, Email FROM ${schema}.USUARIO WHERE (Legajo = @Legajo OR Email = @Email)`;
     if (actual) {
       query += ' AND Legajo <> @Actual';
     }
@@ -36,11 +38,11 @@ router.get('/referentes', async (req, res) => {
     const result = await pool.request().query(`
       SELECT r.Referente, CONCAT(u.Apellido, ', ', u.Nombre) AS NombreCompleto
       FROM (
-        SELECT DISTINCT Referente FROM a002103.USUARIO
+        SELECT DISTINCT Referente FROM ${schema}.USUARIO
         WHERE Referente IS NOT NULL AND LTRIM(RTRIM(Referente)) <> ''
       ) r
       OUTER APPLY (
-        SELECT TOP 1 Apellido, Nombre FROM a002103.USUARIO u2 WHERE u2.Legajo = r.Referente
+        SELECT TOP 1 Apellido, Nombre FROM ${schema}.USUARIO u2 WHERE u2.Legajo = r.Referente
       ) u
       ORDER BY r.Referente
     `);
@@ -87,7 +89,7 @@ router.post('/registrar_usuario', async (req, res) => {
       .input('Email', sql.VarChar, Email)
       .input('Legajo', sql.VarChar, Legajo)
       .query(`
-        SELECT 1 FROM a002103.USUARIO
+        SELECT 1 FROM ${schema}.USUARIO
         WHERE Email = @Email OR Legajo = @Legajo
       `);
 
@@ -109,7 +111,7 @@ router.post('/registrar_usuario', async (req, res) => {
       .input('Convenio', sql.VarChar, Convenio)
       .input('Ciudad', sql.VarChar, Ciudad)
       .query(`
-        INSERT INTO a002103.USUARIO (
+        INSERT INTO ${schema}.USUARIO (
           Apellido, Nombre, Alias, Legajo, Email,
           Referente, Fecha_Nacimiento, Empresa, Convenio, Ciudad
         )

@@ -1,8 +1,24 @@
 // server.js
+
+console.log("🔥 SERVER REAL:", __filename);
+
+
+const path = require("path");
 const express = require("express");
+
+
+require("dotenv").config({
+  path: process.env.NODE_ENV === "production"
+    ? path.join(__dirname, '.env.production')  // Para producción
+    : path.join(__dirname, '.env.test')  // Para test/local
+});
+
+const schema = process.env.DB_SCHEMA;
+
+
+
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const path = require("path");
 const https = require("https");
 const fs = require("fs");
 const session = require("express-session");
@@ -66,8 +82,8 @@ app.post("/login", async (req, res) => {
       .input("email", sql.VarChar, email)
       .query(`
         SELECT u.ID_Usuario, w.Password
-        FROM a002103.USUARIO u
-        INNER JOIN a002103.WEB_PORTAL_ITAS_USR w
+        FROM ${schema}.USUARIO u
+        INNER JOIN ${schema}.WEB_PORTAL_ITAS_USR w
         ON u.ID_Usuario = w.ID_Usuario
         WHERE u.Email = @email
       `);
@@ -159,13 +175,20 @@ app.get("/", (req, res) => {
 //  cert: fs.readFileSync("/etc/nginx/ssl/test-web.crt"),
 //};
  
-const httpsOptions = {
-  key: fs.readFileSync("/app/cert/portal-itas.telecom.com.ar.key"),
-  cert: fs.readFileSync("/app/cert/fullchain.crt"), // certificado + intermedio
-};
- 
-const PORT = 8080;
-https.createServer(httpsOptions, app).listen(PORT, () => {
- // console.log(`✅ HTTPS corriendo en https://10.4.48.116:${PORT}`);
-  console.log(`✅ HTTPS corriendo en https://portal-itas.telecom.com.ar:${PORT}`);
-});
+const PORT = process.env.PORT || 8080;
+
+if (process.env.NODE_ENV === "production") {
+  const httpsOptions = {
+    key: fs.readFileSync(process.env.SSL_KEY_PATH),
+    cert: fs.readFileSync(process.env.SSL_CERT_PATH)
+  };
+
+  https.createServer(httpsOptions, app).listen(PORT, () => {
+    console.log(`🔐 HTTPS PROD corriendo en https://portal-itas.telecom.com.ar:${PORT}`);
+  });
+
+} else {
+  app.listen(PORT,"127.0.0.1",() => {
+    console.log(`🌐 HTTP TEST corriendo en http://127.0.0.1:${PORT}`);
+  });
+}

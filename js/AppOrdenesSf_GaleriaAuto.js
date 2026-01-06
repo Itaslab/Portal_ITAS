@@ -69,7 +69,7 @@ document.addEventListener("click", e => {
 // Obtener datos del backend
 async function fetchData() {
   try {
-    const response = await fetch("/api/galeria-auto-mq");
+    const response = await fetch(basePath + "/api/galeria-auto-mq");
     const { success, autoMQ } = await response.json();
     if (success) {
       autoMQData = autoMQ;

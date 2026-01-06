@@ -202,7 +202,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ------------------------------
   async function loadProfile() {
     try {
-      const resp = await fetch('/me');
+      const resp = await fetch(basePath + '/me');
       if (!resp.ok) return;
       const data = await resp.json();
       if (!data.success || !data.usuario) return;
@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Ensure any pasted overlong password is clipped clientside (input has maxlength, but defensive)
       if (nw.length > 15) perfilNewPass.value = nw.slice(0, 15);
       try {
-        const r = await fetch('/me/password', {
+        const r = await fetch(basePath + '/me/password', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ currentPassword: current, newPassword: nw })

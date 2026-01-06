@@ -1,13 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
 
-// Endpoint para traer usuarios base (de a002103.USUARIO)
+
+// Endpoint para traer usuarios base (de schema.USUARIO)
 router.get('/usuarios_base', async (req, res) => {
   try {
     const pool = await poolPromise;
     const result = await pool.request().query(`
-      SELECT Legajo, Nombre, Apellido, Email FROM a002103.USUARIO ORDER BY Apellido, Nombre
+      SELECT Legajo, Nombre, Apellido, Email FROM ${schema}.USUARIO ORDER BY Apellido, Nombre
     `);
     res.json({ success: true, usuarios: result.recordset });
   } catch (error) {
@@ -77,7 +79,7 @@ router.post("/usuariosordenes", async (req, res) => {
     // pool ya inicializado arriba
     // Comprobar si la tabla APP_ORDENES_USR contiene columna ID_Usuario
     const cols = await pool.request().query(
-      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'a002103' AND TABLE_NAME = 'APP_ORDENES_USR' AND COLUMN_NAME = 'ID_Usuario'`
+      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '${schema}' AND TABLE_NAME = 'APP_ORDENES_USR' AND COLUMN_NAME = 'ID_Usuario'`
     );
 
     const hasIdUsuario = cols && cols.recordset && cols.recordset.length > 0;
@@ -89,10 +91,10 @@ router.post("/usuariosordenes", async (req, res) => {
         return res.status(400).json({ mensaje: 'Se requiere UsuarioBase (legajo) cuando la tabla usa ID_Usuario.' });
       }
 
-      // Buscar ID_Usuario en tabla a002103.USUARIO por Legajo
+      // Buscar ID_Usuario en tabla schema.USUARIO por Legajo
       const r = await pool.request()
         .input('Legajo', sql.VarChar, usuarioBase)
-        .query('SELECT TOP 1 ID_Usuario FROM a002103.USUARIO WHERE Legajo = @Legajo');
+        .query(`SELECT TOP 1 ID_Usuario FROM ${schema}.USUARIO WHERE Legajo = @Legajo`);
 
       const idUsuario = r && r.recordset && r.recordset[0] ? r.recordset[0].ID_Usuario : null;
       if (!idUsuario) {
@@ -102,7 +104,7 @@ router.post("/usuariosordenes", async (req, res) => {
       // Evitar duplicados por ID_Usuario
       const existente = await pool.request()
         .input('ID_Usuario', sql.Int, idUsuario)
-        .query('SELECT COUNT(1) AS cnt FROM a002103.APP_ORDENES_USR WHERE ID_Usuario = @ID_Usuario');
+        .query(`SELECT COUNT(1) AS cnt FROM ${schema}.APP_ORDENES_USR WHERE ID_Usuario = @ID_Usuario`);
 
       if (existente && existente.recordset && existente.recordset[0] && existente.recordset[0].cnt > 0) {
         return res.status(409).json({ mensaje: 'Ya existe un usuario de orden para ese UsuarioBase.' });
@@ -120,7 +122,7 @@ router.post("/usuariosordenes", async (req, res) => {
         .input('Asc_desc', sql.VarChar, Asc_desc || null)
         .input('Script', sql.NVarChar(sql.MAX), Script || null)
         .query(`
-          INSERT INTO a002103.APP_ORDENES_USR
+          INSERT INTO ${schema}.APP_ORDENES_USR
           (ID_Usuario, Grupo, Grupo2, Modo, Max_Por_Trabajar, Hora_De, Hora_A, SF_UserID, Asc_desc, Script)
           VALUES (@ID_Usuario, @Grupo, @Grupo2, @Modo, @MaxPorTrabajar, @HoraDe, @HoraA, @SF_UserID, @Asc_desc, @Script)
         `);
@@ -130,7 +132,7 @@ router.post("/usuariosordenes", async (req, res) => {
       // Verificar si ya existe un usuario con el mismo apellido
       const existente = await pool.request()
         .input('Apellido', sql.VarChar, Apellido.trim())
-        .query('SELECT COUNT(1) AS cnt FROM a002103.APP_ORDENES_USR WHERE Apellido = @Apellido');
+        .query(`SELECT COUNT(1) AS cnt FROM ${schema}.APP_ORDENES_USR WHERE Apellido = @Apellido`);
 
       if (existente && existente.recordset && existente.recordset[0] && existente.recordset[0].cnt > 0) {
         return res.status(409).json({ mensaje: 'Ya existe un usuario con ese apellido.' });
@@ -149,7 +151,7 @@ router.post("/usuariosordenes", async (req, res) => {
         .input('Asc_desc', sql.VarChar, Asc_desc || null)
         .input('Script', sql.NVarChar(sql.MAX), Script || null)
         .query(`
-          INSERT INTO a002103.APP_ORDENES_USR
+          INSERT INTO ${schema}.APP_ORDENES_USR
           (Nombre, Apellido, Grupo, Grupo2, Modo, Max_Por_Trabajar, Hora_De, Hora_A, SF_UserID, Asc_desc, Script)
           VALUES (@Nombre, @Apellido, @Grupo, @Grupo2, @Modo, @MaxPorTrabajar, @HoraDe, @HoraA, @SF_UserID, @Asc_desc, @Script)
         `);

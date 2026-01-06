@@ -1,5 +1,7 @@
 // appOrdenesSF_usuarioDetalle.js
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
 
 module.exports = async (req, res) => {
   try {
@@ -24,9 +26,9 @@ module.exports = async (req, res) => {
         ap.Des_Asignar,     -- idem
         ap.Script            -- idem
       FROM 
-        a002103.APP_ORDENES_USR ap
+        ${schema}.APP_ORDENES_USR ap
       INNER JOIN 
-        a002103.USUARIO u ON u.ID_Usuario = ap.ID_Usuario
+        ${schema}.USUARIO u ON u.ID_Usuario = ap.ID_Usuario
       WHERE ap.ID_Usuario = @id;
     `;
 

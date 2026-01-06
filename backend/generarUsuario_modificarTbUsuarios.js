@@ -2,6 +2,8 @@
 const express = require("express");
 const router = express.Router();
 const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
+
 
 // Función para evitar "" y convertirlos en NULL
 const clean = (v) => (v === "" || v === undefined ? null : v);
@@ -14,7 +16,7 @@ router.get('/abm_usuarios', async (req, res) => {
     const pool = await poolPromise;
     const result = await pool.request().query(`
       SELECT Legajo, Nombre, Apellido
-      FROM a002103.USUARIO
+      FROM ${schema}.USUARIO
       ORDER BY Apellido
     `);
     res.json({ success: true, usuarios: result.recordset });
@@ -33,7 +35,7 @@ router.get('/abm_usuarios/:legajo', async (req, res) => {
     const pool = await poolPromise;
     const result = await pool.request()
       .input('Legajo', sql.VarChar, legajo)
-      .query('SELECT * FROM a002103.USUARIO WHERE Legajo = @Legajo');
+      .query('SELECT * FROM ${schema}.USUARIO WHERE Legajo = @Legajo');
 
     if (result.recordset.length === 0) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
@@ -56,7 +58,7 @@ router.get("/permisos/:legajo", async (req, res) => {
 
     const rUser = await pool.request()
       .input('Legajo', sql.VarChar, legajo)
-      .query('SELECT TOP 1 ID_Usuario FROM a002103.USUARIO WHERE Legajo = @Legajo');
+      .query('SELECT TOP 1 ID_Usuario FROM ${schema}.USUARIO WHERE Legajo = @Legajo');
 
     if (!rUser.recordset || rUser.recordset.length === 0) {
       return res.json([]);
@@ -68,7 +70,7 @@ router.get("/permisos/:legajo", async (req, res) => {
       .input("ID_Usuario", sql.Int, idUsuario)
       .query(`
         SELECT ID_Aplicacion
-        FROM a002103.USUARIO_PERFIL_APP
+        FROM ${schema}.USUARIO_PERFIL_APP
         WHERE ID_Usuario = @ID_Usuario
       `);
 
@@ -113,7 +115,7 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
       .input('Convenio', sql.VarChar, clean(Convenio))
       .input('Ciudad', sql.VarChar, clean(Ciudad))
       .query(`
-        UPDATE a002103.USUARIO
+        UPDATE ${schema}.USUARIO
         SET Apellido=@Apellido,
             Nombre=@Nombre,
             Alias=@Alias,
@@ -132,7 +134,7 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
 
     const resultUser = await pool.request()
       .input("Legajo", sql.VarChar, legajo)
-      .query("SELECT TOP 1 ID_Usuario, Nombre, Apellido FROM a002103.USUARIO WHERE Legajo = @Legajo");
+      .query("SELECT TOP 1 ID_Usuario, Nombre, Apellido FROM ${schema}.USUARIO WHERE Legajo = @Legajo");
 
     if (resultUser.recordset.length === 0) {
       return res.status(400).json({ mensaje: "Usuario no existe" });
@@ -143,10 +145,10 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
 
     // MAP permisos → ID_Aplicacion
     const permisosMap = {
-      Perm_Robot: 3,
-      Perm_AppOrdenes: 2,
-      Perm_Grafana: 5,
-      Perm_ABMUsuarios: 6,
+      Perm_Robot: 4,
+      Perm_AppOrdenes: 3,
+      Perm_Grafana: 8,
+      Perm_ABMUsuarios: 1,
     };
 
     const permisosEstado = {
@@ -163,7 +165,7 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
       .input("Nombre", sql.VarChar, nombreCompleto)
       .query(`
         SELECT ID_Perfil 
-        FROM a002103.PERFIL 
+        FROM ${schema}.PERFIL 
         WHERE Nombre = @Nombre
       `);
 
@@ -174,7 +176,7 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
       const nuevoPerfil = await pool.request()
         .input("Nombre", sql.VarChar, nombreCompleto)
         .query(`
-          INSERT INTO a002103.PERFIL (Nombre, ID_Aplicacion)
+          INSERT INTO ${schema}.PERFIL (Nombre, ID_Aplicacion)
           VALUES (@Nombre, 0)
 
           SELECT SCOPE_IDENTITY() AS ID_Perfil;
@@ -201,11 +203,11 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
           .input("ID_Aplicacion", sql.Int, idApp)
           .query(`
             IF NOT EXISTS (
-              SELECT 1 FROM a002103.USUARIO_PERFIL_APP
+              SELECT 1 FROM ${schema}.USUARIO_PERFIL_APP
               WHERE ID_Usuario = @ID_Usuario 
               AND ID_Aplicacion = @ID_Aplicacion
             )
-            INSERT INTO a002103.USUARIO_PERFIL_APP (ID_Usuario, ID_Perfil, ID_Aplicacion)
+            INSERT INTO ${schema}.USUARIO_PERFIL_APP (ID_Usuario, ID_Perfil, ID_Aplicacion)
             VALUES (@ID_Usuario, @ID_Perfil, @ID_Aplicacion)
           `);
 
@@ -215,7 +217,7 @@ router.put('/abm_usuarios/:legajo', async (req, res) => {
           .input("ID_Usuario", sql.Int, ID_Usuario)
           .input("ID_Aplicacion", sql.Int, idApp)
           .query(`
-            DELETE FROM a002103.USUARIO_PERFIL_APP
+            DELETE FROM ${schema}.USUARIO_PERFIL_APP
             WHERE ID_Usuario = @ID_Usuario AND ID_Aplicacion = @ID_Aplicacion
           `);
       }

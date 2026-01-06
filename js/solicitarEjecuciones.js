@@ -7,7 +7,7 @@ const identificadorInput = document.getElementById("identificador"); // 👈 ren
 let flujos = [];
 
 // Cargar flujos desde backend
-fetch("/flujos")
+fetch(basePath + "/flujos")
   .then(res => res.json())
   .then(data => {
       if (data.success) {
@@ -78,7 +78,7 @@ btnEnviar.addEventListener("click", () => {
         FHInicio: new Date().toLocaleString()
     };
 
-    fetch("/crearEjecucion", {
+    fetch(basePath + "/crearEjecucion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

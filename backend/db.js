@@ -1,29 +1,27 @@
 // db.js
 const sql = require("mssql");
 
-// Configuración de SQL Server
 const config = {
-    user: "a002103",
-    password: "6uaE4aZS9hZf_",
-    server: "10.4.48.173",   // Ejemplo: "192.168.1.50"
-    database: "OCTOPUSPROD",
-    port: 1433,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    server: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    port: Number(process.env.DB_PORT || 1433),
     options: {
-        encrypt: false, // true si usás Azure
-        trustServerCertificate: true // necesario si no tenés certificado SSL
+        encrypt: false,
+        trustServerCertificate: true
     }
 };
 
-// Creamos un pool de conexiones
 const poolPromise = new sql.ConnectionPool(config)
     .connect()
     .then(pool => {
-        console.log("✅ Conectado a SQL Server");
+        console.log(`✅ SQL conectado → ${process.env.DB_NAME}`);
         return pool;
     })
     .catch(err => {
-        console.error("❌ Error al conectar a SQL Server:", err);
-        throw err;
+        console.error("❌ Error SQL:", err);
+        process.exit(1);
     });
 
 module.exports = { sql, poolPromise };
