@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const texto = estadoSpan.textContent.toLowerCase();
                 estadoSpan.classList.add("text-white", "px-2", "py-1", "rounded", "shadow");
                 estadoSpan.style.fontSize = "0.80rem";
-                estadoSpan.classList.add("bg-success");
+                
                 if (texto === "activo") {
                 } else if (texto === "inactivo") {
                 estadoSpan.classList.add("bg-danger");

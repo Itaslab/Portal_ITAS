@@ -42,8 +42,9 @@ module.exports = async (req, res) => {
       desde: u.Hora_De,
       hasta: u.Hora_A,
       activo: u.Activo,
-      asignar: u.Asignar
-    }));
+      asignar: u.Asignar,
+      lic_estado: u.Lic_Estado
+}));
 
     res.json({ success: true, usuarios });
   } catch (err) {
