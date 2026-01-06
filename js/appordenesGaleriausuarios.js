@@ -92,15 +92,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         lista.forEach(uRaw => {
                 const licEnTrue =
                     uRaw.Lic_Estado === true || uRaw.Lic_Estado === 1 ||
-                    String(uRaw.Lic_Estado).toLowerCase() === "true";
+                    String(uRaw.Lic_Estado).toLowerCase() === 'True';
                     const activoReal =
                     typeof uRaw.activo === "string"
                     ? uRaw.activo.trim()
                     : (uRaw.activo == 1 || uRaw.activo === true ? "Activo" : "Inactivo");
-
-                    const estadoTexto = licEnTrue
-                    ? "Licencia"
-                    : activoReal;
+                    const estadoTexto = licEnTrue ? "Licencia" : activoReal;
                 const u = {
                     id_usuario: uRaw.id_usuario ?? uRaw.ID_Usuario ?? uRaw.id ?? null,
                     nombre: uRaw.nombre ?? uRaw.Nombre ?? "-",
