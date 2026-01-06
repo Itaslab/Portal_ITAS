@@ -90,19 +90,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     function renderTabla(lista) {
         tabla.innerHTML = "";
         lista.forEach(uRaw => {
-            const u = {
-                id_usuario: uRaw.id_usuario ?? uRaw.ID_Usuario ?? uRaw.id ?? null,
-                nombre: uRaw.nombre ?? uRaw.Nombre ?? "-",
-                grupo: uRaw.grupo ?? uRaw.Grupo ?? "-",
-                grupo2: uRaw.grupo2 ?? uRaw.Grupo2 ?? "-",
-                modo: uRaw.modo ?? uRaw.Modo ?? "-",
-                max: uRaw.max ?? uRaw.Max_Por_Trabajar ?? "-",
-                desde: uRaw.desde ?? uRaw.Hora_De ?? uRaw.hora_de ?? "-",
-                hasta: uRaw.hasta ?? uRaw.Hora_A ?? uRaw.hora_a ?? "-",
-                activo: typeof uRaw.activo === "string"
+                const licEnTrue =
+                    uRaw.Lic_Estado === true || uRaw.Lic_Estado === 1 ||
+                    String(uRaw.Lic_Estado).toLowerCase() === "true";
+                    const activoReal =
+                    typeof uRaw.activo === "string"
                     ? uRaw.activo.trim()
-                    : (uRaw.activo == 1 || uRaw.activo === true ? "Activo" : "Inactivo"),
-                asignar: uRaw.asignar ?? uRaw.Asignar ?? ""
+                    : (uRaw.activo == 1 || uRaw.activo === true ? "Activo" : "Inactivo");
+
+                    const estadoTexto = licEnTrue
+                    ? "Licencia"
+                    : activoReal;
+                const u = {
+                    id_usuario: uRaw.id_usuario ?? uRaw.ID_Usuario ?? uRaw.id ?? null,
+                    nombre: uRaw.nombre ?? uRaw.Nombre ?? "-",
+                    grupo: uRaw.grupo ?? uRaw.Grupo ?? "-",
+                    grupo2: uRaw.grupo2 ?? uRaw.Grupo2 ?? "-",
+                    modo: uRaw.modo ?? uRaw.Modo ?? "-",
+                    max: uRaw.max ?? uRaw.Max_Por_Trabajar ?? "-",
+                    desde: uRaw.desde ?? uRaw.Hora_De ?? uRaw.hora_de ?? "-",
+                    hasta: uRaw.hasta ?? uRaw.Hora_A ?? uRaw.hora_a ?? "-",
+                    activo: estadoTexto,
+                    asignar: uRaw.asignar ?? uRaw.Asignar ?? "",
+                    lic_estado: uRaw.Lic_Estado ?? uRaw.lic_estado ?? "-"
+
             };
 
             const row = document.createElement("tr");
@@ -114,7 +125,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <td>${escapeHtml(String(u.max))}</td>
                 <td>${escapeHtml(u.desde)}</td>
                 <td>${escapeHtml(u.hasta)}</td>
-                <td><span class="estado-span">${u.activo === "Activo" ? "Activo" : "Inactivo"}</span></td>
+                <td><span class="estado-span">${escapeHtml(u.activo)}</span></td>
                 <td>
                     <select class="asignar-select form-select form-select-sm">
                         <option value="Asignar" ${u.asignar === "Asignar" ? "selected" : ""}>Asignar</option>
@@ -130,10 +141,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const texto = estadoSpan.textContent.toLowerCase();
                 estadoSpan.classList.add("text-white", "px-2", "py-1", "rounded", "shadow");
                 estadoSpan.style.fontSize = "0.80rem";
+                estadoSpan.classList.add("bg-success");
                 if (texto === "activo") {
-                    estadoSpan.classList.add("bg-success");
                 } else if (texto === "inactivo") {
-                    estadoSpan.classList.add("bg-danger");
+                estadoSpan.classList.add("bg-danger");
+                } else if (texto === "licencia") {
+                estadoSpan.classList.add("bg-warning", "text-dark");
                 }
             }
 
