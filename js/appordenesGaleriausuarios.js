@@ -90,10 +90,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     function renderTabla(lista) {
         tabla.innerHTML = "";
         lista.forEach(uRaw => {
-                const licEnTrue =
-                    uRaw.Lic_Estado === true || uRaw.Lic_Estado === 1 ||
-                    String(uRaw.Lic_Estado).toLowerCase() === 'True';
-                    const activoReal =
+            const licValor = uRaw.Lic_Estado ?? uRaw.lic_estado;
+            const licEnTrue =
+            typeof licValor === "string" &&
+            licValor.toLowerCase() === "true";
+            const activoReal =
                     typeof uRaw.activo === "string"
                     ? uRaw.activo.trim()
                     : (uRaw.activo == 1 || uRaw.activo === true ? "Activo" : "Inactivo");
