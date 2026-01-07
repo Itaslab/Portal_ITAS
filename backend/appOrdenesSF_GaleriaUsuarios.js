@@ -18,7 +18,8 @@ module.exports = async (req, res) => {
         ISNULL(CONVERT(VARCHAR(8), ap.Hora_De, 108), '') AS Hora_De,
         ISNULL(CONVERT(VARCHAR(8), ap.Hora_A, 108), '') AS Hora_A,
         ap.Activo,
-        ap.Asignar
+        ap.Asignar,
+        ap.Lic_Estado
       FROM 
         ${schema}.APP_ORDENES_USR ap
       INNER JOIN 
@@ -41,8 +42,9 @@ module.exports = async (req, res) => {
       desde: u.Hora_De,
       hasta: u.Hora_A,
       activo: u.Activo,
-      asignar: u.Asignar
-    }));
+      asignar: u.Asignar,
+      lic_estado: u.Lic_Estado
+}));
 
     res.json({ success: true, usuarios });
   } catch (err) {
