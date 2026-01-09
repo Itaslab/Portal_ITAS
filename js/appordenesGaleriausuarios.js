@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
                 }
                 try {
-                    const resp = await fetch(`/usuarios/${u.id_usuario}/asignar`, {
+                    const resp = await fetch(basePath + `/usuarios/${u.id_usuario}/asignar`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ asignar: nuevoValor })
@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function abrirModal(id_usuario) {
         try {
-            const resp = await fetch(`/usuarios/${id_usuario}`);
+            const resp = await fetch(basePath + `/usuarios/${id_usuario}`);
             const data = await resp.json();
             if (!data.success) throw new Error(data.error || "Error al obtener detalle del usuario");
             const u = data.usuario || {};
