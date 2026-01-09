@@ -44,10 +44,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   try {
     const res = await fetch(`${basePath}/permisos`, {
-  credentials: "same-origin"
+    credentials: "include"
     });
-
-
 
     const data = await res.json();
 
