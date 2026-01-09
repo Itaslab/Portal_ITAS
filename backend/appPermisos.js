@@ -1,12 +1,13 @@
 const { sql, poolPromise } = require("./db");
 const schema = process.env.DB_SCHEMA;
 
-
-
 async function obtenerPermisosUsuario(req, res) {
   try {
-    if (!req.session.user) {
-      return res.status(401).json({ ok: false, error: "No autenticado" });
+    if (!req.session || !req.session.user) {
+      return res.status(401).json({
+        ok: false,
+        error: "No autenticado"
+      });
     }
 
     const id_usuario = req.session.user.ID_Usuario;
@@ -25,15 +26,14 @@ async function obtenerPermisosUsuario(req, res) {
 
     const permisos = result.recordset.map(r => r.ID_Aplicacion);
 
-    res.json({
+    return res.json({
       ok: true,
-      usuario: id_usuario,
       aplicacionesPermitidas: permisos
     });
 
   } catch (error) {
     console.error("Error obteniendo permisos:", error);
-    res.status(500).json({
+    return res.status(500).json({
       ok: false,
       error: "Error al obtener permisos"
     });
