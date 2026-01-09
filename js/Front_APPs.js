@@ -26,17 +26,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const perfilResult = document.getElementById('perfilResult');
 
   // ------------------------------
-  // 1) OBTENER ID DEL USUARIO
-  // ------------------------------
-  const idUsuario = localStorage.getItem("idUsuario");
-
-  if (!idUsuario) {
-    alert("Usuario no autenticado");
-    window.location.href = "../ingreso.html";
-    return;
-  }
-
-  // ------------------------------
   // 2) ARRAY ORIGINAL DE APPS
   // ------------------------------
   const apps = [
@@ -54,7 +43,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   let appsPermitidas = []; // Si el backend dice nada → mostramos todas
 
   try {
-    const res = await fetch(`/permisos/${idUsuario}`);
+    const res = await fetch("/permisos", {
+    credentials: "same-origin"
+      });
     const data = await res.json();
 
     if (data.ok && Array.isArray(data.aplicacionesPermitidas)) {
