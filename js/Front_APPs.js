@@ -43,9 +43,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   let appsPermitidas = []; // Si el backend dice nada → mostramos todas
 
   try {
-    const res = await fetch("/permisos", {
-    credentials: "same-origin"
-      });
+    const res = await fetch(`${basePath}/permisos`, {
+  credentials: "same-origin"
+    });
+
+
+
     const data = await res.json();
 
     if (data.ok && Array.isArray(data.aplicacionesPermitidas)) {
