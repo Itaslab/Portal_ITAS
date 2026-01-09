@@ -5,7 +5,11 @@ const schema = process.env.DB_SCHEMA;
 
 async function obtenerPermisosUsuario(req, res) {
   try {
-    const { id_usuario } = req.params;
+    if (!req.session.user) {
+      return res.status(401).json({ ok: false, error: "No autenticado" });
+    }
+
+    const id_usuario = req.session.user.ID_Usuario;
 
     const query = `
       SELECT ID_Aplicacion
@@ -13,7 +17,6 @@ async function obtenerPermisosUsuario(req, res) {
       WHERE ID_Usuario = @id
     `;
 
-    // Obtener pool (SQL Server)
     const pool = await poolPromise;
 
     const result = await pool.request()
