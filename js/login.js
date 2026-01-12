@@ -15,9 +15,8 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const data = await res.json();
 
         if (data.success) {
-            // ✅ Guardamos tanto el email como el ID numérico
-            localStorage.setItem("usuarioEmail", data.Email);
-            localStorage.setItem("idUsuario", data.ID_Usuario);
+            // ✅ La sesión ya está guardada en servidor (cookies de sesión)
+            // No necesitamos guardar nada en localStorage
 
             // Redirigir a la página principal
             window.location.href = `${basePath}/pages/Front_APPs.html`;

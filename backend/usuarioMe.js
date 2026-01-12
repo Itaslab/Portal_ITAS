@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
 const { sql, poolPromise } = require('./db');
 const schema = process.env.DB_SCHEMA;
 
@@ -12,7 +13,7 @@ router.get('/me', async (req, res) => {
     const pool = await poolPromise;
     const r = await pool.request()
       .input('id', sql.Int, idUsuario)
-      .query('SELECT ID_Usuario, Legajo, Nombre, Apellido, Email FROM ${schema}.USUARIO WHERE ID_Usuario = @id');
+      .query(`SELECT ID_Usuario, Legajo, Nombre, Apellido, Email FROM ${schema}.USUARIO WHERE ID_Usuario = @id`);
     if (!r.recordset || r.recordset.length === 0) return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
     const u = r.recordset[0];
     res.json({ success: true, usuario: { ID_Usuario: u.ID_Usuario, Legajo: u.Legajo, Nombre: u.Nombre, Apellido: u.Apellido, Email: u.Email } });
@@ -36,19 +37,21 @@ router.put('/me/password', async (req, res) => {
     const pool = await poolPromise;
     const r = await pool.request()
       .input('id', sql.Int, idUsuario)
-      .query('SELECT Password FROM ${schema}.WEB_PORTAL_ITAS_USR WHERE ID_Usuario = @id');
+      .query(`SELECT PasswordHash FROM ${schema}.WEB_PORTAL_ITAS_USR WHERE ID_Usuario = @id`);
 
     if (!r.recordset || r.recordset.length === 0) return res.status(404).json({ success: false, error: 'Registro WEB no encontrado' });
 
-    const current = r.recordset[0].Password;
-    if (String(current) !== String(currentPassword)) {
+    const current = r.recordset[0].PasswordHash;
+    const passwordOk = await bcrypt.compare(currentPassword, current);
+    if (!passwordOk) {
       return res.status(403).json({ success: false, error: 'Contraseña actual incorrecta' });
     }
 
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
     await pool.request()
       .input('id', sql.Int, idUsuario)
-      .input('newPass', sql.VarChar, newPassword)
-      .query('UPDATE ${schema}.WEB_PORTAL_ITAS_USR SET Password = @newPass WHERE ID_Usuario = @id');
+      .input('newPass', sql.VarChar, hashedPassword)
+      .query(`UPDATE ${schema}.WEB_PORTAL_ITAS_USR SET PasswordHash = @newPass WHERE ID_Usuario = @id`);
 
     res.json({ success: true, mensaje: 'Contraseña actualizada' });
   } catch (err) {

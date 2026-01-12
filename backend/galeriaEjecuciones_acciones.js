@@ -37,8 +37,8 @@ router.post("/cancelar", async (req, res) => {
 
   try {
     const { mensajes } = await ejecutarSP(
-      "${schema}.PortalRPABotonCancelarTarea",
-      idTasklist,
+    `${schema}.PortalRPABotonCancelarTarea`,
+    idTasklist,
       idUsuario
     );
 
@@ -66,7 +66,7 @@ router.post("/pausar", async (req, res) => {
 
   try {
     const { mensajes } = await ejecutarSP(
-      "${schema}.PortalRPABotonPausarTarea",
+      `${schema}.PortalRPABotonPausarTarea`,
       idTasklist,
       idUsuario
     );
@@ -91,7 +91,7 @@ router.post("/reanudar", async (req, res) => {
 
   try {
     const { mensajes } = await ejecutarSP(
-      "${schema}.PortalRPABotonReanudarTarea",
+      `${schema}.PortalRPABotonReanudarTarea`,
       idTasklist,
       idUsuario
     );
@@ -118,7 +118,7 @@ router.post("/reenviar-todo", async (req, res) => {
 
   try {
     const { mensajes } = await ejecutarSP(
-      "${schema}.PortalRPABotonReenviarTodo",
+      `${schema}.PortalRPABotonReenviarTodo`,
       idTasklist,
       idUsuario
     );
@@ -145,7 +145,7 @@ router.post("/reenviar-fallidos", async (req, res) => {
 
   try {
     const { mensajes } = await ejecutarSP(
-      "${schema}.PortalRPABotonReenviarFallidos",
+      `${schema}.PortalRPABotonReenviarFallidos`,
       idTasklist,
       idUsuario
     );

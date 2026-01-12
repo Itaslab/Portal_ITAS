@@ -151,9 +151,7 @@
   document.getElementById("btnLogout").addEventListener("click", async () => {
     try {
       await fetch("/logout"); // Llama al backend para destruir la sesión
-      // Limpiar datos locales
-      localStorage.removeItem("usuarioEmail");
-      localStorage.removeItem("idUsuario");
+      // Ya no hay datos locales que limpiar (sesión del servidor)
       // Redirigir al login
       window.location.href = "/ingreso.html";
     } catch (err) {

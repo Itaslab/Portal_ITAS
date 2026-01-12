@@ -5,6 +5,17 @@ const datosSolicitados = document.getElementById("datosSolicitados");
 const identificadorInput = document.getElementById("identificador"); // 👈 renombrado para evitar confusión
 
 let flujos = [];
+let usuarioActualId = 0; // Obtener desde sesión
+
+// Obtener usuario actual desde sesión
+fetch(basePath + "/me", { credentials: "include" })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success && data.usuario) {
+      usuarioActualId = data.usuario.ID_Usuario;
+    }
+  })
+  .catch(err => console.error("Error obteniendo usuario:", err));
 
 // Cargar flujos desde backend
 fetch(basePath + "/flujos")
@@ -58,7 +69,7 @@ btnEnviar.addEventListener("click", () => {
     const nombreFlujo = flujoSeleccionadoObj.nombre;
     const prioridad = flujoSeleccionadoObj.prio;
     const datosValor = inputUsuario.value;
-    const solicitante = parseInt(localStorage.getItem("idUsuario")) || 0;
+    const solicitante = usuarioActualId; // Obtener de sesión
     const identificador = identificadorInput.value.trim(); // 👈 toma el valor del input correcto
 
     if (!identificador) {

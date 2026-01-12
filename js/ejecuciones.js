@@ -381,15 +381,32 @@ function llenarFiltroSolicitante() {
   filtroSolicitante.addEventListener("change", renderTabla);
   filtroRegistro.addEventListener("input", renderTabla);
  
-  cargarEjecuciones();
-  setInterval(cargarEjecuciones, 4000);
+  // Obtener usuario actual desde sesión
+  async function inicializarUsuario() {
+    try {
+      const resMe = await fetch(basePath + "/me", { credentials: "include" });
+      const datMe = await resMe.json();
+      if (datMe.success && datMe.usuario) {
+        usuarioActual = datMe.usuario.ID_Usuario;
+      } else {
+        usuarioActual = 0;
+      }
+    } catch (err) {
+      console.error("Error obteniendo usuario:", err);
+      usuarioActual = 0;
+    }
 
-  usuarioActual = localStorage.getItem("idUsuario") || window.UsuarioActual;
-
-  if (!usuarioActual) {
-    alert("Error: no se encontró el usuario logueado");
-    console.error("Usuario no detectado");
+    if (!usuarioActual) {
+      alert("Error: no se encontró el usuario logueado");
+      console.error("Usuario no detectado");
+    }
   }
+
+  // Inicializar usuario y luego cargar ejecuciones
+  inicializarUsuario().then(() => {
+    cargarEjecuciones();
+    setInterval(cargarEjecuciones, 4000);
+  });
 
   document.getElementById("btnCancelarConfirmar")
     .addEventListener("click", confirmarCancelar);
