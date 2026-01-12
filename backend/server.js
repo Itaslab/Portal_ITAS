@@ -37,7 +37,7 @@ const actualizarUsuario = require("./appOrdenesSF_actualizarUsuario");
 const modificarUsuario = require("./generarUsuario_modificarTbUsuarios");
 const generarUsuarioOrdenes = require("./appOrdenesSF_AltaUsuario");
 const usuarioMe = require('./usuarioMe');
-const { obtenerPermisosUsuario } = require("./appPermisos");
+const { obtenerPermisosUsuarioActual, obtenerPermisosUsuario } = require("./appPermisos");
 const appOrdenesSFGaleriaAuto = require("./appOrdenesSF_galeriaMq");
 const ejecucionesDetalle = require("./galeriaEjecucionesDetalles");
 const logs = require("./logs");
@@ -140,6 +140,10 @@ app.use("/api/acciones", accionesEjecuciones);
 app.use("/api/logs", logs);
  
  
+// Obtener permisos del usuario actual (desde sesión)
+app.get("/permisos", checkAuth, obtenerPermisosUsuarioActual);
+
+// Obtener permisos de un usuario específico (para otros usos)
 app.get("/permisos/:id_usuario", checkAuth, obtenerPermisosUsuario);
  
  

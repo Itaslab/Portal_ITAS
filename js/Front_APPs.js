@@ -44,13 +44,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   try {
     const res = await fetch(`${basePath}/permisos`, {
-    credentials: "include"
+      credentials: "include"
     });
 
     const data = await res.json();
 
     if (data.ok && Array.isArray(data.aplicacionesPermitidas)) {
-      appsPermitidas = data.aplicacionesPermitidas; // ej: [2,3,6]
+      appsPermitidas = data.aplicacionesPermitidas; // ej: [3,4,8]
+    } else {
+      console.warn("Respuesta inesperada del servidor:", data);
     }
   } catch (error) {
     console.error("Error obteniendo permisos:", error);
