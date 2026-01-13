@@ -50,8 +50,8 @@ function mostrarContraseñas(credenciales) {
         </div>
       </td>
       <td>
-        <button class="btn btn-warning btn-sm" onclick="modificarCredencial('${escaparHTML(cred.sistema)}', '${escaparHTML(cred.usuario)}', ${cred.id})">Modificar</button>
-        <button class="btn btn-danger btn-sm" onclick="eliminarCredencial(${cred.id})">Eliminar</button>
+        <button class="btn btn-warning btn-sm" style="color: white;" onclick="modificarCredencial('${escaparHTML(cred.sistema)}', '${escaparHTML(cred.usuario)}', ${cred.id})">Modificar</button>
+        <button class="btn btn-danger btn-sm" style="color: white;" onclick="eliminarCredencial(${cred.id})">Eliminar</button>
       </td>
     </tr>
   `).join('');
