@@ -22,45 +22,43 @@
             <a class="navbar-brand nvbar" href="../pages/Front_APPs.html">
                 <span class="ms-2">PORTAL ITAS</span>
             </a>
-            <span class="navbar-text nvbar position-absolute top-50 start-50 translate-middle">Seguridad Informatica</span>
+            <span class="navbar-text nvbar position-absolute top-50 start-50 translate-middle">Bóveda de Contraseñas</span>
         
         </div>
     </nav>
+
+    <!-- Galería de Contraseñas -->
     <div class="container mt-5">
-        <h2 class="text-center mb-4">Elegir una opción</h2>
-        <div class="row g-4">
-            <!-- Card 1 -->
-            <div class="col-md-4">
-                <div class="card text-center h-100 shadow-sm hover-shadow">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">Vault de Contraseñas</h5>
-                        <p class="card-text">Ingresar aca para alojar contraseñas de sistemas solicitados por ITAS</p>
-                        <a href="../pages/vaultContraseñas.html" class="btn btn-primary mt-auto">Ingresar</a>
-                    </div>
-                </div>
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="text-center mb-4">Bóveda de Contraseñas</h2>
             </div>
-            <!-- Card 2 -->
-            <div class="col-md-4">
-                <div class="card text-center h-100 shadow-sm hover-shadow">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">Listado de Contraseñas</h5>
-                        <p class="card-text">Ingresar aca para ver contraseñas dentro del vault </p>
-                        <a href="../pages/list_vaultContraseñas.html" class="btn btn-primary mt-auto">Ingresar</a>
-                    </div>
+        </div>
+
+        <!-- Tabla de Contraseñas -->
+        <div class="row">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Sistema</th>
+                                <th>Usuario</th>
+                                <th>Contraseña</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vaultTableBody">
+                            <tr>
+                                <td colspan="4" class="text-center">Cargando contraseñas...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- CSS extra para el efecto hover -->
-    <style>
-        .hover-shadow:hover {
-            transform: translateY(-5px);
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
-        }
-    </style>
-</body>
-
-
-    
+    <!-- Scripts -->
+    <script src="../js/config.js"></script>
+    <script src="../js/list_vaultContraseñas.js"></script>

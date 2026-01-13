@@ -92,7 +92,40 @@ async function guardarCredencial(req, res) {
   }
 }
 
-module.exports = {
-  guardarCredencial
-};
+/**
+ * Obtener todas las contraseñas de la bóveda
+ * GET /vault/listar
+ */
+async function listarContraseñas(req, res) {
+  try {
+    const pool = await poolPromise;
 
+    const query = `
+      SELECT 
+        id,
+        sistema,
+        usuario,
+        password_cifrada
+      FROM ${schema}.VAULT_SEG_INFORMATICA
+      ORDER BY sistema, usuario
+    `;
+
+    const result = await pool.request().query(query);
+
+    res.json({
+      success: true,
+      credenciales: result.recordset
+    });
+
+  } catch (err) {
+    console.error("Error al listar contraseñas:", err);
+    res.status(500).json({
+      success: false,
+      error: err.message || "Error al listar contraseñas"
+    });
+  }
+}
+
+module.exports = {
+  guardarCredencial,
+  listarContraseñas};
