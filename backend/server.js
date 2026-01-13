@@ -121,9 +121,16 @@ app.post("/login", async (req, res) => {
 });
 
 // ------------------- LOGOUT -------------------
+//app.get("/logout", (req, res) => {
+ // req.session.destroy(() => {
+ //   res.redirect("/ingreso.html");
+ // });
+//});
+
+
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
-    res.redirect("/test/ingreso.html");
+    res.json({ ok: true });
   });
 });
  
@@ -163,9 +170,15 @@ app.use("/api/scripts", rutasScripts);
 
 
 // ------------------- PROTECCIÓN -------------------
+//function checkAuth(req, res, next) {
+//  if (req.session.user) return next();
+//  res.redirect("/ingreso.html");
+//}
+
+
 function checkAuth(req, res, next) {
   if (req.session.user) return next();
-  res.redirect("/ingreso.html");
+  return res.status(401).json({ error: "No autenticado" });
 }
  
 // Archivos estáticos
