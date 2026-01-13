@@ -123,7 +123,7 @@ app.post("/login", async (req, res) => {
 // ------------------- LOGOUT -------------------
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
-    res.redirect("/ingreso.html");
+    res.redirect("/test/ingreso.html");
   });
 });
  
