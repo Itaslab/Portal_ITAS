@@ -42,6 +42,7 @@ const appOrdenesSFGaleriaAuto = require("./appOrdenesSF_galeriaMq");
 const ejecucionesDetalle = require("./galeriaEjecucionesDetalles");
 const logs = require("./logs");
 const accionesEjecuciones  = require("./galeriaEjecuciones_acciones");
+const vaultContraseñas = require("./seginf_VaultContraseñas");
 
 
 
@@ -139,6 +140,8 @@ app.use("/api/galeria-auto-mq", appOrdenesSFGaleriaAuto);
 app.use("/api/acciones", accionesEjecuciones);
 app.use("/api/logs", logs);
  
+// ------------------- BÓVEDA DE CONTRASEÑAS (SEGURIDAD INFORMÁTICA) -------------------
+app.post("/vault/guardar", vaultContraseñas.guardarCredencial);
  
 // Obtener permisos del usuario actual (desde sesión)
 app.get("/permisos", checkAuth, obtenerPermisosUsuarioActual);

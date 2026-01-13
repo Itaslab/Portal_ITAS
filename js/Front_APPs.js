@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     { id: 4, name: "Robot Itas", category: "Personal", collection: "Bots", img: "../images/robot.png", url: "../pages/EjecucionesPorRobot.html" },
     { id: 3, name: "APP Ordenes SF", category: "Personal", collection: "Bots", img: "../images/robot_01.png", url: "../pages/AppOrdenesSf.html" },
     { id: 7, name: "Helix", category: "Personal", collection: "Gestión", img: "../images/bmx_helix.png" },
- // { id: 9, name: "Compartido", category: "Privado", collection: "Gestión", img: "https://img.icons8.com/fluency/48/folder-invoices.png" },
+    { id: 6, name: "Seguridad Informatica", category: "Privado", collection: "Gestión", img: "../images/SeguridadInformatica.jpg", url: "../pages/SeguridadInformatica.html" },
     { id: 8, name: "Monitoreo", category: "Personal", collection: "Gestión", img: "../images/Grafana.png", url: "https://portal-itas.telecom.com.ar:3000/grafana/public-dashboards/e5368ad7e39f41d99b6f28c003e9f998" },
     { id: 1, name: "ABM Usuarios", category: "Privado", collection: "Gestión", img: "../images/ABM.jpg", url: "../pages/ModulosAbmUsuarios.html" }
   ];
