@@ -143,6 +143,7 @@ app.use("/api/logs", logs);
 // ------------------- BÓVEDA DE CONTRASEÑAS (SEGURIDAD INFORMÁTICA) -------------------
 app.post("/vault/guardar", vaultContraseñas.guardarCredencial);
 app.get("/vault/listar", vaultContraseñas.listarContraseñas);
+app.get("/vault/desencriptar/:id", vaultContraseñas.desencriptarContraseña);
  
 // Obtener permisos del usuario actual (desde sesión)
 app.get("/permisos", checkAuth, obtenerPermisosUsuarioActual);

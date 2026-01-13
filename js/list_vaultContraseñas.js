@@ -40,7 +40,7 @@ function mostrarContraseñas(credenciales) {
       <td>${escaparHTML(cred.usuario)}</td>
       <td>
         <div class="input-group input-group-sm">
-          <input type="password" class="form-control form-control-sm" id="pass-${cred.id}" value="${escaparHTML(cred.password_cifrada)}" readonly>
+          <input type="password" class="form-control form-control-sm" id="pass-${cred.id}" value="••••••••" readonly>
           <button class="btn btn-outline-secondary btn-sm" type="button" onclick="togglePassword(${cred.id})">
             <i class="bi bi-eye"></i> Ver
           </button>
@@ -69,10 +69,42 @@ function escaparHTML(texto) {
 
 function togglePassword(id) {
   const input = document.getElementById(`pass-${id}`);
+  
   if (input.type === 'password') {
-    input.type = 'text';
+    // Mostrar la contraseña descifrada
+    desencriptarYMostrar(id);
   } else {
+    // Ocultar la contraseña
     input.type = 'password';
+    input.value = '••••••••';
+  }
+}
+
+async function desencriptarYMostrar(id) {
+  try {
+    const input = document.getElementById(`pass-${id}`);
+    
+    // Mostrar que estamos cargando
+    input.value = 'Cargando...';
+    
+    const res = await fetch(basePath + `/vault/desencriptar/${id}`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      input.value = data.password;
+      input.type = 'text';
+    } else {
+      input.value = 'Error al desencriptar';
+      console.error('Error:', data.error);
+    }
+  } catch (err) {
+    console.error('Error al desencriptar:', err);
+    document.getElementById(`pass-${id}`).value = 'Error de conexión';
   }
 }
 

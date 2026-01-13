@@ -34,6 +34,30 @@ function cifrarContraseña(contrasena) {
 }
 
 /**
+ * Descifrar contraseña con AES-256
+ */
+function descifrarContraseña(encrypted) {
+  try {
+    const key = Buffer.from(ensureKeyLength(ENCRYPTION_KEY));
+    const parts = encrypted.split(':');
+    
+    if (parts.length !== 2) {
+      throw new Error("Formato de contraseña cifrada inválido");
+    }
+    
+    const iv = Buffer.from(parts[0], 'hex');
+    const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
+    
+    let decrypted = decipher.update(parts[1], 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    
+    return decrypted;
+  } catch (err) {
+    console.error("Error al descifrar:", err);
+    throw new Error("No se pudo descifrar la contraseña");
+  }
+}
+/**
  * Guardar una credencial en la Bóveda de Contraseñas
  * POST /vault/guardar
  */
@@ -126,6 +150,51 @@ async function listarContraseñas(req, res) {
   }
 }
 
+/**
+ * Desencriptar una contraseña específica
+ * GET /vault/desencriptar/:id
+ */
+async function desencriptarContraseña(req, res) {
+  try {
+    const { id } = req.params;
+    const pool = await poolPromise;
+
+    const query = `
+      SELECT password_cifrada
+      FROM ${schema}.VAULT_SEG_INFORMATICA
+      WHERE id = @id
+    `;
+
+    const result = await pool.request()
+      .input("id", sql.Int, id)
+      .query(query);
+
+    if (result.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Contraseña no encontrada"
+      });
+    }
+
+    const password_cifrada = result.recordset[0].password_cifrada;
+    const passwordDescifrada = descifrarContraseña(password_cifrada);
+
+    res.json({
+      success: true,
+      password: passwordDescifrada
+    });
+
+  } catch (err) {
+    console.error("Error al desencriptar:", err);
+    res.status(500).json({
+      success: false,
+      error: err.message || "Error al desencriptar la contraseña"
+    });
+  }
+}
+
 module.exports = {
   guardarCredencial,
-  listarContraseñas};
+  listarContraseñas,
+  desencriptarContraseña
+};
