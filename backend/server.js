@@ -121,18 +121,13 @@ app.post("/login", async (req, res) => {
 });
 
 // ------------------- LOGOUT -------------------
-//app.get("/logout", (req, res) => {
- // req.session.destroy(() => {
- //   res.redirect("/ingreso.html");
- // });
-//});
-
-
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
-    res.json({ ok: true });
+    res.redirect("/ingreso.html");
   });
 });
+
+
  
 // ------------------- API REST -------------------
 app.get("/flujos", listaEjecuciones);
@@ -170,17 +165,12 @@ app.use("/api/scripts", rutasScripts);
 
 
 // ------------------- PROTECCIÓN -------------------
-//function checkAuth(req, res, next) {
-//  if (req.session.user) return next();
-//  res.redirect("/ingreso.html");
-//}
-
-
 function checkAuth(req, res, next) {
   if (req.session.user) return next();
-  return res.status(401).json({ error: "No autenticado" });
+  res.redirect("/ingreso.html");
 }
- 
+
+
 // Archivos estáticos
 app.use("/css", express.static(path.join(__dirname, "..", "css")));
 app.use("/js", express.static(path.join(__dirname, "..", "js")));
