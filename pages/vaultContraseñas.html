@@ -34,7 +34,7 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <form id="vaultForm">
-                    <h3 class="mb-4">Bóveda de Contraseñas</h3>
+                    <h3 class="mb-4" id="formTitle">Crear Nueva Contraseña</h3>
                     
                     <div class="mb-3">
                         <label for="sistema" class="form-label">Ingresar Sistema</label>
@@ -51,13 +51,13 @@
                         <input type="password" class="form-control" id="contrasena" name="contrasena" required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100">Enviar</button>
+                    <button type="submit" class="btn btn-primary w-100" id="btnSubmit">Guardar</button>
                 </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
+                
+                <!-- Botón para volver a la galería -->
+                <div class="mt-3 text-center">
+                    <a href="../pages/SeguridadInformatica.html" class="btn btn-secondary">Volver a la Galería</a>
+                </div>
     <script src="../js/config.js"></script>
     <script src="../js/vaultContraseñas.js"></script>
 </body>

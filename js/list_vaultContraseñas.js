@@ -50,6 +50,7 @@ function mostrarContraseñas(credenciales) {
         </div>
       </td>
       <td>
+        <button class="btn btn-warning btn-sm" onclick="modificarCredencial('${escaparHTML(cred.sistema)}', '${escaparHTML(cred.usuario)}', ${cred.id})">Modificar</button>
         <button class="btn btn-danger btn-sm" onclick="eliminarCredencial(${cred.id})">Eliminar</button>
       </td>
     </tr>
@@ -118,6 +119,12 @@ function copiarAlPortapapeles(id) {
     console.error('Error al copiar:', err);
     alert('Error al copiar la contraseña');
   });
+}
+
+function modificarCredencial(sistema, usuario, id) {
+  // Redirigir a vaultContraseñas.html con parámetros
+  const url = `../pages/vaultContraseñas.html?sistema=${encodeURIComponent(sistema)}&usuario=${encodeURIComponent(usuario)}&id=${id}`;
+  window.location.href = url;
 }
 
 function eliminarCredencial(id) {
