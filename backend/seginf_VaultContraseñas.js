@@ -60,6 +60,7 @@ function descifrarContraseña(encrypted) {
 /**
  * Guardar una credencial en la Bóveda de Contraseñas
  * POST /vault/guardar
+ * Si ya existe (sistema, usuario), actualiza la contraseña
  */
 async function guardarCredencial(req, res) {
   try {
@@ -71,8 +72,7 @@ async function guardarCredencial(req, res) {
       });
     }
 
-    const { sistema, usuario, contrasena } = req.body;
-    const id_usuario = req.session.user.ID_Usuario;
+    const { sistema, usuario, contrasena, modoEdicion } = req.body;
 
     // Validaciones
     if (!sistema || !usuario || !contrasena) {
@@ -87,25 +87,62 @@ async function guardarCredencial(req, res) {
 
     const pool = await poolPromise;
 
-    // Insertar en la tabla
-    const query = `
-      INSERT INTO ${schema}.VAULT_SEG_INFORMATICA
-        (sistema, usuario, password_cifrada)
-      VALUES
-        (@sistema, @usuario, @password_cifrada)
-    `;
+    if (modoEdicion) {
+      // Modo edición: UPDATE
+      const query = `
+        UPDATE ${schema}.VAULT_SEG_INFORMATICA
+        SET password_cifrada = @password_cifrada
+        WHERE sistema = @sistema AND usuario = @usuario
+      `;
 
-    const result = await pool.request()
-      .input("sistema", sql.VarChar(255), sistema)
-      .input("usuario", sql.VarChar(255), usuario)
-      .input("password_cifrada", sql.NVarChar(sql.MAX), password_cifrada)
-      .query(query);
+      const result = await pool.request()
+        .input("sistema", sql.VarChar(255), sistema)
+        .input("usuario", sql.VarChar(255), usuario)
+        .input("password_cifrada", sql.NVarChar(sql.MAX), password_cifrada)
+        .query(query);
 
-    res.json({
-      success: true,
-      message: "Credencial guardada correctamente",
-      recordsAffected: result.rowsAffected[0]
-    });
+      if (result.rowsAffected[0] === 0) {
+        return res.status(404).json({
+          success: false,
+          error: "No se encontró la credencial para actualizar"
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Contraseña actualizada correctamente",
+        recordsAffected: result.rowsAffected[0]
+      });
+    } else {
+      // Modo creación: INSERT O UPDATE (MERGE)
+      const query = `
+        IF EXISTS (SELECT 1 FROM ${schema}.VAULT_SEG_INFORMATICA WHERE sistema = @sistema AND usuario = @usuario)
+        BEGIN
+          UPDATE ${schema}.VAULT_SEG_INFORMATICA
+          SET password_cifrada = @password_cifrada
+          WHERE sistema = @sistema AND usuario = @usuario
+        END
+        ELSE
+        BEGIN
+          INSERT INTO ${schema}.VAULT_SEG_INFORMATICA
+            (sistema, usuario, password_cifrada)
+          VALUES
+            (@sistema, @usuario, @password_cifrada)
+        END
+      `;
+
+      const result = await pool.request()
+        .input("sistema", sql.VarChar(255), sistema)
+        .input("usuario", sql.VarChar(255), usuario)
+        .input("password_cifrada", sql.NVarChar(sql.MAX), password_cifrada)
+        .query(query);
+
+      res.json({
+        success: true,
+        message: "Credencial guardada correctamente",
+        recordsAffected: result.rowsAffected[0]
+      });
+    }
 
   } catch (err) {
     console.error("Error al guardar credencial:", err);
