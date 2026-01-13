@@ -36,7 +36,7 @@ function mostrarContraseñas(credenciales) {
 
   tableBody.innerHTML = credenciales.map(cred => `
     <tr>
-      <td><strong>${escaparHTML(cred.sistema)}</strong></td>
+      <td>${escaparHTML(cred.sistema)}</td>
       <td>${escaparHTML(cred.usuario)}</td>
       <td>
         <div class="input-group input-group-sm">
