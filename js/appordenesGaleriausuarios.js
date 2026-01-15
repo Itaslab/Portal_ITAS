@@ -199,13 +199,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         const filtrados = usuarios.filter(uRaw => {
             const nombreRaw = (uRaw.nombre ?? uRaw.Nombre ?? "").toString().toLowerCase();
             const grupoRaw = (uRaw.grupo ?? uRaw.Grupo ?? "").toString().toLowerCase();
-            const activoTexto = normalizeActivo(uRaw.activo);
+            const licValor = uRaw.Lic_Estado ?? uRaw.lic_estado;
+            const esLicencia = typeof licValor === "string" && licValor.toLowerCase() === "true";
+            const activoTexto = esLicencia ? "licencia" : normalizeActivo(uRaw.activo);
             return (!grupo || grupoRaw === grupo) &&
-                (!nombre || nombreRaw.includes(nombre)) &&
-                (!activoVal || activoTexto === activoVal);
-        });
-        renderTabla(filtrados);
-    }
+                    (!nombre || nombreRaw.includes(nombre)) &&
+                    (!activoVal || activoTexto === activoVal);
+            });
+            renderTabla(filtrados);
+        }
 
     async function abrirModal(id_usuario) {
         try {
@@ -237,11 +239,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                     textareaScript.disabled = false;
                     textareaScript.classList.remove('bg-light');
                     textareaScript.required = true;
+                    selectForma.disabled = true;
+                    selectForma.classList.add('bg-light')
                 } else {
                     textareaScript.disabled = true;
                     textareaScript.value = '';
                     textareaScript.classList.add('bg-light');
                     textareaScript.required = false;
+                    selectForma.disabled = false;
+                    selectForma.classList.remove('bg-light')
                 }
             }
             updateScriptState();
