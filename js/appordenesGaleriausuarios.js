@@ -237,11 +237,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                     textareaScript.disabled = false;
                     textareaScript.classList.remove('bg-light');
                     textareaScript.required = true;
+                    selectForma.disabled = true;
+                    selectForma.classList.add('bg-light')
                 } else {
                     textareaScript.disabled = true;
                     textareaScript.value = '';
                     textareaScript.classList.add('bg-light');
                     textareaScript.required = false;
+                    selectForma.disabled = false;
+                    selectForma.classList.remove('bg-light')
                 }
             }
             updateScriptState();
