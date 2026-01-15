@@ -26,24 +26,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const perfilResult = document.getElementById('perfilResult');
 
   // ------------------------------
-  // 1) OBTENER ID DEL USUARIO
-  // ------------------------------
-  const idUsuario = localStorage.getItem("idUsuario");
-
-  if (!idUsuario) {
-    alert("Usuario no autenticado");
-    window.location.href = "../ingreso.html";
-    return;
-  }
-
-  // ------------------------------
   // 2) ARRAY ORIGINAL DE APPS
   // ------------------------------
   const apps = [
     { id: 4, name: "Robot Itas", category: "Personal", collection: "Bots", img: "../images/robot.png", url: "../pages/EjecucionesPorRobot.html" },
     { id: 3, name: "APP Ordenes SF", category: "Personal", collection: "Bots", img: "../images/robot_01.png", url: "../pages/AppOrdenesSf.html" },
     { id: 7, name: "Helix", category: "Personal", collection: "Gestión", img: "../images/bmx_helix.png" },
- // { id: 9, name: "Compartido", category: "Privado", collection: "Gestión", img: "https://img.icons8.com/fluency/48/folder-invoices.png" },
+    { id: 6, name: "Seguridad Informatica", category: "Privado", collection: "Gestión", img: "../images/SeguridadInformatica.jpg", url: "../pages/SeguridadInformatica.html" },
     { id: 8, name: "Monitoreo", category: "Personal", collection: "Gestión", img: "../images/Grafana.png", url: "https://portal-itas.telecom.com.ar:3000/grafana/public-dashboards/e5368ad7e39f41d99b6f28c003e9f998" },
     { id: 1, name: "ABM Usuarios", category: "Privado", collection: "Gestión", img: "../images/ABM.jpg", url: "../pages/ModulosAbmUsuarios.html" }
   ];
@@ -54,11 +43,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   let appsPermitidas = []; // Si el backend dice nada → mostramos todas
 
   try {
-    const res = await fetch(`/permisos/${idUsuario}`);
+    const res = await fetch(`${basePath}/permisos`, {
+      credentials: "include"
+    });
+
     const data = await res.json();
 
     if (data.ok && Array.isArray(data.aplicacionesPermitidas)) {
-      appsPermitidas = data.aplicacionesPermitidas; // ej: [2,3,6]
+      appsPermitidas = data.aplicacionesPermitidas; // ej: [3,4,8]
+    } else {
+      console.warn("Respuesta inesperada del servidor:", data);
     }
   } catch (error) {
     console.error("Error obteniendo permisos:", error);

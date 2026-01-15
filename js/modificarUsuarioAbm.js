@@ -88,7 +88,7 @@ btnCargar.addEventListener("click", async () => {
 
   try {
     // === 1) Cargar datos básicos del usuario ===
-    const res = await fetch(`/abm_usuarios/${legajo}`);
+    const res = await fetch(basePath + `/abm_usuarios/${legajo}`);
     const data = await res.json();
 
     if (!res.ok) {
@@ -116,7 +116,7 @@ btnCargar.addEventListener("click", async () => {
     try {
       // Preferimos usar ID_Usuario cuando esté disponible (devuelto por /abm_usuarios/:legajo)
       const idUsuario = data.ID_Usuario || data.id_usuario || null;
-      const permisosRes = await fetch(`/permisos/${idUsuario || legajo}`);
+      const permisosRes = await fetch(basePath + `/permisos/${idUsuario || legajo}`);
       const permisosData = await permisosRes.json();
 
       // Lista de apps asignadas al usuario — manejamos distintos formatos de respuesta
@@ -196,7 +196,7 @@ btnCargar.addEventListener("click", async () => {
 
     // Validar legajo/email únicos (excepto el usuario actual)
     try {
-      const resVerif = await fetch(`/verificar_legajo_email?legajo=${encodeURIComponent(legajo)}&email=${encodeURIComponent(email)}&actual=${encodeURIComponent(selectUsuario.value)}`);
+      const resVerif = await fetch(basePath + `/verificar_legajo_email?legajo=${encodeURIComponent(legajo)}&email=${encodeURIComponent(email)}&actual=${encodeURIComponent(selectUsuario.value)}`);
       const dataVerif = await resVerif.json();
       if (dataVerif.success && dataVerif.existe) {
         resultado.textContent = "El legajo o email ya existen en otro usuario.";
@@ -227,7 +227,7 @@ btnCargar.addEventListener("click", async () => {
     };
 
     try {
-      const res = await fetch(`/abm_usuarios/${legajo}`, {
+      const res = await fetch(basePath + `/abm_usuarios/${legajo}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

@@ -37,8 +37,8 @@ router.post("/cancelar", async (req, res) => {
 
   try {
     const { mensajes } = await ejecutarSP(
-      `${schema}.PortalRPABotonCancelarTarea`,
-      idTasklist,
+    `${schema}.PortalRPABotonCancelarTarea`,
+    idTasklist,
       idUsuario
     );
 
