@@ -29,6 +29,11 @@ router.put('/me/password', async (req, res) => {
     if (!req.session || !req.session.user) return res.status(401).json({ success: false, error: 'No autenticado' });
     const idUsuario = req.session.user.ID_Usuario;
     const { currentPassword, newPassword } = req.body;
+    
+    console.log("🔍 DEBUG /me/password - ID Usuario:", idUsuario);
+    console.log("🔍 DEBUG /me/password - currentPassword recibido:", currentPassword ? "***" : "VACÍO");
+    console.log("🔍 DEBUG /me/password - newPassword recibido:", newPassword ? "***" : "VACÍO");
+    
     if (!currentPassword || !newPassword) return res.status(400).json({ success: false, error: 'Se requieren currentPassword y newPassword' });
     // validaciones mínimas
     const newLen = String(newPassword).length;
@@ -42,7 +47,11 @@ router.put('/me/password', async (req, res) => {
     if (!r.recordset || r.recordset.length === 0) return res.status(404).json({ success: false, error: 'Registro WEB no encontrado' });
 
     const current = r.recordset[0].PasswordHash;
+    console.log("🔍 DEBUG /me/password - PasswordHash en BD:", current ? "EXISTE" : "NO EXISTE");
+    
     const passwordOk = await bcrypt.compare(currentPassword, current);
+    console.log("🔍 DEBUG /me/password - ¿Contraseña coincide?", passwordOk);
+    
     if (!passwordOk) {
       return res.status(403).json({ success: false, error: 'Contraseña actual incorrecta' });
     }
