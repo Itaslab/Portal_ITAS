@@ -51,7 +51,7 @@ router.put('/me/password', async (req, res) => {
     await pool.request()
       .input('id', sql.Int, idUsuario)
       .input('newPass', sql.VarChar, hashedPassword)
-      .query(`UPDATE ${schema}.WEB_PORTAL_ITAS_USR SET PasswordHash = @newPass WHERE ID_Usuario = @id`);
+      .query(`UPDATE ${schema}.WEB_PORTAL_ITAS_USR SET PasswordHash = @newPass, Blanquear_Pass = 1 WHERE ID_Usuario = @id`);
 
     res.json({ success: true, mensaje: 'Contraseña actualizada' });
   } catch (err) {

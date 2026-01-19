@@ -25,6 +25,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   const perfilSaveBtn = document.getElementById('perfilSaveBtn');
   const perfilResult = document.getElementById('perfilResult');
 
+  // --- DETECTAR SI ES CAMBIO OBLIGATORIO DE CONTRASEÑA ---
+  const urlParams = new URLSearchParams(window.location.search);
+  const forcePass = urlParams.get('forcePass') === '1';
+  let passwordChangedOnce = false;
+
+  // Si es cambio obligatorio, mostrar modal inmediatamente
+  if (forcePass && perfilModal) {
+    setTimeout(() => {
+      perfilResult.innerHTML = '<div class="alert alert-warning">Esta es su primera vez ingresando. Debe cambiar su contraseña para continuar.</div>';
+      perfilCurrentPass.value = '';
+      perfilNewPass.value = '';
+      perfilModal.show();
+      // Prevenir cierre del modal si es obligatorio
+      perfilModalEl.querySelector('.btn-close')?.style.setProperty('display', 'none', 'important');
+    }, 800);
+  }
+
   // ------------------------------
   // 2) ARRAY ORIGINAL DE APPS
   // ------------------------------
@@ -249,7 +266,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         const d = await r.json();
         if (r.ok && d.success) {
           perfilResult.innerHTML = '<div class="text-success">Contraseña actualizada correctamente</div>';
-          setTimeout(() => { perfilModal.hide(); }, 1200);
+          passwordChangedOnce = true;
+          // Si era cambio obligatorio, limpiar URL y permitir usar la app
+          if (forcePass) {
+            setTimeout(() => {
+              window.history.replaceState({}, document.title, window.location.pathname);
+              perfilModal.hide();
+              if (perfilModalEl) {
+                perfilModalEl.querySelector('.btn-close')?.style.setProperty('display', '', 'important');
+              }
+            }, 1200);
+          } else {
+            setTimeout(() => { perfilModal.hide(); }, 1200);
+          }
         } else {
           perfilResult.innerHTML = `<div class="text-danger">${d.error || d.mensaje || 'Error'}</div>`;
         }
