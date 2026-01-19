@@ -386,3 +386,22 @@ td.text-start i.fas,
   font-family: 'Chakra Petch' !important;
 }
 
+/* ──────────────── ESTILOS PARA ELEMENTOS DESHABILITADOS ──────────────── */
+.disabled-field {
+  background-color: #d3d3d3 !important;
+  color: #666 !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  border: 1px solid #999 !important;
+}
+
+.disabled-field::placeholder {
+  color: #999 !important;
+}
+
+select.disabled-field,
+textarea.disabled-field {
+  background-color: #d3d3d3 !important;
+  color: #666 !important;
+}
+

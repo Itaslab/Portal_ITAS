@@ -29,11 +29,6 @@ router.put('/me/password', async (req, res) => {
     if (!req.session || !req.session.user) return res.status(401).json({ success: false, error: 'No autenticado' });
     const idUsuario = req.session.user.ID_Usuario;
     const { currentPassword, newPassword } = req.body;
-    
-    console.log("🔍 DEBUG /me/password - ID Usuario:", idUsuario);
-    console.log("🔍 DEBUG /me/password - currentPassword recibido:", currentPassword ? "***" : "VACÍO");
-    console.log("🔍 DEBUG /me/password - newPassword recibido:", newPassword ? "***" : "VACÍO");
-    
     if (!currentPassword || !newPassword) return res.status(400).json({ success: false, error: 'Se requieren currentPassword y newPassword' });
     // validaciones mínimas
     const newLen = String(newPassword).length;
@@ -47,22 +42,9 @@ router.put('/me/password', async (req, res) => {
     if (!r.recordset || r.recordset.length === 0) return res.status(404).json({ success: false, error: 'Registro WEB no encontrado' });
 
     const current = r.recordset[0].PasswordHash;
-    console.log("🔍 DEBUG /me/password - PasswordHash en BD:", current ? "EXISTE" : "NO EXISTE");
-    console.log("🔍 DEBUG /me/password - PasswordHash longitud:", current ? current.length : 0);
-    console.log("🔍 DEBUG /me/password - PasswordHash primeros 10 chars:", current ? current.substring(0, 10) : "N/A");
-    console.log("🔍 DEBUG /me/password - PasswordHash últimos 10 chars:", current ? current.substring(current.length - 10) : "N/A");
-    
-    // Limpiar espacios en blanco
+    // Limpiar espacios en blanco que puede haber del SQL Server
     const cleanHash = current ? current.trim() : null;
-    if (cleanHash !== current) {
-      console.log("⚠️ ADVERTENCIA: El hash tenía espacios en blanco, fue limpiado");
-    }
-    
-    console.log("🔍 DEBUG /me/password - currentPassword longitud:", currentPassword ? currentPassword.length : 0);
-    console.log("🔍 DEBUG /me/password - currentPassword primeros 3 chars:", currentPassword ? currentPassword.substring(0, 3) : "N/A");
-    
     const passwordOk = await bcrypt.compare(currentPassword, cleanHash);
-    console.log("🔍 DEBUG /me/password - ¿Contraseña coincide?", passwordOk);
     
     if (!passwordOk) {
       return res.status(403).json({ success: false, error: 'Contraseña actual incorrecta' });
