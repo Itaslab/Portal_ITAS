@@ -17,6 +17,8 @@ document.getElementById('loginForm').addEventListener('submit', async function (
 
     const data = await res.json();
 
+    console.log("🔍 DEBUG LOGIN - Respuesta del servidor:", data);
+
     if (data.success) {
       if (data.forcePasswordChange) {
         window.location.href = `${basePath}/pages/Front_APPs.html?forcePass=1`;

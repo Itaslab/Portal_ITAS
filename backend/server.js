@@ -101,6 +101,8 @@ app.post("/login", async (req, res) => {
 
     const user = result.recordset[0];
 
+    console.log("🔍 DEBUG LOGIN - Blanquear_Pass:", user.Blanquear_Pass, "Tipo:", typeof user.Blanquear_Pass);
+
     const passwordOk = await bcrypt.compare(password, user.PasswordHash);
     if (!passwordOk) {
       return res.json({
@@ -111,6 +113,7 @@ app.post("/login", async (req, res) => {
 
     // 👉 Si Blanquear_Pass = 0 → obligar cambio de contraseña
     const forcePasswordChange = user.Blanquear_Pass === 0;
+    console.log("🔍 DEBUG LOGIN - forcePasswordChange:", forcePasswordChange);
 
     // guardar sesión
     req.session.user = {
