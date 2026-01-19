@@ -1,8 +1,14 @@
+console.log("✅ login.js cargado correctamente");
+
 document.getElementById('loginForm').addEventListener('submit', async function (e) {
   e.preventDefault();
+  
+  console.log("✅ Evento submit del login capturado");
 
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
+  
+  console.log("📧 Email:", email, "Password:", password ? "***" : "vacía");
 
   try {
     const res = await fetch(basePath + "/login", {
