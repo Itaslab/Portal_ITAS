@@ -48,6 +48,8 @@ router.put('/me/password', async (req, res) => {
 
     const current = r.recordset[0].PasswordHash;
     console.log("🔍 DEBUG /me/password - PasswordHash en BD:", current ? "EXISTE" : "NO EXISTE");
+    console.log("🔍 DEBUG /me/password - PasswordHash valor:", current);
+    console.log("🔍 DEBUG /me/password - PasswordHash longitud:", current ? current.length : 0);
     
     const passwordOk = await bcrypt.compare(currentPassword, current);
     console.log("🔍 DEBUG /me/password - ¿Contraseña coincide?", passwordOk);
