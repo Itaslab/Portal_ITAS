@@ -83,6 +83,33 @@
     </div>
   </div>
 
+  <!-- Modal Cambio Obligatorio de Contraseña (Primera vez) -->
+  <div class="modal fade" id="forcePasswordModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title">Cambio de Contraseña Requerido</h5>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted mb-4">Esta es su primera vez ingresando. Debe establecer una nueva contraseña para continuar.</p>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Ingresar nueva contraseña</label>
+            <input id="forceNewPass1" type="password" maxlength="15" class="form-control" placeholder="Mínimo 8 caracteres" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Repetir nueva contraseña</label>
+            <input id="forceNewPass2" type="password" maxlength="15" class="form-control" placeholder="Confirme su contraseña" />
+            <div class="form-text">La contraseña debe tener entre 8 y 15 caracteres.</div>
+          </div>
+          <div id="forcePassResult" class="mt-3"></div>
+        </div>
+        <div class="modal-footer">
+          <button id="forcePassSaveBtn" type="button" class="btn btn-success w-100">Establecer Contraseña</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="container mt-4">
     <!-- Filtros -->
     <div class="row g-3 mb-4">

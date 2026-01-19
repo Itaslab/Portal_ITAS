@@ -25,21 +25,81 @@ document.addEventListener("DOMContentLoaded", async () => {
   const perfilSaveBtn = document.getElementById('perfilSaveBtn');
   const perfilResult = document.getElementById('perfilResult');
 
+  // --- MODAL CAMBIO OBLIGATORIO DE CONTRASEÑA ---
+  const forcePasswordModalEl = document.getElementById('forcePasswordModal');
+  const forcePasswordModal = forcePasswordModalEl ? new bootstrap.Modal(forcePasswordModalEl, { backdrop: 'static', keyboard: false }) : null;
+  const forceNewPass1 = document.getElementById('forceNewPass1');
+  const forceNewPass2 = document.getElementById('forceNewPass2');
+  const forcePassSaveBtn = document.getElementById('forcePassSaveBtn');
+  const forcePassResult = document.getElementById('forcePassResult');
+
   // --- DETECTAR SI ES CAMBIO OBLIGATORIO DE CONTRASEÑA ---
   const urlParams = new URLSearchParams(window.location.search);
   const forcePass = urlParams.get('forcePass') === '1';
   let passwordChangedOnce = false;
 
   // Si es cambio obligatorio, mostrar modal inmediatamente
-  if (forcePass && perfilModal) {
+  if (forcePass && forcePasswordModal) {
     setTimeout(() => {
-      perfilResult.innerHTML = '<div class="alert alert-warning">Esta es su primera vez ingresando. Debe cambiar su contraseña para continuar.</div>';
-      perfilCurrentPass.value = '';
-      perfilNewPass.value = '';
-      perfilModal.show();
-      // Prevenir cierre del modal si es obligatorio
-      perfilModalEl.querySelector('.btn-close')?.style.setProperty('display', 'none', 'important');
+      forceNewPass1.value = '';
+      forceNewPass2.value = '';
+      forcePassResult.innerHTML = '';
+      forcePasswordModal.show();
     }, 800);
+  }
+
+  // Evento del botón para cambiar contraseña forzado
+  if (forcePassSaveBtn) {
+    forcePassSaveBtn.addEventListener('click', async () => {
+      forcePassResult.innerHTML = '';
+      const pass1 = forceNewPass1.value.trim();
+      const pass2 = forceNewPass2.value.trim();
+
+      // Validaciones
+      if (!pass1 || !pass2) {
+        forcePassResult.innerHTML = '<div class="alert alert-danger">Complete ambos campos</div>';
+        return;
+      }
+
+      if (pass1 !== pass2) {
+        forcePassResult.innerHTML = '<div class="alert alert-danger">Las contraseñas no coinciden</div>';
+        return;
+      }
+
+      if (pass1.length < 8) {
+        forcePassResult.innerHTML = '<div class="alert alert-danger">La contraseña debe tener al menos 8 caracteres</div>';
+        return;
+      }
+
+      if (pass1.length > 15) {
+        forcePassResult.innerHTML = '<div class="alert alert-danger">La contraseña no debe exceder 15 caracteres</div>';
+        return;
+      }
+
+      try {
+        // Para cambio forzado, usamos la contraseña actual del usuario (que está en la sesión)
+        // El servidor la validará. El cliente envía la nueva contraseña dos veces para confirmar.
+        const r = await fetch(basePath + '/me/password', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentPassword: '', newPassword: pass1, forcePassword: true })
+        });
+
+        const d = await r.json();
+        if (r.ok && d.success) {
+          forcePassResult.innerHTML = '<div class="alert alert-success">Contraseña establecida correctamente</div>';
+          setTimeout(() => {
+            window.history.replaceState({}, document.title, window.location.pathname);
+            forcePasswordModal.hide();
+          }, 1200);
+        } else {
+          forcePassResult.innerHTML = `<div class="alert alert-danger">${d.error || d.mensaje || 'Error'}</div>`;
+        }
+      } catch (err) {
+        console.error('Error actualizando contraseña:', err);
+        forcePassResult.innerHTML = '<div class="alert alert-danger">Error al conectar con servidor</div>';
+      }
+    });
   }
 
   // ------------------------------
@@ -266,19 +326,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const d = await r.json();
         if (r.ok && d.success) {
           perfilResult.innerHTML = '<div class="text-success">Contraseña actualizada correctamente</div>';
-          passwordChangedOnce = true;
-          // Si era cambio obligatorio, limpiar URL y permitir usar la app
-          if (forcePass) {
-            setTimeout(() => {
-              window.history.replaceState({}, document.title, window.location.pathname);
-              perfilModal.hide();
-              if (perfilModalEl) {
-                perfilModalEl.querySelector('.btn-close')?.style.setProperty('display', '', 'important');
-              }
-            }, 1200);
-          } else {
-            setTimeout(() => { perfilModal.hide(); }, 1200);
-          }
+          setTimeout(() => { perfilModal.hide(); }, 1200);
         } else {
           perfilResult.innerHTML = `<div class="text-danger">${d.error || d.mensaje || 'Error'}</div>`;
         }
