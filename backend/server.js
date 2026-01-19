@@ -101,6 +101,7 @@ app.post("/login", async (req, res) => {
 
     const user = result.recordset[0];
 
+    console.log("🔍 DEBUG LOGIN - User Record:", user);
     console.log("🔍 DEBUG LOGIN - Blanquear_Pass:", user.Blanquear_Pass, "Tipo:", typeof user.Blanquear_Pass);
 
     const passwordOk = await bcrypt.compare(password, user.PasswordHash);
@@ -111,9 +112,12 @@ app.post("/login", async (req, res) => {
       });
     }
 
-    // 👉 Si Blanquear_Pass = 0 → obligar cambio de contraseña
-    const forcePasswordChange = user.Blanquear_Pass === 0;
-    console.log("🔍 DEBUG LOGIN - forcePasswordChange:", forcePasswordChange);
+    // 👉 Si Blanquear_Pass = 0 o false → obligar cambio de contraseña
+    // Maneja BIT de SQL Server que puede ser 0, 1, true, false o null
+    const blanquearValue = user.Blanquear_Pass;
+    const forcePasswordChange = blanquearValue === 0 || blanquearValue === false;
+    
+    console.log("🔍 DEBUG LOGIN - forcePasswordChange:", forcePasswordChange, "(Blanquear_Pass era:", blanquearValue, ")");
 
     // guardar sesión
     req.session.user = {
