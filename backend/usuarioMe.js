@@ -48,10 +48,20 @@ router.put('/me/password', async (req, res) => {
 
     const current = r.recordset[0].PasswordHash;
     console.log("🔍 DEBUG /me/password - PasswordHash en BD:", current ? "EXISTE" : "NO EXISTE");
-    console.log("🔍 DEBUG /me/password - PasswordHash valor:", current);
     console.log("🔍 DEBUG /me/password - PasswordHash longitud:", current ? current.length : 0);
+    console.log("🔍 DEBUG /me/password - PasswordHash primeros 10 chars:", current ? current.substring(0, 10) : "N/A");
+    console.log("🔍 DEBUG /me/password - PasswordHash últimos 10 chars:", current ? current.substring(current.length - 10) : "N/A");
     
-    const passwordOk = await bcrypt.compare(currentPassword, current);
+    // Limpiar espacios en blanco
+    const cleanHash = current ? current.trim() : null;
+    if (cleanHash !== current) {
+      console.log("⚠️ ADVERTENCIA: El hash tenía espacios en blanco, fue limpiado");
+    }
+    
+    console.log("🔍 DEBUG /me/password - currentPassword longitud:", currentPassword ? currentPassword.length : 0);
+    console.log("🔍 DEBUG /me/password - currentPassword primeros 3 chars:", currentPassword ? currentPassword.substring(0, 3) : "N/A");
+    
+    const passwordOk = await bcrypt.compare(currentPassword, cleanHash);
     console.log("🔍 DEBUG /me/password - ¿Contraseña coincide?", passwordOk);
     
     if (!passwordOk) {
