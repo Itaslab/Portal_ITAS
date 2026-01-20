@@ -1,32 +1,34 @@
-document.getElementById('loginForm').addEventListener('submit', async function(e) {
-    e.preventDefault(); // Evita que el form recargue la página
+document.getElementById('loginForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
 
-    try {
-     //   const res = await fetch("https://10.4.48.116:8080/login", {
-        const res = await fetch(basePath + "/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
-        });
+  try {
+    const res = await fetch(basePath + "/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
 
-        const data = await res.json();
-
-        if (data.success) {
-            // ✅ La sesión ya está guardada en servidor (cookies de sesión)
-            // No necesitamos guardar nada en localStorage
-
-            // Redirigir a la página principal
-            window.location.href = `${basePath}/pages/Front_APPs.html`;
-        } else {
-            alert("Error: " + data.error);
-        }
-
-    } catch (err) {
-        alert("Error de conexión con el servidor");
-        console.error(err);
+    if (!res.ok) {
+      throw new Error("Error HTTP");
     }
-});
 
+    const data = await res.json();
+
+    if (data.success) {
+      if (data.forcePasswordChange) {
+        window.location.href = `${basePath}/pages/Front_APPs.html?forcePass=1`;
+      } else {
+        window.location.href = `${basePath}/pages/Front_APPs.html`;
+      }
+    } else {
+      alert("Error: " + data.error);
+    }
+
+  } catch (err) {
+    alert("Error de conexión con el servidor");
+    console.error(err);
+  }
+});

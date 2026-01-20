@@ -83,7 +83,9 @@ app.post("/login", async (req, res) => {
       .request()
       .input("email", sql.VarChar, email)
       .query(`
-        SELECT u.ID_Usuario, w.PasswordHash
+        SELECT u.ID_Usuario,
+               w.PasswordHash,
+               w.Blanquear_Pass
         FROM ${schema}.USUARIO u
         INNER JOIN ${schema}.WEB_PORTAL_ITAS_USR w
           ON u.ID_Usuario = w.ID_Usuario
@@ -91,32 +93,48 @@ app.post("/login", async (req, res) => {
       `);
 
     if (result.recordset.length === 0) {
-      return res.json({ success: false, error: "Usuario o contraseña incorrectos" });
+      return res.json({
+        success: false,
+        error: "Usuario o contraseña incorrectos"
+      });
     }
 
     const user = result.recordset[0];
-    const passwordOk = await bcrypt.compare(password, user.PasswordHash);
 
+    const passwordOk = await bcrypt.compare(password, user.PasswordHash);
     if (!passwordOk) {
-      return res.json({ success: false, error: "Usuario o contraseña incorrectos" });
+      return res.json({
+        success: false,
+        error: "Usuario o contraseña incorrectos"
+      });
     }
+
+    // 👉 Si Blanquear_Pass = 0 o false → obligar cambio de contraseña
+    // Maneja BIT de SQL Server que puede ser 0, 1, true, false o null
+    const blanquearValue = user.Blanquear_Pass;
+    const forcePasswordChange = blanquearValue === 0 || blanquearValue === false;
 
     // guardar sesión
     req.session.user = {
       email,
-      ID_Usuario: user.ID_Usuario
+      ID_Usuario: user.ID_Usuario,
+      forcePasswordChange
     };
 
-    // ⚠️ DEVOLVER JSON, NO redirect
+    // devolver respuesta al frontend
     return res.json({
       success: true,
       ID_Usuario: user.ID_Usuario,
-      Email: email
+      Email: email,
+      forcePasswordChange
     });
 
   } catch (err) {
     console.error("Error en login:", err);
-    res.status(500).json({ success: false, error: "Error interno" });
+    return res.status(500).json({
+      success: false,
+      error: "Error interno"
+    });
   }
 });
 

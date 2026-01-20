@@ -28,9 +28,11 @@ router.put('/me/password', async (req, res) => {
   try {
     if (!req.session || !req.session.user) return res.status(401).json({ success: false, error: 'No autenticado' });
     const idUsuario = req.session.user.ID_Usuario;
-    const { currentPassword, newPassword } = req.body;
-    if (!currentPassword || !newPassword) return res.status(400).json({ success: false, error: 'Se requieren currentPassword y newPassword' });
-    // validaciones mínimas
+    const { currentPassword, newPassword, forcePassword } = req.body;
+    
+    if (!newPassword) return res.status(400).json({ success: false, error: 'Se requiere newPassword' });
+    
+    // Validaciones mínimas
     const newLen = String(newPassword).length;
     if (newLen < 8 || newLen > 15) return res.status(400).json({ success: false, error: 'La contraseña debe tener entre 8 y 15 caracteres' });
 
@@ -42,16 +44,26 @@ router.put('/me/password', async (req, res) => {
     if (!r.recordset || r.recordset.length === 0) return res.status(404).json({ success: false, error: 'Registro WEB no encontrado' });
 
     const current = r.recordset[0].PasswordHash;
-    const passwordOk = await bcrypt.compare(currentPassword, current);
-    if (!passwordOk) {
-      return res.status(403).json({ success: false, error: 'Contraseña actual incorrecta' });
+    
+    // Si NO es cambio forzado, validar contraseña actual
+    if (!forcePassword) {
+      if (!currentPassword) return res.status(400).json({ success: false, error: 'Se requiere currentPassword' });
+      
+      // Limpiar espacios en blanco que puede haber del SQL Server
+      const cleanHash = current ? current.trim() : null;
+      const passwordOk = await bcrypt.compare(currentPassword, cleanHash);
+      
+      if (!passwordOk) {
+        return res.status(403).json({ success: false, error: 'Contraseña actual incorrecta' });
+      }
     }
+    // Si es cambio forzado, no validamos la contraseña actual (usuario ya está autenticado en la sesión)
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await pool.request()
       .input('id', sql.Int, idUsuario)
       .input('newPass', sql.VarChar, hashedPassword)
-      .query(`UPDATE ${schema}.WEB_PORTAL_ITAS_USR SET PasswordHash = @newPass WHERE ID_Usuario = @id`);
+      .query(`UPDATE ${schema}.WEB_PORTAL_ITAS_USR SET PasswordHash = @newPass, Blanquear_Pass = 1 WHERE ID_Usuario = @id`);
 
     res.json({ success: true, mensaje: 'Contraseña actualizada' });
   } catch (err) {

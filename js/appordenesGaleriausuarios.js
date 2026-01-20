@@ -237,17 +237,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const modoVal = selectModo.value;
                 if (modoVal === 'SCRIPT') {
                     textareaScript.disabled = false;
-                    textareaScript.classList.remove('bg-light');
+                    textareaScript.classList.remove('disabled-field');
                     textareaScript.required = true;
                     selectForma.disabled = true;
-                    selectForma.classList.add('bg-light')
+                    selectForma.classList.add('disabled-field');
                 } else {
                     textareaScript.disabled = true;
                     textareaScript.value = '';
-                    textareaScript.classList.add('bg-light');
+                    textareaScript.classList.add('disabled-field');
                     textareaScript.required = false;
                     selectForma.disabled = false;
-                    selectForma.classList.remove('bg-light')
+                    selectForma.classList.remove('disabled-field');
                 }
             }
             updateScriptState();
