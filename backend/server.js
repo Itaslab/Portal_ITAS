@@ -43,6 +43,7 @@ const ejecucionesDetalle = require("./galeriaEjecucionesDetalles");
 const logs = require("./logs");
 const accionesEjecuciones  = require("./galeriaEjecuciones_acciones");
 const vaultContraseñas = require("./seginf_VaultContraseñas");
+const blanqueoPasswordPortalItas = require("./blanqueoPasswordPortalITAS");
 
 
 
@@ -164,6 +165,9 @@ app.use("/api/logs", logs);
 app.post("/vault/guardar", vaultContraseñas.guardarCredencial);
 app.get("/vault/listar", vaultContraseñas.listarContraseñas);
 app.get("/vault/desencriptar/:id", vaultContraseñas.desencriptarContraseña);
+
+// ------------------- BLANQUEO DE CONTRASEÑA (ADMIN) -------------------
+app.use("/", blanqueoPasswordPortalItas);
  
 // Obtener permisos del usuario actual (desde sesión)
 app.get("/permisos", checkAuth, obtenerPermisosUsuarioActual);
