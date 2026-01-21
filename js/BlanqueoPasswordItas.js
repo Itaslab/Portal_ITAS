@@ -1,4 +1,4 @@
-// blanqueoPasswordAdmin.js
+// BlanqueoPasswordItas.js
 // Maneja la búsqueda de usuarios y el blanqueo de contraseña
 
 let usuariosOriginal = []; // Almacenar lista original de usuarios
@@ -45,8 +45,8 @@ function mostrarUsuariosEnTabla(usuarios) {
       <td>${usuario.email}</td>
       <td>
         ${usuario.blanquear_pass ? 
-          '<span class="badge bg-warning badge-estado">Cambio Pendiente</span>' : 
-          '<span class="badge bg-success badge-estado">Activo</span>'
+          '<span class="badge bg-success badge-estado">Cambio Realizado</span>' : 
+          '<span class="badge bg-warning badge-estado">Cambio Pendiente</span>'
         }
       </td>
     </tr>
@@ -81,7 +81,7 @@ function seleccionarUsuario(fila) {
   document.getElementById('emailSeleccionado').textContent = usuario.email;
   document.getElementById('legajoSeleccionado').textContent = usuario.legajo || '-';
   document.getElementById('estadoSeleccionado').textContent = usuario.blanquear_pass ? 
-    'Cambio de contraseña pendiente' : 'Activo';
+    'Cambio de contraseña realizado' : 'Cambio pendiente';
 
   // Mostrar panel de información
   document.getElementById('infoUsuario').classList.add('mostrar');
