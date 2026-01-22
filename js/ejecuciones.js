@@ -175,9 +175,18 @@ function llenarFiltroSolicitante() {
   function renderTabla() {
     const solicitante = filtroSolicitante.value.toLowerCase();
     const registro = filtroRegistro.value.toLowerCase();
- 
+
+    // 🔴 DESTRUIR TOOLTIPS EXISTENTES antes de limpiar la tabla
+    // Esto evita que queden "clavados"
+    document.querySelectorAll(".btn-accion").forEach(btn => {
+      const tooltip = bootstrap.Tooltip.getInstance(btn);
+      if (tooltip) {
+        tooltip.dispose();
+      }
+    });
+
     tabla.innerHTML = "";
- 
+
     ejecuciones
       .filter(item => {
         const coincideSolicitante = solicitante ? item.usuario.toLowerCase().includes(solicitante) : true;
@@ -380,11 +389,15 @@ function llenarFiltroSolicitante() {
         });
         
         // Inicializar tooltips para los botones de acción
+        // Usar delay para que no aparezcan tan rápido y sean más estables
         row.querySelectorAll(".btn-accion").forEach(btn => {
-          new bootstrap.Tooltip(btn);
+          const tooltip = new bootstrap.Tooltip(btn, {
+            delay: { show: 500, hide: 100 },
+            trigger: 'hover'
+          });
         });
       });
- }
+    }
   
   function calcularDuracion(inicio, fin) {
     if (!inicio || !fin) return "-";
@@ -816,8 +829,22 @@ let ejecucionSeleccionada = null;
 let usuarioActual = null;
 
 $(document).on("click", ".btn-accion", function () {
+  // 🔴 Limpiar tooltip cuando se hace click
+  const tooltip = bootstrap.Tooltip.getInstance(this);
+  if (tooltip) {
+    tooltip.hide();
+  }
+  
   ejecucionSeleccionada = $(this).data("idtasklist");
   console.log("👉 Ejecución seleccionada:", ejecucionSeleccionada);
+});
+
+// 🔴 Manejador global para limpiar tooltips cuando se dejan los botones
+$(document).on("mouseleave", ".btn-accion", function () {
+  const tooltip = bootstrap.Tooltip.getInstance(this);
+  if (tooltip) {
+    tooltip.hide();
+  }
 });
 
 
