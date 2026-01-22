@@ -13,7 +13,7 @@ async function obtenerPermisosUsuarioActual(req, res) {
     const id_usuario = req.session.user.ID_Usuario;
 
     const query = `
-      SELECT ID_Aplicacion
+      SELECT ID_Perfil, ID_Aplicacion
       FROM ${schema}.USUARIO_PERFIL_APP
       WHERE ID_Usuario = @id
     `;
@@ -24,10 +24,8 @@ async function obtenerPermisosUsuarioActual(req, res) {
       .input("id", sql.Int, id_usuario)
       .query(query);
 
-    const permisos = result.recordset.map(r => r.ID_Aplicacion);
-
     // Si no hay resultados, el usuario no está en la tabla
-    if (permisos.length === 0) {
+    if (result.recordset.length === 0) {
       return res.json({
         ok: true,
         usuarioEncontrado: false,
@@ -36,14 +34,27 @@ async function obtenerPermisosUsuarioActual(req, res) {
       });
     }
 
-    // Si encuentra ID_Aplicacion = 999, es Admin y puede ver todas las apps
-    const esAdmin = permisos.includes(999);
+    // Verificar si algún registro tiene ID_Perfil = 1 (Admin)
+    const esAdmin = result.recordset.some(r => r.ID_Perfil === 1);
+
+    // Si es admin, retornar vacío (señal de mostrar todas)
+    if (esAdmin) {
+      return res.json({
+        ok: true,
+        usuarioEncontrado: true,
+        esAdmin: true,
+        aplicacionesPermitidas: []
+      });
+    }
+
+    // Si no es admin, extraer solo los ID_Aplicacion permitidos
+    const aplicacionesPermitidas = result.recordset.map(r => r.ID_Aplicacion);
 
     return res.json({
       ok: true,
       usuarioEncontrado: true,
-      esAdmin: esAdmin,
-      aplicacionesPermitidas: esAdmin ? [] : permisos // Si es admin, retorna array vacío (señal de mostrar todas)
+      esAdmin: false,
+      aplicacionesPermitidas: aplicacionesPermitidas
     });
 
   } catch (error) {
@@ -67,7 +78,7 @@ async function obtenerPermisosUsuario(req, res) {
     const id_usuario = req.params.id_usuario;
 
     const query = `
-      SELECT ID_Aplicacion
+      SELECT ID_Perfil, ID_Aplicacion
       FROM ${schema}.USUARIO_PERFIL_APP
       WHERE ID_Usuario = @id
     `;
@@ -78,10 +89,8 @@ async function obtenerPermisosUsuario(req, res) {
       .input("id", sql.Int, id_usuario)
       .query(query);
 
-    const permisos = result.recordset.map(r => r.ID_Aplicacion);
-
     // Si no hay resultados, el usuario no está en la tabla
-    if (permisos.length === 0) {
+    if (result.recordset.length === 0) {
       return res.json({
         ok: true,
         usuarioEncontrado: false,
@@ -90,14 +99,27 @@ async function obtenerPermisosUsuario(req, res) {
       });
     }
 
-    // Si encuentra ID_Aplicacion = 999, es Admin y puede ver todas las apps
-    const esAdmin = permisos.includes(999);
+    // Verificar si algún registro tiene ID_Perfil = 1 (Admin)
+    const esAdmin = result.recordset.some(r => r.ID_Perfil === 1);
+
+    // Si es admin, retornar vacío (señal de mostrar todas)
+    if (esAdmin) {
+      return res.json({
+        ok: true,
+        usuarioEncontrado: true,
+        esAdmin: true,
+        aplicacionesPermitidas: []
+      });
+    }
+
+    // Si no es admin, extraer solo los ID_Aplicacion permitidos
+    const aplicacionesPermitidas = result.recordset.map(r => r.ID_Aplicacion);
 
     return res.json({
       ok: true,
       usuarioEncontrado: true,
-      esAdmin: esAdmin,
-      aplicacionesPermitidas: esAdmin ? [] : permisos // Si es admin, retorna array vacío (señal de mostrar todas)
+      esAdmin: false,
+      aplicacionesPermitidas: aplicacionesPermitidas
     });
 
   } catch (error) {
