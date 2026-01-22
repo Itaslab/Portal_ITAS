@@ -126,6 +126,8 @@ async function cargarEjecuciones() {
         // Guardar el filtro actual ANTES de actualizar las opciones
         const filtroSolicitanteActual = filtroSolicitante.value;
         
+        console.log("🔍 Ejecuciones cargadas:", ejecuciones);
+        
         llenarFiltroSolicitante();
         
         // Restaurar el filtro DESPUÉS de llenar las opciones
