@@ -315,7 +315,8 @@ function llenarFiltroSolicitante() {
   <button class="btn btn-outline-secondary btn-sm btn-accion"
           data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
-          data-bs-target="#modalCancelar">
+          data-bs-target="#modalCancelar"
+          title="Cancela la ejecución actual">
     <i class="bi bi-x-circle"></i>
   </button>
 
@@ -323,7 +324,8 @@ function llenarFiltroSolicitante() {
 <button class="btn btn-outline-secondary btn-sm btn-accion"
         data-idtasklist="${ejec.id}"
         data-bs-toggle="modal"
-        data-bs-target="#modalPausar">
+        data-bs-target="#modalPausar"
+        title="Pausa la ejecución actual">
   <i class="bi bi-pause-circle"></i>
 </button>
 
@@ -331,7 +333,8 @@ function llenarFiltroSolicitante() {
   <button class="btn btn-outline-secondary btn-sm btn-accion" 
           data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
-          data-bs-target="#modalReanudar">
+          data-bs-target="#modalReanudar"
+          title="Reanuda una ejecución pausada">
     <i class="bi bi-arrow-clockwise"></i>
   </button>
 
@@ -339,7 +342,8 @@ function llenarFiltroSolicitante() {
   <button class="btn btn-outline-secondary btn-sm btn-accion" 
         data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
-          data-bs-target="#modalReenviar">
+          data-bs-target="#modalReenviar"
+          title="Reenvía toda la ejecución nuevamente">
     <i class="bi bi-send"></i>
   </button>
 
@@ -347,7 +351,8 @@ function llenarFiltroSolicitante() {
   <button class="btn btn-outline-secondary btn-sm btn-accion" 
         data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
-          data-bs-target="#modalReenviarFallidos">
+          data-bs-target="#modalReenviarFallidos"
+          title="Reenvía solo los items que fallaron">
     <i class="bi bi-arrow-counterclockwise"></i>
   </button>
 </td>
@@ -364,6 +369,11 @@ function llenarFiltroSolicitante() {
         btn.style.pointerEvents = "none";
         btn.style.opacity = "0.5";
         }
+        });
+        
+        // Inicializar tooltips para los botones de acción
+        row.querySelectorAll(".btn-accion").forEach(btn => {
+          new bootstrap.Tooltip(btn);
         });
       });
  }
@@ -494,7 +504,7 @@ function verEstado(id) { mostrarAlerta("warning", `Estado detallado para ejecuci
 // 🔹 Botón "Solicitar ejecución"
 const btnSolicitar = document.getElementById("btnSolicitar");
 btnSolicitar.addEventListener("click", () => {
-  window.location.href = "SolicitarEjecucion.html";
+  window.location.href = basePath + "/pages/SolicitarEjecucion.html";
 });
  
 // ------------------------------
