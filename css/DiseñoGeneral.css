@@ -405,3 +405,38 @@ textarea.disabled-field {
   color: #666 !important;
 }
 
+/* ──────────────── BLANQUEO DE PASSWORD - ABM USUARIOS ──────────────── */
+.tabla-usuarios {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.usuario-row {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.usuario-row:hover {
+  background-color: #f0f0f0;
+}
+
+.usuario-row.seleccionado {
+  background-color: #007bff !important;
+  color: white;
+}
+
+.info-usuario {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  display: none;
+}
+
+.info-usuario.mostrar {
+  display: block;
+}
+
+.badge-estado {
+  font-size: 0.85rem;
+}
