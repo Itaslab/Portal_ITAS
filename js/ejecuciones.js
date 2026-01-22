@@ -40,6 +40,10 @@ async function obtenerContadores(id) {
 
     try {
         const res = await fetch(`${basePath}/api/ejecuciones/detalle/${id}`);
+        
+        // Verificar si la sesión es válida
+        await verificarSesionValida(res, '/api/ejecuciones/detalle');
+        
         const data = await res.json();
 
         if (!Array.isArray(data)) {
@@ -85,6 +89,10 @@ async function cargarEjecuciones() {
         Object.keys(cacheContadores).forEach(k => delete cacheContadores[k]);
 
         const res = await fetch(basePath + "/ejecuciones");
+        
+        // Verificar si la sesión es válida
+        await verificarSesionValida(res, '/ejecuciones');
+        
         const data = await res.json();
 
         if (!data.success) {
@@ -168,9 +176,18 @@ function llenarFiltroSolicitante() {
   function renderTabla() {
     const solicitante = filtroSolicitante.value.toLowerCase();
     const registro = filtroRegistro.value.toLowerCase();
- 
+
+    // 🔴 DESTRUIR TOOLTIPS EXISTENTES antes de limpiar la tabla
+    // Esto evita que queden "clavados"
+    document.querySelectorAll(".btn-accion").forEach(btn => {
+      const tooltip = bootstrap.Tooltip.getInstance(btn);
+      if (tooltip) {
+        tooltip.dispose();
+      }
+    });
+
     tabla.innerHTML = "";
- 
+
     ejecuciones
       .filter(item => {
         const coincideSolicitante = solicitante ? item.usuario.toLowerCase().includes(solicitante) : true;
@@ -316,7 +333,8 @@ function llenarFiltroSolicitante() {
   <button class="btn btn-outline-secondary btn-sm btn-accion"
           data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
-          data-bs-target="#modalCancelar">
+          data-bs-target="#modalCancelar"
+          title="Cancela la ejecución actual">
     <i class="bi bi-x-circle"></i>
   </button>
 
@@ -324,7 +342,8 @@ function llenarFiltroSolicitante() {
 <button class="btn btn-outline-secondary btn-sm btn-accion"
         data-idtasklist="${ejec.id}"
         data-bs-toggle="modal"
-        data-bs-target="#modalPausar">
+        data-bs-target="#modalPausar"
+        title="Pausa la ejecución actual">
   <i class="bi bi-pause-circle"></i>
 </button>
 
@@ -332,7 +351,8 @@ function llenarFiltroSolicitante() {
   <button class="btn btn-outline-secondary btn-sm btn-accion" 
           data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
-          data-bs-target="#modalReanudar">
+          data-bs-target="#modalReanudar"
+          title="Reanuda una ejecución pausada">
     <i class="bi bi-arrow-clockwise"></i>
   </button>
 
@@ -340,7 +360,8 @@ function llenarFiltroSolicitante() {
   <button class="btn btn-outline-secondary btn-sm btn-accion" 
         data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
-          data-bs-target="#modalReenviar">
+          data-bs-target="#modalReenviar"
+          title="Reenvía toda la ejecución nuevamente">
     <i class="bi bi-send"></i>
   </button>
 
@@ -348,7 +369,8 @@ function llenarFiltroSolicitante() {
   <button class="btn btn-outline-secondary btn-sm btn-accion" 
         data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
-          data-bs-target="#modalReenviarFallidos">
+          data-bs-target="#modalReenviarFallidos"
+          title="Reenvía solo los items que fallaron">
     <i class="bi bi-arrow-counterclockwise"></i>
   </button>
 </td>
@@ -366,8 +388,17 @@ function llenarFiltroSolicitante() {
         btn.style.opacity = "0.5";
         }
         });
+        
+        // Inicializar tooltips para los botones de acción
+        // Usar delay para que no aparezcan tan rápido y sean más estables
+        row.querySelectorAll(".btn-accion").forEach(btn => {
+          const tooltip = new bootstrap.Tooltip(btn, {
+            delay: { show: 500, hide: 100 },
+            trigger: 'hover'
+          });
+        });
       });
- }
+    }
   
   function calcularDuracion(inicio, fin) {
     if (!inicio || !fin) return "-";
@@ -386,6 +417,10 @@ function llenarFiltroSolicitante() {
   async function inicializarUsuario() {
     try {
       const resMe = await fetch(basePath + "/me", { credentials: "include" });
+      
+      // Verificar si la sesión es válida
+      await verificarSesionValida(resMe, '/me');
+      
       const datMe = await resMe.json();
       if (datMe.success && datMe.usuario) {
         usuarioActual = datMe.usuario.ID_Usuario;
@@ -495,7 +530,7 @@ function verEstado(id) { mostrarAlerta("warning", `Estado detallado para ejecuci
 // 🔹 Botón "Solicitar ejecución"
 const btnSolicitar = document.getElementById("btnSolicitar");
 btnSolicitar.addEventListener("click", () => {
-  window.location.href = "SolicitarEjecucion.html";
+  window.location.href = basePath + "/pages/SolicitarEjecucion.html";
 });
  
 // ------------------------------
@@ -534,6 +569,10 @@ $(document).on("click", ".btn-detalle", async function (e) {
  
     try {
         const res = await fetch(`${basePath}/api/ejecuciones/detalle/${id}`);
+        
+        // Verificar si la sesión es válida
+        await verificarSesionValida(res, '/api/ejecuciones/detalle');
+        
         const data = await res.json();
  
         if (!data || !Array.isArray(data) || data.length === 0) {
@@ -682,6 +721,10 @@ $(document).on("click", ".btn-log", async function () {
   try {
     // Llamada al backend nuevo
     const res = await fetch(`${basePath}/api/logs/${idTasklist}`);
+    
+    // Verificar si la sesión es válida
+    await verificarSesionValida(res, '/api/logs');
+    
     const json = await res.json();
  
     if (!json.success || !Array.isArray(json.data) || json.data.length === 0) {
@@ -787,8 +830,22 @@ let ejecucionSeleccionada = null;
 let usuarioActual = null;
 
 $(document).on("click", ".btn-accion", function () {
+  // 🔴 Limpiar tooltip cuando se hace click
+  const tooltip = bootstrap.Tooltip.getInstance(this);
+  if (tooltip) {
+    tooltip.hide();
+  }
+  
   ejecucionSeleccionada = $(this).data("idtasklist");
   console.log("👉 Ejecución seleccionada:", ejecucionSeleccionada);
+});
+
+// 🔴 Manejador global para limpiar tooltips cuando se dejan los botones
+$(document).on("mouseleave", ".btn-accion", function () {
+  const tooltip = bootstrap.Tooltip.getInstance(this);
+  if (tooltip) {
+    tooltip.hide();
+  }
 });
 
 
@@ -839,6 +896,9 @@ async function ejecutarAccionBackend(accion) {
         idUsuario: usuarioActual
       })
     });
+
+    // Verificar si la sesión es válida
+    await verificarSesionValida(res, `/api/acciones/${accion}`);
 
     const data = await res.json();
     console.log("Respuesta backend:", data);

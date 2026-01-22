@@ -85,6 +85,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           body: JSON.stringify({ currentPassword: '', newPassword: pass1, forcePassword: true })
         });
 
+        // Verificar si la sesión es válida
+        await verificarSesionValida(r, '/me/password');
+
         const d = await r.json();
         if (r.ok && d.success) {
           forcePassResult.innerHTML = '<div class="alert alert-success">Contraseña establecida correctamente</div>';
@@ -111,23 +114,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     { id: 7, name: "Helix", category: "Personal", collection: "Gestión", img: "../images/bmx_helix.png" },
     { id: 6, name: "Seguridad Informatica", category: "Privado", collection: "Gestión", img: "../images/SeguridadInformatica.jpg", url: "../pages/SeguridadInformatica.html" },
     { id: 8, name: "Monitoreo", category: "Personal", collection: "Gestión", img: "../images/Grafana.png", url: "https://portal-itas.telecom.com.ar:3000/grafana/public-dashboards/e5368ad7e39f41d99b6f28c003e9f998" },
-    { id: 1, name: "ABM Usuarios", category: "Privado", collection: "Gestión", img: "../images/ABM.jpg", url: "../pages/ModulosAbmUsuarios.html" }
+    { id: 11, name: "ABM Usuarios", category: "Privado", collection: "Gestión", img: "../images/ABM.jpg", url: "../pages/ModulosAbmUsuarios.html" }
   ];
 
   // ------------------------------
   // 3) TRAER PERMISOS DEL BACKEND
   // ------------------------------
-  let appsPermitidas = []; // Si el backend dice nada → mostramos todas
+  let appsPermitidas = [];
+  let usuarioEncontrado = false;
+  let esAdmin = false;
 
   try {
     const res = await fetch(`${basePath}/permisos`, {
       credentials: "include"
     });
 
+    // Verificar si la sesión es válida
+    await verificarSesionValida(res, '/permisos');
+
     const data = await res.json();
 
-    if (data.ok && Array.isArray(data.aplicacionesPermitidas)) {
-      appsPermitidas = data.aplicacionesPermitidas; // ej: [3,4,8]
+    if (data.ok) {
+      usuarioEncontrado = data.usuarioEncontrado || false;
+      esAdmin = data.esAdmin || false;
+      if (Array.isArray(data.aplicacionesPermitidas)) {
+        appsPermitidas = data.aplicacionesPermitidas; // ej: [3,4,8]
+      }
     } else {
       console.warn("Respuesta inesperada del servidor:", data);
     }
@@ -135,15 +147,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Error obteniendo permisos:", error);
   }
 
-  console.log("Apps permitidas por backend:", appsPermitidas);
+  console.log("Usuario encontrado:", usuarioEncontrado, "Es Admin:", esAdmin, "Apps permitidas:", appsPermitidas);
 
   // ------------------------------
   // 4) APLICAR FILTRO DE PERMISOS
   // ------------------------------
   let appsFiltradas = apps;
 
-  if (appsPermitidas.length > 0) {
+  // Si el usuario NO está en la tabla, no mostrar nada
+  if (!usuarioEncontrado) {
+    appsFiltradas = [];
+  }
+  // Si es admin, mostrar todas
+  else if (esAdmin) {
+    appsFiltradas = apps;
+  }
+  // Si tiene permisos específicos, filtrar
+  else if (appsPermitidas.length > 0) {
     appsFiltradas = apps.filter(app => appsPermitidas.includes(app.id));
+  }
+  // Si está en la tabla pero sin permisos específicos, no mostrar nada
+  else {
+    appsFiltradas = [];
   }
 
   // ------------------------------
@@ -273,7 +298,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ------------------------------
   async function loadProfile() {
     try {
-      const resp = await fetch(basePath + '/me');
+      const resp = await fetch(basePath + '/me', { credentials: "include" });
+      
+      // Verificar si la sesión es válida
+      await verificarSesionValida(resp, '/me');
+      
       if (!resp.ok) return;
       const data = await resp.json();
       if (!data.success || !data.usuario) return;
@@ -323,6 +352,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ currentPassword: current, newPassword: nw })
         });
+        
+        // Verificar si la sesión es válida
+        await verificarSesionValida(r, '/me/password');
+        
         const d = await r.json();
         if (r.ok && d.success) {
           perfilResult.innerHTML = '<div class="text-success">Contraseña actualizada correctamente</div>';
