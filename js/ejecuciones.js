@@ -334,7 +334,7 @@ function llenarFiltroSolicitante() {
           data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
           data-bs-target="#modalCancelar"
-          title="Cancela la ejecución actual">
+          title="Cancela la tarea actual">
     <i class="bi bi-x-circle"></i>
   </button>
 
@@ -343,7 +343,7 @@ function llenarFiltroSolicitante() {
         data-idtasklist="${ejec.id}"
         data-bs-toggle="modal"
         data-bs-target="#modalPausar"
-        title="Pausa la ejecución actual">
+        title="Pausa la tarea actual">
   <i class="bi bi-pause-circle"></i>
 </button>
 
@@ -352,7 +352,7 @@ function llenarFiltroSolicitante() {
           data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
           data-bs-target="#modalReanudar"
-          title="Reanuda una ejecución pausada">
+          title="Reanudar una tarea Pausada o Finalizada con Error">
     <i class="bi bi-arrow-clockwise"></i>
   </button>
 
@@ -361,7 +361,7 @@ function llenarFiltroSolicitante() {
         data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
           data-bs-target="#modalReenviar"
-          title="Reenvía toda la ejecución nuevamente">
+          title="Reenvía toda la tarea nuevamente">
     <i class="bi bi-send"></i>
   </button>
 
@@ -370,7 +370,7 @@ function llenarFiltroSolicitante() {
         data-idtasklist="${ejec.id}"
           data-bs-toggle="modal" 
           data-bs-target="#modalReenviarFallidos"
-          title="Reenvía solo los items que fallaron">
+          title="Reenvía solo los ítems que fallaron o no se procesaron">
     <i class="bi bi-arrow-counterclockwise"></i>
   </button>
 </td>
