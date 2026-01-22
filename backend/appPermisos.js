@@ -26,9 +26,24 @@ async function obtenerPermisosUsuarioActual(req, res) {
 
     const permisos = result.recordset.map(r => r.ID_Aplicacion);
 
+    // Si no hay resultados, el usuario no está en la tabla
+    if (permisos.length === 0) {
+      return res.json({
+        ok: true,
+        usuarioEncontrado: false,
+        esAdmin: false,
+        aplicacionesPermitidas: [] // Array vacío → no mostrar nada
+      });
+    }
+
+    // Si encuentra ID_Aplicacion = 999, es Admin y puede ver todas las apps
+    const esAdmin = permisos.includes(999);
+
     return res.json({
       ok: true,
-      aplicacionesPermitidas: permisos
+      usuarioEncontrado: true,
+      esAdmin: esAdmin,
+      aplicacionesPermitidas: esAdmin ? [] : permisos // Si es admin, retorna array vacío (señal de mostrar todas)
     });
 
   } catch (error) {
@@ -65,9 +80,24 @@ async function obtenerPermisosUsuario(req, res) {
 
     const permisos = result.recordset.map(r => r.ID_Aplicacion);
 
+    // Si no hay resultados, el usuario no está en la tabla
+    if (permisos.length === 0) {
+      return res.json({
+        ok: true,
+        usuarioEncontrado: false,
+        esAdmin: false,
+        aplicacionesPermitidas: [] // Array vacío → no mostrar nada
+      });
+    }
+
+    // Si encuentra ID_Aplicacion = 999, es Admin y puede ver todas las apps
+    const esAdmin = permisos.includes(999);
+
     return res.json({
       ok: true,
-      aplicacionesPermitidas: permisos
+      usuarioEncontrado: true,
+      esAdmin: esAdmin,
+      aplicacionesPermitidas: esAdmin ? [] : permisos // Si es admin, retorna array vacío (señal de mostrar todas)
     });
 
   } catch (error) {
