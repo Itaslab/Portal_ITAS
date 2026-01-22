@@ -40,6 +40,10 @@ async function obtenerContadores(id) {
 
     try {
         const res = await fetch(`${basePath}/api/ejecuciones/detalle/${id}`);
+        
+        // Verificar si la sesión es válida
+        await verificarSesionValida(res, '/api/ejecuciones/detalle');
+        
         const data = await res.json();
 
         if (!Array.isArray(data)) {
@@ -84,6 +88,10 @@ async function cargarEjecuciones() {
         Object.keys(cacheContadores).forEach(k => delete cacheContadores[k]);
 
         const res = await fetch(basePath + "/ejecuciones");
+        
+        // Verificar si la sesión es válida
+        await verificarSesionValida(res, '/ejecuciones');
+        
         const data = await res.json();
 
         if (!data.success) {
@@ -395,6 +403,10 @@ function llenarFiltroSolicitante() {
   async function inicializarUsuario() {
     try {
       const resMe = await fetch(basePath + "/me", { credentials: "include" });
+      
+      // Verificar si la sesión es válida
+      await verificarSesionValida(resMe, '/me');
+      
       const datMe = await resMe.json();
       if (datMe.success && datMe.usuario) {
         usuarioActual = datMe.usuario.ID_Usuario;
@@ -543,6 +555,10 @@ $(document).on("click", ".btn-detalle", async function (e) {
  
     try {
         const res = await fetch(`${basePath}/api/ejecuciones/detalle/${id}`);
+        
+        // Verificar si la sesión es válida
+        await verificarSesionValida(res, '/api/ejecuciones/detalle');
+        
         const data = await res.json();
  
         if (!data || !Array.isArray(data) || data.length === 0) {
@@ -691,6 +707,10 @@ $(document).on("click", ".btn-log", async function () {
   try {
     // Llamada al backend nuevo
     const res = await fetch(`${basePath}/api/logs/${idTasklist}`);
+    
+    // Verificar si la sesión es válida
+    await verificarSesionValida(res, '/api/logs');
+    
     const json = await res.json();
  
     if (!json.success || !Array.isArray(json.data) || json.data.length === 0) {
@@ -848,6 +868,9 @@ async function ejecutarAccionBackend(accion) {
         idUsuario: usuarioActual
       })
     });
+
+    // Verificar si la sesión es válida
+    await verificarSesionValida(res, `/api/acciones/${accion}`);
 
     const data = await res.json();
     console.log("Respuesta backend:", data);

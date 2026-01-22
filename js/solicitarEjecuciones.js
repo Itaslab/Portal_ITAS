@@ -9,7 +9,10 @@ let usuarioActualId = 0; // Obtener desde sesión
 
 // Obtener usuario actual desde sesión
 fetch(basePath + "/me", { credentials: "include" })
-  .then(res => res.json())
+  .then(async res => {
+    await verificarSesionValida(res, '/me');
+    return res.json();
+  })
   .then(data => {
     if (data.success && data.usuario) {
       usuarioActualId = data.usuario.ID_Usuario;
@@ -19,7 +22,10 @@ fetch(basePath + "/me", { credentials: "include" })
 
 // Cargar flujos desde backend
 fetch(basePath + "/flujos")
-  .then(res => res.json())
+  .then(async res => {
+    await verificarSesionValida(res, '/flujos');
+    return res.json();
+  })
   .then(data => {
       if (data.success) {
           flujos = data.flujos;
@@ -94,11 +100,14 @@ btnEnviar.addEventListener("click", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
     })
-    .then(res => res.json())
+    .then(async res => {
+      await verificarSesionValida(res, '/crearEjecucion');
+      return res.json();
+    })
     .then(data => {
         if (data.success) {
             alert("Ejecución creada correctamente!");
-            window.location.href = "EjecucionesPorRobot.html";
+            window.location.href = basePath + "/pages/EjecucionesPorRobot.html";
         } else {
             alert("Error al crear la ejecución: " + data.error);
         }

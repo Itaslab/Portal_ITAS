@@ -142,7 +142,11 @@ app.post("/login", async (req, res) => {
 // ------------------- LOGOUT -------------------
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
-    res.redirect("/ingreso.html");
+    // Detectar si es TEST o PRODUCCIÓN basado en Host header
+    const host = req.get('host');
+    const isTest = host.includes('localhost') || host.includes('127.0.0.1');
+    const redirectPath = isTest ? "/test/ingreso.html" : "/ingreso.html";
+    res.redirect(redirectPath);
   });
 });
 
@@ -189,7 +193,12 @@ app.use("/api/scripts", rutasScripts);
 // ------------------- PROTECCIÓN -------------------
 function checkAuth(req, res, next) {
   if (req.session.user) return next();
-  res.redirect("/ingreso.html");
+  
+  // Detectar si es TEST o PRODUCCIÓN basado en Host header
+  const host = req.get('host');
+  const isTest = host.includes('localhost') || host.includes('127.0.0.1');
+  const redirectPath = isTest ? "/test/ingreso.html" : "/ingreso.html";
+  res.redirect(redirectPath);
 }
 
 

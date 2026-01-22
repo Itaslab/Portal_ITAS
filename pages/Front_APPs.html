@@ -176,10 +176,10 @@
   <script>
   document.getElementById("btnLogout").addEventListener("click", async () => {
     try {
-      await fetch("/logout"); // Llama al backend para destruir la sesión
+      await fetch(basePath + "/logout"); // Llama al backend para destruir la sesión
       // Ya no hay datos locales que limpiar (sesión del servidor)
       // Redirigir al login
-      window.location.href = "/ingreso.html";
+      window.location.href = basePath + "/ingreso.html";
     } catch (err) {
       console.error("Error al cerrar sesión:", err);
       alert("Error al cerrar sesión.");

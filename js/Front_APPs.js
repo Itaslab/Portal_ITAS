@@ -85,6 +85,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           body: JSON.stringify({ currentPassword: '', newPassword: pass1, forcePassword: true })
         });
 
+        // Verificar si la sesión es válida
+        await verificarSesionValida(r, '/me/password');
+
         const d = await r.json();
         if (r.ok && d.success) {
           forcePassResult.innerHTML = '<div class="alert alert-success">Contraseña establecida correctamente</div>';
@@ -125,6 +128,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const res = await fetch(`${basePath}/permisos`, {
       credentials: "include"
     });
+
+    // Verificar si la sesión es válida
+    await verificarSesionValida(res, '/permisos');
 
     const data = await res.json();
 
@@ -293,6 +299,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function loadProfile() {
     try {
       const resp = await fetch(basePath + '/me');
+      
+      // Verificar si la sesión es válida
+      await verificarSesionValida(resp, '/me');
+      
       if (!resp.ok) return;
       const data = await resp.json();
       if (!data.success || !data.usuario) return;
@@ -342,6 +352,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ currentPassword: current, newPassword: nw })
         });
+        
+        // Verificar si la sesión es válida
+        await verificarSesionValida(r, '/me/password');
+        
         const d = await r.json();
         if (r.ok && d.success) {
           perfilResult.innerHTML = '<div class="text-success">Contraseña actualizada correctamente</div>';
