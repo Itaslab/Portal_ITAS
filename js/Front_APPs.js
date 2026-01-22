@@ -117,7 +117,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ------------------------------
   // 3) TRAER PERMISOS DEL BACKEND
   // ------------------------------
-  let appsPermitidas = []; // Si el backend dice nada → mostramos todas
+  let appsPermitidas = [];
+  let usuarioEncontrado = false;
+  let esAdmin = false;
 
   try {
     const res = await fetch(`${basePath}/permisos`, {
@@ -126,8 +128,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const data = await res.json();
 
-    if (data.ok && Array.isArray(data.aplicacionesPermitidas)) {
-      appsPermitidas = data.aplicacionesPermitidas; // ej: [3,4,8]
+    if (data.ok) {
+      usuarioEncontrado = data.usuarioEncontrado || false;
+      esAdmin = data.esAdmin || false;
+      if (Array.isArray(data.aplicacionesPermitidas)) {
+        appsPermitidas = data.aplicacionesPermitidas; // ej: [3,4,8]
+      }
     } else {
       console.warn("Respuesta inesperada del servidor:", data);
     }
@@ -135,15 +141,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Error obteniendo permisos:", error);
   }
 
-  console.log("Apps permitidas por backend:", appsPermitidas);
+  console.log("Usuario encontrado:", usuarioEncontrado, "Es Admin:", esAdmin, "Apps permitidas:", appsPermitidas);
 
   // ------------------------------
   // 4) APLICAR FILTRO DE PERMISOS
   // ------------------------------
   let appsFiltradas = apps;
 
-  if (appsPermitidas.length > 0) {
+  // Si el usuario NO está en la tabla, no mostrar nada
+  if (!usuarioEncontrado) {
+    appsFiltradas = [];
+  }
+  // Si es admin, mostrar todas
+  else if (esAdmin) {
+    appsFiltradas = apps;
+  }
+  // Si tiene permisos específicos, filtrar
+  else if (appsPermitidas.length > 0) {
     appsFiltradas = apps.filter(app => appsPermitidas.includes(app.id));
+  }
+  // Si está en la tabla pero sin permisos específicos, no mostrar nada
+  else {
+    appsFiltradas = [];
   }
 
   // ------------------------------
