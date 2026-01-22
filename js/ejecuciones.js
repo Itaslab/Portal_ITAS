@@ -112,7 +112,6 @@ async function cargarEjecuciones() {
                     identificador: item.Identificador,
                     usuario: item.Email,
                     estado: item.Estado,
-                    colorEstado: item.Color,
                     avance: item.Avance,
                     resultado: item.Resultado,
                     fechaInicio: item.Fecha_Inicio,
@@ -239,7 +238,7 @@ function llenarFiltroSolicitante() {
         <div class="p-3 border rounded bg-light" style="width: 280px;">
           <!-- Estado -->
           <div class="mb-3 text-center">
-            <span class="badge px-3 py-2" style="background-color: ${ejec.colorEstado || '#6c757d'}">
+            <span class="badge bg-${ejec.estado.includes('Error') ? 'danger' : 'success'} px-3 py-2">
               ${ejec.estado}
             </span>
           </div>

@@ -11,7 +11,6 @@ module.exports = async (req, res) => {
          SELECT
            U.Email,
            TE.Estado,
-           TE.Color,
            T.Id_Tasklist,
            T.Titulo_Tasklist,
            T.Identificador,
