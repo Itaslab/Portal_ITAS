@@ -8,6 +8,38 @@
 
 nav {
   background-color: midnightblue !important;
+  padding: 12px 0;
+}
+
+/* Contenedor del navbar con mejor alineación */
+.navbar-container {
+  gap: 2rem;
+  min-height: 50px;
+}
+
+/* Logo con alineación vertical mejorada */
+.navbar-brand {
+  flex-shrink: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Texto "Aplicaciones" centrado */
+.navbar-center {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Sección derecha con usuario y botón */
+.navbar-right {
+  flex-shrink: 0;
+  align-items: center !important;
+  gap: 1rem;
 }
 
 .main,

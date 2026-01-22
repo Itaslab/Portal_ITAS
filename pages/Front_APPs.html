@@ -19,25 +19,24 @@
 <body class="main">
   <!-- Navbar -->
   <nav class="navbar position-relative">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-      <a class="navbar-brand nvbar" href="#">
-        <img src="../images/teco.png" alt="Logo" width="100" height="30" class="d-inline-block align-text-top">
+    <div class="container-fluid d-flex justify-content-between align-items-center navbar-container">
+      <a class="navbar-brand nvbar d-flex align-items-center" href="#">
+        <img src="../images/teco.png" alt="Logo" width="70" height="22" class="d-inline-block">
         <span class="ms-2">PORTAL ITAS</span>
       </a>
-      <span class="navbar-text nvbar position-absolute top-50 start-50 translate-middle">Aplicaciones</span>
+      <span class="navbar-text nvbar navbar-center">Aplicaciones</span>
 
       <!-- Greeting + Dropdown + Botón de Cerrar Sesión -->
-      <div class="d-flex align-items-center gap-3" style="position: absolute; right: 140px; top: 8px;">
+      <div class="d-flex align-items-center gap-3 navbar-right">
         <div id="userGreetingBar" class="d-flex align-items-center gap-2">
           <span id="userGreeting" class="text-white"></span>
           <a id="openProfile" style="cursor:pointer; color: #fff; text-decoration: underline;">Mi perfil</a>
         </div>
+        <!-- Botón de Cerrar Sesión -->
+        <button id="btnLogout" class="btn btn-danger btn-sm">
+          Cerrar sesión
+        </button>
       </div>
-
-      <!-- Botón de Cerrar Sesión -->
-      <button id="btnLogout" style="position: absolute; top: 15px; right: 20px;" class="btn btn-danger btn-sm">
-        Cerrar sesión
-      </button>
     </div>
   </nav>
 
