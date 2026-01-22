@@ -142,10 +142,12 @@ app.post("/login", async (req, res) => {
 // ------------------- LOGOUT -------------------
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
-    // Detectar si es TEST o PRODUCCIÓN basado en Host header
-    const host = req.get('host');
-    const isTest = host.includes('localhost') || host.includes('127.0.0.1');
+    // Detectar si es TEST revisando el originalUrl o Referer header
+    // Si viene de /test/*, redireccionar a /test/ingreso.html
+    const referer = req.get('referer') || '';
+    const isTest = referer.includes('/test/') || req.originalUrl.includes('/test/');
     const redirectPath = isTest ? "/test/ingreso.html" : "/ingreso.html";
+    console.log("🔐 Logout - Referer:", referer, "- isTest:", isTest, "- redirectPath:", redirectPath);
     res.redirect(redirectPath);
   });
 });
@@ -194,10 +196,30 @@ app.use("/api/scripts", rutasScripts);
 function checkAuth(req, res, next) {
   if (req.session.user) return next();
   
-  // Detectar si es TEST o PRODUCCIÓN basado en Host header
-  const host = req.get('host');
-  const isTest = host.includes('localhost') || host.includes('127.0.0.1');
+  // Detectar si es TEST revisando el originalUrl o Referer header
+  // Si viene de /test/*, redireccionar a /test/ingreso.html
+  const referer = req.get('referer') || '';
+  const originalUrl = req.originalUrl || '';
+  const isTest = referer.includes('/test/') || originalUrl.includes('/test/');
+  
+  // Si es una petición AJAX (fetch), devolver JSON en lugar de redirect
+  const isAjax = req.get('accept')?.includes('application/json') || 
+                 req.xhr ||
+                 req.get('content-type')?.includes('application/json');
+  
+  if (isAjax) {
+    // Para AJAX: devolver JSON con error
+    console.log("🔐 checkAuth AJAX - Sesión expirada - isTest:", isTest);
+    return res.status(401).json({
+      success: false,
+      error: "Sesión expirada",
+      redirectTo: isTest ? "/test/ingreso.html" : "/ingreso.html"
+    });
+  }
+  
+  // Para navegación normal: redirect HTTP
   const redirectPath = isTest ? "/test/ingreso.html" : "/ingreso.html";
+  console.log("🔐 checkAuth HTTP - Referer:", referer, "- OriginalUrl:", originalUrl, "- isTest:", isTest, "- redirectPath:", redirectPath);
   res.redirect(redirectPath);
 }
 

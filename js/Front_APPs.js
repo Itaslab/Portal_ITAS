@@ -298,7 +298,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ------------------------------
   async function loadProfile() {
     try {
-      const resp = await fetch(basePath + '/me');
+      const resp = await fetch(basePath + '/me', { credentials: "include" });
       
       // Verificar si la sesión es válida
       await verificarSesionValida(resp, '/me');

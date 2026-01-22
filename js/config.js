@@ -10,6 +10,19 @@ console.log('Entorno detectado:', basePath ? 'TEST' : 'PRODUCCIÓN', '- basePath
  * Si el usuario fue redirigido por falta de autenticación, redirige a login
  */
 async function verificarSesionValida(res, endpoint = '') {
+  // Si es 401 Unauthorized, la sesión expiró
+  if (res.status === 401) {
+    try {
+      const data = await res.json();
+      console.warn(`Sesión expirada en ${endpoint}:`, data);
+      const redirectTo = data.redirectTo || (basePath + "/ingreso.html");
+      window.location.href = redirectTo;
+    } catch (e) {
+      window.location.href = basePath + "/ingreso.html";
+    }
+    throw new Error("Sesión expirada - redirigiendo a login");
+  }
+  
   if (!res.ok) {
     return false;
   }
