@@ -238,7 +238,7 @@ function llenarFiltroSolicitante() {
         <div class="p-3 border rounded bg-light" style="width: 280px;">
           <!-- Estado -->
           <div class="mb-3 text-center">
-            <span class="badge px-3 py-2" style="background-color: ${ejec.colorEstado || '#6c757d'}">
+            <span class="badge px-3 py-2" style="background-color: #${ejec.colorEstado || '6c757d'}">
               ${ejec.estado}
             </span>
           </div>
