@@ -11,6 +11,7 @@ module.exports = async (req, res) => {
          SELECT
            U.Email,
            TE.Estado,
+           TE.Color,
            T.Id_Tasklist,
            T.Titulo_Tasklist,
            T.Identificador,
@@ -25,7 +26,7 @@ module.exports = async (req, res) => {
            FROM ${schema}.USUARIO U
            JOIN ${schema}.RPA_TASKLIST T ON T.Id_Usuario = U.Id_Usuario
            JOIN ${schema}.RPA_TASKLIST_ESTADO TE ON T.Id_Estado = TE.Id_Estado
-           ORDER BY T.Id_Tasklist DESC;
+           ORDER BY T.Id_Tasklist DESC
            `;
  
     const result = await pool.request().query(query);
