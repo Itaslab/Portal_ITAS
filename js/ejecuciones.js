@@ -1,5 +1,6 @@
 //ejecuciones.js
-  
+
+
 
 function formatearFecha(fechaISO) {
          if (!fechaISO) return "-";
@@ -22,12 +23,34 @@ function formatearFecha(fechaISO) {
      
 let cargandoEjecuciones = false;
 const cacheContadores = {};
+let idsTasklistPorDato = null;
 
 
 document.addEventListener("DOMContentLoaded", () => {
   const tabla = document.getElementById("tablaEjecuciones");
   const filtroSolicitante = document.getElementById("filtroSolicitante");
   const filtroRegistro = document.getElementById("filtroRegistro");
+
+
+  let debounceDato = null;
+
+filtroRegistro.addEventListener("input", () => {
+  const texto = filtroRegistro.value.trim();
+
+  clearTimeout(debounceDato);
+
+  // si borra el texto, volvemos a filtro local
+  if (texto.length < 3) {
+    idsTasklistPorDato = null;
+    renderTabla();
+    return;
+  }
+
+  debounceDato = setTimeout(async () => {
+    idsTasklistPorDato = await buscarTasklistPorDato(texto);
+    renderTabla();
+  }, 400);
+});
  
 
   let ejecuciones = [];
@@ -175,10 +198,29 @@ function llenarFiltroSolicitante() {
   }
 }
  
+async function buscarTasklistPorDato(texto) {
+  if (!texto || texto.length < 3) return [];
+
+  try {
+    const resp = await fetch(`/api/galeriaEjecuciones_FiltroDato?texto=${encodeURIComponent(texto)}`);
+    const json = await resp.json();
+
+    if (!json.success) return [];
+
+    return json.data || [];
+  } catch (err) {
+    console.error("Error buscando tasklist por dato:", err);
+    return [];
+  }
+}
+
+
+
   
   function renderTabla() {
     const solicitante = filtroSolicitante.value.toLowerCase();
     const registro = filtroRegistro.value.toLowerCase();
+
 
     // 🔴 DESTRUIR TOOLTIPS EXISTENTES antes de limpiar la tabla
     // Esto evita que queden "clavados"
@@ -193,13 +235,24 @@ function llenarFiltroSolicitante() {
 
     ejecuciones
       .filter(item => {
-        const coincideSolicitante = solicitante ? item.usuario.toLowerCase().includes(solicitante) : true;
+
+    // 🔹 filtro remoto por dato (prioridad)
+        if (idsTasklistPorDato !== null) {
+          return idsTasklistPorDato.includes(item.id);
+        }
+
+    // 🔹 filtros locales
+        const coincideSolicitante = solicitante
+          ? item.usuario.toLowerCase().includes(solicitante)
+          : true;
+
         const coincideRegistro = registro
-          ? (item.id.toString().toLowerCase().includes(registro) ||
+          ? (item.id.toString().includes(registro) ||
              (item.identificador || "").toLowerCase().includes(registro) ||
              (item.usuario || "").toLowerCase().includes(registro) ||
              (item.flujo || "").toLowerCase().includes(registro))
           : true;
+
         return coincideSolicitante && coincideRegistro;
       })
       .forEach(ejec => {
