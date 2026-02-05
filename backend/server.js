@@ -44,7 +44,7 @@ const logs = require("./logs");
 const accionesEjecuciones  = require("./galeriaEjecuciones_acciones");
 const vaultContraseñas = require("./seginf_VaultContraseñas");
 const blanqueoPasswordPortalItas = require("./blanqueoPasswordPortalITAS");
-const galeriaEjecucionesFiltroDato = require("./api/galeriaEjecuciones_FiltroDato");
+const galeriaEjecucionesFiltroDato = require("./galeriaEjecuciones_FiltroDato");
 
 
 
