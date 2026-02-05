@@ -14,8 +14,10 @@ function formatearFecha(fechaISO) {
 
          const horas = String(d.getHours()).padStart(2, "0");
          const minutos = String(d.getMinutes()).padStart(2, "0");
+         const segundos = String(d.getSeconds()).padStart(2, "0");
 
-         return `${dia}/${mes}/${año} ${horas}:${minutos}`;
+
+         return `${dia}/${mes}/${año} ${horas}:${minutos}:${segundos}`;
      }
      
 let cargandoEjecuciones = false;
