@@ -31,6 +31,7 @@ const { sql, poolPromise } = require("./db");
 const listaEjecuciones = require("./listaEjecuciones");
 const crearEjecucion = require("./crearEjecucion");
 const obtenerEjecuciones = require("./galeriaEjecuciones");
+const obtenerEjecucionesPaginadas = require("./galeriaEjecuciones_paginadas");
 const generarUsuario = require("./generarUsuario_tbUsuarios");
 const appOrdenesSFgaleriaUsuarios = require("./appOrdenesSF_GaleriaUsuarios");
 const updateAsignar = require("./appOrdenesSF_updateAsignar");
@@ -161,6 +162,7 @@ app.get("/logout", (req, res) => {
 app.get("/flujos", listaEjecuciones);
 app.post("/crearEjecucion", crearEjecucion);
 app.get("/ejecuciones", obtenerEjecuciones);
+app.get("/ejecuciones-paginadas", obtenerEjecucionesPaginadas);
 app.use("/api/ejecuciones", ejecucionesDetalle);
 app.get("/usuarios", appOrdenesSFgaleriaUsuarios);
 app.get("/usuarios/:id_usuario", appOrdenesSFUsuarioDetalle);
