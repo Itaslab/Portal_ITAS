@@ -14,6 +14,8 @@ require("dotenv").config({
 });
 
 const schema = process.env.DB_SCHEMA;
+const apiBasePath =
+  process.env.NODE_ENV === "production" ? "" : "/test";
 
 
 
