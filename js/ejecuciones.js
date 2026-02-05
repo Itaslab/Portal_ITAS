@@ -107,7 +107,8 @@ async function cargarEjecuciones() {
 
                 return {
                     id: item.Id_Tasklist,
-                    flujo: item.Titulo_Tasklist,
+                    titulo:item.Titulo_Tasklist,
+                    flujo: item.Titulo_Flujo,
                     identificador: item.Identificador,
                     usuario: item.Email,
                     estado: item.Estado,
@@ -215,7 +216,7 @@ function llenarFiltroSolicitante() {
                     </div>
                     <div class="mb-2">
                       <i class="fas fa-terminal text-secondary me-2" data-bs-toggle="tooltip" title="Nombre del proceso"></i>
-                      <span class="small">${ejec.flujo}</span>
+                      <span class="small">${ejec.titulo}</span>
                     </div>
                     <div class="mb-2">
                       <i class="fas fa-id-card text-info me-2" data-bs-toggle="tooltip" title="Identificador interno"></i>
