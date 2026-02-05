@@ -202,7 +202,12 @@ async function buscarTasklistPorDato(texto) {
   if (!texto || texto.length < 3) return [];
 
   try {
-    const resp = await fetch(`/api/galeriaEjecuciones_FiltroDato?texto=${encodeURIComponent(texto)}`);
+    const resp = await fetch(
+      `${basePath}/galeriaEjecuciones_FiltroDato?texto=${encodeURIComponent(texto)}`
+    );
+
+    await verificarSesionValida(resp, '/galeriaEjecuciones_FiltroDato');
+
     const json = await resp.json();
 
     if (!json.success) return [];

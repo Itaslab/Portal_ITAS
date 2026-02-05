@@ -44,6 +44,7 @@ const logs = require("./logs");
 const accionesEjecuciones  = require("./galeriaEjecuciones_acciones");
 const vaultContraseñas = require("./seginf_VaultContraseñas");
 const blanqueoPasswordPortalItas = require("./blanqueoPasswordPortalITAS");
+const galeriaEjecucionesFiltroDato = require("./api/galeriaEjecuciones_FiltroDato");
 
 
 
@@ -166,6 +167,7 @@ app.post("/usuarios/actualizar", actualizarUsuario);
 app.use("/api/galeria-auto-mq", appOrdenesSFGaleriaAuto);
 app.use("/api/acciones", accionesEjecuciones);
 app.use("/api/logs", logs);
+app.get("/api/galeriaEjecuciones_FiltroDato",galeriaEjecucionesFiltroDato);
  
 // ------------------- BÓVEDA DE CONTRASEÑAS (SEGURIDAD INFORMÁTICA) -------------------
 app.post("/vault/guardar", vaultContraseñas.guardarCredencial);
