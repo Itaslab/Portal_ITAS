@@ -203,10 +203,10 @@ async function buscarTasklistPorDato(texto) {
 
   try {
     const resp = await fetch(
-      `${basePath}/galeriaEjecuciones_FiltroDato?texto=${encodeURIComponent(texto)}`
+      `${basePath}/api/galeriaEjecuciones_FiltroDato?texto=${encodeURIComponent(texto)}`
     );
 
-    await verificarSesionValida(resp, '/galeriaEjecuciones_FiltroDato');
+    await verificarSesionValida(resp, '/api/galeriaEjecuciones_FiltroDato');
 
     const json = await resp.json();
 
