@@ -246,9 +246,6 @@ async function buscarTasklistPorDato(texto) {
 
   
   function renderTabla() {
-    const solicitante = filtroSolicitante.value.toLowerCase();
-    const registro = filtroRegistro.value.toLowerCase();
-
 
     // 🔴 DESTRUIR TOOLTIPS EXISTENTES antes de limpiar la tabla
     // Esto evita que queden "clavados"
@@ -261,29 +258,8 @@ async function buscarTasklistPorDato(texto) {
 
     tabla.innerHTML = "";
 
-    ejecuciones
-      .filter(item => {
 
-    // 🔹 filtro remoto por dato (prioridad)
-        if (idsTasklistPorDato !== null) {
-          return idsTasklistPorDato.includes(item.id);
-        }
-
-    // 🔹 filtros locales
-        const coincideSolicitante = solicitante
-          ? item.usuario.toLowerCase().includes(solicitante)
-          : true;
-
-        const coincideRegistro = registro
-          ? (item.id.toString().includes(registro) ||
-             (item.identificador || "").toLowerCase().includes(registro) ||
-             (item.usuario || "").toLowerCase().includes(registro) ||
-             (item.flujo || "").toLowerCase().includes(registro))
-          : true;
-
-        return coincideSolicitante && coincideRegistro;
-      })
-      .forEach(ejec => {
+      ejecuciones.forEach(ejec => {
         const duracion = calcularDuracion(ejec.fechaInicio, ejec.fechaFin);
         const row = document.createElement("tr");
  
