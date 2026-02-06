@@ -32,6 +32,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabla = document.getElementById("tablaEjecuciones");
   const filtroSolicitante = document.getElementById("filtroSolicitante");
   const filtroRegistro = document.getElementById("filtroRegistro");
+  const btnAnterior = document.getElementById("btnPaginaAnterior");
+  const btnSiguiente = document.getElementById("btnPaginaSiguiente");
+  const lblPagina = document.getElementById("paginaActualLabel");
+
+  btnAnterior.addEventListener("click", () => {
+  if (paginaActual === 1) return;
+  paginaActual--;
+      lblPagina.textContent = paginaActual;
+      cargarEjecuciones();
+      });
+
+  btnSiguiente.addEventListener("click", () => {
+      paginaActual++;
+      lblPagina.textContent = paginaActual;
+      cargarEjecuciones();
+      });
 
 
   let debounceDato = null;
