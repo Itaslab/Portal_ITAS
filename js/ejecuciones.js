@@ -24,6 +24,8 @@ function formatearFecha(fechaISO) {
 let cargandoEjecuciones = false;
 const cacheContadores = {};
 let idsTasklistPorDato = null;
+let paginaActual = 2;
+const LIMITE = 50;
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -112,7 +114,8 @@ async function cargarEjecuciones() {
 
         Object.keys(cacheContadores).forEach(k => delete cacheContadores[k]);
 
-        const res = await fetch(basePath + "/ejecuciones-paginadas?page=1");
+        const res = await fetch(`${basePath}/ejecuciones-paginadas?page=${paginaActual}&limit=${LIMITE}`
+);
         
         // Verificar si la sesión es válida
         await verificarSesionValida(res, '/ejecuciones');
