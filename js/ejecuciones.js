@@ -130,8 +130,12 @@ async function cargarEjecuciones() {
 
         Object.keys(cacheContadores).forEach(k => delete cacheContadores[k]);
 
-        const res = await fetch(`${basePath}/ejecuciones-paginadas?page=${paginaActual}&limit=${LIMITE}`
-);
+      const solicitante = encodeURIComponent(filtroSolicitante.value || "");
+      const registro = encodeURIComponent(filtroRegistro.value || "");
+
+      const res = await fetch(
+        `${basePath}/ejecuciones-paginadas?page=${paginaActual}&limit=${LIMITE}&solicitante=${solicitante}&registro=${registro}`
+      );
         
         // Verificar si la sesión es válida
         await verificarSesionValida(res, '/ejecuciones');
@@ -490,8 +494,15 @@ async function buscarTasklistPorDato(texto) {
   }
  
   // 🔹 Eventos filtros
-  filtroSolicitante.addEventListener("change", renderTabla);
-  filtroRegistro.addEventListener("input", renderTabla);
+filtroSolicitante.addEventListener("change", () => {
+  paginaActual = 1;
+  cargarEjecuciones();
+});
+
+filtroRegistro.addEventListener("input", () => {
+  paginaActual = 1;
+  cargarEjecuciones();
+});
  
   // Obtener usuario actual desde sesión
   async function inicializarUsuario() {
