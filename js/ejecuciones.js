@@ -112,7 +112,7 @@ async function cargarEjecuciones() {
 
         Object.keys(cacheContadores).forEach(k => delete cacheContadores[k]);
 
-        const res = await fetch(basePath + "/ejecuciones");
+        const res = await fetch(basePath + "/ejecuciones-paginadas?page=1");
         
         // Verificar si la sesión es válida
         await verificarSesionValida(res, '/ejecuciones');
