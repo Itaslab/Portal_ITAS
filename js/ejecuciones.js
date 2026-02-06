@@ -24,7 +24,7 @@ function formatearFecha(fechaISO) {
 let cargandoEjecuciones = false;
 const cacheContadores = {};
 let idsTasklistPorDato = null;
-let paginaActual = 2;
+let paginaActual = 1;
 const LIMITE = 50;
 
 
