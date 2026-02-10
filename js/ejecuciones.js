@@ -105,6 +105,10 @@ async function cargarEjecuciones() {
     if (cargandoEjecuciones) return;
     cargandoEjecuciones = true;
 
+      // 🔒 Bloquear paginación mientras carga
+  btnPaginaAnterior.disabled = true;
+  btnPaginaSiguiente.disabled = true;
+
     try {
 
         Object.keys(cacheContadores).forEach(k => delete cacheContadores[k]);
@@ -169,6 +173,10 @@ async function cargarEjecuciones() {
 
     } finally {
         cargandoEjecuciones = false;
+            // 🔓 Habilitar paginación
+        btnPaginaAnterior.disabled = false;
+        btnPaginaSiguiente.disabled = false;
+        btnPaginaAnterior.disabled = paginaActual === 1;
     }
 }
  
