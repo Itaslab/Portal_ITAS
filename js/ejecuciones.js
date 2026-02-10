@@ -132,9 +132,10 @@ async function cargarEjecuciones() {
 
       const solicitante = encodeURIComponent(filtroSolicitante.value || "");
       const registro = encodeURIComponent(filtroRegistro.value || "");
+      const dato = encodeURIComponent(filtroDato.value || "");
 
       const res = await fetch(
-        `${basePath}/ejecuciones-paginadas?page=${paginaActual}&limit=${LIMITE}&solicitante=${solicitante}&registro=${registro}`
+        `${basePath}/ejecuciones-paginadas?page=${paginaActual}&limit=${LIMITE}&solicitante=${solicitante}&registro=${registro}&dato=${dato}`
       );
         
         // Verificar si la sesión es válida
@@ -221,29 +222,6 @@ function llenarFiltroSolicitante() {
   }
 }
  
-async function buscarTasklistPorDato(texto) {
-  if (!texto || texto.length < 3) return [];
-
-  try {
-    const resp = await fetch(
-      `${basePath}/api/galeriaEjecuciones_FiltroDato?texto=${encodeURIComponent(texto)}`
-    );
-
-    await verificarSesionValida(resp, '/api/galeriaEjecuciones_FiltroDato');
-
-    const json = await resp.json();
-
-    if (!json.success) return [];
-
-    return json.data || [];
-  } catch (err) {
-    console.error("Error buscando tasklist por dato:", err);
-    return [];
-  }
-}
-
-
-
   
   function renderTabla() {
 
