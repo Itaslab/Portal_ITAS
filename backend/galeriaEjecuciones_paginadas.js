@@ -3,46 +3,57 @@ const { sql, poolPromise } = require("./db");
 const schema = process.env.DB_SCHEMA;
 
 module.exports = async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 50;
-  const offset = (page - 1) * limit;
-
-  const dato = (req.query.dato || "").trim();
-  const solicitante = (req.query.solicitante || "").trim();
-  const registro = (req.query.registro || "").trim();
-
-  let where = "WHERE 1=1";
-
-  // 🔹 Filtro solicitante
-  if (solicitante) {
-    where += " AND U.Email LIKE @solicitante";
-  }
-
-  // 🔹 Filtro registro (ID / identificador / email / flujo)
-  if (registro) {
-    where += `
-      AND (
-        CAST(T.Id_Tasklist AS VARCHAR) LIKE @registro
-        OR T.Identificador LIKE @registro
-        OR U.Email LIKE @registro
-        OR F.Titulo LIKE @registro
-      )
-    `;
-  }
-
-  // 🔹 Filtro por DATO (GLOBAL, real)
-  if (dato) {
-    where += `
-      AND EXISTS (
-        SELECT 1
-        FROM ${schema}.RPA_RESULTADOS R
-        WHERE R.Id_Tasklist = T.Id_Tasklist
-          AND R.Dato LIKE @dato
-      )
-    `;
-  }
-
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const offset = (page - 1) * limit;
+
+    const solicitante = (req.query.solicitante || "").trim();
+    const registro = (req.query.registro || "").trim();
+    const dato = (req.query.dato || "").trim();
+
+    // 🔴 MISMO COMPORTAMIENTO QUE ANTES
+    // No buscar por dato si tiene menos de 3 caracteres
+    if (dato && dato.length < 3) {
+      return res.json({
+        success: true,
+        page,
+        limit,
+        data: []
+      });
+    }
+
+    let where = "WHERE 1=1";
+
+    // 🔹 Filtro por solicitante
+    if (solicitante) {
+      where += " AND U.Email LIKE @solicitante";
+    }
+
+    // 🔹 Filtro por registro
+    if (registro) {
+      where += `
+        AND (
+          CAST(T.Id_Tasklist AS VARCHAR) LIKE @registro
+          OR T.Identificador LIKE @registro
+          OR U.Email LIKE @registro
+          OR F.Titulo LIKE @registro
+        )
+      `;
+    }
+
+    // 🔹 Filtro GLOBAL por dato (REAL, paginado)
+    if (dato) {
+      where += `
+        AND EXISTS (
+          SELECT 1
+          FROM ${schema}.RPA_RESULTADOS R
+          WHERE R.Id_Tasklist = T.Id_Tasklist
+            AND R.Dato COLLATE Latin1_General_CI_AI LIKE @dato
+        )
+      `;
+    }
+
     const pool = await poolPromise;
 
     const query = `
@@ -103,6 +114,9 @@ module.exports = async (req, res) => {
 
   } catch (err) {
     console.error("Error ejecuciones paginadas:", err);
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
   }
 };
