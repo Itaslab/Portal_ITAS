@@ -1,4 +1,3 @@
-// galeriaEjecuciones_paginadas.js
 const { sql, poolPromise } = require("./db");
 const schema = process.env.DB_SCHEMA;
 
@@ -11,14 +10,32 @@ module.exports = async (req, res) => {
     const solicitante = (req.query.solicitante || "").trim();
     const registro = (req.query.registro || "").trim();
 
+    const pool = await poolPromise;
+
+    let idsPorDato = null;
+
+    // 🔹 1) Buscar IDs por DATO (solo si registro >= 3)
+    if (registro.length >= 3) {
+      const resultDato = await pool
+        .request()
+        .input("dato", sql.VarChar, `%${registro}%`)
+        .query(`
+          SELECT DISTINCT Id_Tasklist
+          FROM ${schema}.RPA_RESULTADOS
+          WHERE Dato COLLATE Latin1_General_CI_AI LIKE @dato
+        `);
+
+      idsPorDato = resultDato.recordset.map(r => r.Id_Tasklist);
+    }
+
     let where = "WHERE 1=1";
 
-    // 🔹 Filtro por solicitante (SE MANTIENE AND)
+    // 🔹 2) Filtro solicitante
     if (solicitante) {
       where += " AND U.Email LIKE @solicitante";
     }
 
-    // 🔹 BUSCADOR GLOBAL (columnas visibles OR RPA_RESULTADOS)
+    // 🔹 3) Filtro registro (columnas visibles)
     if (registro) {
       where += `
         AND (
@@ -26,17 +43,12 @@ module.exports = async (req, res) => {
           OR T.Identificador LIKE @registro
           OR U.Email LIKE @registro
           OR F.Titulo LIKE @registro
-          OR EXISTS (
-            SELECT 1
-            FROM ${schema}.RPA_RESULTADOS R
-            WHERE R.Id_Tasklist = T.Id_Tasklist
-              AND R.Dato COLLATE Latin1_General_CI_AI LIKE @registro
-          )
+          ${idsPorDato && idsPorDato.length
+            ? `OR T.Id_Tasklist IN (${idsPorDato.join(",")})`
+            : ""}
         )
       `;
     }
-
-    const pool = await poolPromise;
 
     const query = `
       SELECT
@@ -56,12 +68,9 @@ module.exports = async (req, res) => {
         T.Reg_Proc_OK,
         T.Reg_Proc_NOK
       FROM ${schema}.USUARIO U
-      JOIN ${schema}.RPA_TASKLIST T 
-        ON T.Id_Usuario = U.Id_Usuario
-      JOIN ${schema}.RPA_TASKLIST_ESTADO TE 
-        ON T.Id_Estado = TE.Id_Estado
-      JOIN ${schema}.RPA_FLUJOS F
-        ON F.Id_Flujo = T.Id_Flujo
+      JOIN ${schema}.RPA_TASKLIST T ON T.Id_Usuario = U.Id_Usuario
+      JOIN ${schema}.RPA_TASKLIST_ESTADO TE ON T.Id_Estado = TE.Id_Estado
+      JOIN ${schema}.RPA_FLUJOS F ON F.Id_Flujo = T.Id_Flujo
       ${where}
       ORDER BY T.Id_Tasklist DESC
       OFFSET @offset ROWS
