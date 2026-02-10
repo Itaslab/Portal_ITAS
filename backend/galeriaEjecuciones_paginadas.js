@@ -11,17 +11,14 @@ module.exports = async (req, res) => {
     const solicitante = (req.query.solicitante || "").trim();
     const registro = (req.query.registro || "").trim();
 
-    // 👉 usamos el MISMO texto como filtro global por dato
-    const dato = registro;
-
     let where = "WHERE 1=1";
 
-    // 🔹 Filtro por solicitante
+    // 🔹 Filtro por solicitante (SE MANTIENE AND)
     if (solicitante) {
       where += " AND U.Email LIKE @solicitante";
     }
 
-    // 🔹 Filtro por columnas visibles
+    // 🔹 BUSCADOR GLOBAL (columnas visibles OR RPA_RESULTADOS)
     if (registro) {
       where += `
         AND (
@@ -29,18 +26,12 @@ module.exports = async (req, res) => {
           OR T.Identificador LIKE @registro
           OR U.Email LIKE @registro
           OR F.Titulo LIKE @registro
-        )
-      `;
-    }
-
-    // 🔹 Filtro GLOBAL por dato (RPA_RESULTADOS)
-    if (dato) {
-      where += `
-        AND EXISTS (
-          SELECT 1
-          FROM ${schema}.RPA_RESULTADOS R
-          WHERE R.Id_Tasklist = T.Id_Tasklist
-            AND R.Dato COLLATE Latin1_General_CI_AI LIKE @dato
+          OR EXISTS (
+            SELECT 1
+            FROM ${schema}.RPA_RESULTADOS R
+            WHERE R.Id_Tasklist = T.Id_Tasklist
+              AND R.Dato COLLATE Latin1_General_CI_AI LIKE @registro
+          )
         )
       `;
     }
@@ -88,7 +79,6 @@ module.exports = async (req, res) => {
 
     if (registro) {
       request.input("registro", sql.VarChar, `%${registro}%`);
-      request.input("dato", sql.VarChar, `%${registro}%`);
     }
 
     const result = await request.query(query);
