@@ -10,18 +10,9 @@ module.exports = async (req, res) => {
 
     const solicitante = (req.query.solicitante || "").trim();
     const registro = (req.query.registro || "").trim();
-    const dato = (req.query.dato || "").trim();
 
-    // 🔴 MISMO COMPORTAMIENTO QUE ANTES
-    // No buscar por dato si tiene menos de 3 caracteres
-    if (dato && dato.length < 3) {
-      return res.json({
-        success: true,
-        page,
-        limit,
-        data: []
-      });
-    }
+    // 👉 usamos el MISMO texto como filtro global por dato
+    const dato = registro;
 
     let where = "WHERE 1=1";
 
@@ -30,7 +21,7 @@ module.exports = async (req, res) => {
       where += " AND U.Email LIKE @solicitante";
     }
 
-    // 🔹 Filtro por registro
+    // 🔹 Filtro por columnas visibles
     if (registro) {
       where += `
         AND (
@@ -42,7 +33,7 @@ module.exports = async (req, res) => {
       `;
     }
 
-    // 🔹 Filtro GLOBAL por dato (REAL, paginado)
+    // 🔹 Filtro GLOBAL por dato (RPA_RESULTADOS)
     if (dato) {
       where += `
         AND EXISTS (
@@ -97,10 +88,7 @@ module.exports = async (req, res) => {
 
     if (registro) {
       request.input("registro", sql.VarChar, `%${registro}%`);
-    }
-
-    if (dato) {
-      request.input("dato", sql.VarChar, `%${dato}%`);
+      request.input("dato", sql.VarChar, `%${registro}%`);
     }
 
     const result = await request.query(query);

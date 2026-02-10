@@ -23,7 +23,7 @@ function formatearFecha(fechaISO) {
      
 let cargandoEjecuciones = false;
 const cacheContadores = {};
-let idsTasklistPorDato = null;
+
 let paginaActual = 1;
 const LIMITE = 50;
 
@@ -49,27 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
       cargarEjecuciones();
       });
 
-
-  let debounceDato = null;
-
-filtroRegistro.addEventListener("input", () => {
-  const texto = filtroRegistro.value.trim();
-
-  clearTimeout(debounceDato);
-
-  // si borra el texto, volvemos a filtro local
-  if (texto.length < 3) {
-    idsTasklistPorDato = null;
-    renderTabla();
-    return;
-  }
-
-  debounceDato = setTimeout(async () => {
-    idsTasklistPorDato = await buscarTasklistPorDato(texto);
-    renderTabla();
-  }, 400);
-});
- 
 
   let ejecuciones = [];
 
@@ -132,10 +111,10 @@ async function cargarEjecuciones() {
 
       const solicitante = encodeURIComponent(filtroSolicitante.value || "");
       const registro = encodeURIComponent(filtroRegistro.value || "");
-      const dato = encodeURIComponent(filtroDato.value || "");
+      
 
       const res = await fetch(
-        `${basePath}/ejecuciones-paginadas?page=${paginaActual}&limit=${LIMITE}&solicitante=${solicitante}&registro=${registro}&dato=${dato}`
+        `${basePath}/ejecuciones-paginadas?page=${paginaActual}&limit=${LIMITE}&solicitante=${solicitante}&registro=${registro}`
       );
         
         // Verificar si la sesión es válida
@@ -455,6 +434,7 @@ filtroSolicitante.addEventListener("change", () => {
 
 filtroRegistro.addEventListener("input", () => {
   paginaActual = 1;
+  lblPagina.textContent = paginaActual;
   cargarEjecuciones();
 });
  
