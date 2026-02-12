@@ -106,7 +106,9 @@ async function cargarEjecuciones(scrollear = false) {
 
     if (cargandoEjecuciones) return;
     cargandoEjecuciones = true;
+    if (scrollear) {
     overlayCarga.classList.remove("d-none");
+    }
 
 
       // 🔒 Bloquear paginación mientras carga
@@ -187,9 +189,10 @@ async function cargarEjecuciones(scrollear = false) {
         btnPaginaAnterior.disabled = false;
         btnPaginaSiguiente.disabled = false;
         btnPaginaAnterior.disabled = paginaActual === 1;
+        if (scrollear) {
         overlayCarga.classList.add("d-none");
-
-    }
+        }
+      }
 }
  
  
