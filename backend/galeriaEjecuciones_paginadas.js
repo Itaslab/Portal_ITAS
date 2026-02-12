@@ -35,12 +35,12 @@ module.exports = async (req, res) => {
       where += " AND U.Email COLLATE Latin1_General_CI_AI LIKE @solicitante";
     }
 
-    // 🔹 3) Filtro registro (Identificador, Flujo o Dato)
+    // 🔹 3) Filtro registro (Titulo Tasklist, Identificador o Dato)
     if (registro) {
       where += `
         AND (
-          T.Identificador COLLATE Latin1_General_CI_AI LIKE @registro
-          OR F.Titulo COLLATE Latin1_General_CI_AI LIKE @registro
+          T.Titulo_Tasklist COLLATE Latin1_General_CI_AI LIKE @registro
+          OR T.Identificador COLLATE Latin1_General_CI_AI LIKE @registro
           ${
             idsPorDato && idsPorDato.length
               ? `OR T.Id_Tasklist IN (${idsPorDato.join(",")})`
