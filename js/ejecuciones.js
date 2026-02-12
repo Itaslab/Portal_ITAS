@@ -453,13 +453,13 @@ function llenarFiltroSolicitante() {
 filtroSolicitante.addEventListener("change", () => {
   paginaActual = 1;
   lblPagina.textContent = paginaActual;
-  cargarEjecuciones(true);
+  cargarEjecuciones();
 });
 
 filtroRegistro.addEventListener("input", () => {
   paginaActual = 1;
   lblPagina.textContent = paginaActual;
-  cargarEjecuciones(true);
+  cargarEjecuciones();
 });
  
   // Obtener usuario actual desde sesión
