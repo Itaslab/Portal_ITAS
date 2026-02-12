@@ -35,18 +35,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnAnterior = document.getElementById("btnPaginaAnterior");
   const btnSiguiente = document.getElementById("btnPaginaSiguiente");
   const lblPagina = document.getElementById("paginaActualLabel");
+  const overlayCarga = document.getElementById("overlayCarga");
+
 
   btnAnterior.addEventListener("click", () => {
   if (paginaActual === 1) return;
   paginaActual--;
       lblPagina.textContent = paginaActual;
-      cargarEjecuciones();
+      cargarEjecuciones(true);
       });
 
   btnSiguiente.addEventListener("click", () => {
       paginaActual++;
       lblPagina.textContent = paginaActual;
-      cargarEjecuciones();
+      cargarEjecuciones(true);
       });
 
 
@@ -100,10 +102,12 @@ async function obtenerContadores(id) {
 
  
   // 🔹 Cargar datos desde backend
-async function cargarEjecuciones() {
+async function cargarEjecuciones(scrollear = false) {
 
     if (cargandoEjecuciones) return;
     cargandoEjecuciones = true;
+    overlayCarga.classList.remove("d-none");
+
 
       // 🔒 Bloquear paginación mientras carga
   btnPaginaAnterior.disabled = true;
@@ -167,6 +171,12 @@ async function cargarEjecuciones() {
         }
         
         renderTabla();
+        if (scrollear) {
+          window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+         });
+        }
 
     } catch (err) {
         console.error("Error al obtener ejecuciones:", err);
@@ -177,6 +187,8 @@ async function cargarEjecuciones() {
         btnPaginaAnterior.disabled = false;
         btnPaginaSiguiente.disabled = false;
         btnPaginaAnterior.disabled = paginaActual === 1;
+        overlayCarga.classList.add("d-none");
+
     }
 }
  
@@ -437,6 +449,7 @@ function llenarFiltroSolicitante() {
   // 🔹 Eventos filtros
 filtroSolicitante.addEventListener("change", () => {
   paginaActual = 1;
+  lblPagina.textContent = paginaActual;
   cargarEjecuciones();
 });
 
