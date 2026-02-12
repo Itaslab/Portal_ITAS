@@ -14,6 +14,8 @@ require("dotenv").config({
 });
 
 const schema = process.env.DB_SCHEMA;
+const apiBasePath =
+  process.env.NODE_ENV === "production" ? "" : "/test";
 
 
 
@@ -29,6 +31,7 @@ const { sql, poolPromise } = require("./db");
 const listaEjecuciones = require("./listaEjecuciones");
 const crearEjecucion = require("./crearEjecucion");
 const obtenerEjecuciones = require("./galeriaEjecuciones");
+const obtenerEjecucionesPaginadas = require("./galeriaEjecuciones_paginadas");
 const generarUsuario = require("./generarUsuario_tbUsuarios");
 const appOrdenesSFgaleriaUsuarios = require("./appOrdenesSF_GaleriaUsuarios");
 const updateAsignar = require("./appOrdenesSF_updateAsignar");
@@ -44,6 +47,7 @@ const logs = require("./logs");
 const accionesEjecuciones  = require("./galeriaEjecuciones_acciones");
 const vaultContraseñas = require("./seginf_VaultContraseñas");
 const blanqueoPasswordPortalItas = require("./blanqueoPasswordPortalITAS");
+const galeriaEjecucionesFiltroDato = require("./galeriaEjecuciones_FiltroDato");
 
 
 
@@ -158,6 +162,7 @@ app.get("/logout", (req, res) => {
 app.get("/flujos", listaEjecuciones);
 app.post("/crearEjecucion", crearEjecucion);
 app.get("/ejecuciones", obtenerEjecuciones);
+app.get("/ejecuciones-paginadas", obtenerEjecucionesPaginadas);
 app.use("/api/ejecuciones", ejecucionesDetalle);
 app.get("/usuarios", appOrdenesSFgaleriaUsuarios);
 app.get("/usuarios/:id_usuario", appOrdenesSFUsuarioDetalle);
@@ -166,6 +171,7 @@ app.post("/usuarios/actualizar", actualizarUsuario);
 app.use("/api/galeria-auto-mq", appOrdenesSFGaleriaAuto);
 app.use("/api/acciones", accionesEjecuciones);
 app.use("/api/logs", logs);
+app.get("/api/galeriaEjecuciones_FiltroDato",galeriaEjecucionesFiltroDato);
  
 // ------------------- BÓVEDA DE CONTRASEÑAS (SEGURIDAD INFORMÁTICA) -------------------
 app.post("/vault/guardar", vaultContraseñas.guardarCredencial);

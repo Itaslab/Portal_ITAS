@@ -1,5 +1,6 @@
 //ejecuciones.js
-  
+
+
 
 function formatearFecha(fechaISO) {
          if (!fechaISO) return "-";
@@ -14,19 +15,42 @@ function formatearFecha(fechaISO) {
 
          const horas = String(d.getHours()).padStart(2, "0");
          const minutos = String(d.getMinutes()).padStart(2, "0");
+         const segundos = String(d.getSeconds()).padStart(2, "0");
 
-         return `${dia}/${mes}/${año} ${horas}:${minutos}`;
+
+         return `${dia}/${mes}/${año} ${horas}:${minutos}:${segundos}`;
      }
      
 let cargandoEjecuciones = false;
 const cacheContadores = {};
+
+let paginaActual = 1;
+const LIMITE = 50;
 
 
 document.addEventListener("DOMContentLoaded", () => {
   const tabla = document.getElementById("tablaEjecuciones");
   const filtroSolicitante = document.getElementById("filtroSolicitante");
   const filtroRegistro = document.getElementById("filtroRegistro");
- 
+  const btnAnterior = document.getElementById("btnPaginaAnterior");
+  const btnSiguiente = document.getElementById("btnPaginaSiguiente");
+  const lblPagina = document.getElementById("paginaActualLabel");
+  const overlayCarga = document.getElementById("overlayCarga");
+
+
+  btnAnterior.addEventListener("click", () => {
+  if (paginaActual === 1) return;
+  paginaActual--;
+      lblPagina.textContent = paginaActual;
+      cargarEjecuciones(true);
+      });
+
+  btnSiguiente.addEventListener("click", () => {
+      paginaActual++;
+      lblPagina.textContent = paginaActual;
+      cargarEjecuciones(true);
+      });
+
 
   let ejecuciones = [];
 
@@ -79,16 +103,30 @@ async function obtenerContadores(id) {
 
  
   // 🔹 Cargar datos desde backend
-async function cargarEjecuciones() {
+async function cargarEjecuciones(scrollear = false) {
 
     if (cargandoEjecuciones) return;
     cargandoEjecuciones = true;
+    if (scrollear) {
+    overlayCarga.classList.remove("d-none");
+    }
+
+
+      // 🔒 Bloquear paginación mientras carga
+  btnPaginaAnterior.disabled = true;
+  btnPaginaSiguiente.disabled = true;
 
     try {
 
         Object.keys(cacheContadores).forEach(k => delete cacheContadores[k]);
 
-        const res = await fetch(basePath + "/ejecuciones");
+      const solicitante = encodeURIComponent(filtroSolicitante.value || "");
+      const registro = encodeURIComponent(filtroRegistro.value || "");
+      
+
+      const res = await fetch(
+        `${basePath}/ejecuciones-paginadas?page=${paginaActual}&limit=${LIMITE}&solicitante=${solicitante}&registro=${registro}`
+      );
         
         // Verificar si la sesión es válida
         await verificarSesionValida(res, '/ejecuciones');
@@ -108,7 +146,8 @@ async function cargarEjecuciones() {
 
                 return {
                     id: item.Id_Tasklist,
-                    flujo: item.Titulo_Tasklist,
+                    titulo:item.Titulo_Tasklist,
+                    flujo: item.Titulo_Flujo,
                     identificador: item.Identificador,
                     usuario: item.Email,
                     estado: item.Estado,
@@ -135,13 +174,26 @@ async function cargarEjecuciones() {
         }
         
         renderTabla();
+        if (scrollear) {
+          window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+         });
+        }
 
     } catch (err) {
         console.error("Error al obtener ejecuciones:", err);
 
     } finally {
         cargandoEjecuciones = false;
-    }
+            // 🔓 Habilitar paginación
+        btnPaginaAnterior.disabled = false;
+        btnPaginaSiguiente.disabled = false;
+        btnPaginaAnterior.disabled = paginaActual === 1;
+        if (scrollear) {
+        overlayCarga.classList.add("d-none");
+        }
+      }
 }
  
  
@@ -175,8 +227,6 @@ function llenarFiltroSolicitante() {
  
   
   function renderTabla() {
-    const solicitante = filtroSolicitante.value.toLowerCase();
-    const registro = filtroRegistro.value.toLowerCase();
 
     // 🔴 DESTRUIR TOOLTIPS EXISTENTES antes de limpiar la tabla
     // Esto evita que queden "clavados"
@@ -189,18 +239,8 @@ function llenarFiltroSolicitante() {
 
     tabla.innerHTML = "";
 
-    ejecuciones
-      .filter(item => {
-        const coincideSolicitante = solicitante ? item.usuario.toLowerCase().includes(solicitante) : true;
-        const coincideRegistro = registro
-          ? (item.id.toString().toLowerCase().includes(registro) ||
-             (item.identificador || "").toLowerCase().includes(registro) ||
-             (item.usuario || "").toLowerCase().includes(registro) ||
-             (item.flujo || "").toLowerCase().includes(registro))
-          : true;
-        return coincideSolicitante && coincideRegistro;
-      })
-      .forEach(ejec => {
+
+      ejecuciones.forEach(ejec => {
         const duracion = calcularDuracion(ejec.fechaInicio, ejec.fechaFin);
         const row = document.createElement("tr");
  
@@ -216,7 +256,7 @@ function llenarFiltroSolicitante() {
                     </div>
                     <div class="mb-2">
                       <i class="fas fa-terminal text-secondary me-2" data-bs-toggle="tooltip" title="Nombre del proceso"></i>
-                      <span class="small">${ejec.flujo}</span>
+                      <span class="small">${ejec.titulo}</span>
                     </div>
                     <div class="mb-2">
                       <i class="fas fa-id-card text-info me-2" data-bs-toggle="tooltip" title="Identificador interno"></i>
@@ -411,8 +451,17 @@ function llenarFiltroSolicitante() {
   }
  
   // 🔹 Eventos filtros
-  filtroSolicitante.addEventListener("change", renderTabla);
-  filtroRegistro.addEventListener("input", renderTabla);
+filtroSolicitante.addEventListener("change", () => {
+  paginaActual = 1;
+  lblPagina.textContent = paginaActual;
+  cargarEjecuciones();
+});
+
+filtroRegistro.addEventListener("input", () => {
+  paginaActual = 1;
+  lblPagina.textContent = paginaActual;
+  cargarEjecuciones();
+});
  
   // Obtener usuario actual desde sesión
   async function inicializarUsuario() {
