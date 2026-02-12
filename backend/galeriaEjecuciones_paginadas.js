@@ -30,22 +30,22 @@ module.exports = async (req, res) => {
 
     let where = "WHERE 1=1";
 
-    // 🔹 2) Filtro solicitante
+    // 🔹 2) Filtro solicitante (solo Email)
     if (solicitante) {
-      where += " AND U.Email LIKE @solicitante";
+      where += " AND U.Email COLLATE Latin1_General_CI_AI LIKE @solicitante";
     }
 
-    // 🔹 3) Filtro registro (columnas visibles)
+    // 🔹 3) Filtro registro (Titulo Tasklist, Identificador o Dato)
     if (registro) {
       where += `
         AND (
-          CAST(T.Id_Tasklist AS VARCHAR) LIKE @registro
-          OR T.Identificador LIKE @registro
-          OR U.Email LIKE @registro
-          OR F.Titulo LIKE @registro
-          ${idsPorDato && idsPorDato.length
-            ? `OR T.Id_Tasklist IN (${idsPorDato.join(",")})`
-            : ""}
+          T.Titulo_Tasklist COLLATE Latin1_General_CI_AI LIKE @registro
+          OR T.Identificador COLLATE Latin1_General_CI_AI LIKE @registro
+          ${
+            idsPorDato && idsPorDato.length
+              ? `OR T.Id_Tasklist IN (${idsPorDato.join(",")})`
+              : ""
+          }
         )
       `;
     }
