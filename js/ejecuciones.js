@@ -394,7 +394,7 @@ function llenarFiltroSolicitante() {
           data-bs-toggle="modal" 
           data-bs-target="#modalReanudar"
           title="Reanudar una tarea Pausada o Finalizada con Error">
-    <i class="bi bi-arrow-clockwise"></i>
+    <i class="bi bi-play-btn"></i>
   </button>
 
   <!-- Reenviar -->
@@ -412,7 +412,7 @@ function llenarFiltroSolicitante() {
           data-bs-toggle="modal" 
           data-bs-target="#modalReenviarFallidos"
           title="Reenvía solo los ítems que fallaron o no se procesaron">
-    <i class="bi bi-arrow-counterclockwise"></i>
+    <i class="bi bi-send-x"></i>
   </button>
 </td>
                 </tr>
