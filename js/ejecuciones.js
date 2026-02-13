@@ -404,7 +404,7 @@ function llenarFiltroSolicitante() {
                   data-idtasklist="${ejec.id}"
                   data-bs-toggle="modal"
                   data-bs-target="#modalReanudar">
-            <i class="bi bi-arrow-clockwise"></i>
+            <i class="bi bi-play-btn"></i>
           </button>
 
           <button class="btn btn-outline-secondary btn-sm btn-accion"
@@ -418,7 +418,7 @@ function llenarFiltroSolicitante() {
                   data-idtasklist="${ejec.id}"
                   data-bs-toggle="modal"
                   data-bs-target="#modalReenviarFallidos">
-            <i class="bi bi-arrow-counterclockwise"></i>
+            <i class="bi bi-send-x"></i>
           </button>
 
         </div>
