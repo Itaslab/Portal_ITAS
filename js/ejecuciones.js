@@ -302,107 +302,118 @@ function llenarFiltroSolicitante() {
         </div>
       </div>
 
-      <!-- COLUMNA 3 - TOTALES -->
-      <div class="col-md-3">
-        <div class="d-flex flex-wrap gap-1 border rounded p-2 bg-light small">
+      
+<!-- COLUMNA 3 - TOTALES + AVANCE + ACCIONES -->
+<div class="col-md-5">
 
-          <button type="button"
-                  class="btn btn-outline-secondary btn-sm btn-detalle"
-                  data-idtasklist="${ejec.id}"
-                  data-detalle="total"
-                  data-valor="${ejec.total ?? 0}"
-                  data-bs-toggle="modal"
-                  data-bs-target="#detalleItemModal"
-                  title="Ver registros Total">
-            T: <span class="fw-bold">${ejec.total ?? 0}</span>
-          </button>
+  <!-- Totales -->
+  <div class="d-flex flex-wrap gap-1 border rounded p-2 bg-light small mb-2">
 
-          <button type="button"
-                  class="btn btn-outline-secondary btn-sm btn-detalle"
-                  data-idtasklist="${ejec.id}"
-                  data-detalle="ok"
-                  data-valor="${ejec.ok ?? 0}"
-                  data-bs-toggle="modal"
-                  data-bs-target="#detalleItemModal"
-                  title="Ver registros OK">
-            OK: <span class="fw-bold text-success">${ejec.ok ?? 0}</span>
-          </button>
+    <button type="button"
+            class="btn btn-outline-secondary btn-sm btn-detalle"
+            data-idtasklist="${ejec.id}"
+            data-detalle="total"
+            data-valor="${ejec.total ?? 0}"
+            data-bs-toggle="modal"
+            data-bs-target="#detalleItemModal"
+            title="Ver registros Total">
+      T: <span class="fw-bold">${ejec.total ?? 0}</span>
+    </button>
 
-          <button type="button"
-                  class="btn btn-outline-secondary btn-sm btn-detalle"
-                  data-idtasklist="${ejec.id}"
-                  data-detalle="error"
-                  data-valor="${ejec.error ?? 0}"
-                  data-bs-toggle="modal"
-                  data-bs-target="#detalleItemModal"
-                  title="Ver registros con Error">
-            ERR: <span class="fw-bold text-danger">${ejec.error ?? 0}</span>
-          </button>
+    <button type="button"
+            class="btn btn-outline-secondary btn-sm btn-detalle"
+            data-idtasklist="${ejec.id}"
+            data-detalle="ok"
+            data-valor="${ejec.ok ?? 0}"
+            data-bs-toggle="modal"
+            data-bs-target="#detalleItemModal"
+            title="Ver registros OK">
+      OK: <span class="fw-bold text-success">${ejec.ok ?? 0}</span>
+    </button>
 
-          <button class="btn btn-outline-secondary btn-sm btn-log"
-                  data-idtasklist="${ejec.id}"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modalBuscar"
-                  title="Buscar en log">
-            Log
-          </button>
-        </div>
+    <button type="button"
+            class="btn btn-outline-secondary btn-sm btn-detalle"
+            data-idtasklist="${ejec.id}"
+            data-detalle="error"
+            data-valor="${ejec.error ?? 0}"
+            data-bs-toggle="modal"
+            data-bs-target="#detalleItemModal"
+            title="Ver registros con Error">
+      ERR: <span class="fw-bold text-danger">${ejec.error ?? 0}</span>
+    </button>
+
+    <button class="btn btn-outline-secondary btn-sm btn-log"
+            data-idtasklist="${ejec.id}"
+            data-bs-toggle="modal"
+            data-bs-target="#modalBuscar"
+            title="Buscar en log">
+      Log
+    </button>
+
+  </div>
+
+  <!-- Avance + Acciones en una sola línea -->
+  <div class="d-flex align-items-center justify-content-between small">
+
+    <div class="flex-grow-1 me-2">
+      <div class="d-flex justify-content-between">
+        <span class="fw-semibold">${ejec.avance}%</span>
       </div>
-
-      <!-- COLUMNA 4 - AVANCE Y ACCIONES -->
-      <div class="col-md-2 text-center small">
-        <div class="fw-semibold mb-1">${ejec.avance}%</div>
-        <div class="progress mb-1" style="height:6px;">
-          <div class="progress-bar bg-success"
-               role="progressbar"
-               style="width:${ejec.avance}%;">
-          </div>
-        </div>
-
-        <div class="d-flex flex-wrap gap-1 justify-content-center">
-          <button class="btn btn-outline-secondary btn-sm btn-accion"
-                  data-idtasklist="${ejec.id}"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modalCancelar"
-                  title="Cancelar">
-            <i class="bi bi-x-circle"></i>
-          </button>
-
-          <button class="btn btn-outline-secondary btn-sm btn-accion"
-                  data-idtasklist="${ejec.id}"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modalPausar"
-                  title="Pausar">
-            <i class="bi bi-pause-circle"></i>
-          </button>
-
-          <button class="btn btn-outline-secondary btn-sm btn-accion"
-                  data-idtasklist="${ejec.id}"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modalReanudar"
-                  title="Reanudar">
-            <i class="bi bi-arrow-clockwise"></i>
-          </button>
-
-          <button class="btn btn-outline-secondary btn-sm btn-accion"
-                  data-idtasklist="${ejec.id}"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modalReenviar"
-                  title="Reenviar">
-            <i class="bi bi-send"></i>
-          </button>
-
-          <button class="btn btn-outline-secondary btn-sm btn-accion"
-                  data-idtasklist="${ejec.id}"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modalReenviarFallidos"
-                  title="Reenviar fallidos">
-            <i class="bi bi-arrow-counterclockwise"></i>
-          </button>
-        </div>
+      <div class="progress" style="height:6px;">
+        <div class="progress-bar bg-success"
+             role="progressbar"
+             style="width:${ejec.avance}%;"></div>
       </div>
+    </div>
+
+    <div class="d-flex gap-1">
+
+      <button class="btn btn-outline-secondary btn-sm btn-accion"
+              data-idtasklist="${ejec.id}"
+              data-bs-toggle="modal"
+              data-bs-target="#modalCancelar"
+              title="Cancelar">
+        <i class="bi bi-x-circle"></i>
+      </button>
+
+      <button class="btn btn-outline-secondary btn-sm btn-accion"
+              data-idtasklist="${ejec.id}"
+              data-bs-toggle="modal"
+              data-bs-target="#modalPausar"
+              title="Pausar">
+        <i class="bi bi-pause-circle"></i>
+      </button>
+
+      <button class="btn btn-outline-secondary btn-sm btn-accion"
+              data-idtasklist="${ejec.id}"
+              data-bs-toggle="modal"
+              data-bs-target="#modalReanudar"
+              title="Reanudar">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+
+      <button class="btn btn-outline-secondary btn-sm btn-accion"
+              data-idtasklist="${ejec.id}"
+              data-bs-toggle="modal"
+              data-bs-target="#modalReenviar"
+              title="Reenviar">
+        <i class="bi bi-send"></i>
+      </button>
+
+      <button class="btn btn-outline-secondary btn-sm btn-accion"
+              data-idtasklist="${ejec.id}"
+              data-bs-toggle="modal"
+              data-bs-target="#modalReenviarFallidos"
+              title="Reenviar fallidos">
+        <i class="bi bi-arrow-counterclockwise"></i>
+      </button>
 
     </div>
+
+  </div>
+
+</div>
+
   </div>
 </td>
 `;
