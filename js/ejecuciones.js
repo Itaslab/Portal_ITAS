@@ -314,67 +314,66 @@ function llenarFiltroSolicitante() {
       </div>
 
       
- <!-- COLUMNA 3 - TOTALES + AVANCE + ACCIONES -->
-<div class="col-md-5 d-flex flex-column">
+<!-- COLUMNA 3 - TOTALES + AVANCE + ACCIONES -->
+<div class="col-md-5">
 
-  <!-- 🔹 TOTALES -->
-  <div class="border rounded p-2 bg-light small mb-2">
+  <div class="border rounded p-2 bg-light small d-flex flex-column gap-3">
 
-    <!-- Fila 1 -->
-    <div class="d-flex gap-2 mb-1">
-      <button type="button"
-              class="btn btn-outline-secondary btn-sm btn-detalle"
-              data-idtasklist="${ejec.id}"
-              data-detalle="total"
-              data-valor="${ejec.total ?? 0}"
-              data-bs-toggle="modal"
-              data-bs-target="#detalleItemModal"
-              title="Ver registros Total">
-        T: <span class="fw-bold">${ejec.total ?? 0}</span>
-      </button>
-
-      <button type="button"
-              class="btn btn-outline-secondary btn-sm btn-detalle"
-              data-idtasklist="${ejec.id}"
-              data-detalle="ok"
-              data-valor="${ejec.ok ?? 0}"
-              data-bs-toggle="modal"
-              data-bs-target="#detalleItemModal"
-              title="Ver registros OK">
-        OK: <span class="fw-bold text-success">${ejec.ok ?? 0}</span>
-      </button>
-    </div>
-
-    <!-- Fila 2 -->
-    <div class="d-flex gap-2">
-      <button type="button"
-              class="btn btn-outline-secondary btn-sm btn-detalle"
-              data-idtasklist="${ejec.id}"
-              data-detalle="error"
-              data-valor="${ejec.error ?? 0}"
-              data-bs-toggle="modal"
-              data-bs-target="#detalleItemModal"
-              title="Ver registros con Error">
-        ERR: <span class="fw-bold text-danger">${ejec.error ?? 0}</span>
-      </button>
-
-      <button class="btn btn-outline-secondary btn-sm btn-log"
-              data-idtasklist="${ejec.id}"
-              data-bs-toggle="modal"
-              data-bs-target="#modalBuscar"
-              title="Buscar en log">
-        Log
-      </button>
-    </div>
-
-  </div>
-
-  <!-- 🔹 BLOQUE DERECHO: PROGRESO + ACCIONES -->
-  <div class="border rounded p-2 flex-grow-1 d-flex flex-column justify-content-between">
-
-    <!-- Barra arriba -->
+    <!-- 🔹 TOTALES -->
     <div>
-      <div class="d-flex justify-content-between small mb-1">
+
+      <!-- Fila 1 -->
+      <div class="d-flex gap-2 mb-1">
+        <button type="button"
+                class="btn btn-outline-secondary btn-sm btn-detalle"
+                data-idtasklist="${ejec.id}"
+                data-detalle="total"
+                data-valor="${ejec.total ?? 0}"
+                data-bs-toggle="modal"
+                data-bs-target="#detalleItemModal"
+                title="Ver registros Total">
+          T: <span class="fw-bold">${ejec.total ?? 0}</span>
+        </button>
+
+        <button type="button"
+                class="btn btn-outline-secondary btn-sm btn-detalle"
+                data-idtasklist="${ejec.id}"
+                data-detalle="ok"
+                data-valor="${ejec.ok ?? 0}"
+                data-bs-toggle="modal"
+                data-bs-target="#detalleItemModal"
+                title="Ver registros OK">
+          OK: <span class="fw-bold text-success">${ejec.ok ?? 0}</span>
+        </button>
+      </div>
+
+      <!-- Fila 2 -->
+      <div class="d-flex gap-2">
+        <button type="button"
+                class="btn btn-outline-secondary btn-sm btn-detalle"
+                data-idtasklist="${ejec.id}"
+                data-detalle="error"
+                data-valor="${ejec.error ?? 0}"
+                data-bs-toggle="modal"
+                data-bs-target="#detalleItemModal"
+                title="Ver registros con Error">
+          ERR: <span class="fw-bold text-danger">${ejec.error ?? 0}</span>
+        </button>
+
+        <button class="btn btn-outline-secondary btn-sm btn-log"
+                data-idtasklist="${ejec.id}"
+                data-bs-toggle="modal"
+                data-bs-target="#modalBuscar"
+                title="Buscar en log">
+          Log
+        </button>
+      </div>
+
+    </div>
+
+    <!-- 🔹 PROGRESO -->
+    <div>
+      <div class="d-flex justify-content-between mb-1">
         <span class="fw-semibold">${ejec.avance}%</span>
       </div>
 
@@ -385,8 +384,8 @@ function llenarFiltroSolicitante() {
       </div>
     </div>
 
-    <!-- Botones centrados abajo -->
-    <div class="d-flex justify-content-center gap-2 mt-3">
+    <!-- 🔹 ACCIONES -->
+    <div class="d-flex justify-content-center gap-2 pt-2 border-top">
 
       <button class="btn btn-outline-secondary btn-sm btn-accion"
               data-idtasklist="${ejec.id}"
@@ -430,11 +429,9 @@ function llenarFiltroSolicitante() {
 
     </div>
 
-  </div>
+      </div>
 
-</div>
-
-
+    </div>
   </div>
 </td>
 `;
