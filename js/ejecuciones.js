@@ -314,10 +314,7 @@ function llenarFiltroSolicitante() {
       </div>
 
       
-<!-- COLUMNA 3 - TOTALES + AVANCE + ACCIONES -->
-<div class="col-md-5">
-
-  <!-- COLUMNA 3 - TOTALES + AVANCE + ACCIONES -->
+ <!-- COLUMNA 3 - TOTALES + AVANCE + ACCIONES -->
 <div class="col-md-5 d-flex flex-column">
 
   <!-- 🔹 TOTALES -->
