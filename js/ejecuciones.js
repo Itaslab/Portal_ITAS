@@ -248,33 +248,46 @@ function llenarFiltroSolicitante() {
   <div class="border rounded p-2 mb-2 bg-white">
     <div class="row g-2 align-items-start">
 
-      <!-- COLUMNA 1 - DATOS -->
-      <div class="col-md-4 small">
-        <div class="mb-1">
-          <i class="fas fa-hashtag text-primary me-1"></i>
-          <span class="fw-bold text-primary">[${ejec.id}]</span>
-        </div>
-        <div class="mb-1">
-          <i class="fas fa-terminal text-secondary me-1"></i>
-          ${ejec.titulo}
-        </div>
-        <div class="mb-1">
-          <i class="fas fa-id-card text-info me-1"></i>
-          <span class="text-muted">Identificador:</span>
-          <span class="fw-semibold">${ejec.identificador || "-"}</span>
-        </div>
-        <div class="mb-1">
-          <i class="fas fa-envelope text-warning me-1"></i>
-          <span class="text-muted">De:</span>
-          <span class="fw-semibold">${ejec.usuario}</span>
-        </div>
-        <div>
-          <i class="fas fa-project-diagram text-success me-1"></i>
-          <span class="text-muted">Flujo:</span>
-          <span class="fw-semibold">${ejec.flujo}</span>
-          <span class="badge bg-secondary ms-1">RPA</span>
-        </div>
-      </div>
+<!-- COLUMNA 1 - DATOS -->
+<div class="col-md-4 small">
+
+  <!-- ID + Flujo -->
+  <div class="mb-1 d-flex align-items-center gap-2">
+    <div>
+      <i class="fas fa-hashtag text-primary me-1"></i>
+      <span class="fw-bold text-primary">[${ejec.id}]</span>
+    </div>
+
+    <span class="badge text-bg-primary">
+      ${ejec.flujo}
+    </span>
+
+    <span class="badge bg-secondary">
+      RPA
+    </span>
+  </div>
+
+  <!-- Título -->
+  <div class="mb-1">
+    <i class="fas fa-terminal text-secondary me-1"></i>
+    ${ejec.titulo}
+  </div>
+
+  <!-- Identificador -->
+  <div class="mb-1">
+    <i class="fas fa-id-card text-info me-1"></i>
+    <span class="text-muted">Identificador:</span>
+    <span class="fw-semibold">${ejec.identificador || "-"}</span>
+  </div>
+
+  <!-- Usuario -->
+  <div>
+    <i class="fas fa-envelope text-warning me-1"></i>
+    <span class="text-muted">De:</span>
+    <span class="fw-semibold">${ejec.usuario}</span>
+  </div>
+
+</div>
 
       <!-- COLUMNA 2 - ESTADO Y TIEMPOS -->
       <div class="col-md-3">
