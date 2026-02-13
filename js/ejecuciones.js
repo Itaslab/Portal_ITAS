@@ -317,59 +317,70 @@ function llenarFiltroSolicitante() {
 <!-- COLUMNA 3 - TOTALES + AVANCE + ACCIONES -->
 <div class="col-md-5">
 
-  <!-- Totales -->
-  <div class="d-flex flex-wrap gap-1 border rounded p-2 bg-light small mb-2">
+  <!-- COLUMNA 3 - TOTALES + AVANCE + ACCIONES -->
+<div class="col-md-5 d-flex flex-column">
 
-    <button type="button"
-            class="btn btn-outline-secondary btn-sm btn-detalle"
-            data-idtasklist="${ejec.id}"
-            data-detalle="total"
-            data-valor="${ejec.total ?? 0}"
-            data-bs-toggle="modal"
-            data-bs-target="#detalleItemModal"
-            title="Ver registros Total">
-      T: <span class="fw-bold">${ejec.total ?? 0}</span>
-    </button>
+  <!-- 🔹 TOTALES -->
+  <div class="border rounded p-2 bg-light small mb-2">
 
-    <button type="button"
-            class="btn btn-outline-secondary btn-sm btn-detalle"
-            data-idtasklist="${ejec.id}"
-            data-detalle="ok"
-            data-valor="${ejec.ok ?? 0}"
-            data-bs-toggle="modal"
-            data-bs-target="#detalleItemModal"
-            title="Ver registros OK">
-      OK: <span class="fw-bold text-success">${ejec.ok ?? 0}</span>
-    </button>
+    <!-- Fila 1 -->
+    <div class="d-flex gap-2 mb-1">
+      <button type="button"
+              class="btn btn-outline-secondary btn-sm btn-detalle"
+              data-idtasklist="${ejec.id}"
+              data-detalle="total"
+              data-valor="${ejec.total ?? 0}"
+              data-bs-toggle="modal"
+              data-bs-target="#detalleItemModal"
+              title="Ver registros Total">
+        T: <span class="fw-bold">${ejec.total ?? 0}</span>
+      </button>
 
-    <button type="button"
-            class="btn btn-outline-secondary btn-sm btn-detalle"
-            data-idtasklist="${ejec.id}"
-            data-detalle="error"
-            data-valor="${ejec.error ?? 0}"
-            data-bs-toggle="modal"
-            data-bs-target="#detalleItemModal"
-            title="Ver registros con Error">
-      ERR: <span class="fw-bold text-danger">${ejec.error ?? 0}</span>
-    </button>
+      <button type="button"
+              class="btn btn-outline-secondary btn-sm btn-detalle"
+              data-idtasklist="${ejec.id}"
+              data-detalle="ok"
+              data-valor="${ejec.ok ?? 0}"
+              data-bs-toggle="modal"
+              data-bs-target="#detalleItemModal"
+              title="Ver registros OK">
+        OK: <span class="fw-bold text-success">${ejec.ok ?? 0}</span>
+      </button>
+    </div>
 
-    <button class="btn btn-outline-secondary btn-sm btn-log"
-            data-idtasklist="${ejec.id}"
-            data-bs-toggle="modal"
-            data-bs-target="#modalBuscar"
-            title="Buscar en log">
-      Log
-    </button>
+    <!-- Fila 2 -->
+    <div class="d-flex gap-2">
+      <button type="button"
+              class="btn btn-outline-secondary btn-sm btn-detalle"
+              data-idtasklist="${ejec.id}"
+              data-detalle="error"
+              data-valor="${ejec.error ?? 0}"
+              data-bs-toggle="modal"
+              data-bs-target="#detalleItemModal"
+              title="Ver registros con Error">
+        ERR: <span class="fw-bold text-danger">${ejec.error ?? 0}</span>
+      </button>
+
+      <button class="btn btn-outline-secondary btn-sm btn-log"
+              data-idtasklist="${ejec.id}"
+              data-bs-toggle="modal"
+              data-bs-target="#modalBuscar"
+              title="Buscar en log">
+        Log
+      </button>
+    </div>
 
   </div>
 
-  <!-- Avance + Acciones en una sola línea -->
-  <div class="d-flex align-items-center justify-content-between small">
+  <!-- 🔹 BLOQUE DERECHO: PROGRESO + ACCIONES -->
+  <div class="border rounded p-2 flex-grow-1 d-flex flex-column justify-content-between">
 
-    <div class="flex-grow-1 me-2">
-      <div class="d-flex justify-content-between">
+    <!-- Barra arriba -->
+    <div>
+      <div class="d-flex justify-content-between small mb-1">
         <span class="fw-semibold">${ejec.avance}%</span>
       </div>
+
       <div class="progress" style="height:6px;">
         <div class="progress-bar bg-success"
              role="progressbar"
@@ -377,7 +388,8 @@ function llenarFiltroSolicitante() {
       </div>
     </div>
 
-    <div class="d-flex gap-1">
+    <!-- Botones centrados abajo -->
+    <div class="d-flex justify-content-center gap-2 mt-3">
 
       <button class="btn btn-outline-secondary btn-sm btn-accion"
               data-idtasklist="${ejec.id}"
@@ -424,6 +436,7 @@ function llenarFiltroSolicitante() {
   </div>
 
 </div>
+
 
   </div>
 </td>
