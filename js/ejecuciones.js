@@ -244,181 +244,168 @@ function llenarFiltroSolicitante() {
         const row = document.createElement("tr");
  
         row.innerHTML = `
-          <td colspan="6">
-            <table class="table table-bordered align-middle mb-0">
-              <tbody>
-                <tr>
-                  <td class="text-start">
-                    <div class="mb-2">
-                      <i class="fas fa-hashtag text-primary me-2" data-bs-toggle="tooltip" title="ID de ejecución"></i>
-                      <span class="fw-bold text-primary">[${ejec.id}]</span>
-                    </div>
-                    <div class="mb-2">
-                      <i class="fas fa-terminal text-secondary me-2" data-bs-toggle="tooltip" title="Nombre del proceso"></i>
-                      <span class="small">${ejec.titulo}</span>
-                    </div>
-                    <div class="mb-2">
-                      <i class="fas fa-id-card text-info me-2" data-bs-toggle="tooltip" title="Identificador interno"></i>
-                      <span class="small">Identificador:</span>
-                      <span class="fw-semibold">${ejec.identificador || "-"}</span>
-                    </div>
-                    <div class="mb-2">
-                      <i class="fas fa-envelope text-warning me-2" data-bs-toggle="tooltip" title="Usuario solicitante"></i>
-                      <span class="small">De:</span>
-                      <span class="fw-semibold">${ejec.usuario}</span>
-                    </div>
-                    <div>
-                      <i class="fas fa-project-diagram text-success me-2" data-bs-toggle="tooltip" title="Flujo de ejecución"></i>
-                      <span class="small">Flujo:</span>
-                      <span class="fw-semibold">${ejec.flujo}</span>
-                      <span class="badge bg-secondary ms-2">RPA</span>
-                    </div>
-                  </td>          
-      <td class="text-start">
-        <div class="p-3 border rounded bg-light" style="width: 280px;">
-          <!-- Estado -->
-          <div class="mb-3 text-center">
-            <span class="badge px-3 py-2 fs-6" style="background-color: #${ejec.colorEstado || '6c757d'}; color: white; text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black, 0 0 3px black;">
-              ${ejec.estado}
-            </span>
+<td colspan="6">
+  <div class="border rounded p-2 mb-2 bg-white">
+    <div class="row g-2 align-items-start">
+
+      <!-- COLUMNA 1 - DATOS -->
+      <div class="col-md-4 small">
+        <div class="mb-1">
+          <i class="fas fa-hashtag text-primary me-1"></i>
+          <span class="fw-bold text-primary">[${ejec.id}]</span>
+        </div>
+        <div class="mb-1">
+          <i class="fas fa-terminal text-secondary me-1"></i>
+          ${ejec.titulo}
+        </div>
+        <div class="mb-1">
+          <i class="fas fa-id-card text-info me-1"></i>
+          <span class="text-muted">Identificador:</span>
+          <span class="fw-semibold">${ejec.identificador || "-"}</span>
+        </div>
+        <div class="mb-1">
+          <i class="fas fa-envelope text-warning me-1"></i>
+          <span class="text-muted">De:</span>
+          <span class="fw-semibold">${ejec.usuario}</span>
+        </div>
+        <div>
+          <i class="fas fa-project-diagram text-success me-1"></i>
+          <span class="text-muted">Flujo:</span>
+          <span class="fw-semibold">${ejec.flujo}</span>
+          <span class="badge bg-secondary ms-1">RPA</span>
+        </div>
+      </div>
+
+      <!-- COLUMNA 2 - ESTADO Y TIEMPOS -->
+      <div class="col-md-3">
+        <div class="text-center mb-1">
+          <span class="badge px-2 py-1 small"
+                style="background-color:#${ejec.colorEstado || '6c757d'};color:white;">
+            ${ejec.estado}
+          </span>
+        </div>
+
+        <div class="small mb-1">
+          <i class="fas fa-play text-primary me-1"></i>
+          <span class="fw-semibold">${formatearFecha(ejec.fechaInicio)}</span>
+          <span class="mx-1 text-muted">|</span>
+          <i class="fas fa-stop text-danger me-1"></i>
+          <span class="fw-semibold">${formatearFecha(ejec.fechaFin)}</span>
+        </div>
+
+        <div class="small">
+          <i class="fas fa-clock text-warning me-1"></i>
+          <span class="fw-bold">${duracion}</span>
+          <span class="mx-1 text-muted">|</span>
+          <span>Res:</span>
+          <span class="fw-bold">${ejec.resultado || '-'}</span>
+        </div>
+      </div>
+
+      <!-- COLUMNA 3 - TOTALES -->
+      <div class="col-md-3">
+        <div class="d-flex flex-wrap gap-1 border rounded p-2 bg-light small">
+
+          <button type="button"
+                  class="btn btn-outline-secondary btn-sm btn-detalle"
+                  data-idtasklist="${ejec.id}"
+                  data-detalle="total"
+                  data-valor="${ejec.total ?? 0}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#detalleItemModal"
+                  title="Ver registros Total">
+            T: <span class="fw-bold">${ejec.total ?? 0}</span>
+          </button>
+
+          <button type="button"
+                  class="btn btn-outline-secondary btn-sm btn-detalle"
+                  data-idtasklist="${ejec.id}"
+                  data-detalle="ok"
+                  data-valor="${ejec.ok ?? 0}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#detalleItemModal"
+                  title="Ver registros OK">
+            OK: <span class="fw-bold text-success">${ejec.ok ?? 0}</span>
+          </button>
+
+          <button type="button"
+                  class="btn btn-outline-secondary btn-sm btn-detalle"
+                  data-idtasklist="${ejec.id}"
+                  data-detalle="error"
+                  data-valor="${ejec.error ?? 0}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#detalleItemModal"
+                  title="Ver registros con Error">
+            ERR: <span class="fw-bold text-danger">${ejec.error ?? 0}</span>
+          </button>
+
+          <button class="btn btn-outline-secondary btn-sm btn-log"
+                  data-idtasklist="${ejec.id}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalBuscar"
+                  title="Buscar en log">
+            Log
+          </button>
+        </div>
+      </div>
+
+      <!-- COLUMNA 4 - AVANCE Y ACCIONES -->
+      <div class="col-md-2 text-center small">
+        <div class="fw-semibold mb-1">${ejec.avance}%</div>
+        <div class="progress mb-1" style="height:6px;">
+          <div class="progress-bar bg-success"
+               role="progressbar"
+               style="width:${ejec.avance}%;">
           </div>
- 
-    <!-- Fechas y duración -->
-    <div class="mb-2">
-      <i class="fas fa-play text-primary me-2"></i>
-      <span class="small">Inicio:</span>
-      <span class="fw-semibold">${formatearFecha(ejec.fechaInicio)}</span>
-    </div>
-    <div class="mb-2">
-      <i class="fas fa-stop text-danger me-2"></i>
-      <span class="small">Fin:</span>
-      <span class="fw-semibold">${formatearFecha(ejec.fechaFin)}</span>
-    </div>
-    <div class="mb-3">
-      <i class="fas fa-clock text-warning me-2"></i>
-      <span class="small">Duración:</span>
-      <span class="fw-bold text-dark">${duracion}</span>
-    </div>
- 
-    <!-- Resultado -->
-    <div class="text-truncate small" style="max-width: 240px;" title="${ejec.resultado || '-'}">
-      Resultado: <span class="fw-bold">${ejec.resultado || '-'}</span>
+        </div>
+
+        <div class="d-flex flex-wrap gap-1 justify-content-center">
+          <button class="btn btn-outline-secondary btn-sm btn-accion"
+                  data-idtasklist="${ejec.id}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalCancelar"
+                  title="Cancelar">
+            <i class="bi bi-x-circle"></i>
+          </button>
+
+          <button class="btn btn-outline-secondary btn-sm btn-accion"
+                  data-idtasklist="${ejec.id}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalPausar"
+                  title="Pausar">
+            <i class="bi bi-pause-circle"></i>
+          </button>
+
+          <button class="btn btn-outline-secondary btn-sm btn-accion"
+                  data-idtasklist="${ejec.id}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalReanudar"
+                  title="Reanudar">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+
+          <button class="btn btn-outline-secondary btn-sm btn-accion"
+                  data-idtasklist="${ejec.id}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalReenviar"
+                  title="Reenviar">
+            <i class="bi bi-send"></i>
+          </button>
+
+          <button class="btn btn-outline-secondary btn-sm btn-accion"
+                  data-idtasklist="${ejec.id}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalReenviarFallidos"
+                  title="Reenviar fallidos">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 </td>
-  
-<td class="text-start">
-  <div class="d-flex flex-column gap-2 border rounded p-2 bg-light">
-  
-<!-- Total -->
-<button type="button"
-        class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
-        data-idtasklist="${ejec.id}"
-        data-detalle="total"
-        data-valor="${ejec.total ?? 0}"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        title="Ver registros Total">
-  <i class="bi bi-eye text-primary"></i>
-  <span class="text-primary fw-semibold">Total:</span>
-  <span class="text-primary fw-bold">${ejec.total ?? 0}</span>
-</button>
-
-<!-- OK -->
-<button type="button"
-        class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
-        data-idtasklist="${ejec.id}"
-        data-detalle="ok"
-        data-valor="${ejec.ok ?? 0}"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        title="Ver registros OK">
-  <i class="bi bi-eye text-success"></i>
-  <span class="text-success fw-semibold">OK:</span>
-  <span class="text-success fw-bold">${ejec.ok ?? 0}</span>
-</button>
-
-<!-- Error -->
-<button type="button"
-        class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
-        data-idtasklist="${ejec.id}"
-        data-detalle="error"
-        data-valor="${ejec.error ?? 0}"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        title="Ver registros con Error">
-  <i class="bi bi-eye text-danger"></i>
-  <span class="text-danger fw-semibold">Error:</span>
-  <span class="text-danger fw-bold">${ejec.error ?? 0}</span>
-</button>
- 
-    <!-- Buscar -->
-    <button class="btn btn-outline-secondary btn-sm btn-log"
-            data-idtasklist="${ejec.id}"
-            data-bs-toggle="modal"
-            data-bs-target="#modalBuscar"
-            title="Buscar en log">
-      <i class="bi-clipboard-data"></i>
-       <span class="text-dark fw-semibold">Ver Log</span>
-    </button>
-  </div>
-</td>
- 
-            <td class="text-center">
-                      <div class="small fw-semibold mb-1">Avance: ${ejec.avance}%</div>
-                    <div class="progress mb-2" style="height: 10px;">
-                      <div class="progress-bar bg-success" role="progressbar" style="width: ${ejec.avance}%;" aria-valuenow="${ejec.avance}" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-  <!-- Cancelar -->
-  <button class="btn btn-outline-secondary btn-sm btn-accion"
-          data-idtasklist="${ejec.id}"
-          data-bs-toggle="modal" 
-          data-bs-target="#modalCancelar"
-          title="Cancela la ejecución actual">
-    <i class="bi bi-x-circle"></i>
-  </button>
-
-  <!-- Pausar -->
-<button class="btn btn-outline-secondary btn-sm btn-accion"
-        data-idtasklist="${ejec.id}"
-        data-bs-toggle="modal"
-        data-bs-target="#modalPausar"
-        title="Pausa la ejecución actual">
-  <i class="bi bi-pause-circle"></i>
-</button>
-
-  <!-- Reanudar -->
-  <button class="btn btn-outline-secondary btn-sm btn-accion" 
-          data-idtasklist="${ejec.id}"
-          data-bs-toggle="modal" 
-          data-bs-target="#modalReanudar"
-          title="Reanuda una ejecución pausada">
-    <i class="bi bi-arrow-clockwise"></i>
-  </button>
-
-  <!-- Reenviar -->
-  <button class="btn btn-outline-secondary btn-sm btn-accion" 
-        data-idtasklist="${ejec.id}"
-          data-bs-toggle="modal" 
-          data-bs-target="#modalReenviar"
-          title="Reenvía toda la ejecución nuevamente">
-    <i class="bi bi-send"></i>
-  </button>
-
-  <!-- Reenviar Fallidos -->
-  <button class="btn btn-outline-secondary btn-sm btn-accion" 
-        data-idtasklist="${ejec.id}"
-          data-bs-toggle="modal" 
-          data-bs-target="#modalReenviarFallidos"
-          title="Reenvía solo los items que fallaron">
-    <i class="bi bi-arrow-counterclockwise"></i>
-  </button>
-</td>
-                </tr>
-              </tbody>
-            </table>
-          </td>
-        `;
+`;
         tabla.appendChild(row);
         row.querySelectorAll(".btn-detalle").forEach(btn => {
     const valor = Number(btn.dataset.valor || 0);
