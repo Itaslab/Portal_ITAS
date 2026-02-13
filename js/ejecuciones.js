@@ -258,9 +258,7 @@ function llenarFiltroSolicitante() {
       <span class="fw-bold text-primary">[${ejec.id}]</span>
     </div>
 
-    <span class="badge text-bg-primary">
-      ${ejec.flujo}
-    </span>
+<span class="badge border border-primary text-primary bg-transparent">${ejec.flujo}</span>
 
     <span class="badge bg-secondary">
       RPA
