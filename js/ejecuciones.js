@@ -246,7 +246,7 @@ function llenarFiltroSolicitante() {
         row.innerHTML = `
 <td colspan="6">
   <div class="border rounded p-2 mb-2 bg-white">
-    <div class="row g-2 align-items-start">
+    <div class="row g-2 align-items-stretch">
 
 <!-- COLUMNA 1 - DATOS -->
 <div class="col-md-4 small">
@@ -315,7 +315,7 @@ function llenarFiltroSolicitante() {
 
       
 <!-- COLUMNA 3 - TOTALES + AVANCE + ACCIONES -->
-<div class="col-md-5">
+<div class="col-md-5 d-flex">
 
   <div class="border rounded p-2 bg-light small d-flex flex-column gap-3">
 
