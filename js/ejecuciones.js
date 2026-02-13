@@ -475,10 +475,14 @@ filtroRegistro.addEventListener("input", () => {
   }
 
   // Inicializar usuario y luego cargar ejecuciones
-  inicializarUsuario().then(() => {
-    cargarEjecuciones();
-    setInterval(cargarEjecuciones, 4000);
-  });
+inicializarUsuario().then(() => {
+  cargarEjecuciones();
+  setInterval(() => {
+    if (paginaActual === 1) {
+      cargarEjecuciones();
+    }
+  }, 4000);
+});
 
   document.getElementById("btnCancelarConfirmar")
     .addEventListener("click", confirmarCancelar);
