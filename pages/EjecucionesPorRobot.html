@@ -51,24 +51,37 @@
     <h5 class="mb-3">Últimos registros:</h5>
  
     <!-- 🔹 Filtros -->
-    <div class="row mb-3">
-      <div class="col-md-3">
-        <label for="filtroSolicitante" class="form-label">Buscar por solicitante:</label>
-        <select id="filtroSolicitante" class="form-select">
-          <option value="">Todos</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <label for="filtroRegistro" class="form-label">Buscar por palabra clave:</label>
-        <input type="text" id="filtroRegistro" class="form-control" placeholder="Ingrese Identificador, dato o flujo">
-      </div>
-      <button id="btnActualizar" class="btn btn-outline-secondary btn-sm">
-          🔄 Actualizar
-      </button>
-      <div class="col-md-3 offset-md-3 d-flex align-items-end">
-        <button id="btnSolicitar" class="btn btn-primary w-100">Solicitar ejecución</button>
-      </div>
-    </div>
+<div class="row mb-3 align-items-end">
+
+  <div class="col-md-3">
+    <label for="filtroSolicitante" class="form-label">Buscar por solicitante:</label>
+    <select id="filtroSolicitante" class="form-select">
+      <option value="">Todos</option>
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <label for="filtroRegistro" class="form-label">Buscar por palabra clave:</label>
+    <input type="text" id="filtroRegistro" class="form-control"
+           placeholder="Ingrese Identificador, dato o flujo">
+  </div>
+
+  <div class="col-md-6 d-flex justify-content-end gap-2">
+    
+    <button id="btnActualizar"
+            class="btn btn-outline-secondary">
+      🔄 Actualizar
+    </button>
+
+    <button id="btnSolicitar"
+            class="btn btn-primary">
+      Solicitar ejecución
+    </button>
+
+  </div>
+
+</div>
+
  
     <!-- 🔹 Tabla dinámica -->
     <div class="table-responsive">
