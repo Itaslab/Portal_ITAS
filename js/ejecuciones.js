@@ -319,10 +319,10 @@ function llenarFiltroSolicitante() {
 
   <div class="border rounded p-2 bg-light small">
 
-    <div class="row">
+    <div class="row align-items-start">
 
       <!-- 🔹 IZQUIERDA: TOTALES -->
-      <div class="col-6">
+      <div class="col-auto">
 
         <!-- Fila 1 -->
         <div class="d-flex gap-2 mb-1">
@@ -370,7 +370,7 @@ function llenarFiltroSolicitante() {
       </div>
 
       <!-- 🔹 DERECHA: PROGRESO + ACCIONES -->
-      <div class="col-6 d-flex flex-column justify-content-between">
+      <div class="col">
 
         <!-- Progreso -->
         <div>
