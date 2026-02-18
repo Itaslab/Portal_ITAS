@@ -382,7 +382,7 @@ function llenarFiltroSolicitante() {
                         data-idtasklist="${ejec.id}"
                         data-bs-toggle="modal"
                         data-bs-target="#modalCancelar">
-                        title="Cancela la tarea actual">
+                        
                   <i class="bi bi-x-circle"></i>
                 </button>
 
@@ -390,7 +390,7 @@ function llenarFiltroSolicitante() {
                         data-idtasklist="${ejec.id}"
                         data-bs-toggle="modal"
                         data-bs-target="#modalPausar">
-                        title="Pausa la tarea actual">
+                        
                   <i class="bi bi-pause-circle"></i>
                 </button>
 
@@ -398,7 +398,7 @@ function llenarFiltroSolicitante() {
                         data-idtasklist="${ejec.id}"
                         data-bs-toggle="modal"
                         data-bs-target="#modalReanudar">
-                        title="Reanudar la tarea actual">
+                        
                   <i class="bi bi-play-btn"></i>
                 </button>
 
@@ -406,7 +406,7 @@ function llenarFiltroSolicitante() {
                         data-idtasklist="${ejec.id}"
                         data-bs-toggle="modal"
                         data-bs-target="#modalReenviar">
-                        title="Reenvía toda la tarea nuevamente">
+                        
                   <i class="bi bi-send"></i>
                 </button>
 
@@ -414,7 +414,7 @@ function llenarFiltroSolicitante() {
                         data-idtasklist="${ejec.id}"
                         data-bs-toggle="modal"
                         data-bs-target="#modalReenviarFallidos">
-                        title="Reenvía solo los ítems que fallaron o no se procesaron">
+                        
                   <i class="bi bi-send-x"></i>
                 </button>
 
