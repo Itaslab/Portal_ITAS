@@ -288,7 +288,7 @@ function llenarFiltroSolicitante() {
 </div>
 
       <!-- COLUMNA 2 - ESTADO Y TIEMPOS -->
-      <div class="col-md-3">
+      <div class="col-md-4">
         <div class="text-center mb-1">
           <span class="badge px-2 py-1 small"
                 style="background-color:#${ejec.colorEstado || '6c757d'};color:white;">
@@ -315,7 +315,7 @@ function llenarFiltroSolicitante() {
 
       
 <!-- COLUMNA 3 - TOTALES + AVANCE + ACCIONES -->
-<div class="col-md-5">
+<div class="col-md-4">
 
   <div class="border rounded p-2 bg-light small">
 
