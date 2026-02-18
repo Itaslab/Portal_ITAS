@@ -245,99 +245,108 @@ function llenarFiltroSolicitante() {
         const row = document.createElement("tr");
  
         row.innerHTML = `
-          <td colspan="6">
-            <table class="table table-bordered align-middle mb-0">
-              <tbody>
-                <tr>
-                  <td class="text-start">
-                    <div class="mb-2">
-                      <i class="fas fa-hashtag text-primary me-2" data-bs-toggle="tooltip" title="ID de ejecución"></i>
-                      <span class="fw-bold text-primary">[${ejec.id}]</span>
-                    </div>
-                    <div class="mb-2">
-                      <i class="fas fa-terminal text-secondary me-2" data-bs-toggle="tooltip" title="Nombre del proceso"></i>
-                      <span class="small">${ejec.titulo}</span>
-                    </div>
-                    <div class="mb-2">
-                      <i class="fas fa-id-card text-info me-2" data-bs-toggle="tooltip" title="Identificador interno"></i>
-                      <span class="small">Identificador:</span>
-                      <span class="fw-semibold">${ejec.identificador || "-"}</span>
-                    </div>
-                    <div class="mb-2">
-                      <i class="fas fa-envelope text-warning me-2" data-bs-toggle="tooltip" title="Usuario solicitante"></i>
-                      <span class="small">De:</span>
-                      <span class="fw-semibold">${ejec.usuario}</span>
-                    </div>
-                    <div>
-                      <i class="fas fa-project-diagram text-success me-2" data-bs-toggle="tooltip" title="Flujo de ejecución"></i>
-                      <span class="small">Flujo:</span>
-                      <span class="fw-semibold">${ejec.flujo}</span>
-                      <span class="badge bg-secondary ms-2">RPA</span>
-                    </div>
-                  </td>          
-      <td class="text-start">
-        <div class="p-3 border rounded bg-light" style="width: 280px;">
-          <!-- Estado -->
-          <div class="mb-3 text-center">
-            <span class="badge px-3 py-2 fs-6" style="background-color: #${ejec.colorEstado || '6c757d'}; color: white; text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black, 0 0 3px black;">
-              ${ejec.estado}
-            </span>
-          </div>
- 
-    <!-- Fechas y duración -->
-    <div class="mb-2">
-      <i class="fas fa-play text-primary me-2"></i>
-      <span class="small">Inicio:</span>
-      <span class="fw-semibold">${formatearFecha(ejec.fechaInicio)}</span>
-    </div>
-    <div class="mb-2">
-      <i class="fas fa-stop text-danger me-2"></i>
-      <span class="small">Fin:</span>
-      <span class="fw-semibold">${formatearFecha(ejec.fechaFin)}</span>
-    </div>
-    <div class="mb-3">
-      <i class="fas fa-clock text-warning me-2"></i>
-      <span class="small">Duración:</span>
-      <span class="fw-bold text-dark">${duracion}</span>
-    </div>
- 
-    <!-- Resultado -->
-    <div class="text-truncate small" style="max-width: 240px;" title="${ejec.resultado || '-'}">
-      Resultado: <span class="fw-bold">${ejec.resultado || '-'}</span>
-    </div>
-  </div>
-</td>
-  
-<td class="text-start">
-  <div class="d-flex flex-column gap-2 border rounded p-2 bg-light">
-  
-<!-- Total -->
-<button type="button"
-        class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
-        data-idtasklist="${ejec.id}"
-        data-detalle="total"
-        data-valor="${ejec.total ?? 0}"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        title="Ver registros Total">
-  <i class="bi bi-eye text-primary"></i>
-  <span class="text-primary fw-semibold">Total:</span>
-  <span class="text-primary fw-bold">${ejec.total ?? 0}</span>
-</button>
+<td colspan="6">
+  <div class="border rounded p-2 mb-2 bg-white">
+    <div class="row g-2 align-items-stretch">
 
-<!-- OK -->
-<button type="button"
-        class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
-        data-idtasklist="${ejec.id}"
-        data-detalle="ok"
-        data-valor="${ejec.ok ?? 0}"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        title="Ver registros OK">
-  <i class="bi bi-eye text-success"></i>
-  <span class="text-success fw-semibold">OK:</span>
-  <span class="text-success fw-bold">${ejec.ok ?? 0}</span>
-</button>
+<!-- COLUMNA 1 - DATOS -->
+<div class="col-md-4 small">
+
+  <!-- ID + Flujo -->
+  <div class="mb-1 d-flex align-items-center gap-2">
+    <div>
+      <i class="fas fa-hashtag text-primary me-1"></i>
+      <span class="fw-bold text-primary">[${ejec.id}]</span>
+    </div>
+
+<span class="fw-bold text-primary">${ejec.flujo}</span>
+
+    <span class="badge bg-secondary">
+      RPA
+    </span>
+  </div>
+
+  <!-- Título -->
+  <div class="mb-1">
+    <i class="fas fa-terminal text-secondary me-1"></i>
+    ${ejec.titulo}
+  </div>
+
+  <!-- Identificador -->
+  <div class="mb-1">
+    <i class="fas fa-id-card text-info me-1"></i>
+    <span class="text-muted">Identificador:</span>
+    <span class="fw-semibold">${ejec.identificador || "-"}</span>
+  </div>
+
+  <!-- Usuario -->
+  <div>
+    <i class="fas fa-envelope text-warning me-1"></i>
+    <span class="text-muted">De:</span>
+    <span class="fw-semibold">${ejec.usuario}</span>
+  </div>
+
+</div>
+
+      <!-- COLUMNA 2 - ESTADO Y TIEMPOS -->
+      <div class="col-md-4">
+        <div class="text-center mb-1">
+          <span class="badge px-2 py-1 small"
+                style="background-color:#${ejec.colorEstado || '6c757d'};color:white;">
+            ${ejec.estado}
+          </span>
+        </div>
+
+        <div class="small mb-1">
+          <i class="fas fa-play text-primary me-1"></i>
+          <span class="fw-semibold">${formatearFecha(ejec.fechaInicio)}</span>
+          <span class="mx-1 text-muted">|</span>
+          <i class="fas fa-stop text-danger me-1"></i>
+          <span class="fw-semibold">${formatearFecha(ejec.fechaFin)}</span>
+        </div>
+
+        <div class="small">
+          <i class="fas fa-clock text-warning me-1"></i>
+          <span class="fw-bold">${duracion}</span>
+          <span class="mx-1 text-muted">|</span>
+          <span>Res:</span>
+          <span class="fw-bold">${ejec.resultado || '-'}</span>
+        </div>
+      </div>
+
+      
+<!-- COLUMNA 3 - TOTALES + AVANCE + ACCIONES -->
+<div class="col-md-4">
+
+  <div class="border rounded p-2 bg-light small">
+
+    <div class="row align-items-start">
+
+      <!-- 🔹 IZQUIERDA: TOTALES -->
+      <div class="col-auto">
+
+        <!-- Fila 1 -->
+        <div class="d-flex gap-2 mb-1">
+          <button type="button"
+                  class="btn btn-outline-secondary btn-sm btn-detalle"
+                  data-idtasklist="${ejec.id}"
+                  data-detalle="total"
+                  data-valor="${ejec.total ?? 0}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#detalleItemModal">
+            T: <span class="fw-bold">${ejec.total ?? 0}</span>
+          </button>
+
+          <button type="button"
+                  class="btn btn-outline-secondary btn-sm btn-detalle"
+                  data-idtasklist="${ejec.id}"
+                  data-detalle="ok"
+                  data-valor="${ejec.ok ?? 0}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#detalleItemModal">
+            OK: <span class="fw-bold text-success">${ejec.ok ?? 0}</span>
+          </button>
+        </div>
 
 <!-- Error -->
 <button type="button"
@@ -388,14 +397,12 @@ function llenarFiltroSolicitante() {
   <i class="bi bi-pause-circle"></i>
 </button>
 
-  <!-- Reanudar -->
-  <button class="btn btn-outline-secondary btn-sm btn-accion" 
-          data-idtasklist="${ejec.id}"
-          data-bs-toggle="modal" 
-          data-bs-target="#modalReanudar"
-          title="Reanudar una tarea Pausada o Finalizada con Error">
-    <i class="bi bi-play-btn"></i>
-  </button>
+          <button class="btn btn-outline-secondary btn-sm btn-accion"
+                  data-idtasklist="${ejec.id}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalReanudar">
+            <i class="bi bi-play-btn"></i>
+          </button>
 
   <!-- Reenviar -->
   <button class="btn btn-outline-secondary btn-sm btn-accion" 
@@ -491,8 +498,10 @@ filtroRegistro.addEventListener("input", () => {
   // Inicializar usuario y luego cargar ejecuciones
   inicializarUsuario().then(() => {
     cargarEjecuciones();
-    setInterval(cargarEjecuciones, 4000);
   });
+
+  document.getElementById("btnActualizar")
+  .addEventListener("click", cargarEjecuciones);
 
   document.getElementById("btnCancelarConfirmar")
     .addEventListener("click", confirmarCancelar);
