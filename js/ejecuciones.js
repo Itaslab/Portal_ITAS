@@ -378,45 +378,50 @@ function llenarFiltroSolicitante() {
 
               <div class="d-flex justify-content-end gap-2 mt-3">
 
-                <button class="btn btn-outline-secondary btn-sm btn-accion"
-                        data-idtasklist="${ejec.id}"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalCancelar">
-                        
-                  <i class="bi bi-x-circle"></i>
-                </button>
+                 <button class="btn btn-outline-secondary btn-sm btn-accion"
+          data-idtasklist="${ejec.id}"
+          data-bs-toggle="modal"
+          data-bs-target="#modalCancelar"
+          data-bs-toggle="tooltip"
+          data-bs-title="Cancelar tarea actual">
+    <i class="bi bi-x-circle"></i>
+  </button>
 
-                <button class="btn btn-outline-secondary btn-sm btn-accion"
-                        data-idtasklist="${ejec.id}"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalPausar">
-                        
-                  <i class="bi bi-pause-circle"></i>
-                </button>
+  <button class="btn btn-outline-secondary btn-sm btn-accion"
+          data-idtasklist="${ejec.id}"
+          data-bs-toggle="modal"
+          data-bs-target="#modalPausar"
+          data-bs-toggle="tooltip"
+          data-bs-title="Pausar tarea actual">
+    <i class="bi bi-pause-circle"></i>
+  </button>
 
-                <button class="btn btn-outline-secondary btn-sm btn-accion"
-                        data-idtasklist="${ejec.id}"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalReanudar">
-                        
-                  <i class="bi bi-play-btn"></i>
-                </button>
+  <button class="btn btn-outline-secondary btn-sm btn-accion"
+          data-idtasklist="${ejec.id}"
+          data-bs-toggle="modal"
+          data-bs-target="#modalReanudar"
+          data-bs-toggle="tooltip"
+          data-bs-title="Reanudar tarea actual">
+    <i class="bi bi-play-btn"></i>
+  </button>
 
-                <button class="btn btn-outline-secondary btn-sm btn-accion"
-                        data-idtasklist="${ejec.id}"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalReenviar">
-                        
-                  <i class="bi bi-send"></i>
-                </button>
+  <button class="btn btn-outline-secondary btn-sm btn-accion"
+          data-idtasklist="${ejec.id}"
+          data-bs-toggle="modal"
+          data-bs-target="#modalReenviar"
+          data-bs-toggle="tooltip"
+          data-bs-title="Reenviar tarea actual">
+    <i class="bi bi-send"></i>
+  </button>
 
-                <button class="btn btn-outline-secondary btn-sm btn-accion"
-                        data-idtasklist="${ejec.id}"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalReenviarFallidos">
-                        
-                  <i class="bi bi-send-x"></i>
-                </button>
+  <button class="btn btn-outline-secondary btn-sm btn-accion"
+          data-idtasklist="${ejec.id}"
+          data-bs-toggle="modal"
+          data-bs-target="#modalReenviarFallidos"
+          data-bs-toggle="tooltip"
+          data-bs-title="Reenviar fallidos de la tarea actual">
+    <i class="bi bi-send-x"></i>
+  </button>
 
               </div>
 
