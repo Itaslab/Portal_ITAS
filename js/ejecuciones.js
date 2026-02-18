@@ -244,49 +244,45 @@ function llenarFiltroSolicitante() {
         const duracion = calcularDuracion(ejec.fechaInicio, ejec.fechaFin);
         const row = document.createElement("tr");
  
-        row.innerHTML = `
+       row.innerHTML = `
 <td colspan="6">
   <div class="border rounded p-2 mb-2 bg-white">
     <div class="row g-2 align-items-stretch">
 
-<!-- COLUMNA 1 - DATOS -->
-<div class="col-md-4 small">
+      <!-- COLUMNA 1 - DATOS -->
+      <div class="col-md-4 small">
 
-  <!-- ID + Flujo -->
-  <div class="mb-1 d-flex align-items-center gap-2">
-    <div>
-      <i class="fas fa-hashtag text-primary me-1"></i>
-      <span class="fw-bold text-primary">[${ejec.id}]</span>
-    </div>
+        <div class="mb-1 d-flex align-items-center gap-2">
+          <div>
+            <i class="fas fa-hashtag text-primary me-1"></i>
+            <span class="fw-bold text-primary">[${ejec.id}]</span>
+          </div>
 
-<span class="fw-bold text-primary">${ejec.flujo}</span>
+          <span class="fw-bold text-primary">${ejec.flujo}</span>
 
-    <span class="badge bg-secondary">
-      RPA
-    </span>
-  </div>
+          <span class="badge bg-secondary">
+            RPA
+          </span>
+        </div>
 
-  <!-- Título -->
-  <div class="mb-1">
-    <i class="fas fa-terminal text-secondary me-1"></i>
-    ${ejec.titulo}
-  </div>
+        <div class="mb-1">
+          <i class="fas fa-terminal text-secondary me-1"></i>
+          ${ejec.titulo}
+        </div>
 
-  <!-- Identificador -->
-  <div class="mb-1">
-    <i class="fas fa-id-card text-info me-1"></i>
-    <span class="text-muted">Identificador:</span>
-    <span class="fw-semibold">${ejec.identificador || "-"}</span>
-  </div>
+        <div class="mb-1">
+          <i class="fas fa-id-card text-info me-1"></i>
+          <span class="text-muted">Identificador:</span>
+          <span class="fw-semibold">${ejec.identificador || "-"}</span>
+        </div>
 
-  <!-- Usuario -->
-  <div>
-    <i class="fas fa-envelope text-warning me-1"></i>
-    <span class="text-muted">De:</span>
-    <span class="fw-semibold">${ejec.usuario}</span>
-  </div>
+        <div>
+          <i class="fas fa-envelope text-warning me-1"></i>
+          <span class="text-muted">De:</span>
+          <span class="fw-semibold">${ejec.usuario}</span>
+        </div>
 
-</div>
+      </div>
 
       <!-- COLUMNA 2 - ESTADO Y TIEMPOS -->
       <div class="col-md-4">
@@ -314,119 +310,124 @@ function llenarFiltroSolicitante() {
         </div>
       </div>
 
-      
-<!-- COLUMNA 3 - TOTALES + AVANCE + ACCIONES -->
-<div class="col-md-4">
+      <!-- COLUMNA 3 - TOTALES + AVANCE + ACCIONES -->
+      <div class="col-md-4">
 
-  <div class="border rounded p-2 bg-light small">
+        <div class="border rounded p-2 bg-light small">
 
-    <div class="row align-items-start">
+          <div class="row align-items-start">
 
-      <!-- 🔹 IZQUIERDA: TOTALES -->
-      <div class="col-auto">
+            <!-- IZQUIERDA -->
+            <div class="col-auto">
 
-        <!-- Fila 1 -->
-        <div class="d-flex gap-2 mb-1">
-          <button type="button"
-                  class="btn btn-outline-secondary btn-sm btn-detalle"
-                  data-idtasklist="${ejec.id}"
-                  data-detalle="total"
-                  data-valor="${ejec.total ?? 0}"
-                  data-bs-toggle="modal"
-                  data-bs-target="#detalleItemModal">
-            T: <span class="fw-bold">${ejec.total ?? 0}</span>
-          </button>
+              <div class="d-flex gap-2 mb-1">
+                <button type="button"
+                        class="btn btn-outline-secondary btn-sm btn-detalle"
+                        data-idtasklist="${ejec.id}"
+                        data-detalle="total"
+                        data-valor="${ejec.total ?? 0}"
+                        data-bs-toggle="modal"
+                        data-bs-target="#detalleItemModal">
+                  T: <span class="fw-bold">${ejec.total ?? 0}</span>
+                </button>
 
-          <button type="button"
-                  class="btn btn-outline-secondary btn-sm btn-detalle"
-                  data-idtasklist="${ejec.id}"
-                  data-detalle="ok"
-                  data-valor="${ejec.ok ?? 0}"
-                  data-bs-toggle="modal"
-                  data-bs-target="#detalleItemModal">
-            OK: <span class="fw-bold text-success">${ejec.ok ?? 0}</span>
-          </button>
+                <button type="button"
+                        class="btn btn-outline-secondary btn-sm btn-detalle"
+                        data-idtasklist="${ejec.id}"
+                        data-detalle="ok"
+                        data-valor="${ejec.ok ?? 0}"
+                        data-bs-toggle="modal"
+                        data-bs-target="#detalleItemModal">
+                  OK: <span class="fw-bold text-success">${ejec.ok ?? 0}</span>
+                </button>
+              </div>
+
+              <div class="d-flex gap-2">
+                <button type="button"
+                        class="btn btn-outline-secondary btn-sm btn-detalle"
+                        data-idtasklist="${ejec.id}"
+                        data-detalle="error"
+                        data-valor="${ejec.error ?? 0}"
+                        data-bs-toggle="modal"
+                        data-bs-target="#detalleItemModal">
+                  ERR: <span class="fw-bold text-danger">${ejec.error ?? 0}</span>
+                </button>
+
+                <button class="btn btn-outline-secondary btn-sm btn-log"
+                        data-idtasklist="${ejec.id}"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalBuscar">
+                  Log
+                </button>
+              </div>
+
+            </div>
+
+            <!-- DERECHA -->
+            <div class="col">
+
+              <div>
+                <div class="fw-semibold mb-1">${ejec.avance}%</div>
+
+                <div class="progress" style="height:6px;">
+                  <div class="progress-bar bg-success"
+                       role="progressbar"
+                       style="width:${ejec.avance}%;"></div>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-end gap-2 mt-3">
+
+                <button class="btn btn-outline-secondary btn-sm btn-accion"
+                        data-idtasklist="${ejec.id}"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalCancelar">
+                  <i class="bi bi-x-circle"></i>
+                </button>
+
+                <button class="btn btn-outline-secondary btn-sm btn-accion"
+                        data-idtasklist="${ejec.id}"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalPausar">
+                  <i class="bi bi-pause-circle"></i>
+                </button>
+
+                <button class="btn btn-outline-secondary btn-sm btn-accion"
+                        data-idtasklist="${ejec.id}"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalReanudar">
+                  <i class="bi bi-play-btn"></i>
+                </button>
+
+                <button class="btn btn-outline-secondary btn-sm btn-accion"
+                        data-idtasklist="${ejec.id}"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalReenviar">
+                  <i class="bi bi-send"></i>
+                </button>
+
+                <button class="btn btn-outline-secondary btn-sm btn-accion"
+                        data-idtasklist="${ejec.id}"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalReenviarFallidos">
+                  <i class="bi bi-send-x"></i>
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
 
-<!-- Error -->
-<button type="button"
-        class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 btn-detalle"
-        data-idtasklist="${ejec.id}"
-        data-detalle="error"
-        data-valor="${ejec.error ?? 0}"
-        data-bs-toggle="modal"
-        data-bs-target="#detalleItemModal"
-        title="Ver registros con Error">
-  <i class="bi bi-eye text-danger"></i>
-  <span class="text-danger fw-semibold">Error:</span>
-  <span class="text-danger fw-bold">${ejec.error ?? 0}</span>
-</button>
- 
-    <!-- Buscar -->
-    <button class="btn btn-outline-secondary btn-sm btn-log"
-            data-idtasklist="${ejec.id}"
-            data-bs-toggle="modal"
-            data-bs-target="#modalBuscar"
-            title="Buscar en log">
-      <i class="bi-clipboard-data"></i>
-       <span class="text-dark fw-semibold">Ver Log</span>
-    </button>
+      </div>
+
+    </div>
   </div>
 </td>
- 
-            <td class="text-center">
-                      <div class="small fw-semibold mb-1">Avance: ${ejec.avance}%</div>
-                    <div class="progress mb-2" style="height: 10px;">
-                      <div class="progress-bar bg-success" role="progressbar" style="width: ${ejec.avance}%;" aria-valuenow="${ejec.avance}" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-  <!-- Cancelar -->
-  <button class="btn btn-outline-secondary btn-sm btn-accion"
-          data-idtasklist="${ejec.id}"
-          data-bs-toggle="modal" 
-          data-bs-target="#modalCancelar"
-          title="Cancela la tarea actual">
-    <i class="bi bi-x-circle"></i>
-  </button>
+`;
 
-  <!-- Pausar -->
-<button class="btn btn-outline-secondary btn-sm btn-accion"
-        data-idtasklist="${ejec.id}"
-        data-bs-toggle="modal"
-        data-bs-target="#modalPausar"
-        title="Pausa la tarea actual">
-  <i class="bi bi-pause-circle"></i>
-</button>
-
-          <button class="btn btn-outline-secondary btn-sm btn-accion"
-                  data-idtasklist="${ejec.id}"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modalReanudar">
-            <i class="bi bi-play-btn"></i>
-          </button>
-
-  <!-- Reenviar -->
-  <button class="btn btn-outline-secondary btn-sm btn-accion" 
-        data-idtasklist="${ejec.id}"
-          data-bs-toggle="modal" 
-          data-bs-target="#modalReenviar"
-          title="Reenvía toda la tarea nuevamente">
-    <i class="bi bi-send"></i>
-  </button>
-
-  <!-- Reenviar Fallidos -->
-  <button class="btn btn-outline-secondary btn-sm btn-accion" 
-        data-idtasklist="${ejec.id}"
-          data-bs-toggle="modal" 
-          data-bs-target="#modalReenviarFallidos"
-          title="Reenvía solo los ítems que fallaron o no se procesaron">
-    <i class="bi bi-send-x"></i>
-  </button>
-</td>
-                </tr>
-              </tbody>
-            </table>
-          </td>
-        `;
         tabla.appendChild(row);
         row.querySelectorAll(".btn-detalle").forEach(btn => {
     const valor = Number(btn.dataset.valor || 0);
