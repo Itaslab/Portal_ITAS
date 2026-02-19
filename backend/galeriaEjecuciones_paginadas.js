@@ -97,7 +97,7 @@ module.exports = async (req, res) => {
     }
 
     if (estado) {
-      request.input("estado", sql.VarChar, `%${estado}%`);
+      request.input("estado", sql.VarChar, estado);
     }
 
     const result = await request.query(query);
