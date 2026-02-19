@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnSiguiente = document.getElementById("btnPaginaSiguiente");
   const lblPagina = document.getElementById("paginaActualLabel");
   const overlayCarga = document.getElementById("overlayCarga");
-
+  const filtroEstado = document.getElementById("filtroEstado");
 
   btnAnterior.addEventListener("click", () => {
   if (paginaActual === 1) return;
@@ -122,10 +122,10 @@ async function cargarEjecuciones(scrollear = false) {
 
       const solicitante = encodeURIComponent(filtroSolicitante.value || "");
       const registro = encodeURIComponent(filtroRegistro.value || "");
-      
+      const estado = encodeURIComponent(document.getElementById("filtroEstado").value || "");
 
       const res = await fetch(
-        `${basePath}/ejecuciones-paginadas?page=${paginaActual}&limit=${LIMITE}&solicitante=${solicitante}&registro=${registro}`
+        `${basePath}/ejecuciones-paginadas?page=${paginaActual}&limit=${LIMITE}&solicitante=${solicitante}&registro=${registro}&estado=${estado}`
       );
         
         // Verificar si la sesión es válida
