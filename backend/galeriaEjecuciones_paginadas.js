@@ -52,9 +52,9 @@ module.exports = async (req, res) => {
     }
 
     // Filtro por estado
-    if (estado && estado !== "Todos") {
-      where += " AND T.Status = @estado";
-    }
+if (estado) {
+  where += " AND T.Status = @estado";
+}
 
     const query = `
       SELECT

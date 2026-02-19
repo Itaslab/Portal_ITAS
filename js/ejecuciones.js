@@ -38,6 +38,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const overlayCarga = document.getElementById("overlayCarga");
   const filtroEstado = document.getElementById("filtroEstado");
 
+    filtroEstado.addEventListener("change", () => {
+    paginaActual = 1;
+    cargarEjecuciones(true);
+  });
+
   btnAnterior.addEventListener("click", () => {
   if (paginaActual === 1) return;
   paginaActual--;
