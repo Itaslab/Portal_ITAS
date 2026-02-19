@@ -64,6 +64,21 @@
            placeholder="Ingrese Identificador, dato o flujo">
   </div>
 
+  <div class="col-md-3">
+    <label for="filtroEstado" class="form-label">Filtrar por estado:</label>
+    <select id="filtroEstado" class="form-select">
+      <option value="">Todos</option>
+      <option value="Finalizado OK">Finalizado OK</option>
+      <option value="Finalizado con Error">Finalizado con Error</option>
+      <option value="Cancelado">Cancelado</option>
+      <option value="En Curso">En Curso</option>
+      <option value="Pausando...">Pausando...</option>
+      <option value="Pendiente">Pendiente</option>
+      <option value="Finalizado OK (PNR)">Finalizado OK (PNR)</option>
+      <option value="Finalizado con Error (PNR)">Finalizado con Error (PNR)</option>
+    </select>
+  </div>
+
   <div class="col-md-6 d-flex justify-content-end gap-2">
     
     <button id="btnActualizar"
@@ -155,7 +170,6 @@
     </div>
   </div>
 </div>
- 
  
 <!-- Modal Reanudar -->
 <div class="modal fade" id="modalReanudar" tabindex="-1" aria-hidden="true">
