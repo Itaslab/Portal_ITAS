@@ -9,6 +9,7 @@ module.exports = async (req, res) => {
 
     const solicitante = (req.query.solicitante || "").trim();
     const registro = (req.query.registro || "").trim();
+    const estado = (req.query.estado || "").trim();
 
     const pool = await poolPromise;
 
@@ -50,6 +51,11 @@ module.exports = async (req, res) => {
       `;
     }
 
+    // Filtro por estado
+    if (estado && estado !== "Todos") {
+      where += " AND T.Status = @estado";
+    }
+
     const query = `
       SELECT
         U.Email,
@@ -88,6 +94,10 @@ module.exports = async (req, res) => {
 
     if (registro) {
       request.input("registro", sql.VarChar, `%${registro}%`);
+    }
+
+    if (estado) {
+      request.input("estado", sql.VarChar, `%${estado}%`);
     }
 
     const result = await request.query(query);
