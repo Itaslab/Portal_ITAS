@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
 
     // Filtro por estado
 if (estado) {
-  where += " AND T.Status = @estado";
+  where += " AND TE.Estado = @estado";
 }
 
     const query = `
