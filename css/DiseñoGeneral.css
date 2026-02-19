@@ -484,3 +484,53 @@ textarea.disabled-field {
   justify-content: center;
   z-index: 9999;
 }
+
+
+/** CALENDARIO LICENCIAS */
+
+.calendario-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.calendario-table th,
+.calendario-table td {
+  border: 1px solid #f0f0f0;
+  text-align: center;
+  font-size: 12px;
+  padding: 2px;
+}
+
+.calendario-table thead th {
+  font-weight: 600;
+  background-color: #fafafa;
+}
+
+.col-usuario {
+  width: 200px;
+  text-align: left !important;
+  padding-left: 8px !important;
+  background-color: white;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+.dia-header {
+  width: 26px;
+}
+
+.celda-dia {
+  height: 24px;
+}
+
+.fin-semana {
+  background-color: #f7f7f7;
+}
+
+.nombre-dia {
+  font-size: 10px;
+  color: #777;
+}
+
