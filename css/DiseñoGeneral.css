@@ -534,3 +534,16 @@ textarea.disabled-field {
   color: #777;
 }
 
+.calendario-table tbody tr:hover td {
+  background-color: #f5f9ff;
+}
+
+.dia-header div:first-child {
+  font-size: 9px;
+  text-transform: capitalize;
+}
+
+.dia-header div:last-child {
+  font-size: 12px;
+  font-weight: 600;
+}
