@@ -133,7 +133,7 @@ const tieneLicencia = usuario.licencias.some(l => {
 
   return fechaActual >= fechaDesde && fechaActual <= fechaHasta;
 });
-
+      console.log("Licencias crudas del backend:", licencias);
       console.log("Tiene licencia:", tieneLicencia);
       html += `
         <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${tieneLicencia ? "licencia-activa" : ""}">
