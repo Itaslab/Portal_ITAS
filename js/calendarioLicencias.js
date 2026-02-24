@@ -1,37 +1,16 @@
 //calendarioLicencias.js
 
-// Función para cargar las licencias desde el backend
-async function cargarLicenciasDesdeBackend() {
-  try {
-    const response = await fetch(`${basePath}/backend/galeriaLicencias.js`); // Usando basePath
-    if (!response.ok) {
-      throw new Error('Error al obtener las licencias desde el backend');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error al cargar las licencias:', error);
-    return [];
-  }
-}
-
-// Función para cargar los usuarios desde el backend
-async function cargarUsuariosDesdeBackend() {
-  try {
-    const response = await fetch(`${basePath}/backend/usuarios.js`); // Usando basePath
-    if (!response.ok) {
-      throw new Error('Error al obtener los usuarios desde el backend');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error al cargar los usuarios:', error);
-    return [];
-  }
-}
-
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
 
   const filtroMes = document.getElementById("filtroMes");
   const contenedor = document.getElementById("contenedorCalendario");
+
+  const usuariosMock = [
+    { id: 1, nombre: "Juan Perez" },
+    { id: 2, nombre: "Maria Gomez" },
+    { id: 3, nombre: "Carlos Lopez" },
+    { id: 4, nombre: "Ana Torres" }
+  ];
 
   function generarOpcionesMes() {
     const hoy = new Date();
@@ -63,11 +42,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     return dias;
   }
 
-  async function renderCalendario() {
+  function renderCalendario() {
     const [year, month] = filtroMes.value.split("-").map(Number);
     const dias = obtenerDiasDelMes(year, month);
-    const licencias = await cargarLicenciasDesdeBackend();
-    const usuarios = await cargarUsuariosDesdeBackend();
 
     let html = `
       <table class="calendario-table">
@@ -91,17 +68,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     html += `</tr></thead><tbody>`;
 
-    usuarios.forEach(usuario => {
+    usuariosMock.forEach(usuario => {
       html += `<tr>`;
       html += `<td class="col-usuario">${usuario.nombre}</td>`;
 
       dias.forEach(dia => {
         const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
-        const licencia = licencias.find(l => l.usuarioId === usuario.id && new Date(l.fecha).toDateString() === dia.toDateString());
 
         html += `
           <td class="celda-dia ${esFinSemana ? "fin-semana" : ""}">
-            ${licencia ? `<span class='licencia'>${licencia.descripcion}</span>` : ""}
           </td>
         `;
       });
@@ -117,6 +92,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   filtroMes.addEventListener("change", renderCalendario);
 
   generarOpcionesMes();
-  await renderCalendario();
+  renderCalendario();
 
 });
