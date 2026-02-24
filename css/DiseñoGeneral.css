@@ -548,6 +548,21 @@ textarea.disabled-field {
   font-weight: 600;
 }
 
-.licencia-activa {
-  background-color: red !important;
+.lic-vacaciones {
+  background-color: rgba(76, 175, 80, 0.15);
+}
+
+.lic-licencia {
+  background-color: rgba(33, 150, 243, 0.15);
+}
+
+.lic-estudio {
+  background-color: rgba(255, 193, 7, 0.18);
+}
+
+.celda-dia input {
+  text-align: center;
+  font-weight: bold;
+  border: none;
+  background: transparent;
 }

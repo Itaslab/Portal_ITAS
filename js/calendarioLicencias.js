@@ -1,10 +1,7 @@
-//calendarioLicencias.js
-
 document.addEventListener("DOMContentLoaded", () => {
 
   const filtroMes = document.getElementById("filtroMes");
   const contenedor = document.getElementById("contenedorCalendario");
-  
 
   function generarOpcionesMes() {
     const hoy = new Date();
@@ -36,126 +33,136 @@ document.addEventListener("DOMContentLoaded", () => {
     return dias;
   }
 
-
   async function cargarLicenciasDesdeBackend(year, month, grupo) {
+    try {
+      const url = `${basePath}/api/licencias/mes?year=${year}&month=${month}&grupo=${grupo || ""}`;
+      const response = await fetch(url);
+      const result = await response.json();
 
-  try {
+      if (!result.success) {
+        throw new Error(result.error || "Error desconocido");
+      }
 
-    const url = `${basePath}/api/licencias/mes?year=${year}&month=${month}&grupo=${grupo || ""}`;
-    const response = await fetch(url);
-    const result = await response.json();
+      return result.data;
 
-    if (!result.success) {
-      throw new Error(result.error || "Error desconocido");
+    } catch (error) {
+      console.error("Error cargando licencias:", error);
+      return [];
     }
-
-    return result.data;
-
-  } catch (error) {
-    console.error("Error cargando licencias:", error);
-    return [];
   }
-}
 
   async function renderCalendario() {
 
-  const [year, month] = filtroMes.value.split("-").map(Number);
-  const grupo = document.getElementById("filtroGrupo").value;
+    const [year, month] = filtroMes.value.split("-").map(Number);
+    const grupo = document.getElementById("filtroGrupo").value;
 
-  const dias = obtenerDiasDelMes(year, month);
+    const dias = obtenerDiasDelMes(year, month);
 
-  // 🔹 Traemos licencias reales
-  const licencias = await cargarLicenciasDesdeBackend(year, month, grupo);
+    const licencias = await cargarLicenciasDesdeBackend(year, month, grupo);
 
-  // 🔹 Agrupar por usuario
-const usuariosMap = {};
+    // 🔹 Agrupar por usuario
+    const usuariosMap = {};
 
-licencias.forEach(l => {
-  const id = l.IdUsuario;
+    licencias.forEach(l => {
+      const id = l.IdUsuario;
 
-  if (!usuariosMap[id]) {
-    usuariosMap[id] = {
-      id: id,
-      nombre: `${l.Apellido} ${l.Nombre}`,
-      licencias: []
-    };
-  }
+      if (!usuariosMap[id]) {
+        usuariosMap[id] = {
+          id: id,
+          nombre: `${l.Apellido} ${l.Nombre}`,
+          licencias: []
+        };
+      }
 
-  usuariosMap[id].licencias.push(l);
-});
+      usuariosMap[id].licencias.push(l);
+    });
 
-const usuarios = Object.values(usuariosMap);
+    const usuarios = Object.values(usuariosMap);
 
-  let html = `
-    <table class="calendario-table">
-      <thead>
-        <tr>
-          <th class="col-usuario">Usuario</th>
-  `;
-
-  dias.forEach(dia => {
-    const diaSemana = dia.toLocaleDateString("es-ES", { weekday: "short" });
-    const numero = dia.getDate();
-    const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
-
-    html += `
-      <th class="dia-header ${esFinSemana ? "fin-semana" : ""}">
-        <div class="nombre-dia">${diaSemana}</div>
-        <div>${numero}</div>
-      </th>
+    let html = `
+      <table class="calendario-table">
+        <thead>
+          <tr>
+            <th class="col-usuario">Usuario</th>
     `;
-  });
-
-  html += `</tr></thead><tbody>`;
-
-  usuarios.forEach(usuario => {
-
-    html += `<tr>`;
-    html += `<td class="col-usuario">${usuario.nombre}</td>`;
 
     dias.forEach(dia => {
-
+      const diaSemana = dia.toLocaleDateString("es-ES", { weekday: "short" });
+      const numero = dia.getDate();
       const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
 
-      // 🔹 Verificar si ese día tiene licencia
-      console.log("Usuario:", usuario.nombre);
-      console.log("Día actual:", dia);
-
-
-
-console.log("Usuario actual ID:", usuario.id);
-console.log("Licencias que tiene cargadas:", usuario.licencias);
-
-const tieneLicencia = usuario.licencias.some(l => {
-
-  const fechaActualStr =
-    `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,"0")}-${String(dia.getDate()).padStart(2,"0")}`;
-
-  const fechaDesdeStr = l.Fecha_Desde.split("T")[0];
-  const fechaHastaStr = l.Fecha_Hasta.split("T")[0];
-
-  return fechaActualStr >= fechaDesdeStr && fechaActualStr <= fechaHastaStr;
-});
-      console.log("Licencias crudas del backend:", licencias);
-      console.log("Tiene licencia:", tieneLicencia);
       html += `
-        <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${tieneLicencia ? "licencia-activa" : ""}">
-        </td>
+        <th class="dia-header ${esFinSemana ? "fin-semana" : ""}">
+          <div class="nombre-dia">${diaSemana}</div>
+          <div>${numero}</div>
+        </th>
       `;
     });
 
-    html += `</tr>`;
-  });
+    html += `</tr></thead><tbody>`;
 
-  html += `</tbody></table>`;
+    usuarios.forEach(usuario => {
 
-  contenedor.innerHTML = html;
-}
+      html += `<tr>`;
+      html += `<td class="col-usuario">${usuario.nombre}</td>`;
+
+      dias.forEach(dia => {
+
+        const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
+
+        // 🔹 Buscar licencia para ese día
+        const licenciaDelDia = usuario.licencias.find(l => {
+
+          const fechaActualStr =
+            `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,"0")}-${String(dia.getDate()).padStart(2,"0")}`;
+
+          const fechaDesdeStr = l.Fecha_Desde.split("T")[0];
+          const fechaHastaStr = l.Fecha_Hasta.split("T")[0];
+
+          return fechaActualStr >= fechaDesdeStr && fechaActualStr <= fechaHastaStr;
+        });
+
+        let letra = "";
+        let claseLicencia = "";
+
+        if (licenciaDelDia) {
+          switch (licenciaDelDia.TipoLic?.toUpperCase()) {
+            case "VACACIONES":
+              letra = "V";
+              claseLicencia = "lic-vacaciones";
+              break;
+
+            case "LICENCIA":
+              letra = "L";
+              claseLicencia = "lic-licencia";
+              break;
+
+            case "ESTUDIO":
+              letra = "E";
+              claseLicencia = "lic-estudio";
+              break;
+          }
+        }
+
+        html += `
+          <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseLicencia}" 
+              title="${licenciaDelDia ? licenciaDelDia.TipoLic : ""}">
+            <input type="text" value="${letra}" readonly />
+          </td>
+        `;
+      });
+
+      html += `</tr>`;
+    });
+
+    html += `</tbody></table>`;
+
+    contenedor.innerHTML = html;
+  }
 
   filtroMes.addEventListener("change", renderCalendario);
+  document.getElementById("filtroGrupo").addEventListener("change", renderCalendario);
 
   generarOpcionesMes();
   renderCalendario();
-  document.getElementById("filtroGrupo").addEventListener("change", renderCalendario);
-
 });
