@@ -128,22 +128,13 @@ console.log("Licencias que tiene cargadas:", usuario.licencias);
 
 const tieneLicencia = usuario.licencias.some(l => {
 
-  const fechaDesde = new Date(l.Fecha_Desde);
-  const fechaHasta = new Date(l.Fecha_Hasta);
+  const fechaActualStr =
+    `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,"0")}-${String(dia.getDate()).padStart(2,"0")}`;
 
-  const fechaActual = new Date(dia);
+  const fechaDesdeStr = l.Fecha_Desde.split("T")[0];
+  const fechaHastaStr = l.Fecha_Hasta.split("T")[0];
 
-  console.log("----");
-  console.log("Fecha actual:", fechaActual);
-  console.log("Fecha desde raw:", fechaDesde);
-  console.log("Fecha hasta raw:", fechaHasta);
-
-  console.log("Times:");
-  console.log("actual:", fechaActual.getTime());
-  console.log("desde:", fechaDesde.getTime());
-  console.log("hasta:", fechaHasta.getTime());
-
-  return fechaActual.getTime() === fechaDesde.getTime();
+  return fechaActualStr >= fechaDesdeStr && fechaActualStr <= fechaHastaStr;
 });
       console.log("Licencias crudas del backend:", licencias);
       console.log("Tiene licencia:", tieneLicencia);
