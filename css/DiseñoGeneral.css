@@ -547,3 +547,7 @@ textarea.disabled-field {
   font-size: 12px;
   font-weight: 600;
 }
+
+.licencia-activa {
+  background-color: red !important;
+}
