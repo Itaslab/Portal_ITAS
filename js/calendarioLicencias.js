@@ -118,25 +118,30 @@ const usuarios = Object.values(usuariosMap);
       const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
 
       // 🔹 Verificar si ese día tiene licencia
-      console.log("Usuario:", usuario.nombre);
-      console.log("Día actual:", dia);
+      const tieneLicencia = usuario.licencias.some(l => {
+        const desde = new Date(l.Fecha_Desde);
+        const hasta = new Date(l.Fecha_Hasta);
 
+        const diaTime = new Date(dia.getFullYear(), dia.getMonth(), dia.getDate()).getTime();
+        const desdeTime = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate()).getTime();
+        const hastaTime = new Date(hasta.getFullYear(), hasta.getMonth(), hasta.getDate()).getTime();
 
-
-console.log("Usuario actual ID:", usuario.id);
-console.log("Licencias que tiene cargadas:", usuario.licencias);
-
-const tieneLicencia = usuario.licencias.some(l => {
-
-  const fechaActualStr =
-    `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,"0")}-${String(dia.getDate()).padStart(2,"0")}`;
-
-  const fechaDesdeStr = l.Fecha_Desde.split("T")[0];
-  const fechaHastaStr = l.Fecha_Hasta.split("T")[0];
-
-  return fechaActualStr >= fechaDesdeStr && fechaActualStr <= fechaHastaStr;
-});
-      console.log("Licencias crudas del backend:", licencias);
+        if (diaTime >= desdeTime && diaTime <= hastaTime) {
+          if (l.TipoLic === "VACACIONES") {
+            html += `
+              <td class="celda-dia licencia-activa vacaciones">"></td>
+            `;
+          } else {
+            html += `
+              <td class="celda-dia licencia-activa"></td>
+            `;
+          }
+          return true;
+        }
+        return false;
+      });
+      console.log("Usuario actual ID:", usuario.id);
+      console.log("Licencias que tiene cargadas:", usuario.licencias);
       console.log("Tiene licencia:", tieneLicencia);
       html += `
         <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${tieneLicencia ? "licencia-activa" : ""}">

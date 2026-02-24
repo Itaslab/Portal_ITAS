@@ -549,5 +549,13 @@ textarea.disabled-field {
 }
 
 .licencia-activa {
-  background-color: red !important;
+  background-color: rgba(0, 128, 128, 0.2) !important; /* Color sutil, casi transparente */
+}
+
+.licencia-activa.vacaciones::after {
+  content: "V"; /* Mostrar una 'V' para días de vacaciones */
+  color: rgba(0, 128, 128, 0.8); /* Color más visible para el texto */
+  font-weight: bold;
+  display: inline-block;
+  margin-left: 5px;
 }
