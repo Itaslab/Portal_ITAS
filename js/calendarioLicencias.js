@@ -3,7 +3,7 @@
 // Función para cargar las licencias desde el backend
 async function cargarLicenciasDesdeBackend() {
   try {
-    const response = await fetch(basePath + '/backend/galeriaLicencias.js'); // Usando basePath
+    const response = await fetch(`${basePath}/backend/galeriaLicencias.js`); // Usando basePath
     if (!response.ok) {
       throw new Error('Error al obtener las licencias desde el backend');
     }
@@ -17,7 +17,7 @@ async function cargarLicenciasDesdeBackend() {
 // Función para cargar los usuarios desde el backend
 async function cargarUsuariosDesdeBackend() {
   try {
-    const response = await fetch(basePath + '/backend/usuarios.js'); // Usando basePath
+    const response = await fetch(`${basePath}/backend/usuarios.js`); // Usando basePath
     if (!response.ok) {
       throw new Error('Error al obtener los usuarios desde el backend');
     }
