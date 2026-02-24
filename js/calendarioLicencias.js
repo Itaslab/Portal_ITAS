@@ -118,21 +118,38 @@ const usuarios = Object.values(usuariosMap);
       const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
 
       // 🔹 Verificar si ese día tiene licencia
-      const tieneLicencia = usuario.licencias.some(l => {
-        const desde = new Date(l.Fecha_Desde);
-        const hasta = new Date(l.Fecha_Hasta);
+const licenciaDelDia = usuario.licencias.find(l => {
+  const desde = new Date(l.Fecha_Desde);
+  const hasta = new Date(l.Fecha_Hasta);
 
-        const diaTime = new Date(dia.getFullYear(), dia.getMonth(), dia.getDate()).getTime();
-        const desdeTime = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate()).getTime();
-        const hastaTime = new Date(hasta.getFullYear(), hasta.getMonth(), hasta.getDate()).getTime();
+  const diaTime = new Date(dia.getFullYear(), dia.getMonth(), dia.getDate()).getTime();
+  const desdeTime = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate()).getTime();
+  const hastaTime = new Date(hasta.getFullYear(), hasta.getMonth(), hasta.getDate()).getTime();
 
-        return diaTime >= desdeTime && diaTime <= hastaTime;
-      });
+  return diaTime >= desdeTime && diaTime <= hastaTime;
+});
 
-      html += `
-        <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${tieneLicencia ? "licencia-activa" : ""}">
-        </td>
-      `;
+
+let letra = "";
+let claseLicencia = "";
+
+if (licenciaDelDia) {
+  claseLicencia = "licencia-activa";
+
+  if (licenciaDelDia.TipoLic === "VACACIONES") {
+    letra = "V";
+  }
+
+  if (licenciaDelDia.TipoLic === "COMPENSACIÓN DIA") {
+    letra = "C";
+  }
+}
+
+html += `
+  <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseLicencia}">
+    ${letra}
+  </td>
+`;
     });
 
     html += `</tr>`;
