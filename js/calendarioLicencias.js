@@ -68,22 +68,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const licencias = await cargarLicenciasDesdeBackend(year, month, grupo);
 
   // 🔹 Agrupar por usuario
-  const usuariosMap = {};
+const usuariosMap = {};
 
-  licencias.forEach(l => {
-    const id = l.IdUsuario;
+licencias.forEach(l => {
+  const id = l.IdUsuario;
 
-    if (!usuariosMap[id]) {
-      usuariosMap[id] = {
-        nombre: `${l.Apellido} ${l.Nombre}`,
-        licencias: []
-      };
-    }
+  if (!usuariosMap[id]) {
+    usuariosMap[id] = {
+      id: id,
+      nombre: `${l.Apellido} ${l.Nombre}`,
+      licencias: []
+    };
+  }
 
-    usuariosMap[id].licencias.push(l);
-  });
+  usuariosMap[id].licencias.push(l);
+});
 
-  const usuarios = Object.values(usuariosMap);
+const usuarios = Object.values(usuariosMap);
 
   let html = `
     <table class="calendario-table">
