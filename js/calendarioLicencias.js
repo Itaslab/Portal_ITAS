@@ -4,13 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const filtroMes = document.getElementById("filtroMes");
   const contenedor = document.getElementById("contenedorCalendario");
-
-  const usuariosMock = [
-    { id: 1, nombre: "Juan Perez" },
-    { id: 2, nombre: "Maria Gomez" },
-    { id: 3, nombre: "Carlos Lopez" },
-    { id: 4, nombre: "Ana Torres" }
-  ];
+  
 
   function generarOpcionesMes() {
     const hoy = new Date();
@@ -42,56 +36,112 @@ document.addEventListener("DOMContentLoaded", () => {
     return dias;
   }
 
-  function renderCalendario() {
-    const [year, month] = filtroMes.value.split("-").map(Number);
-    const dias = obtenerDiasDelMes(year, month);
 
-    let html = `
-      <table class="calendario-table">
-        <thead>
-          <tr>
-            <th class="col-usuario">Usuario</th>
+  async function cargarLicenciasDesdeBackend(year, month, grupo) {
+
+  try {
+
+    const url = `${basePath}/galeriaLicencias/mes?year=${year}&month=${month}&grupo=${grupo || ""}`;
+
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || "Error desconocido");
+    }
+
+    return result.data;
+
+  } catch (error) {
+    console.error("Error cargando licencias:", error);
+    return [];
+  }
+}
+
+  async function renderCalendario() {
+
+  const [year, month] = filtroMes.value.split("-").map(Number);
+  const grupo = document.getElementById("filtroGrupo").value;
+
+  const dias = obtenerDiasDelMes(year, month);
+
+  // 🔹 Traemos licencias reales
+  const licencias = await cargarLicenciasDesdeBackend(year, month, grupo);
+
+  // 🔹 Agrupar por usuario
+  const usuariosMap = {};
+
+  licencias.forEach(l => {
+    const id = l.IdUsuario;
+
+    if (!usuariosMap[id]) {
+      usuariosMap[id] = {
+        nombre: `${l.Apellido} ${l.Nombre}`,
+        licencias: []
+      };
+    }
+
+    usuariosMap[id].licencias.push(l);
+  });
+
+  const usuarios = Object.values(usuariosMap);
+
+  let html = `
+    <table class="calendario-table">
+      <thead>
+        <tr>
+          <th class="col-usuario">Usuario</th>
+  `;
+
+  dias.forEach(dia => {
+    const diaSemana = dia.toLocaleDateString("es-ES", { weekday: "short" });
+    const numero = dia.getDate();
+    const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
+
+    html += `
+      <th class="dia-header ${esFinSemana ? "fin-semana" : ""}">
+        <div class="nombre-dia">${diaSemana}</div>
+        <div>${numero}</div>
+      </th>
     `;
+  });
+
+  html += `</tr></thead><tbody>`;
+
+  usuarios.forEach(usuario => {
+
+    html += `<tr>`;
+    html += `<td class="col-usuario">${usuario.nombre}</td>`;
 
     dias.forEach(dia => {
-      const diaSemana = dia.toLocaleDateString("es-ES", { weekday: "short" });
-      const numero = dia.getDate();
+
       const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
 
+      // 🔹 Verificar si ese día tiene licencia
+      const tieneLicencia = usuario.licencias.some(l => {
+        const desde = new Date(l.Fecha_Desde);
+        const hasta = new Date(l.Fecha_Hasta);
+        return dia >= desde && dia <= hasta;
+      });
+
       html += `
-        <th class="dia-header ${esFinSemana ? "fin-semana" : ""}">
-          <div class="nombre-dia">${diaSemana}</div>
-          <div>${numero}</div>
-        </th>
+        <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${tieneLicencia ? "licencia-activa" : ""}">
+        </td>
       `;
     });
 
-    html += `</tr></thead><tbody>`;
+    html += `</tr>`;
+  });
 
-    usuariosMock.forEach(usuario => {
-      html += `<tr>`;
-      html += `<td class="col-usuario">${usuario.nombre}</td>`;
+  html += `</tbody></table>`;
 
-      dias.forEach(dia => {
-        const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
-
-        html += `
-          <td class="celda-dia ${esFinSemana ? "fin-semana" : ""}">
-          </td>
-        `;
-      });
-
-      html += `</tr>`;
-    });
-
-    html += `</tbody></table>`;
-
-    contenedor.innerHTML = html;
-  }
+  contenedor.innerHTML = html;
+}
 
   filtroMes.addEventListener("change", renderCalendario);
 
   generarOpcionesMes();
   renderCalendario();
+  document.getElementById("filtroGrupo").addEventListener("change", renderCalendario);
 
 });
