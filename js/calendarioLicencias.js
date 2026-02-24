@@ -120,20 +120,19 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("Usuario:", usuario.nombre);
       console.log("Día actual:", dia);
 
-      const tieneLicencia = usuario.licencias.some(l => {
-        const desde = new Date(l.Fecha_Desde);
-        const hasta = new Date(l.Fecha_Hasta);
+const tieneLicencia = usuario.licencias.some(l => {
 
-        console.log("Licencia desde:", desde, "Licencia hasta:", hasta);
+  const [anioDesde, mesDesde, diaDesde] = l.Fecha_Desde.split("-").map(Number);
+  const [anioHasta, mesHasta, diaHasta] = l.Fecha_Hasta.split("-").map(Number);
 
-        const diaTime = new Date(dia.getFullYear(), dia.getMonth(), dia.getDate()).getTime();
-        const desdeTime = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate()).getTime();
-        const hastaTime = new Date(hasta.getFullYear(), hasta.getMonth(), hasta.getDate()).getTime();
+  // Creamos fechas LOCALES, no UTC
+  const fechaDesde = new Date(anioDesde, mesDesde - 1, diaDesde);
+  const fechaHasta = new Date(anioHasta, mesHasta - 1, diaHasta);
 
-        console.log("Comparando:", { diaTime, desdeTime, hastaTime });
+  const fechaActual = new Date(dia.getFullYear(), dia.getMonth(), dia.getDate());
 
-        return diaTime >= desdeTime && diaTime <= hastaTime;
-      });
+  return fechaActual >= fechaDesde && fechaActual <= fechaHasta;
+});
 
       console.log("Tiene licencia:", tieneLicencia);
       html += `
