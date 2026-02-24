@@ -1,10 +1,37 @@
-document.addEventListener("DOMContentLoaded", () => {
+//calendarioLicencias.js
+
+// Función para cargar las licencias desde el backend
+async function cargarLicenciasDesdeBackend() {
+  try {
+    const response = await fetch('../backend/galeriaLicencias.js');
+    if (!response.ok) {
+      throw new Error('Error al obtener las licencias desde el backend');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error al cargar las licencias:', error);
+    return [];
+  }
+}
+
+// Función para cargar los usuarios desde el backend
+async function cargarUsuariosDesdeBackend() {
+  try {
+    const response = await fetch('../backend/usuarios.js'); // Ajustar la ruta según corresponda
+    if (!response.ok) {
+      throw new Error('Error al obtener los usuarios desde el backend');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error al cargar los usuarios:', error);
+    return [];
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
 
   const filtroMes = document.getElementById("filtroMes");
-  const filtroGrupo = document.getElementById("filtroGrupo");
   const contenedor = document.getElementById("contenedorCalendario");
-
-  let datosLicencias = [];
 
   function generarOpcionesMes() {
     const hoy = new Date();
@@ -24,20 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  async function cargarLicencias() {
-
-    const [year, month] = filtroMes.value.split("-");
-    const grupo = filtroGrupo.value;
-
-    const response = await fetch(`/api/licencias/mes?year=${year}&month=${month}&grupo=${grupo}`);
-    const json = await response.json();
-
-    if (json.success) {
-      datosLicencias = json.data;
-      renderCalendario();
-    }
-  }
-
   function obtenerDiasDelMes(year, month) {
     const dias = [];
     const fecha = new Date(year, month, 0);
@@ -50,36 +63,11 @@ document.addEventListener("DOMContentLoaded", () => {
     return dias;
   }
 
-  function agruparPorUsuario(data) {
-    const mapa = {};
-
-    data.forEach(reg => {
-      const id = reg.IdUsuario;
-
-      if (!mapa[id]) {
-        mapa[id] = {
-          id,
-          nombre: `${reg.Apellido} ${reg.Nombre}`,
-          licencias: []
-        };
-      }
-
-      mapa[id].licencias.push({
-        desde: new Date(reg.Fecha_Desde),
-        hasta: new Date(reg.Fecha_Hasta),
-        tipo: reg.TipoLic
-      });
-    });
-
-    return Object.values(mapa);
-  }
-
-  function renderCalendario() {
-
+  async function renderCalendario() {
     const [year, month] = filtroMes.value.split("-").map(Number);
     const dias = obtenerDiasDelMes(year, month);
-
-    const usuarios = agruparPorUsuario(datosLicencias);
+    const licencias = await cargarLicenciasDesdeBackend();
+    const usuarios = await cargarUsuariosDesdeBackend();
 
     let html = `
       <table class="calendario-table">
@@ -108,20 +96,12 @@ document.addEventListener("DOMContentLoaded", () => {
       html += `<td class="col-usuario">${usuario.nombre}</td>`;
 
       dias.forEach(dia => {
-
         const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
-
-        let contenido = "";
-
-        usuario.licencias.forEach(lic => {
-          if (dia >= lic.desde && dia <= lic.hasta) {
-            contenido = lic.tipo;
-          }
-        });
+        const licencia = licencias.find(l => l.usuarioId === usuario.id && new Date(l.fecha).toDateString() === dia.toDateString());
 
         html += `
           <td class="celda-dia ${esFinSemana ? "fin-semana" : ""}">
-            ${contenido}
+            ${licencia ? `<span class='licencia'>${licencia.descripcion}</span>` : ""}
           </td>
         `;
       });
@@ -134,10 +114,9 @@ document.addEventListener("DOMContentLoaded", () => {
     contenedor.innerHTML = html;
   }
 
-  filtroMes.addEventListener("change", cargarLicencias);
-  filtroGrupo.addEventListener("change", cargarLicencias);
+  filtroMes.addEventListener("change", renderCalendario);
 
   generarOpcionesMes();
-  cargarLicencias();
+  await renderCalendario();
 
 });
