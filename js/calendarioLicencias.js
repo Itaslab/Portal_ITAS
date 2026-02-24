@@ -131,14 +131,19 @@ const tieneLicencia = usuario.licencias.some(l => {
   const fechaDesde = new Date(l.Fecha_Desde);
   const fechaHasta = new Date(l.Fecha_Hasta);
 
-  // Normalizamos todas a medianoche LOCAL
-  fechaDesde.setHours(0,0,0,0);
-  fechaHasta.setHours(0,0,0,0);
-
   const fechaActual = new Date(dia);
-  fechaActual.setHours(0,0,0,0);
 
-  return fechaActual >= fechaDesde && fechaActual <= fechaHasta;
+  console.log("----");
+  console.log("Fecha actual:", fechaActual);
+  console.log("Fecha desde raw:", fechaDesde);
+  console.log("Fecha hasta raw:", fechaHasta);
+
+  console.log("Times:");
+  console.log("actual:", fechaActual.getTime());
+  console.log("desde:", fechaDesde.getTime());
+  console.log("hasta:", fechaHasta.getTime());
+
+  return fechaActual.getTime() === fechaDesde.getTime();
 });
       console.log("Licencias crudas del backend:", licencias);
       console.log("Tiene licencia:", tieneLicencia);
