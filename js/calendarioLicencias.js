@@ -119,17 +119,12 @@ document.addEventListener("DOMContentLoaded", () => {
       // 🔹 Verificar si ese día tiene licencia
 const tieneLicencia = usuario.licencias.some(l => {
 
-  const desde = new Date(l.Fecha_Desde);
-  const hasta = new Date(l.Fecha_Hasta);
+  const desdeStr = l.Fecha_Desde.split("T")[0];
+  const hastaStr = l.Fecha_Hasta.split("T")[0];
 
-  // Normalizamos todo a 00:00:00
-  desde.setHours(0, 0, 0, 0);
-  hasta.setHours(0, 0, 0, 0);
+  const diaStr = dia.toISOString().split("T")[0];
 
-  const diaComparar = new Date(dia);
-  diaComparar.setHours(0, 0, 0, 0);
-
-  return diaComparar >= desde && diaComparar <= hasta;
+  return diaStr >= desdeStr && diaStr <= hastaStr;
 });
       html += `
         <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${tieneLicencia ? "licencia-activa" : ""}">
