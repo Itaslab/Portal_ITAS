@@ -120,16 +120,22 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("Usuario:", usuario.nombre);
       console.log("Día actual:", dia);
 
+
+
+console.log("Usuario actual ID:", usuario.id);
+console.log("Licencias que tiene cargadas:", usuario.licencias);
+
 const tieneLicencia = usuario.licencias.some(l => {
 
-  const [anioDesde, mesDesde, diaDesde] = l.Fecha_Desde.split("-").map(Number);
-  const [anioHasta, mesHasta, diaHasta] = l.Fecha_Hasta.split("-").map(Number);
+  const fechaDesde = new Date(l.Fecha_Desde);
+  const fechaHasta = new Date(l.Fecha_Hasta);
 
-  // Creamos fechas LOCALES, no UTC
-  const fechaDesde = new Date(anioDesde, mesDesde - 1, diaDesde);
-  const fechaHasta = new Date(anioHasta, mesHasta - 1, diaHasta);
+  // Normalizamos todas a medianoche LOCAL
+  fechaDesde.setHours(0,0,0,0);
+  fechaHasta.setHours(0,0,0,0);
 
-  const fechaActual = new Date(dia.getFullYear(), dia.getMonth(), dia.getDate());
+  const fechaActual = new Date(dia);
+  fechaActual.setHours(0,0,0,0);
 
   return fechaActual >= fechaDesde && fechaActual <= fechaHasta;
 });
