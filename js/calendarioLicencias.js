@@ -126,23 +126,9 @@ const usuarios = Object.values(usuariosMap);
         const desdeTime = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate()).getTime();
         const hastaTime = new Date(hasta.getFullYear(), hasta.getMonth(), hasta.getDate()).getTime();
 
-        if (diaTime >= desdeTime && diaTime <= hastaTime) {
-          if (l.TipoLic === "VACACIONES") {
-            html += `
-              <td class="celda-dia licencia-activa vacaciones">"></td>
-            `;
-          } else {
-            html += `
-              <td class="celda-dia licencia-activa"></td>
-            `;
-          }
-          return true;
-        }
-        return false;
+        return diaTime >= desdeTime && diaTime <= hastaTime;
       });
-      console.log("Usuario actual ID:", usuario.id);
-      console.log("Licencias que tiene cargadas:", usuario.licencias);
-      console.log("Tiene licencia:", tieneLicencia);
+
       html += `
         <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${tieneLicencia ? "licencia-activa" : ""}">
         </td>
