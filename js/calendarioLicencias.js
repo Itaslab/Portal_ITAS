@@ -41,8 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   try {
 
-    const url = `${basePath}/galeriaLicencias/mes?year=${year}&month=${month}&grupo=${grupo || ""}`;
-
+    const url = `${basePath}/api/licencias/mes?year=${year}&month=${month}&grupo=${grupo || ""}`;
     const response = await fetch(url);
     const result = await response.json();
 
