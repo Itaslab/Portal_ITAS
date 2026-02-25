@@ -41,7 +41,7 @@ router.get("/mes", async (req, res) => {
           l.TipoLic
       FROM ${schema}.LICENCIAS_SMART l
       INNER JOIN ${schema}.USUARIO u 
-          ON u.ID_Usuario = l.IdUsuario
+          ON u.ID_Usuario = l.ID_Usuario
       WHERE l.Fecha_Desde <= @finMes
       AND l.Fecha_Hasta >= @inicioMes
     `;
