@@ -33,7 +33,7 @@ router.get("/mes", async (req, res) => {
 
     let query = `
       SELECT 
-          l.IdUsuario,
+          l.ID_Usuario,
           u.Nombre,
           u.Apellido,
           l.Fecha_Desde,
