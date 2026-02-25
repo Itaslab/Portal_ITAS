@@ -552,3 +552,23 @@ textarea.disabled-field {
   background-color: rgba(29, 157, 189, 0.2) !important; /* Color sutil, casi transparente */
 }
 
+/* Colores sutiles por tipo de licencia */
+.tipo-vacaciones {
+  background-color: rgba(29, 157, 189, 0.2) !important; /* el que ya tenías */
+}
+
+.tipo-compensacion {
+  background-color: rgba(255, 200, 0, 0.2) !important; /* amarillo suave */
+}
+
+.tipo-enfermedad {
+  background-color: rgba(255, 0, 0, 0.1) !important; /* rojo muy suave */
+}
+
+.tipo-mudanza {
+  background-color: rgba(0, 128, 0, 0.1) !important; /* verde muy suave */
+}
+
+.tipo-nacimiento {
+  background-color: rgba(128, 0, 128, 0.1) !important; /* morado suave */
+}

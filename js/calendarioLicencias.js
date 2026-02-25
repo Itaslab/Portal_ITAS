@@ -134,26 +134,29 @@ let letra = "";
 let claseLicencia = "";
 
 if (licenciaDelDia) {
-  claseLicencia = "licencia-activa";
+  claseLicencia = "licencia-activa"; // clase base para todas
 
-  if (licenciaDelDia.TipoLic === "VACACIONES") {
-    letra = "V";
-  }
-
-  if (licenciaDelDia.TipoLic === "COMPENSACIÓN DIA") {
-    letra = "C";
-  }
-  
-  if (licenciaDelDia.TipoLic === "ENFERMEDAD") {
-    letra = "E";
-  }
-
-  if (licenciaDelDia.TipoLic === "MUDANZA") {
-    letra = "M";
-  }
-
-    if (licenciaDelDia.TipoLic === "NACIMIENTO") {
-    letra = "N";
+  switch (licenciaDelDia.TipoLic) {
+    case "VACACIONES":
+      letra = "V";
+      claseLicencia += " tipo-vacaciones";
+      break;
+    case "COMPENSACIÓN DIA":
+      letra = "C";
+      claseLicencia += " tipo-compensacion";
+      break;
+    case "ENFERMEDAD":
+      letra = "E";
+      claseLicencia += " tipo-enfermedad";
+      break;
+    case "MUDANZA":
+      letra = "M";
+      claseLicencia += " tipo-mudanza";
+      break;
+    case "NACIMIENTO":
+      letra = "N";
+      claseLicencia += " tipo-nacimiento";
+      break;
   }
 }
 
