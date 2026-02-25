@@ -161,7 +161,7 @@ if (licenciaDelDia) {
 }
 
 html += `
-  <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseLicencia}">
+  <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseLicencia}"title="${letra ? licenciaDelDia.TipoLic : ''}">
     ${letra}
   </td>
 `;
