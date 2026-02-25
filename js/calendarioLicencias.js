@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const usuariosMap = {};
 
 licencias.forEach(l => {
-  const id = l.IdUsuario;
+  const id = l.ID_Usuario;
 
   if (!usuariosMap[id]) {
     usuariosMap[id] = {
