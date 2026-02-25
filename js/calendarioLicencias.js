@@ -143,6 +143,18 @@ if (licenciaDelDia) {
   if (licenciaDelDia.TipoLic === "COMPENSACIÓN DIA") {
     letra = "C";
   }
+  
+  if (licenciaDelDia.TipoLic === "ENFERMEDAD") {
+    letra = "E";
+  }
+
+  if (licenciaDelDia.TipoLic === "MUDANZA") {
+    letra = "M";
+  }
+
+    if (licenciaDelDia.TipoLic === "NACIMIENTO") {
+    letra = "N";
+  }
 }
 
 html += `
