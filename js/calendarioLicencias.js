@@ -110,6 +110,15 @@ licencias.forEach(l => {
 
 const usuarios = Object.values(usuariosMap);
 
+if (usuarios.length === 0) {
+  contenedor.innerHTML = `
+    <div class="alert alert-info mt-3">
+      No hay licencias para los filtros seleccionados.
+    </div>
+  `;
+  return;
+}
+
   let html = `
     <table class="calendario-table">
       <thead>
