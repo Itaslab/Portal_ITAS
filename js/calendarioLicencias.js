@@ -55,7 +55,11 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("Error cargando licencias:", error);
     return [];
   }
+
+  
 }
+
+
 
   async function renderCalendario() {
 
