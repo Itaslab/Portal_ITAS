@@ -222,6 +222,7 @@ html += `
   });
 
   filtroSubgrupo.disabled = false;
+  filtroSubgrupo.value = "";
 
   renderCalendario();
 });
