@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const filtroMes = document.getElementById("filtroMes");
   const contenedor = document.getElementById("contenedorCalendario");
+  const filtroGrupo = document.getElementById("filtroGrupo");
+  const filtroSubgrupo = document.getElementById("filtroSubgrupo");
   
 
   function generarOpcionesMes() {
@@ -37,11 +39,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  async function cargarLicenciasDesdeBackend(year, month, grupo) {
+  async function cargarLicenciasDesdeBackend(year, month, grupo,subgrupo) {
 
   try {
 
-    const url = `${basePath}/api/licencias/mes?year=${year}&month=${month}&grupo=${grupo || ""}`;
+    const url = `${basePath}/api/licencias/mes?year=${year}&month=${month}&grupo=${grupo || ""}&subgrupo=${subgrupo || ""}`;
     const response = await fetch(url);
     const result = await response.json();
 
@@ -59,18 +61,36 @@ document.addEventListener("DOMContentLoaded", () => {
   
 }
 
+async function cargarSubgrupos(grupo) {
+  try {
+
+    const response = await fetch(`${basePath}/api/licencias/subgrupos?grupo=${grupo}`);
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || "Error desconocido");
+    }
+
+    return result.data;
+
+  } catch (error) {
+    console.error("Error cargando subgrupos:", error);
+    return [];
+  }
+}
 
 
   async function renderCalendario() {
 
   const [year, month] = filtroMes.value.split("-").map(Number);
   const grupo = document.getElementById("filtroGrupo").value;
+  const subgrupo = filtroSubgrupo.value;
+  
 
   const dias = obtenerDiasDelMes(year, month);
 
   // 🔹 Traemos licencias reales
-  const licencias = await cargarLicenciasDesdeBackend(year, month, grupo);
-
+const licencias = await cargarLicenciasDesdeBackend(year, month, grupo, subgrupo);
   // 🔹 Agrupar por usuario
 const usuariosMap = {};
 
@@ -179,10 +199,34 @@ html += `
   contenedor.innerHTML = html;
 }
 
-  filtroMes.addEventListener("change", renderCalendario);
+  filtroGrupo.addEventListener("change", async () => {
 
+  const grupoSeleccionado = filtroGrupo.value;
+
+  if (!grupoSeleccionado) {
+    filtroSubgrupo.innerHTML = `<option value="">Todos</option>`;
+    filtroSubgrupo.disabled = true;
+    renderCalendario();
+    return;
+  }
+
+  const subgrupos = await cargarSubgrupos(grupoSeleccionado);
+
+  filtroSubgrupo.innerHTML = `<option value="">Todos</option>`;
+
+  subgrupos.forEach(sg => {
+    const option = document.createElement("option");
+    option.value = sg.Subgrupo;
+    option.textContent = sg.Subgrupo;
+    filtroSubgrupo.appendChild(option);
+  });
+
+  filtroSubgrupo.disabled = false;
+
+  renderCalendario();
+});
+filtroSubgrupo.addEventListener("change", renderCalendario);
   generarOpcionesMes();
   renderCalendario();
-  document.getElementById("filtroGrupo").addEventListener("change", renderCalendario);
 
 });
