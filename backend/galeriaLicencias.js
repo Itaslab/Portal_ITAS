@@ -31,27 +31,40 @@ router.get("/mes", async (req, res) => {
       .input("inicioMes", sql.Date, inicioMes)
       .input("finMes", sql.Date, finMes);
 
-    let query = `
-      SELECT 
-          l.ID_Usuario,
-          u.Nombre,
-          u.Apellido,
-          l.Fecha_Desde,
-          l.Fecha_Hasta,
-          l.TipoLic
-      FROM ${schema}.LICENCIAS_SMART l
-      INNER JOIN ${schema}.USUARIO u 
-          ON u.ID_Usuario = l.ID_Usuario
-      WHERE l.Fecha_Desde <= @finMes
-      AND l.Fecha_Hasta >= @inicioMes
-    `;
+let query = `
+  SELECT 
+      l.ID_Usuario,
+      u.Nombre,
+      u.Apellido,
+      l.Fecha_Desde,
+      l.Fecha_Hasta,
+      l.TipoLic
+  FROM ${schema}.LICENCIAS_SMART l
+  INNER JOIN ${schema}.USUARIO u 
+      ON u.ID_Usuario = l.ID_Usuario
+`;
 
-    if (grupo) {
-      request.input("grupo", sql.VarChar, grupo);
-      query += ` AND u.Grupo = @grupo `;
-    }
+if (grupo) {
+  request.input("grupo", sql.VarChar, grupo);
 
-    query += ` ORDER BY u.Apellido, u.Nombre`;
+  query += `
+    INNER JOIN ${schema}.USUARIO_GRUPO ug
+      ON ug.ID_Usuario = u.ID_Usuario
+    INNER JOIN ${schema}.GRUPO g
+      ON g.ID_Grupo = ug.ID_Grupo
+  `;
+}
+
+query += `
+  WHERE l.Fecha_Desde <= @finMes
+  AND l.Fecha_Hasta >= @inicioMes
+`;
+
+if (grupo) {
+  query += ` AND g.Grupo = @grupo `;
+}
+
+query += ` ORDER BY u.Apellido, u.Nombre`;
 
     const result = await request.query(query);
 
