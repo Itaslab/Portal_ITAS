@@ -227,6 +227,7 @@ html += `
   renderCalendario();
 });
 filtroSubgrupo.addEventListener("change", renderCalendario);
+filtroMes.addEventListener("change", renderCalendario);
   generarOpcionesMes();
   renderCalendario();
 
