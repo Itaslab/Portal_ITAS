@@ -175,7 +175,7 @@ if (licenciaDelDia) {
       claseLicencia += " tipo-vacaciones";
       break;
     case "COMPENSACIÓN DIA":
-      letra = "C";
+      letra = "CD";
       claseLicencia += " tipo-compensacion";
       break;
     case "ENFERMEDAD":
@@ -195,7 +195,7 @@ if (licenciaDelDia) {
       claseLicencia += " tipo-accidente";
       break;
     case "PARO/ASAMBLEA":
-      letra = "P";
+      letra = "PA";
       claseLicencia += " tipo-paro";
       break;
     case "OTRA":
@@ -203,7 +203,7 @@ if (licenciaDelDia) {
       claseLicencia += " tipo-otra";
       break;
     case "COMPENSACIÓN HORAS":
-      letra = "H";
+      letra = "CH";
       claseLicencia += " tipo-compensacion-horas";
       break;
     case "EXAMEN":
