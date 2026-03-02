@@ -572,3 +572,23 @@ textarea.disabled-field {
 .tipo-nacimiento {
   background-color: rgba(128, 0, 128, 0.1) !important; /* morado suave */
 }
+
+.tipo-accidente {
+  background-color: rgba(128, 0, 70, 0.1) !important; /* morado suave */
+}
+
+.tipo-paro {
+  background-color: rgba(22, 190, 202, 0.1) !important; /* morado suave */
+}
+
+.tipo-otra {
+  background-color: rgba(202, 169, 22, 0.1) !important; /* morado suave */
+}
+
+.tipo-compensacion-horas{
+  background-color: rgba(235, 23, 86, 0.1) !important; /* morado suave */
+}
+
+.tipo-examen{
+  background-color: rgba(56, 165, 74, 0.1) !important; /* morado suave */
+}

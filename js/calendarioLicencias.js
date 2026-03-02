@@ -190,6 +190,26 @@ if (licenciaDelDia) {
       letra = "N";
       claseLicencia += " tipo-nacimiento";
       break;
+    case "ACCIDENTE":
+      letra = "A";
+      claseLicencia += " tipo-accidente";
+      break;
+    case "PARO/ASAMBLEA":
+      letra = "P";
+      claseLicencia += " tipo-paro";
+      break;
+    case "OTRA":
+      letra = "O";
+      claseLicencia += " tipo-otra";
+      break;
+    case "COMPENSACIÓN HORAS":
+      letra = "H";
+      claseLicencia += " tipo-compensacion-horas";
+      break;
+    case "EXAMEN":
+      letra = "EX";
+      claseLicencia += " tipo-examen";
+      break;
   }
 }
 
