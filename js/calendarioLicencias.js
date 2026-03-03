@@ -39,9 +39,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  function parseFechaLocal(fechaStr) {
-  const [year, month, day] = fechaStr.split("-").map(Number);
-  return new Date(year, month - 1, day);
+function parseFechaLocal(fechaStr) {
+  if (!fechaStr) return null;
+
+  const fecha = new Date(fechaStr);
+
+  return new Date(
+    fecha.getFullYear(),
+    fecha.getMonth(),
+    fecha.getDate()
+  );
 }
 
 
