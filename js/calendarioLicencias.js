@@ -39,6 +39,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
+  function parseFechaLocal(fechaStr) {
+  const [year, month, day] = fechaStr.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+
   async function cargarLicenciasDesdeBackend(year, month, grupo,subgrupo) {
 
   try {
@@ -152,9 +158,10 @@ if (usuarios.length === 0) {
 
       // 🔹 Verificar si ese día tiene licencia
 const licenciaDelDia = usuario.licencias.find(l => {
-  const desde = new Date(l.Fecha_Desde);
-  const hasta = new Date(l.Fecha_Hasta);
 
+
+  const desde = parseFechaLocal(l.Fecha_Desde);
+  const hasta = parseFechaLocal(l.Fecha_Hasta);
   const diaTime = new Date(dia.getFullYear(), dia.getMonth(), dia.getDate()).getTime();
   const desdeTime = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate()).getTime();
   const hastaTime = new Date(hasta.getFullYear(), hasta.getMonth(), hasta.getDate()).getTime();
