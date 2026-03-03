@@ -29,13 +29,13 @@ router.get("/mes", async (req, res) => {
       .input("finMes", sql.Date, finMes);
 
     let query = `
-      SELECT 
-          l.ID_Usuario,
-          u.Nombre,
-          u.Apellido,
-          l.Fecha_Desde,
-          l.Fecha_Hasta,
-          l.TipoLic
+SELECT 
+    l.ID_Usuario,
+    u.Nombre,
+    u.Apellido,
+    CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
+    CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
+    l.TipoLic
       FROM ${schema}.LICENCIAS_SMART l
       INNER JOIN ${schema}.USUARIO u 
           ON u.ID_Usuario = l.ID_Usuario
