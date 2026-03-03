@@ -28,46 +28,40 @@ router.get("/mes", async (req, res) => {
       .input("inicioMes", sql.Date, inicioMes)
       .input("finMes", sql.Date, finMes);
 
-    let query = `
+let query = `
 SELECT 
     l.ID_Usuario,
     u.Nombre,
     u.Apellido,
+    g.Grupo,
+    g.Subgrupo,
     CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
     CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
     l.TipoLic
-      FROM ${schema}.LICENCIAS_SMART l
-      INNER JOIN ${schema}.USUARIO u 
-          ON u.ID_Usuario = l.ID_Usuario
-    `;
+FROM ${schema}.LICENCIAS_SMART l
+INNER JOIN ${schema}.USUARIO u 
+    ON u.ID_Usuario = l.ID_Usuario
+INNER JOIN ${schema}.USUARIO_GRUPO ug
+    ON ug.ID_Usuario = u.ID_Usuario
+INNER JOIN ${schema}.GRUPO g
+    ON g.ID_Grupo = ug.ID_Grupo
+WHERE l.Fecha_Desde <= @finMes
+AND l.Fecha_Hasta >= @inicioMes
+`;
 
-    // JOIN grupo solo si viene grupo
-    if (grupo) {
-      request.input("grupo", sql.VarChar, grupo);
+if (grupo) {
+  request.input("grupo", sql.VarChar, grupo);
+  query += ` AND g.Grupo = @grupo `;
+}
 
-      query += `
-        INNER JOIN ${schema}.USUARIO_GRUPO ug
-          ON ug.ID_Usuario = u.ID_Usuario
-        INNER JOIN ${schema}.GRUPO g
-          ON g.ID_Grupo = ug.ID_Grupo
-      `;
-    }
+if (grupo && subgrupo) {
+  request.input("subgrupo", sql.VarChar, subgrupo);
+  query += ` AND g.Subgrupo = @subgrupo `;
+}
 
-    query += `
-      WHERE l.Fecha_Desde <= @finMes
-      AND l.Fecha_Hasta >= @inicioMes
-    `;
-
-    if (grupo) {
-      query += ` AND g.Grupo = @grupo `;
-    }
-
-    if (grupo && subgrupo) {
-      request.input("subgrupo", sql.VarChar, subgrupo);
-      query += ` AND g.Subgrupo = @subgrupo `;
-    }
-
-    query += ` ORDER BY u.Apellido, u.Nombre`;
+query += `
+ORDER BY g.Grupo, u.Apellido, u.Nombre
+`;
 
     const result = await request.query(query);
 

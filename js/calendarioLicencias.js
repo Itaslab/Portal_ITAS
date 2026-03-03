@@ -100,26 +100,71 @@ async function cargarSubgrupos(grupo) {
   // 🔹 Traemos licencias reales
 const licencias = await cargarLicenciasDesdeBackend(year, month, grupo, subgrupo);
   // 🔹 Agrupar por usuario
-const usuariosMap = {};
+const grupoSeleccionado = filtroGrupo.value;
+const modoTodos = !grupoSeleccionado;
 
-licencias.forEach(l => {
-  const id = l.ID_Usuario;
+let estructura = [];
 
-  if (!usuariosMap[id]) {
-    usuariosMap[id] = {
-      id: id,
-      nombre: `${l.Apellido} ${l.Nombre}`,
-      licencias: []
-    };
-  }
+if (modoTodos) {
 
-  usuariosMap[id].licencias.push(l);
-});
+  const gruposMap = {};
 
-const usuarios = Object.values(usuariosMap);
+  licencias.forEach(l => {
+    const grupoNombre = l.Grupo || "Sin Grupo";
+    const id = l.ID_Usuario;
 
-if (usuarios.length === 0) {
-  contenedor.innerHTML = `
+    if (!gruposMap[grupoNombre]) {
+      gruposMap[grupoNombre] = {};
+    }
+
+    if (!gruposMap[grupoNombre][id]) {
+      gruposMap[grupoNombre][id] = {
+        id: id,
+        nombre: `${l.Apellido} ${l.Nombre}`,
+        licencias: []
+      };
+    }
+
+    gruposMap[grupoNombre][id].licencias.push(l);
+  });
+
+  estructura = Object.keys(gruposMap)
+    .sort()
+    .map(grupoNombre => ({
+      tipo: "grupo",
+      nombre: grupoNombre,
+      usuarios: Object.values(gruposMap[grupoNombre])
+        .sort((a,b) => a.nombre.localeCompare(b.nombre))
+    }));
+
+} else {
+
+  const usuariosMap = {};
+
+  licencias.forEach(l => {
+    const id = l.ID_Usuario;
+
+    if (!usuariosMap[id]) {
+      usuariosMap[id] = {
+        id: id,
+        nombre: `${l.Apellido} ${l.Nombre}`,
+        licencias: []
+      };
+    }
+
+    usuariosMap[id].licencias.push(l);
+  });
+
+  estructura = [{
+    tipo: "normal",
+    usuarios: Object.values(usuariosMap)
+      .sort((a,b) => a.nombre.localeCompare(b.nombre))
+  }];
+}
+
+
+if (estructura.length === 0 || estructura.every(b => b.usuarios.length === 0)) {
+    contenedor.innerHTML = `
     <div class="alert alert-info mt-3">
       No hay licencias para los filtros seleccionados.
     </div>
@@ -149,7 +194,19 @@ if (usuarios.length === 0) {
 
   html += `</tr></thead><tbody>`;
 
-  usuarios.forEach(usuario => {
+estructura.forEach(bloque => {
+
+  if (bloque.tipo === "grupo") {
+    html += `
+      <tr class="fila-grupo">
+        <td colspan="${dias.length + 1}" class="grupo-titulo">
+          ${bloque.nombre}
+        </td>
+      </tr>
+    `;
+  }
+
+  bloque.usuarios.forEach(usuario => {
 
     html += `<tr>`;
     html += `<td class="col-usuario">${usuario.nombre}</td>`;
@@ -158,87 +215,55 @@ if (usuarios.length === 0) {
 
       const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
 
-      // 🔹 Verificar si ese día tiene licencia
-const licenciaDelDia = usuario.licencias.find(l => {
+      const licenciaDelDia = usuario.licencias.find(l => {
 
+        const desde = parseFechaLocal(l.Fecha_Desde);
+        const hasta = parseFechaLocal(l.Fecha_Hasta);
 
-  const desde = parseFechaLocal(l.Fecha_Desde);
-  const hasta = parseFechaLocal(l.Fecha_Hasta);
-  const diaTime = new Date(dia.getFullYear(), dia.getMonth(), dia.getDate()).getTime();
-  const desdeTime = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate()).getTime();
-  const hastaTime = new Date(hasta.getFullYear(), hasta.getMonth(), hasta.getDate()).getTime();
+        const diaTime = new Date(dia.getFullYear(), dia.getMonth(), dia.getDate()).getTime();
+        const desdeTime = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate()).getTime();
+        const hastaTime = new Date(hasta.getFullYear(), hasta.getMonth(), hasta.getDate()).getTime();
 
-  return diaTime >= desdeTime && diaTime <= hastaTime;
-});
+        return diaTime >= desdeTime && diaTime <= hastaTime;
+      });
 
+      let letra = "";
+      let claseLicencia = "";
 
-let letra = "";
-let claseLicencia = "";
+      if (licenciaDelDia) {
+        claseLicencia = "licencia-activa";
 
-if (licenciaDelDia) {
-  claseLicencia = "licencia-activa"; // clase base para todas
+        switch (licenciaDelDia.TipoLic) {
+          case "VACACIONES": letra = "V"; claseLicencia += " tipo-vacaciones"; break;
+          case "COMPENSACIÓN DIA": letra = "CD"; claseLicencia += " tipo-compensacion"; break;
+          case "ENFERMEDAD": letra = "E"; claseLicencia += " tipo-enfermedad"; break;
+          case "MUDANZA": letra = "M"; claseLicencia += " tipo-mudanza"; break;
+          case "NACIMIENTO": letra = "N"; claseLicencia += " tipo-nacimiento"; break;
+          case "ACCIDENTE": letra = "A"; claseLicencia += " tipo-accidente"; break;
+          case "PARO/ASAMBLEA": letra = "PA"; claseLicencia += " tipo-paro"; break;
+          case "OTRA": letra = "O"; claseLicencia += " tipo-otra"; break;
+          case "COMPENSACIÓN HORAS": letra = "CH"; claseLicencia += " tipo-compensacion-horas"; break;
+          case "EXAMEN": letra = "EX"; claseLicencia += " tipo-examen"; break;
+        }
+      }
 
-  switch (licenciaDelDia.TipoLic) {
-    case "VACACIONES":
-      letra = "V";
-      claseLicencia += " tipo-vacaciones";
-      break;
-    case "COMPENSACIÓN DIA":
-      letra = "CD";
-      claseLicencia += " tipo-compensacion";
-      break;
-    case "ENFERMEDAD":
-      letra = "E";
-      claseLicencia += " tipo-enfermedad";
-      break;
-    case "MUDANZA":
-      letra = "M";
-      claseLicencia += " tipo-mudanza";
-      break;
-    case "NACIMIENTO":
-      letra = "N";
-      claseLicencia += " tipo-nacimiento";
-      break;
-    case "ACCIDENTE":
-      letra = "A";
-      claseLicencia += " tipo-accidente";
-      break;
-    case "PARO/ASAMBLEA":
-      letra = "PA";
-      claseLicencia += " tipo-paro";
-      break;
-    case "OTRA":
-      letra = "O";
-      claseLicencia += " tipo-otra";
-      break;
-    case "COMPENSACIÓN HORAS":
-      letra = "CH";
-      claseLicencia += " tipo-compensacion-horas";
-      break;
-    case "EXAMEN":
-      letra = "EX";
-      claseLicencia += " tipo-examen";
-      break;
-  }
-}
-
-html += `
-  <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseLicencia}"title="${letra ? licenciaDelDia.TipoLic : ''}">
-    ${letra}
-  </td>
-`;
+      html += `
+        <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseLicencia}" 
+            title="${letra ? licenciaDelDia.TipoLic : ''}">
+          ${letra}
+        </td>
+      `;
     });
 
     html += `</tr>`;
   });
+});
 
-  html += `</tbody></table>`;
-
-  contenedor.innerHTML = html;
+html += `</tbody></table>`;
+contenedor.innerHTML = html;
 }
 
   filtroGrupo.addEventListener("change", async () => {
-
   const grupoSeleccionado = filtroGrupo.value;
 
   if (!grupoSeleccionado) {
@@ -264,9 +289,10 @@ html += `
 
   renderCalendario();
 });
+
 filtroSubgrupo.addEventListener("change", renderCalendario);
 filtroMes.addEventListener("change", renderCalendario);
-  generarOpcionesMes();
-  renderCalendario();
+generarOpcionesMes();
+renderCalendario();
 
 });

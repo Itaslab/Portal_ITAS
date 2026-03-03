@@ -552,6 +552,14 @@ textarea.disabled-field {
   background-color: rgba(29, 157, 189, 0.2) !important; /* Color sutil, casi transparente */
 }
 
+
+.grupo-titulo {
+  background: #f4f6f8;
+  font-weight: 600;
+  padding: 6px;
+  border-top: 2px solid #d0d7de;
+}
+
 /* Colores sutiles por tipo de licencia */
 .tipo-vacaciones {
   background-color: rgba(29, 157, 189, 0.2) !important; /* el que ya tenías */
