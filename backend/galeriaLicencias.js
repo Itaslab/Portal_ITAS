@@ -17,12 +17,76 @@ router.get("/mes", async (req, res) => {
     });
   }
 
+  // ✅ CAPTURAR USUARIO
+  const idUsuarioSesion = req.session?.user?.ID_Usuario;
+
+  if (!idUsuarioSesion) {
+    return res.status(401).json({
+      success: false,
+      error: "No autorizado"
+    });
+  }
+  
   try {
 
     const inicioMes = new Date(year, month - 1, 1);
     const finMes = new Date(year, month, 0);
 
     const pool = await poolPromise;
+
+// 🔎 Obtener datos del usuario logueado y detectar rol
+const usuarioResult = await pool.request()
+  .input("idUsuario", sql.Int, idUsuarioSesion)
+  .query(`
+    SELECT 
+        u.ID_Usuario,
+        u.Nombre,
+        u.Apellido,
+        g.Grupo,
+        g.Subgrupo,
+        g.Gerente,
+        g.Coordinador,
+        g.Referente
+    FROM ${schema}.USUARIO u
+    LEFT JOIN ${schema}.GRUPO g
+        ON (u.Nombre + ' ' + u.Apellido = g.Gerente
+            OR u.Nombre + ' ' + u.Apellido = g.Coordinador
+            OR u.Nombre + ' ' + u.Apellido = g.Referente)
+    WHERE u.ID_Usuario = @idUsuario
+  `);
+
+if (usuarioResult.recordset.length === 0) {
+  return res.status(403).json({
+    success: false,
+    error: "Usuario sin rol asignado"
+  });
+}
+
+const usuario = usuarioResult.recordset[0];
+
+const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
+
+let rol = "USER";
+let grupoUsuario = null;
+let subgrupoUsuario = null;
+
+if (usuario.Gerente === nombreCompleto) {
+  rol = "GERENTE";
+}
+
+else if (usuario.Coordinador === nombreCompleto) {
+  rol = "COORDINADOR";
+  grupoUsuario = usuario.Grupo;
+}
+
+else if (usuario.Referente === nombreCompleto) {
+  rol = "REFERENTE";
+  grupoUsuario = usuario.Grupo;
+  subgrupoUsuario = usuario.Subgrupo;
+}
+
+
+
 
     const request = pool.request()
       .input("inicioMes", sql.Date, inicioMes)
@@ -48,6 +112,30 @@ INNER JOIN ${schema}.GRUPO g
 WHERE l.Fecha_Desde <= @finMes
 AND l.Fecha_Hasta >= @inicioMes
 `;
+
+// 🎯 FILTRO POR ROL
+if (rol === "GERENTE") {
+  // ve todo
+}
+
+else if (rol === "COORDINADOR") {
+  request.input("grupoUsuario", sql.VarChar, grupoUsuario);
+  query += ` AND g.Grupo = @grupoUsuario `;
+}
+
+else if (rol === "REFERENTE") {
+  request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
+  query += ` AND g.Subgrupo = @subgrupoUsuario `;
+}
+
+else {
+  request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
+  query += ` AND l.ID_Usuario = @idUsuarioSesion `;
+}
+
+
+
+
 
 if (grupo) {
   request.input("grupo", sql.VarChar, grupo);
