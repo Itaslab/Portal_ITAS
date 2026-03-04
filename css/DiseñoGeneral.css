@@ -553,13 +553,7 @@ textarea.disabled-field {
 }
 
 
-.grupo-titulo {
-  background: #f4f6f8;
-  font-weight: 600;
-  padding: 8px;
-  border-top: 2px solid #d0d7de;
-  text-align: left;
-}
+
 
 
 .fila-grupo {
@@ -568,7 +562,7 @@ textarea.disabled-field {
 
 .grupo-titulo {
   font-weight: 600;
-    padding-left: 4px;
+  padding-left: 4px;
   border-left: 4px solid #0d6efd;
 }
 
