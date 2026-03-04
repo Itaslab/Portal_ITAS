@@ -568,6 +568,8 @@ textarea.disabled-field {
 
 .grupo-titulo {
   font-weight: 600;
+    padding-left: 4px;
+  border-left: 4px solid #0d6efd;
 }
 
 /* Colores sutiles por tipo de licencia */
