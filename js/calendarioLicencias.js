@@ -197,13 +197,17 @@ if (estructura.length === 0 || estructura.every(b => b.usuarios.length === 0)) {
 estructura.forEach(bloque => {
 
   if (bloque.tipo === "grupo") {
-    html += `
-      <tr class="fila-grupo">
-        <td colspan="${dias.length + 1}" class="grupo-titulo">
-          ${bloque.nombre}
-        </td>
-      </tr>
-    `;
+html += `<tr class="fila-grupo">`;
+
+// Primera columna (Usuario)
+html += `<td class="col-usuario grupo-titulo">${bloque.nombre}</td>`;
+
+// Resto de columnas vacías
+dias.forEach(() => {
+  html += `<td></td>`;
+});
+
+html += `</tr>`;
   }
 
   bloque.usuarios.forEach(usuario => {

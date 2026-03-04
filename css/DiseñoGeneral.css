@@ -561,6 +561,15 @@ textarea.disabled-field {
   text-align: left;
 }
 
+
+.fila-grupo {
+  background-color: #f1f3f5;
+}
+
+.grupo-titulo {
+  font-weight: 600;
+}
+
 /* Colores sutiles por tipo de licencia */
 .tipo-vacaciones {
   background-color: rgba(29, 157, 189, 0.2) !important; /* el que ya tenías */
