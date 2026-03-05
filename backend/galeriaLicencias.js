@@ -19,6 +19,7 @@ router.get("/mes", async (req, res) => {
 
   // ✅ CAPTURAR USUARIO
   const idUsuarioSesion = req.session?.user?.ID_Usuario;
+  const esAdmin = idUsuarioSesion  === 'Admin';
 
   if (!idUsuarioSesion) {
     return res.status(401).json({
@@ -65,6 +66,43 @@ if (usuarioResult.recordset.length === 0) {
 const usuario = usuarioResult.recordset[0];
 
 const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
+
+
+if (esAdmin) {
+
+  const licencias = await pool.request()
+    .input("inicioMes", sql.Date, inicioMes)
+    .input("finMes", sql.Date, finMes)
+    .query(`
+      SELECT 
+          l.ID_Usuario,
+          u.Nombre,
+          u.Apellido,
+          g.Grupo,
+          g.Subgrupo,
+          CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
+          CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
+          l.TipoLic
+      FROM ${schema}.LICENCIAS_SMART l
+      INNER JOIN ${schema}.USUARIO u 
+          ON u.ID_Usuario = l.ID_Usuario
+      INNER JOIN ${schema}.USUARIO_GRUPO ug
+          ON ug.ID_Usuario = u.ID_Usuario
+      INNER JOIN ${schema}.GRUPO g
+          ON g.ID_Grupo = ug.ID_Grupo
+      WHERE l.Fecha_Desde <= @finMes
+      AND l.Fecha_Hasta >= @inicioMes
+      ORDER BY g.Grupo, u.Apellido, u.Nombre
+    `);
+
+  return res.json({
+    success: true,
+    data: licencias.recordset
+  });
+}
+
+
+
 
 let rol = "USER";
 let grupoUsuario = null;
