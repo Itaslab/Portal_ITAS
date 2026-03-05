@@ -19,7 +19,7 @@ router.get("/mes", async (req, res) => {
 
   // ✅ CAPTURAR USUARIO
   const idUsuarioSesion = req.session?.user?.ID_Usuario;
-  const adminIds = [79, 81, 89, 69, 88];
+  const adminIds = [79, 81, 89, 88];
   const esAdmin = adminIds.includes(idUsuarioSesion);
 
 
