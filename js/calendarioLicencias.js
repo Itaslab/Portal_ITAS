@@ -2,16 +2,18 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const filtroMes = document.getElementById("filtroMes");
-  const contenedor = document.getElementById("contenedorCalendario");
-  const filtroGrupo = document.getElementById("filtroGrupo");
-  const filtroSubgrupo = document.getElementById("filtroSubgrupo");
-  document.getElementById("btnCrearLicencia").addEventListener("click", () => {
+const filtroMes = document.getElementById("filtroMes");
+const contenedor = document.getElementById("contenedorCalendario");
+const filtroGrupo = document.getElementById("filtroGrupo");
+const filtroSubgrupo = document.getElementById("filtroSubgrupo");
 
-  const modal = new bootstrap.Modal(document.getElementById("modalCrearLicencia"));
+// MODAL
+const modalCrearLicencia = new bootstrap.Modal(
+  document.getElementById("modalCrearLicencia")
+);
 
-  modal.show();
-
+document.getElementById("btnCrearLicencia").addEventListener("click", () => {
+  modalCrearLicencia.show();
 });
 
   function generarOpcionesMes() {
