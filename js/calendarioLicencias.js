@@ -300,3 +300,13 @@ generarOpcionesMes();
 renderCalendario();
 
 });
+
+// CREAR LICENCIAS 
+
+document.getElementById("btnCrearLicencia").addEventListener("click", () => {
+
+  const modal = new bootstrap.Modal(document.getElementById("modalCrearLicencia"));
+
+  modal.show();
+
+});
