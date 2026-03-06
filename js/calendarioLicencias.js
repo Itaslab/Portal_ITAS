@@ -6,7 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const contenedor = document.getElementById("contenedorCalendario");
   const filtroGrupo = document.getElementById("filtroGrupo");
   const filtroSubgrupo = document.getElementById("filtroSubgrupo");
-  
+  document.getElementById("btnCrearLicencia").addEventListener("click", () => {
+
+  const modal = new bootstrap.Modal(document.getElementById("modalCrearLicencia"));
+
+  modal.show();
+
+});
 
   function generarOpcionesMes() {
     const hoy = new Date();
@@ -303,10 +309,3 @@ renderCalendario();
 
 // CREAR LICENCIAS 
 
-document.getElementById("btnCrearLicencia").addEventListener("click", () => {
-
-  const modal = new bootstrap.Modal(document.getElementById("modalCrearLicencia"));
-
-  modal.show();
-
-});
