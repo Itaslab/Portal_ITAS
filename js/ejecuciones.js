@@ -270,10 +270,14 @@ function llenarFiltroSolicitante() {
           </span>
         </div>
 
-        <div class="mb-1 break-anywhere">
-          <i class="fas fa-terminal text-secondary me-1"></i>
-          ${ejec.titulo}
+        <div class="mb-1">
+        <div class="d-flex align-items-center gap-2 min-w-0">
+          <i class="fas fa-terminal text-secondary flex-shrink-0"></i>
+          <span class="flex-grow-1 min-w-0 truncate-flex" title="${ejec.titulo}">
+            ${ejec.titulo}
+          </span>
         </div>
+      </div>
 
         <div class="mb-1">
           <i class="fas fa-id-card text-info me-1"></i>
@@ -290,7 +294,7 @@ function llenarFiltroSolicitante() {
       </div>
 
       <!-- COLUMNA 2 - ESTADO Y TIEMPOS -->
-      <div class="col-md-4">
+      <div class="col-md-4 col-min-0">
         <div class="text-center mb-1">
           <span class="badge px-2 py-1 small"
                 style="background-color:#${ejec.colorEstado || '6c757d'};color:white;">
