@@ -255,7 +255,7 @@ function llenarFiltroSolicitante() {
     <div class="row g-2 align-items-stretch">
 
       <!-- COLUMNA 1 - DATOS -->
-      <div class="col-md-4 small">
+      <div class="col-md-4 small col-min-0">
 
         <div class="mb-1 d-flex align-items-center gap-2">
           <div>
@@ -270,7 +270,7 @@ function llenarFiltroSolicitante() {
           </span>
         </div>
 
-        <div class="mb-1">
+        <div class="mb-1 break-anywhere">
           <i class="fas fa-terminal text-secondary me-1"></i>
           ${ejec.titulo}
         </div>

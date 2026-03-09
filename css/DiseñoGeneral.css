@@ -608,3 +608,13 @@ textarea.disabled-field {
 .tipo-examen{
   background-color: rgba(56, 165, 74, 0.1) !important; /* morado suave */
 }
+
+
+/* 🔹 Truncado de texto opcional con ... (solo si elegís truncar) */
+.truncate-1line {
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
