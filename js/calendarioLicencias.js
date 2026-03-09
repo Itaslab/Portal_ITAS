@@ -2,11 +2,36 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const filtroMes = document.getElementById("filtroMes");
-  const contenedor = document.getElementById("contenedorCalendario");
-  const filtroGrupo = document.getElementById("filtroGrupo");
-  const filtroSubgrupo = document.getElementById("filtroSubgrupo");
-  
+const filtroMes = document.getElementById("filtroMes");
+const contenedor = document.getElementById("contenedorCalendario");
+const filtroGrupo = document.getElementById("filtroGrupo");
+const filtroSubgrupo = document.getElementById("filtroSubgrupo");
+
+const fechaDesde = document.getElementById("fechaDesde");
+const fechaHasta = document.getElementById("fechaHasta");
+
+if (fechaDesde && fechaHasta) {
+
+  fechaDesde.addEventListener("change", () => {
+
+    fechaHasta.min = fechaDesde.value;
+
+    if (fechaHasta.value && fechaHasta.value < fechaDesde.value) {
+      fechaHasta.value = fechaDesde.value;
+    }
+
+  });
+
+}
+
+// MODAL
+const modalCrearLicencia = new bootstrap.Modal(
+  document.getElementById("modalCrearLicencia")
+);
+
+document.getElementById("btnCrearLicencia").addEventListener("click", () => {
+  modalCrearLicencia.show();
+});
 
   function generarOpcionesMes() {
     const hoy = new Date();
@@ -300,3 +325,6 @@ generarOpcionesMes();
 renderCalendario();
 
 });
+
+// CREAR LICENCIAS 
+

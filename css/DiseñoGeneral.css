@@ -608,3 +608,23 @@ textarea.disabled-field {
 .tipo-examen{
   background-color: rgba(56, 165, 74, 0.1) !important; /* morado suave */
 }
+
+
+/* 🔹 Truncado de texto opcional con ... (solo si elegís truncar) */
+.truncate-1line {
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Permite que columnas o contenedores flex se achiquen de verdad */
+.col-min-0, .min-w-0 { min-width: 0; }
+
+/* (Opcional) Helper específico para truncar dentro de flex */
+.truncate-flex {
+  display: block;          /* o inline-block */
+  overflow: hidden;
+  text-overflow: ellipsis; /* ... */
+  white-space: nowrap;
+}
