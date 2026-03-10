@@ -699,8 +699,11 @@ $(document).on("click", ".btn-detalle", async function (e) {
 
 
 // Render tabla
-        let html = `
-        <table class="table table-bordered table-striped">
+        
+ let html = `
+   <div class="table-responsive thead-sticky">
+  <table class="table table-bordered table-striped table-wrap-anywhere mono-90">
+
             <thead class="table-dark">
                 <tr>
                     <th>${col1}</th>
@@ -731,7 +734,7 @@ $(document).on("click", ".btn-detalle", async function (e) {
             `;
         });
  
-        html += "</tbody></table>";
+        html += "</tbody></table></div>";
  
         $("#detalleItemModalTitle").text(`${tituloBase} (${filtrados.length})`);
         $("#detalleItemModalBody").html(html);
@@ -827,8 +830,11 @@ $(document).on("click", ".btn-log", async function () {
       )
       .join("");
  
-    const tableHtml = `
-      <table class="table table-sm table-striped table-bordered align-middle">
+    
+const tableHtml = `
+  <div class="table-responsive thead-sticky">
+   <table class="table table-sm table-striped table-bordered align-middle table-wrap-anywhere mono-90">
+
         <thead class="table-light">
           <tr>
             <th style="width:200px">Fecha y hora</th>
@@ -839,6 +845,7 @@ $(document).on("click", ".btn-log", async function () {
           ${rows}
         </tbody>
       </table>
+      </div>
     `;
  
     $("#modalBuscarBody").html(tableHtml);
