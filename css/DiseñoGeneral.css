@@ -628,3 +628,56 @@ textarea.disabled-field {
   text-overflow: ellipsis; /* ... */
   white-space: nowrap;
 }
+
+/* ✅ El modal puede hacer scroll si el contenido es muy alto */
+.modal-dialog.modal-lg,
+.modal-dialog.modal-xl {
+  /* En pantallas chicas, que no desborde por alto */
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+.modal-dialog.modal-lg .modal-content,
+.modal-dialog.modal-xl .modal-content {
+  max-height: 90vh;               /* altura limitada */
+  display: flex;
+  flex-direction: column;
+}
+.modal-dialog.modal-lg .modal-body,
+.modal-dialog.modal-xl .modal-body {
+  overflow: auto;                  /* scroll vertical/horizontal si hace falta */
+}
+
+/* ✅ Dentro del modal, la tabla se adapta y hace scroll horizontal si necesita */
+.modal .table-responsive {
+  max-height: 65vh;                /* limita el alto de la tabla dentro del modal */
+  overflow: auto;                  /* permite scroll vertical/horizontal */
+}
+
+/* ✅ Evitar desbordes por cadenas largas en celdas */
+.table-wrap-anywhere td,
+.table-wrap-anywhere th {
+  overflow-wrap: anywhere;         /* corta cadenas largas en donde sea */
+  word-break: break-word;          /* fallback */
+}
+
+/* (Opcional) Si preferís no cortar y permitir scroll horizontal “tipo código” */
+.table-nowrap td,
+.table-nowrap th {
+  white-space: nowrap;             /* todo en una línea */
+}
+
+/* (Opcional) Si renderizás log/detalle como texto “tipo código” */
+.mono-90 {
+  font-family: "Chakra Petch" !important;
+  font-size: 90%;
+}
+
+/* (Opcional) cabecera “pegada” cuando hay mucho scroll en tabla */
+.thead-sticky thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bs-dark, #212529);
+  color: #fff;
+}
