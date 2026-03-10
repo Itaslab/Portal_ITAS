@@ -669,7 +669,7 @@ textarea.disabled-field {
 
 /* (Opcional) Si renderizás log/detalle como texto “tipo código” */
 .mono-90 {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-family: "Orbitron" !important;
   font-size: 90%;
 }
 
