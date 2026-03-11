@@ -33,6 +33,56 @@ document.getElementById("btnCrearLicencia").addEventListener("click", () => {
   modalCrearLicencia.show();
 });
 
+
+document.getElementById("btnCargarLicencia").addEventListener("click", async () => {
+
+  const tipo = document.getElementById("tipoLicencia").value;
+  const desde = document.getElementById("fechaDesde").value;
+  const hasta = document.getElementById("fechaHasta").value;
+  const comentario = document.getElementById("comentarioLicencia").value;
+
+  if (!tipo || !desde || !hasta) {
+    alert("Completá los campos obligatorios");
+    return;
+  }
+
+  try {
+
+    const response = await fetch(`${basePath}/api/licencias`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        tipoLic: tipo,
+        fechaDesde: desde,
+        fechaHasta: hasta,
+        comentario: comentario
+      })
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+
+    alert("Licencia cargada correctamente");
+
+    modalCrearLicencia.hide();
+
+    renderCalendario();
+
+  } catch (error) {
+
+    console.error(error);
+    alert("Error al cargar licencia");
+
+  }
+
+});
+
+
   function generarOpcionesMes() {
     const hoy = new Date();
 
