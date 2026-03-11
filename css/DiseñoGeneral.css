@@ -530,8 +530,9 @@ textarea.disabled-field {
   height: 24px;
 }
 
-.fin-semana {
-   background-color: #f2f3f5
+.calendario-table td.fin-semana,
+.calendario-table th.fin-semana {
+  background-color: #f2f3f5 !important;
 }
 
 
@@ -565,7 +566,7 @@ textarea.disabled-field {
   font-weight: 600;
 }
 
-.calendario-table tbody tr:nth-child(even) {
+.calendario-table tbody tr:nth-child(even) td:not(.fin-semana) {
   background-color: #fafafa;
 }
 
