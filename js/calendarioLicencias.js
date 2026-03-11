@@ -331,8 +331,12 @@ html += `<tr class="fila-grupo">`;
 html += `<td class="col-usuario grupo-titulo">${bloque.nombre}</td>`;
 
 // Resto de columnas vacías
-dias.forEach(() => {
-  html += `<td></td>`;
+dias.forEach(dia => {
+
+  const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
+
+  html += `<td class="${esFinSemana ? "fin-semana" : ""}"></td>`;
+
 });
 
 html += `</tr>`;

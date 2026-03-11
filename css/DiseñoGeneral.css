@@ -507,6 +507,10 @@ textarea.disabled-field {
   font-weight: 600;
 }
 
+.calendario-table tbody tr:nth-child(even) td {
+  background-color: #fafafa;
+}
+
 .col-usuario {
   width: 200px;
   text-align: left !important;
@@ -527,8 +531,15 @@ textarea.disabled-field {
 }
 
 .fin-semana {
-  background-color: #eceff3;
+   background-color: #f2f3f5
 }
+
+
+.fila-grupo td {
+  background-color: #e9ecef !important;
+  font-weight: 600;
+}
+
 
 .nombre-dia {
   font-size: 10px;
@@ -536,7 +547,7 @@ textarea.disabled-field {
 }
 
 .calendario-table tbody tr:hover td {
-  background-color: #f5f9ff;
+  background-color: #f3f6fa;
 }
 
 .dia-header div:first-child {
@@ -550,7 +561,8 @@ textarea.disabled-field {
 }
 
 .licencia-activa {
-  background-color: rgba(29, 157, 189, 0.2) !important; /* Color sutil, casi transparente */
+  background-color: rgba(0, 123, 255, 0.15) !important;
+  font-weight: 600;
 }
 
 .calendario-table tbody tr:nth-child(even) {
