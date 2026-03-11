@@ -681,3 +681,14 @@ textarea.disabled-field {
   background: var(--bs-dark, #212529);
   color: #fff;
 }
+
+/* Encabezado NO debe cortarse */
+.table-header-nowrap thead th {
+  white-space: nowrap !important;
+}
+
+/* El cuerpo sí puede cortar */
+.table-wrap-anywhere tbody td {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}

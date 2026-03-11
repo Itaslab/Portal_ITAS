@@ -702,8 +702,8 @@ $(document).on("click", ".btn-detalle", async function (e) {
         
  let html = `
    <div class="table-responsive thead-sticky">
-  <table class="table table-bordered table-striped table-wrap-anywhere mono-90">
-
+   <table class="table table-bordered table-striped table-header-nowrap table-wrap-anywhere mono-90">
+   
             <thead class="table-dark">
                 <tr>
                     <th>${col1}</th>
