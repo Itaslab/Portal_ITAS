@@ -99,6 +99,14 @@ document.getElementById("btnVerMisLicencias").addEventListener("click", async ()
 
     licencias.forEach(l => {
 
+
+      let estadoColor = "secondary";
+
+      if (l.Estado === "PENDING") estadoColor = "warning";
+      if (l.Estado === "APROBADA") estadoColor = "success";
+      if (l.Estado === "RECHAZADA") estadoColor = "danger";
+
+
       const fila = `
         <tr>
           <td>${l.TipoLic}</td>
