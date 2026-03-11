@@ -83,6 +83,46 @@ document.getElementById("btnCargarLicencia").addEventListener("click", async () 
 });
 
 
+const modalMisLicencias = new bootstrap.Modal(
+  document.getElementById("modalMisLicencias")
+);
+
+document.getElementById("btnVerMisLicencias").addEventListener("click", async () => {
+
+  try {
+
+    const res = await fetch(`${basePath}/api/mis-licencias`);
+    const licencias = await res.json();
+
+    const tabla = document.getElementById("tablaMisLicencias");
+    tabla.innerHTML = "";
+
+    licencias.forEach(l => {
+
+      const fila = `
+        <tr>
+          <td>${l.TipoLic}</td>
+          <td>${l.Fecha_Desde.split("T")[0]}</td>
+          <td>${l.Fecha_Hasta.split("T")[0]}</td>
+          <td>${l.Estado}</td>
+        </tr>
+      `;
+
+      tabla.innerHTML += fila;
+
+    });
+
+    modalMisLicencias.show();
+
+  } catch (error) {
+
+    console.error("Error cargando licencias", error);
+
+  }
+
+});
+
+
   function generarOpcionesMes() {
     const hoy = new Date();
 

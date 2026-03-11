@@ -50,6 +50,7 @@ const blanqueoPasswordPortalItas = require("./blanqueoPasswordPortalITAS");
 const galeriaEjecucionesFiltroDato = require("./galeriaEjecuciones_FiltroDato");
 const galeriaLicencias = require("./galeriaLicencias");
 const crearLicencia = require("./crearLicencia");
+const misLicencias = require("./misLicencias");
 
 
 
@@ -176,6 +177,7 @@ app.use("/api/logs", logs);
 app.get("/api/galeriaEjecuciones_FiltroDato",galeriaEjecucionesFiltroDato);
 app.use("/api/licencias", galeriaLicencias);
 app.use("/api/licencias", crearLicencia);
+app.use("/api/mis-licencias", misLicencias);
 
  
 // ------------------- BÓVEDA DE CONTRASEÑAS (SEGURIDAD INFORMÁTICA) -------------------
