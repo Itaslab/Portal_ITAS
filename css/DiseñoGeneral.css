@@ -496,7 +496,7 @@ textarea.disabled-field {
 
 .calendario-table th,
 .calendario-table td {
-  border: 1px solid #06397c;
+  border: 1px solid #f0f0f0;
   text-align: center;
   font-size: 12px;
   padding: 2px;
