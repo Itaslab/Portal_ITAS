@@ -504,14 +504,14 @@ textarea.disabled-field {
 
 .calendario-table thead th {
   font-weight: 600;
-  background-color: #fafafa;
+  background-color: #fff4e6; /* naranja muy suave */
 }
 
 .col-usuario {
   width: 200px;
   text-align: left !important;
   padding-left: 8px !important;
-  background-color: white;
+  background-color: #fff9f0;
   position: sticky;
   left: 0;
   z-index: 2;
@@ -526,7 +526,7 @@ textarea.disabled-field {
 }
 
 .fin-semana {
-  background-color: #f7f7f7;
+  background-color: #ffe8cc; /* naranja suave */
 }
 
 .nombre-dia {
@@ -552,7 +552,13 @@ textarea.disabled-field {
   background-color: rgba(29, 157, 189, 0.2) !important; /* Color sutil, casi transparente */
 }
 
+.calendario-table tbody tr:nth-child(even) {
+  background-color: #fffdf8;
+}
 
+.calendario-table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
 
 
 
