@@ -135,6 +135,10 @@ document.getElementById("btnVerMisLicencias").addEventListener("click", async ()
 });
 
 
+if (diaSemana === 0 || diaSemana === 6) {
+    celda.classList.add("fin-semana");
+}
+
   function generarOpcionesMes() {
     const hoy = new Date();
 
