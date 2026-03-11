@@ -567,7 +567,7 @@ textarea.disabled-field {
 }
 
 .calendario-table tbody tr:nth-child(even) td:not(.fin-semana) {
-  background-color: #fafafa;
+  background-color: #e0f0ff;
 }
 
 
