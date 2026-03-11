@@ -112,7 +112,11 @@ document.getElementById("btnVerMisLicencias").addEventListener("click", async ()
           <td>${l.TipoLic}</td>
           <td>${l.Fecha_Desde.split("T")[0]}</td>
           <td>${l.Fecha_Hasta.split("T")[0]}</td>
-          <td>${l.Estado}</td>
+          <td>
+          <span class="badge bg-${estadoColor}">
+              ${l.Estado}
+          </span>
+          </td>
         </tr>
       `;
 
