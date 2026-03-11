@@ -629,14 +629,24 @@ textarea.disabled-field {
   white-space: nowrap;
 }
 
-/* ✅ El modal puede hacer scroll si el contenido es muy alto */
 .modal-dialog.modal-lg,
 .modal-dialog.modal-xl {
-  /* En pantallas chicas, que no desborde por alto */
+  max-height: 90vh;
+}
+
+.modal-dialog.modal-lg .modal-content,
+.modal-dialog.modal-xl .modal-content {
   max-height: 90vh;
   display: flex;
   flex-direction: column;
 }
+
+.modal-dialog.modal-lg .modal-body,
+.modal-dialog.modal-xl .modal-body {
+  overflow: auto;
+}
+
+
 .modal-dialog.modal-lg .modal-content,
 .modal-dialog.modal-xl .modal-content {
   max-height: 90vh;               /* altura limitada */
