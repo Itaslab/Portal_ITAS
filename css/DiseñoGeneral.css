@@ -515,7 +515,7 @@ textarea.disabled-field {
   width: 200px;
   text-align: left !important;
   padding-left: 8px !important;
-  background-color: #f7f8fa;
+  background-color: inherit;
   font-weight: 500;
   position: sticky;
   left: 0;
