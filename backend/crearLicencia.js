@@ -2,7 +2,8 @@
 
 const express = require("express");
 const router = express.Router();
-const sql = require("mssql");
+const { sql, poolPromise } = require("./db");
+const schema = process.env.DB_SCHEMA;
 
 router.post("/", async (req, res) => {
 
@@ -12,7 +13,7 @@ router.post("/", async (req, res) => {
 
     const idUsuario = req.session.user.ID_Usuario;
 
-    const pool = await sql.connect();
+    const pool = await poolPromise;
 
     // Buscar legajo del usuario
     const legajoResult = await pool.request()
