@@ -503,7 +503,7 @@ textarea.disabled-field {
 }
 
 .calendario-table thead th {
-  background-color: #f3f4f6;
+  background-color: #b6b5ff98;
   font-weight: 600;
 }
 
@@ -532,12 +532,12 @@ textarea.disabled-field {
 
 .calendario-table td.fin-semana,
 .calendario-table th.fin-semana {
-  background-color: #f2f3f5 !important;
+  background-color: #b6b5ff98!important;
 }
 
 
 .fila-grupo td {
-  background-color: #e9ecef !important;
+  background-color: #b6b5ff98!important;
   font-weight: 600;
 }
 
@@ -567,7 +567,7 @@ textarea.disabled-field {
 }
 
 .calendario-table tbody tr:nth-child(even) td:not(.fin-semana) {
-  background-color: #e0f0ff;
+  background-color: #b6d7f7;
 }
 
 
