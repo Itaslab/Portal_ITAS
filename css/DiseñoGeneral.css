@@ -562,7 +562,7 @@ textarea.disabled-field {
 }
 
 .licencia-activa {
-  background-color: rgba(0, 123, 255, 0.15) !important;
+  background-color: rgb(221, 255, 98) !important;
   font-weight: 600;
 }
 
@@ -586,43 +586,43 @@ textarea.disabled-field {
 
 /* Colores sutiles por tipo de licencia */
 .tipo-vacaciones {
-  background-color: rgba(29, 157, 189, 0.2) !important; /* el que ya tenías */
+  background-color: rgba(141, 253, 113, 0.712) !important; /* el que ya tenías */
 }
 
 .tipo-compensacion {
-  background-color: rgba(255, 200, 0, 0.2) !important; /* amarillo suave */
+  background-color: rgb(205, 247, 127) !important; /* amarillo suave */
 }
 
 .tipo-enfermedad {
-  background-color: rgba(255, 0, 0, 0.1) !important; /* rojo muy suave */
+  background-color: rgb(250, 156, 94) !important; /* rojo muy suave */
 }
 
 .tipo-mudanza {
-  background-color: rgba(0, 128, 0, 0.1) !important; /* verde muy suave */
+  background-color: rgb(200, 247, 90) !important; /* verde muy suave */
 }
 
 .tipo-nacimiento {
-  background-color: rgba(128, 0, 128, 0.1) !important; /* morado suave */
+  background-color: rgb(248, 104, 248) !important; /* morado suave */
 }
 
 .tipo-accidente {
-  background-color: rgba(128, 0, 70, 0.1) !important; /* morado suave */
+  background-color: rgb(248, 86, 86) !important; /* morado suave */
 }
 
 .tipo-paro {
-  background-color: rgba(22, 190, 202, 0.1) !important; /* morado suave */
+  background-color: rgb(255, 147, 75) !important; /* morado suave */
 }
 
 .tipo-otra {
-  background-color: rgba(202, 169, 22, 0.1) !important; /* morado suave */
+  background-color: rgb(252, 158, 247) !important; /* morado suave */
 }
 
 .tipo-compensacion-horas{
-  background-color: rgba(235, 23, 86, 0.1) !important; /* morado suave */
+  background-color: rgb(255, 80, 132) !important; /* morado suave */
 }
 
 .tipo-examen{
-  background-color: rgba(56, 165, 74, 0.1) !important; /* morado suave */
+  background-color: rgb(255, 183, 101) !important; /* morado suave */
 }
 
 
