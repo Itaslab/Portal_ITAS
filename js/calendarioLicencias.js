@@ -413,20 +413,26 @@ contenedor.innerHTML = html;
 
 }
 
+function activarSeleccionFilas() {
 
-const filas = document.querySelectorAll(".calendario-table tbody tr");
+  const filas = document.querySelectorAll(".calendario-table tbody tr");
 
-filas.forEach(fila => {
-  fila.addEventListener("click", () => {
+  filas.forEach(fila => {
 
-    document.querySelectorAll(".fila-seleccionada")
-      .forEach(f => f.classList.remove("fila-seleccionada"));
+    fila.addEventListener("click", () => {
 
-    fila.classList.add("fila-seleccionada");
+      if (fila.classList.contains("fila-grupo")) return;
+
+      document.querySelectorAll(".fila-seleccionada")
+        .forEach(f => f.classList.remove("fila-seleccionada"));
+
+      fila.classList.add("fila-seleccionada");
+
+    });
 
   });
-});
 
+}
 
 
   filtroGrupo.addEventListener("change", async () => {

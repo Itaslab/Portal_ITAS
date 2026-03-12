@@ -521,7 +521,11 @@ textarea.disabled-field {
 
 
 .fila-seleccionada td {
-  background-color: #bfdbfe !important;
+  background-color: #c6dcfa  !important;
+}
+
+.fila-seleccionada td:first-child {
+  font-weight: 600;
 }
 
 /* columna usuario */
