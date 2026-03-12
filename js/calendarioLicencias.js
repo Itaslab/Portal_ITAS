@@ -331,11 +331,23 @@ html += `<tr class="fila-grupo">`;
 html += `<td class="col-usuario grupo-titulo">${bloque.nombre}</td>`;
 
 // Resto de columnas vacías
+const hoy = new Date();
+
 dias.forEach(dia => {
 
   const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
 
-  html += `<td class="${esFinSemana ? "fin-semana" : ""}"></td>`;
+  const esHoy =
+    dia.getDate() === hoy.getDate() &&
+    dia.getMonth() === hoy.getMonth() &&
+    dia.getFullYear() === hoy.getFullYear();
+
+  let clases = "";
+
+  if (esFinSemana) clases += " fin-semana";
+  if (esHoy) clases += " hoy";
+
+  html += `<td class="${clases}"></td>`;
 
 });
 

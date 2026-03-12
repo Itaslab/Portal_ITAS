@@ -494,23 +494,28 @@ textarea.disabled-field {
   table-layout: fixed;
 }
 
+/* celdas generales */
 .calendario-table th,
 .calendario-table td {
-  border: 1px solid #f0f0f0;
+  border: 1px solid #e5e7eb;
   text-align: center;
   font-size: 12px;
   padding: 2px;
 }
 
+/* HEADER DIAS */
 .calendario-table thead th {
-  background-color: #b6b5ff98;
+  background-color: #1f2a44;
+  color: white;
   font-weight: 600;
 }
 
+/* filas alternadas usuarios */
 .calendario-table tbody tr:nth-child(even) td {
-  background-color: #fafafa;
+  background-color: #f7f9fc;
 }
 
+/* columna usuario */
 .col-usuario {
   width: 200px;
   text-align: left !important;
@@ -522,6 +527,7 @@ textarea.disabled-field {
   z-index: 2;
 }
 
+/* ancho de dias */
 .dia-header {
   width: 26px;
 }
@@ -530,27 +536,30 @@ textarea.disabled-field {
   height: 24px;
 }
 
+/* FIN DE SEMANA */
 .calendario-table td.fin-semana,
 .calendario-table th.fin-semana {
-  background-color: #b6b5ff98!important;
+  background-color: #f1f3f6 !important;
 }
 
-
+/* FILAS DE GRUPO */
 .fila-grupo td {
-  background-color: #b6b5ff98!important;
+  background-color: #e9edf3 !important;
   font-weight: 600;
 }
 
-
+/* nombre dia (lun mar etc) */
 .nombre-dia {
   font-size: 10px;
-  color: #777;
+  color: #cbd5e1;
 }
 
+/* hover */
 .calendario-table tbody tr:hover td {
-  background-color: #f3f6fa;
+  background-color: #eef4ff;
 }
 
+/* header dia texto */
 .dia-header div:first-child {
   font-size: 9px;
   text-transform: capitalize;
@@ -561,16 +570,17 @@ textarea.disabled-field {
   font-weight: 600;
 }
 
+/* licencias activas */
 .licencia-activa {
-  background-color: rgb(221, 255, 98) !important;
   font-weight: 600;
 }
 
-.calendario-table tbody tr:nth-child(even) td:not(.fin-semana) {
-  background-color: #b6d7f7;
+.hoy {
+  border: 2px solid #3b82f6;
 }
 
 
+/* TITULO GRUPO */
 .fila-grupo {
   background-color: #e9edf3;
   font-weight: 600;
@@ -584,45 +594,54 @@ textarea.disabled-field {
   text-align: left;
 }
 
-/* Colores sutiles por tipo de licencia */
+/* ========================= */
+/* COLORES LICENCIAS */
+/* ========================= */
+
 .tipo-vacaciones {
-  background-color: rgba(141, 253, 113, 0.712) !important; /* el que ya tenías */
+  background-color: #38bdf8 !important;
+  color: white;
 }
 
 .tipo-compensacion {
-  background-color: rgb(205, 247, 127) !important; /* amarillo suave */
+  background-color: #facc15 !important;
 }
 
 .tipo-enfermedad {
-  background-color: rgb(250, 156, 94) !important; /* rojo muy suave */
+  background-color: #f87171 !important;
+  color: white;
 }
 
 .tipo-mudanza {
-  background-color: rgb(200, 247, 90) !important; /* verde muy suave */
+  background-color: #c084fc !important;
+  color: white;
 }
 
 .tipo-nacimiento {
-  background-color: rgb(248, 104, 248) !important; /* morado suave */
+  background-color: #34d399 !important;
 }
 
 .tipo-accidente {
-  background-color: rgb(248, 86, 86) !important; /* morado suave */
+  background-color: #ef4444 !important;
+  color: white;
 }
 
 .tipo-paro {
-  background-color: rgb(255, 147, 75) !important; /* morado suave */
+  background-color: #fb923c !important;
 }
 
 .tipo-otra {
-  background-color: rgb(252, 158, 247) !important; /* morado suave */
+  background-color: #94a3b8 !important;
+  color: white;
 }
 
-.tipo-compensacion-horas{
-  background-color: rgb(255, 80, 132) !important; /* morado suave */
+.tipo-compensacion-horas {
+  background-color: #22c55e !important;
+  color: white;
 }
 
-.tipo-examen{
-  background-color: rgb(255, 183, 101) !important; /* morado suave */
+.tipo-examen {
+  background-color: #f59e0b !important;
 }
 
 
