@@ -409,7 +409,25 @@ html += `</tr>`;
 
 html += `</tbody></table>`;
 contenedor.innerHTML = html;
+  activarSeleccionFilas();
+
 }
+
+
+const filas = document.querySelectorAll(".calendario-table tbody tr");
+
+filas.forEach(fila => {
+  fila.addEventListener("click", () => {
+
+    document.querySelectorAll(".fila-seleccionada")
+      .forEach(f => f.classList.remove("fila-seleccionada"));
+
+    fila.classList.add("fila-seleccionada");
+
+  });
+});
+
+
 
   filtroGrupo.addEventListener("change", async () => {
   const grupoSeleccionado = filtroGrupo.value;

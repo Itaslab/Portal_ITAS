@@ -510,9 +510,18 @@ textarea.disabled-field {
   font-weight: 600;
 }
 
-/* filas alternadas usuarios */
-.calendario-table tbody tr:nth-child(even) td {
-  background-color: #f7f9fc;
+.calendario-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background-color: #1f2a44; /* tu color del header */
+  color: white;
+}
+
+
+
+.fila-seleccionada td {
+  background-color: #bfdbfe !important;
 }
 
 /* columna usuario */
