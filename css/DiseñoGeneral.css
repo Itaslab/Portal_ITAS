@@ -494,29 +494,53 @@ textarea.disabled-field {
   table-layout: fixed;
 }
 
+/* celdas generales */
 .calendario-table th,
 .calendario-table td {
-  border: 1px solid #f0f0f0;
+  border: 1px solid #e5e7eb;
   text-align: center;
   font-size: 12px;
   padding: 2px;
 }
 
+/* HEADER DIAS */
 .calendario-table thead th {
+  background-color: #1f2a44;
+  color: white;
   font-weight: 600;
-  background-color: #fafafa;
 }
 
+.calendario-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background-color: #1f2a44; /* tu color del header */
+  color: white;
+}
+
+
+
+.fila-seleccionada td {
+  background-color: #c6dcfa  !important;
+}
+
+.fila-seleccionada td:first-child {
+  font-weight: 600;
+}
+
+/* columna usuario */
 .col-usuario {
   width: 200px;
   text-align: left !important;
   padding-left: 8px !important;
-  background-color: white;
+  background-color: inherit;
+  font-weight: 500;
   position: sticky;
   left: 0;
   z-index: 2;
 }
 
+/* ancho de dias */
 .dia-header {
   width: 26px;
 }
@@ -525,19 +549,30 @@ textarea.disabled-field {
   height: 24px;
 }
 
-.fin-semana {
-  background-color: #f7f7f7;
+/* FIN DE SEMANA */
+.calendario-table td.fin-semana,
+.calendario-table th.fin-semana {
+  background-color: #f1f3f6 !important;
 }
 
+/* FILAS DE GRUPO */
+.fila-grupo td {
+  background-color: #e9edf3 !important;
+  font-weight: 600;
+}
+
+/* nombre dia (lun mar etc) */
 .nombre-dia {
   font-size: 10px;
-  color: #777;
+  color: #cbd5e1;
 }
 
+/* hover */
 .calendario-table tbody tr:hover td {
-  background-color: #f5f9ff;
+  background-color: #eef4ff;
 }
 
+/* header dia texto */
 .dia-header div:first-child {
   font-size: 9px;
   text-transform: capitalize;
@@ -548,16 +583,20 @@ textarea.disabled-field {
   font-weight: 600;
 }
 
+/* licencias activas */
 .licencia-activa {
-  background-color: rgba(29, 157, 189, 0.2) !important; /* Color sutil, casi transparente */
+  font-weight: 600;
+}
+
+.hoy {
+  border: 2px solid #3b82f6;
 }
 
 
-
-
-
+/* TITULO GRUPO */
 .fila-grupo {
-  background-color: #f1f3f5;
+  background-color: #e9edf3;
+  font-weight: 600;
 }
 
 .grupo-titulo {
@@ -568,45 +607,54 @@ textarea.disabled-field {
   text-align: left;
 }
 
-/* Colores sutiles por tipo de licencia */
+/* ========================= */
+/* COLORES LICENCIAS */
+/* ========================= */
+
 .tipo-vacaciones {
-  background-color: rgba(29, 157, 189, 0.2) !important; /* el que ya tenías */
+  background-color: #38bdf8 !important;
+  color: white;
 }
 
 .tipo-compensacion {
-  background-color: rgba(255, 200, 0, 0.2) !important; /* amarillo suave */
+  background-color: #facc15 !important;
 }
 
 .tipo-enfermedad {
-  background-color: rgba(255, 0, 0, 0.1) !important; /* rojo muy suave */
+  background-color: #f87171 !important;
+  color: white;
 }
 
 .tipo-mudanza {
-  background-color: rgba(0, 128, 0, 0.1) !important; /* verde muy suave */
+  background-color: #c084fc !important;
+  color: white;
 }
 
 .tipo-nacimiento {
-  background-color: rgba(128, 0, 128, 0.1) !important; /* morado suave */
+  background-color: #34d399 !important;
 }
 
 .tipo-accidente {
-  background-color: rgba(128, 0, 70, 0.1) !important; /* morado suave */
+  background-color: #ef4444 !important;
+  color: white;
 }
 
 .tipo-paro {
-  background-color: rgba(22, 190, 202, 0.1) !important; /* morado suave */
+  background-color: #fb923c !important;
 }
 
 .tipo-otra {
-  background-color: rgba(202, 169, 22, 0.1) !important; /* morado suave */
+  background-color: #94a3b8 !important;
+  color: white;
 }
 
-.tipo-compensacion-horas{
-  background-color: rgba(235, 23, 86, 0.1) !important; /* morado suave */
+.tipo-compensacion-horas {
+  background-color: #22c55e !important;
+  color: white;
 }
 
-.tipo-examen{
-  background-color: rgba(56, 165, 74, 0.1) !important; /* morado suave */
+.tipo-examen {
+  background-color: #f59e0b !important;
 }
 
 
@@ -629,14 +677,24 @@ textarea.disabled-field {
   white-space: nowrap;
 }
 
-/* ✅ El modal puede hacer scroll si el contenido es muy alto */
 .modal-dialog.modal-lg,
 .modal-dialog.modal-xl {
-  /* En pantallas chicas, que no desborde por alto */
+  max-height: 90vh;
+}
+
+.modal-dialog.modal-lg .modal-content,
+.modal-dialog.modal-xl .modal-content {
   max-height: 90vh;
   display: flex;
   flex-direction: column;
 }
+
+.modal-dialog.modal-lg .modal-body,
+.modal-dialog.modal-xl .modal-body {
+  overflow: auto;
+}
+
+
 .modal-dialog.modal-lg .modal-content,
 .modal-dialog.modal-xl .modal-content {
   max-height: 90vh;               /* altura limitada */
@@ -680,4 +738,29 @@ textarea.disabled-field {
   z-index: 1;
   background: var(--bs-dark, #212529);
   color: #fff;
+}
+
+/* Encabezado NO debe cortarse */
+.table-header-nowrap thead th {
+  white-space: nowrap !important;
+}
+
+/* El cuerpo sí puede cortar */
+.table-wrap-anywhere tbody td {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+#modalMisLicencias .modal-content {
+  box-shadow: 0 25px 60px rgba(0,0,0,0.45);
+  border-radius: 10px;
+}
+
+.modal-backdrop.show {
+  opacity: 0.7;
+}
+
+#modalMisLicencias .modal-dialog {
+  transform: translateY(-10px);
 }

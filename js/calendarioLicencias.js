@@ -33,6 +33,109 @@ document.getElementById("btnCrearLicencia").addEventListener("click", () => {
   modalCrearLicencia.show();
 });
 
+
+document.getElementById("btnCargarLicencia").addEventListener("click", async () => {
+
+  const tipo = document.getElementById("tipoLicencia").value;
+  const desde = document.getElementById("fechaDesde").value;
+  const hasta = document.getElementById("fechaHasta").value;
+  const comentario = document.getElementById("comentarioLicencia").value;
+
+  if (!tipo || !desde || !hasta) {
+    alert("Completá los campos obligatorios");
+    return;
+  }
+
+  try {
+
+    const response = await fetch(`${basePath}/api/licencias`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        tipoLic: tipo,
+        fechaDesde: desde,
+        fechaHasta: hasta,
+        comentario: comentario
+      })
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+
+    alert("Licencia cargada correctamente");
+
+    modalCrearLicencia.hide();
+
+    renderCalendario();
+
+  } catch (error) {
+
+    console.error(error);
+    alert("Error al cargar licencia");
+
+  }
+
+});
+
+
+const modalMisLicencias = new bootstrap.Modal(
+  document.getElementById("modalMisLicencias")
+);
+
+document.getElementById("btnVerMisLicencias").addEventListener("click", async () => {
+
+  try {
+
+    const res = await fetch(`${basePath}/api/mis-licencias`);
+    const licencias = await res.json();
+
+    const tabla = document.getElementById("tablaMisLicencias");
+    tabla.innerHTML = "";
+
+    licencias.forEach(l => {
+
+
+      let estadoColor = "secondary";
+
+      if (l.Estado === "PENDING") estadoColor = "warning";
+      if (l.Estado === "APROBADA") estadoColor = "success";
+      if (l.Estado === "RECHAZADA") estadoColor = "danger";
+
+
+      const fila = `
+        <tr>
+          <td>${l.TipoLic}</td>
+          <td>${l.Fecha_Desde.split("T")[0]}</td>
+          <td>${l.Fecha_Hasta.split("T")[0]}</td>
+          <td>
+          <span class="badge bg-${estadoColor}">
+              ${l.Estado}
+          </span>
+          </td>
+        </tr>
+      `;
+
+      tabla.innerHTML += fila;
+
+    });
+
+    modalMisLicencias.show();
+
+  } catch (error) {
+
+    console.error("Error cargando licencias", error);
+
+  }
+
+});
+
+
+
   function generarOpcionesMes() {
     const hoy = new Date();
 
@@ -228,8 +331,24 @@ html += `<tr class="fila-grupo">`;
 html += `<td class="col-usuario grupo-titulo">${bloque.nombre}</td>`;
 
 // Resto de columnas vacías
-dias.forEach(() => {
-  html += `<td></td>`;
+const hoy = new Date();
+
+dias.forEach(dia => {
+
+  const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
+
+  const esHoy =
+    dia.getDate() === hoy.getDate() &&
+    dia.getMonth() === hoy.getMonth() &&
+    dia.getFullYear() === hoy.getFullYear();
+
+  let clases = "";
+
+  if (esFinSemana) clases += " fin-semana";
+  if (esHoy) clases += " hoy";
+
+  html += `<td class="${clases}"></td>`;
+
 });
 
 html += `</tr>`;
@@ -290,7 +409,31 @@ html += `</tr>`;
 
 html += `</tbody></table>`;
 contenedor.innerHTML = html;
+  activarSeleccionFilas();
+
 }
+
+function activarSeleccionFilas() {
+
+  const filas = document.querySelectorAll(".calendario-table tbody tr");
+
+  filas.forEach(fila => {
+
+    fila.addEventListener("click", () => {
+
+      if (fila.classList.contains("fila-grupo")) return;
+
+      document.querySelectorAll(".fila-seleccionada")
+        .forEach(f => f.classList.remove("fila-seleccionada"));
+
+      fila.classList.add("fila-seleccionada");
+
+    });
+
+  });
+
+}
+
 
   filtroGrupo.addEventListener("change", async () => {
   const grupoSeleccionado = filtroGrupo.value;
