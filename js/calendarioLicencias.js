@@ -202,7 +202,8 @@ async function cargarUsuarios(year, month, grupo, subgrupo) {
 
   try {
 
-    const url = `${basePath}/api/usuarios?grupo=${grupo || ""}&subgrupo=${subgrupo || ""}`;
+    
+    const url = `${basePath}/api/licencias/usuarios?grupo=${grupo || ""}&subgrupo=${subgrupo || ""}`;
     const response = await fetch(url);
     const result = await response.json();
 
