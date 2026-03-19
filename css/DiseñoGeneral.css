@@ -554,18 +554,15 @@ textarea.disabled-field {
 
  /* FINES DE SEMANA */ 
 
-.calendario-table td.fin-semana {
-  background-color: #e6edf7; /* azul grisáceo suave */
-  filter: brightness(0.75) saturate(0.9) !important;
-  
-}
-
-
 
 .calendario-table th.fin-semana {
   background-color: #162033; /* header un poco más oscuro */
 }
 
+
+.calendario-table td.celda-dia.fin-semana {
+  filter: brightness(0.75);
+}
 
 /* FILAS DE GRUPO */
 .fila-grupo td {
