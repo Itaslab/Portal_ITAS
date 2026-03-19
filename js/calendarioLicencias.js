@@ -263,7 +263,7 @@ const gruposMap = {};
 // 1. TODOS los usuarios
 usuarios.forEach(u => {
 
-  const grupoNombre = u.Grupo || "Sin Grupo";
+  const grupoNombre = (u.Grupo || "Sin Grupo").trim().toUpperCase();
   const id = u.ID_Usuario;
 
   if (!gruposMap[grupoNombre]) {
@@ -281,7 +281,7 @@ usuarios.forEach(u => {
 // 2. Agregar licencias encima
 licencias.forEach(l => {
 
-  const grupoNombre = l.Grupo || "Sin Grupo";
+  const grupoNombre = (l.Grupo || "Sin Grupo").trim().toUpperCase();
   const id = l.ID_Usuario;
 
   if (!gruposMap[grupoNombre]) {
