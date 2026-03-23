@@ -501,6 +501,7 @@ textarea.disabled-field {
   text-align: center;
   font-size: 12px;
   padding: 2px;
+  color: #ffffff
 }
 
 /* HEADER DIAS */
@@ -538,6 +539,7 @@ textarea.disabled-field {
   position: sticky;
   left: 0;
   z-index: 2;
+  color: #1f2937 !important;
 }
 
 /* ancho de dias */
@@ -549,10 +551,17 @@ textarea.disabled-field {
   height: 24px;
 }
 
-/* FIN DE SEMANA */
-.calendario-table td.fin-semana,
+
+ /* FINES DE SEMANA */ 
+
+
 .calendario-table th.fin-semana {
-  background-color: #f1f3f6 !important;
+  background-color: #162033; /* header un poco más oscuro */
+}
+
+
+.calendario-table td.celda-dia.fin-semana {
+  filter: brightness(0.75);
 }
 
 /* FILAS DE GRUPO */
@@ -613,7 +622,6 @@ textarea.disabled-field {
 
 .tipo-vacaciones {
   background-color: #38bdf8 !important;
-  color: white;
 }
 
 .tipo-compensacion {
@@ -622,12 +630,10 @@ textarea.disabled-field {
 
 .tipo-enfermedad {
   background-color: #f87171 !important;
-  color: white;
 }
 
 .tipo-mudanza {
   background-color: #c084fc !important;
-  color: white;
 }
 
 .tipo-nacimiento {
@@ -636,7 +642,6 @@ textarea.disabled-field {
 
 .tipo-accidente {
   background-color: #ef4444 !important;
-  color: white;
 }
 
 .tipo-paro {
@@ -645,12 +650,10 @@ textarea.disabled-field {
 
 .tipo-otra {
   background-color: #94a3b8 !important;
-  color: white;
 }
 
 .tipo-compensacion-horas {
   background-color: #22c55e !important;
-  color: white;
 }
 
 .tipo-examen {

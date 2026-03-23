@@ -197,6 +197,29 @@ function parseFechaLocal(fechaStr) {
   
 }
 
+
+async function cargarUsuarios(year, month, grupo, subgrupo) {
+
+  try {
+
+    
+    const url = `${basePath}/api/licencias/usuarios?grupo=${grupo || ""}&subgrupo=${subgrupo || ""}`;
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || "Error usuarios");
+    }
+
+    return result.data;
+
+  } catch (error) {
+    console.error("Error cargando usuarios:", error);
+    return [];
+  }
+
+}
+
 async function cargarSubgrupos(grupo) {
   try {
 
@@ -227,7 +250,7 @@ async function cargarSubgrupos(grupo) {
 
   // 🔹 Traemos licencias reales
 const licencias = await cargarLicenciasDesdeBackend(year, month, grupo, subgrupo);
-  // 🔹 Agrupar por usuario
+const usuarios = await cargarUsuarios(year, month, grupo, subgrupo);
 const grupoSeleccionado = filtroGrupo.value;
 const modoTodos = !grupoSeleccionado;
 
@@ -235,26 +258,47 @@ let estructura = [];
 
 if (modoTodos) {
 
-  const gruposMap = {};
+const gruposMap = {};
 
-  licencias.forEach(l => {
-    const grupoNombre = l.Grupo || "Sin Grupo";
-    const id = l.ID_Usuario;
+// 1. TODOS los usuarios
+usuarios.forEach(u => {
 
-    if (!gruposMap[grupoNombre]) {
-      gruposMap[grupoNombre] = {};
-    }
+  const grupoNombre = (u.Grupo || "Sin Grupo").trim().toUpperCase();
+  const id = u.ID_Usuario;
 
-    if (!gruposMap[grupoNombre][id]) {
-      gruposMap[grupoNombre][id] = {
-        id: id,
-        nombre: `${l.Apellido} ${l.Nombre}`,
-        licencias: []
-      };
-    }
+  if (!gruposMap[grupoNombre]) {
+    gruposMap[grupoNombre] = {};
+  }
 
-    gruposMap[grupoNombre][id].licencias.push(l);
-  });
+  gruposMap[grupoNombre][id] = {
+    id: id,
+    nombre: `${u.Apellido} ${u.Nombre}`,
+    licencias: []
+  };
+
+});
+
+// 2. Agregar licencias encima
+licencias.forEach(l => {
+
+  const grupoNombre = (l.Grupo || "Sin Grupo").trim().toUpperCase();
+  const id = l.ID_Usuario;
+
+  if (!gruposMap[grupoNombre]) {
+    gruposMap[grupoNombre] = {};
+  }
+
+  if (!gruposMap[grupoNombre][id]) {
+    gruposMap[grupoNombre][id] = {
+      id: id,
+      nombre: `${l.Apellido} ${l.Nombre}`,
+      licencias: []
+    };
+  }
+
+  gruposMap[grupoNombre][id].licencias.push(l);
+
+});
 
   estructura = Object.keys(gruposMap)
     .sort()
@@ -469,5 +513,5 @@ renderCalendario();
 
 });
 
-// CREAR LICENCIAS 
+
 
