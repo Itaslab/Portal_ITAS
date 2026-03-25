@@ -155,16 +155,7 @@ AND l.Fecha_Hasta >= @inicioMes
 
 // 🎯 FILTRO POR ROL
 if (rol === "GERENTE" || rol === "COORDINADOR") {
-  // Por defecto, ven todos los datos
-  if (grupo) {
-    request.input("grupo", sql.VarChar, grupo);
-    query += ` AND g.Grupo = @grupo `;
-  }
-
-  if (subgrupo) {
-    request.input("subgrupo", sql.VarChar, subgrupo);
-    query += ` AND g.Subgrupo = @subgrupo `;
-  }
+  // ve todo
 } else if (rol === "REFERENTE") {
   request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
   query += ` AND g.Subgrupo = @subgrupoUsuario `;
@@ -172,10 +163,6 @@ if (rol === "GERENTE" || rol === "COORDINADOR") {
   request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
   query += ` AND l.ID_Usuario = @idUsuarioSesion `;
 }
-
-
-
-
 
 if (grupo) {
   request.input("grupo", sql.VarChar, grupo);
