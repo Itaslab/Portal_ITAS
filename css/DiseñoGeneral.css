@@ -660,6 +660,10 @@ textarea.disabled-field {
   background-color: #f59e0b !important;
 }
 
+.feriado {
+  background-color: #ee52d4 !important; /* gris claro */
+  font-weight: 600;
+}
 
 /* 🔹 Truncado de texto opcional con ... (solo si elegís truncar) */
 .truncate-1line {
