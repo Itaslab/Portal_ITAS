@@ -313,6 +313,17 @@ licencias.forEach(l => {
 
   const usuariosMap = {};
 
+  // Primero, agregar TODOS los usuarios del grupo seleccionado
+  usuarios.forEach(u => {
+    const id = u.ID_Usuario;
+    usuariosMap[id] = {
+      id: id,
+      nombre: `${u.Apellido} ${u.Nombre}`,
+      licencias: []
+    };
+  });
+
+  // Luego, agregar licencias a los usuarios que las tienen
   licencias.forEach(l => {
     const id = l.ID_Usuario;
 
@@ -503,6 +514,38 @@ function activarSeleccionFilas() {
   filtroSubgrupo.disabled = false;
   filtroSubgrupo.value = "";
 
+  renderCalendario();
+});
+
+filtroGrupo.addEventListener("change", async () => {
+  // Recargar subgrupos cuando cambia el grupo
+  const grupo = filtroGrupo.value;
+  
+  if (grupo) {
+    try {
+      const res = await fetch(`${basePath}/api/licencias/subgrupos?grupo=${grupo}`);
+      const result = await res.json();
+      const subgrupos = result.data || [];
+      
+      filtroSubgrupo.innerHTML = '<option value="">Todos</option>';
+      subgrupos.forEach(sg => {
+        const option = document.createElement("option");
+        option.value = sg.Subgrupo;
+        option.textContent = sg.Subgrupo;
+        filtroSubgrupo.appendChild(option);
+      });
+      
+      filtroSubgrupo.disabled = false;
+      filtroSubgrupo.value = "";
+    } catch (error) {
+      console.error("Error cargando subgrupos:", error);
+    }
+  } else {
+    filtroSubgrupo.innerHTML = '<option value="">Todos</option>';
+    filtroSubgrupo.disabled = true;
+    filtroSubgrupo.value = "";
+  }
+  
   renderCalendario();
 });
 
