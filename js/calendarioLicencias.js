@@ -394,8 +394,7 @@ if (estructura.length === 0 || estructura.every(b => b.usuarios.length === 0)) {
     const diaSemana = dia.toLocaleDateString("es-ES", { weekday: "short" });
     const numero = dia.getDate();
     const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
-    const fechaStr = dia.toISOString().split("T")[0];
-    const feriadoDescripcion = feriadosMap[fechaStr];
+
 
     html += `
       <th class="dia-header ${esFinSemana ? "fin-semana" : ""}">
@@ -447,6 +446,8 @@ html += `</tr>`;
     dias.forEach(dia => {
 
       const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
+      const fechaStr = dia.toISOString().split("T")[0];
+      const feriadoDescripcion = feriadosMap[fechaStr];
 
       const licenciaDelDia = usuario.licencias.find(l => {
 
