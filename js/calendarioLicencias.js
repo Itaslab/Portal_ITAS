@@ -198,6 +198,28 @@ function parseFechaLocal(fechaStr) {
 }
 
 
+async function cargarFeriados(year, month) {
+
+  try {
+
+    const url = `${basePath}/api/licencias/feriados?year=${year}&month=${month}`;
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || "Error feriados");
+    }
+
+    return result.data;
+
+  } catch (error) {
+    console.error("Error cargando feriados:", error);
+    return [];
+  }
+
+}
+
+
 async function cargarUsuarios(year, month, grupo, subgrupo) {
 
   try {
@@ -251,8 +273,14 @@ async function cargarSubgrupos(grupo) {
   // 🔹 Traemos licencias reales
 const licencias = await cargarLicenciasDesdeBackend(year, month, grupo, subgrupo);
 const usuarios = await cargarUsuarios(year, month, grupo, subgrupo);
+const feriados = await cargarFeriados(year, month);
 const grupoSeleccionado = filtroGrupo.value;
 const modoTodos = !grupoSeleccionado;
+const feriadosMap = {};
+
+feriados.forEach(f => {
+  feriadosMap[f.Fecha] = f.Descripcion;
+});
 
 let estructura = [];
 
@@ -367,6 +395,7 @@ if (estructura.length === 0 || estructura.every(b => b.usuarios.length === 0)) {
     const numero = dia.getDate();
     const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
 
+
     html += `
       <th class="dia-header ${esFinSemana ? "fin-semana" : ""}">
         <div class="nombre-dia">${diaSemana}</div>
@@ -417,6 +446,8 @@ html += `</tr>`;
     dias.forEach(dia => {
 
       const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
+      const fechaStr = dia.toISOString().split("T")[0];
+      const feriadoDescripcion = feriadosMap[fechaStr];
 
       const licenciaDelDia = usuario.licencias.find(l => {
 
@@ -430,29 +461,41 @@ html += `</tr>`;
         return diaTime >= desdeTime && diaTime <= hastaTime;
       });
 
-      let letra = "";
-      let claseLicencia = "";
+let letra = "";
+let claseExtra = "";
+let title = "";
 
-      if (licenciaDelDia) {
-        claseLicencia = "licencia-activa";
+// PRIORIDAD: licencia > feriado
+if (licenciaDelDia) {
 
-        switch (licenciaDelDia.TipoLic) {
-          case "VACACIONES": letra = "V"; claseLicencia += " tipo-vacaciones"; break;
-          case "COMPENSACIÓN DIA": letra = "CD"; claseLicencia += " tipo-compensacion"; break;
-          case "ENFERMEDAD": letra = "E"; claseLicencia += " tipo-enfermedad"; break;
-          case "MUDANZA": letra = "M"; claseLicencia += " tipo-mudanza"; break;
-          case "NACIMIENTO": letra = "N"; claseLicencia += " tipo-nacimiento"; break;
-          case "ACCIDENTE": letra = "A"; claseLicencia += " tipo-accidente"; break;
-          case "PARO/ASAMBLEA": letra = "PA"; claseLicencia += " tipo-paro"; break;
-          case "OTRA": letra = "O"; claseLicencia += " tipo-otra"; break;
-          case "COMPENSACIÓN HORAS": letra = "CH"; claseLicencia += " tipo-compensacion-horas"; break;
-          case "EXAMEN": letra = "EX"; claseLicencia += " tipo-examen"; break;
-        }
-      }
+  claseExtra = "licencia-activa";
+
+  switch (licenciaDelDia.TipoLic) {
+    case "VACACIONES": letra = "V"; claseExtra += " tipo-vacaciones"; break;
+    case "COMPENSACIÓN DIA": letra = "CD"; claseExtra += " tipo-compensacion"; break;
+    case "ENFERMEDAD": letra = "E"; claseExtra += " tipo-enfermedad"; break;
+    case "MUDANZA": letra = "M"; claseExtra += " tipo-mudanza"; break;
+    case "NACIMIENTO": letra = "N"; claseExtra += " tipo-nacimiento"; break;
+    case "ACCIDENTE": letra = "A"; claseExtra += " tipo-accidente"; break;
+    case "PARO/ASAMBLEA": letra = "PA"; claseExtra += " tipo-paro"; break;
+    case "OTRA": letra = "O"; claseExtra += " tipo-otra"; break;
+    case "COMPENSACIÓN HORAS": letra = "CH"; claseExtra += " tipo-compensacion-horas"; break;
+    case "EXAMEN": letra = "EX"; claseExtra += " tipo-examen"; break;
+  }
+
+  title = licenciaDelDia.TipoLic;
+
+} else if (feriadoDescripcion) {
+
+  letra = "F";
+  claseExtra = "feriado";
+  title = feriadoDescripcion;
+
+}
 
       html += `
-        <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseLicencia}" 
-            title="${letra ? licenciaDelDia.TipoLic : ''}">
+        <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseExtra}" 
+            title="${title}">
           ${letra}
         </td>
       `;

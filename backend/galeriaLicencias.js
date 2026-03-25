@@ -366,4 +366,51 @@ router.get("/usuarios", async (req, res) => {
 
 });
 
+// =============================
+// OBTENER FERIADOS POR MES
+// =============================
+router.get("/feriados", async (req, res) => {
+
+  const { year, month } = req.query;
+
+  if (!year || !month) {
+    return res.status(400).json({
+      success: false,
+      error: "Debe enviar year y month"
+    });
+  }
+
+  try {
+
+    const pool = await poolPromise;
+
+    const yearMonth = `${year}${String(month).padStart(2, "0")}`;
+
+    const result = await pool.request()
+      .input("yearMonth", sql.VarChar, yearMonth)
+      .query(`
+        SELECT 
+          CONVERT(varchar(10), Fecha, 23) AS Fecha,
+          Descripcion
+        FROM ${schema}.FERIADOS
+        WHERE AñoMes = @yearMonth
+      `);
+
+    res.json({
+      success: true,
+      data: result.recordset
+    });
+
+  } catch (err) {
+    console.error("Error obteniendo feriados:", err);
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
+  }
+
+});
+
+
+
 module.exports = router;
