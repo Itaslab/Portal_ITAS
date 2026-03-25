@@ -506,6 +506,38 @@ function activarSeleccionFilas() {
   renderCalendario();
 });
 
+filtroGrupo.addEventListener("change", async () => {
+  // Recargar subgrupos cuando cambia el grupo
+  const grupo = filtroGrupo.value;
+  
+  if (grupo) {
+    try {
+      const res = await fetch(`${basePath}/api/licencias/subgrupos?grupo=${grupo}`);
+      const result = await res.json();
+      const subgrupos = result.data || [];
+      
+      filtroSubgrupo.innerHTML = '<option value="">Todos</option>';
+      subgrupos.forEach(sg => {
+        const option = document.createElement("option");
+        option.value = sg.Subgrupo;
+        option.textContent = sg.Subgrupo;
+        filtroSubgrupo.appendChild(option);
+      });
+      
+      filtroSubgrupo.disabled = false;
+      filtroSubgrupo.value = "";
+    } catch (error) {
+      console.error("Error cargando subgrupos:", error);
+    }
+  } else {
+    filtroSubgrupo.innerHTML = '<option value="">Todos</option>';
+    filtroSubgrupo.disabled = true;
+    filtroSubgrupo.value = "";
+  }
+  
+  renderCalendario();
+});
+
 filtroSubgrupo.addEventListener("change", renderCalendario);
 filtroMes.addEventListener("change", renderCalendario);
 generarOpcionesMes();
