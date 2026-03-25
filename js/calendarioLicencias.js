@@ -313,6 +313,17 @@ licencias.forEach(l => {
 
   const usuariosMap = {};
 
+  // Primero, agregar TODOS los usuarios del grupo seleccionado
+  usuarios.forEach(u => {
+    const id = u.ID_Usuario;
+    usuariosMap[id] = {
+      id: id,
+      nombre: `${u.Apellido} ${u.Nombre}`,
+      licencias: []
+    };
+  });
+
+  // Luego, agregar licencias a los usuarios que las tienen
   licencias.forEach(l => {
     const id = l.ID_Usuario;
 
