@@ -154,16 +154,25 @@ AND l.Fecha_Hasta >= @inicioMes
 `;
 
 // 🎯 FILTRO POR ROL
-if (rol === "GERENTE" || rol === "COORDINADOR") {
-  // ve todo
-} else if (rol === "REFERENTE") {
-  request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
-  query += ` AND g.Subgrupo = @subgrupoUsuario `;
+if (!esAdmin) {
+  if (rol === "GERENTE") {
+    // ve todo
+  } else if (rol === "COORDINADOR") {
+    request.input("grupoUsuario", sql.VarChar, grupoUsuario);
+    query += ` AND g.Grupo = @grupoUsuario `;
+  } else if (rol === "REFERENTE") {
+    request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
+    query += ` AND g.Subgrupo = @subgrupoUsuario `;
+  } else if (rol === "USER") {
+    request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
+    query += ` AND l.ID_Usuario = @idUsuarioSesion `;
+  }
 } else {
-  request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
-  query += ` AND l.ID_Usuario = @idUsuarioSesion `;
+  // esAdmin
+  // ve todo
 }
 
+// 🎯 FILTROS OPCIONALES
 if (grupo) {
   request.input("grupo", sql.VarChar, grupo);
   query += ` AND g.Grupo = @grupo `;
@@ -412,9 +421,7 @@ router.get("/feriados", async (req, res) => {
 });
 
 
-
-
-/// =============================
+// =============================
 // OBTENER LICENCIAS PENDIENTES
 // =============================
 router.get("/pendientes", async (req, res) => {
