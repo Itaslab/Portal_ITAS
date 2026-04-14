@@ -520,15 +520,14 @@ router.get("/pendientes", async (req, res) => {
 
     let query = `
 SELECT 
-    l.Id,
     l.ID_Usuario,
     u.Nombre,
     u.Apellido,
     g.Grupo,
     g.Subgrupo,
-    l.Fecha_Desde,
-    l.Fecha_Hasta,
-    MAX(l.TipoLic) AS TipoLic,
+    CONVERT(varchar(10), MIN(l.Fecha_Desde), 23) AS Fecha_Desde,
+    CONVERT(varchar(10), MAX(l.Fecha_Hasta), 23) AS Fecha_Hasta,
+    MAX(l.Licencia) AS Licencia,
     l.Estado
 FROM ${schema}.LICENCIAS_SMART l
 INNER JOIN ${schema}.USUARIO u 
@@ -539,14 +538,11 @@ INNER JOIN ${schema}.GRUPO g
     ON g.ID_Grupo = ug.ID_Grupo
 WHERE l.Estado = 'PENDING'
 GROUP BY 
-    l.Id,
     l.ID_Usuario,
     u.Nombre,
     u.Apellido,
     g.Grupo,
     g.Subgrupo,
-    l.Fecha_Desde,
-    l.Fecha_Hasta,
     l.Estado
 ORDER BY g.Grupo, u.Apellido, u.Nombre
     `;

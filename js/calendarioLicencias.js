@@ -61,7 +61,7 @@ function renderPendientes(licencias) {
     div.innerHTML = `
       <strong>${l.Apellido}, ${l.Nombre}</strong><br>
       ${l.Fecha_Desde} → ${l.Fecha_Hasta}<br>
-      ${l.TipoLic}
+      ${l.Licencia}
     <div class="mt-2">
       <button class="btn btn-success btn-sm" onclick="aprobarLicencia(${l.ID_Usuario}, '${l.Fecha_Desde}')">Aprobar</button>
       <button class="btn btn-danger btn-sm" onclick="rechazarLicencia(${l.ID_Usuario}, '${l.Fecha_Desde}')">Rechazar</button>
