@@ -414,7 +414,7 @@ router.get("/feriados", async (req, res) => {
 
 
 
-// =============================
+/// =============================
 // OBTENER LICENCIAS PENDIENTES
 // =============================
 router.get("/pendientes", async (req, res) => {
@@ -436,7 +436,7 @@ router.get("/pendientes", async (req, res) => {
 
     const pool = await poolPromise;
 
-    // 🔎 Obtener datos del usuario logueado y detectar rol
+    // 🔎 Obtener usuario logueado
     const usuarioResult = await pool.request()
       .input("idUsuario", sql.Int, idUsuarioSesion)
       .query(`
@@ -467,112 +467,76 @@ router.get("/pendientes", async (req, res) => {
     const usuario = usuarioResult.recordset[0];
     const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
 
-    // 🔐 ADMIN ve todo
-    if (esAdmin) {
-
-      const licencias = await pool.request()
-        .query(`
-          SELECT 
-              l.ID_Usuario,
-              u.Nombre,
-              u.Apellido,
-              g.Grupo,
-              g.Subgrupo,
-              CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
-              CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
-              l.Licencia,
-              l.Estado
-          FROM ${schema}.LICENCIAS_SMART l
-          INNER JOIN ${schema}.USUARIO u 
-              ON u.ID_Usuario = l.ID_Usuario
-          INNER JOIN ${schema}.USUARIO_GRUPO ug
-              ON ug.ID_Usuario = u.ID_Usuario
-          INNER JOIN ${schema}.GRUPO g
-              ON g.ID_Grupo = ug.ID_Grupo
-          WHERE l.Estado = 'PENDING'
-          ORDER BY g.Grupo, u.Apellido, u.Nombre
-        `);
-
-      return res.json({
-        success: true,
-        data: licencias.recordset
-      });
-    }
-
+    // 🎯 detectar rol
     let rol = "USER";
-    let grupoUsuario = null;
     let subgrupoUsuario = null;
 
     if (usuario.Gerente === nombreCompleto) {
       rol = "GERENTE";
-    }
+    } 
     else if (usuario.Coordinador === nombreCompleto) {
       rol = "COORDINADOR";
-      grupoUsuario = usuario.Grupo;
-    }
+    } 
     else if (usuario.Referente === nombreCompleto) {
       rol = "REFERENTE";
-      grupoUsuario = usuario.Grupo;
       subgrupoUsuario = usuario.Subgrupo;
     }
 
     const request = pool.request();
 
-let query = `
-SELECT 
-    l.Log,
-    l.ID_Usuario,
-    u.Nombre,
-    u.Apellido,
-    g.Grupo,
-    g.Subgrupo,
-    CONVERT(varchar(10), MIN(l.Fecha_Desde), 23) AS Fecha_Desde,
-    CONVERT(varchar(10), MAX(l.Fecha_Hasta), 23) AS Fecha_Hasta,
-    MAX(l.Licencia) AS Licencia,
-    l.Estado
-FROM ${schema}.LICENCIAS_SMART l
-INNER JOIN ${schema}.USUARIO u 
-    ON u.ID_Usuario = l.ID_Usuario
-INNER JOIN ${schema}.USUARIO_GRUPO ug
-    ON ug.ID_Usuario = u.ID_Usuario
-INNER JOIN ${schema}.GRUPO g
-    ON g.ID_Grupo = ug.ID_Grupo
-WHERE l.Estado = 'PENDING'
-`;
+    // 🔥 QUERY BASE (SIN GROUP BY)
+    let query = `
+      SELECT DISTINCT
+          l.Id,
+          l.ID_Usuario,
+          u.Nombre,
+          u.Apellido,
+          g.Grupo,
+          g.Subgrupo,
+          CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
+          CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
+          l.Licencia,
+          l.Estado
+      FROM ${schema}.LICENCIAS_SMART l
+      INNER JOIN ${schema}.USUARIO u 
+          ON u.ID_Usuario = l.ID_Usuario
+      INNER JOIN (
+          SELECT DISTINCT ID_Usuario, ID_Grupo 
+          FROM ${schema}.USUARIO_GRUPO
+      ) ug ON ug.ID_Usuario = u.ID_Usuario
+      INNER JOIN ${schema}.GRUPO g
+          ON g.ID_Grupo = ug.ID_Grupo
+      WHERE l.Estado = 'PENDING'
+    `;
 
-// 🎯 FILTROS POR ROL (ACÁ, antes del GROUP BY)
-if (rol === "REFERENTE") {
-  request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
-  query += ` AND g.Subgrupo = @subgrupoUsuario `;
-} 
-else if (rol === "USER") {
-  request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
-  query += ` AND l.ID_Usuario = @idUsuarioSesion `;
-}
+    // 🎯 FILTRO POR ROL
+    if (!esAdmin) {
 
-// 🎯 FILTROS OPCIONALES
-if (grupo) {
-  request.input("grupo", sql.VarChar, grupo);
-  query += ` AND g.Grupo = @grupo `;
-}
+      if (rol === "REFERENTE") {
+        request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
+        query += ` AND g.Subgrupo = @subgrupoUsuario `;
+      } 
+      else if (rol === "USER") {
+        request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
+        query += ` AND l.ID_Usuario = @idUsuarioSesion `;
+      }
 
-if (grupo && subgrupo) {
-  request.input("subgrupo", sql.VarChar, subgrupo);
-  query += ` AND g.Subgrupo = @subgrupo `;
-}
+      // ⚠️ GERENTE / COORDINADOR → ven todo (por ahora)
+    }
 
-// 🔥 RECIÉN ACÁ agrupás
-query += `
-GROUP BY 
-    l.Log,  -- 🔥 clave
-    l.ID_Usuario,
-    u.Nombre,
-    u.Apellido,
-    g.Grupo,
-    g.Subgrupo,
-    l.Estado
-ORDER BY g.Grupo, u.Apellido, u.Nombre
-`;
+    // 🎯 FILTROS OPCIONALES
+    if (grupo) {
+      request.input("grupo", sql.VarChar, grupo);
+      query += ` AND g.Grupo = @grupo `;
+    }
+
+    if (grupo && subgrupo) {
+      request.input("subgrupo", sql.VarChar, subgrupo);
+      query += ` AND g.Subgrupo = @subgrupo `;
+    }
+
+    // ✅ ORDEN FINAL
+    query += ` ORDER BY g.Grupo, u.Apellido, u.Nombre `;
 
     const result = await request.query(query);
 
