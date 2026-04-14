@@ -63,7 +63,11 @@
     </button>
   </div>
 </div>
-  
+<div class="col ms-auto text-end">
+  <button id="btnAprobarLicencias" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalAprobarLicencias">
+    Aprobar licencias
+  </button>
+</div>
 
 
   <!-- Leyenda (vacía por ahora) -->
@@ -95,15 +99,22 @@
             <label class="form-label fw-semibold">Tipo de licencia</label>
             <select id="tipoLicencia" class="form-select">
               <option value="">Seleccionar</option>
-              <option>VACACIONES</option>
-              <option>ENFERMEDAD</option>
-              <option>NACIMIENTO</option>
-              <option>MUDANZA</option>
-              <option>COMPENSACÍON DIA</option>
-              <option>COMPENSACIÓN HORAS</option>
-              <option>EXAMEN</option>
-              <option>PARO/ASAMBLEA</option>
-              <option>OTRA</option>
+              <option>Franco Compensatorio</option>
+              <option>Compensación Horas Adic</option>
+              <option>Compensacion horas extras feriado</option>
+              <option>Examen de Estudios</option>
+              <option>Mudanza</option>
+              <option>Donación de sangre</option>
+              <option>Credito Permiso Gremial</option>
+              <option>Paro</option>
+              <option>Licencia por Enfermedad</option>
+              <option>Lic Enf Familiar</option>
+              <option>LicEnfFLiar C/Goce</option>
+              <option>Fallecimiento Familiar</option>
+              <option>Lic. por Nacimiento Adicional</option>
+              <option>Accidente de Trabajo</option>
+              <option>Vacaciones Legales</option>
+              <option>Vacaciones pactadas</option>
             </select>
           </div>
 
@@ -178,7 +189,30 @@
   </div>
 </div>
 
+<!-- Modal Aprobar Licencias -->
+<div class="modal fade" id="modalAprobarLicencias" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
 
+      <div class="modal-header">
+        <h5 class="modal-title">Licencias pendientes</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- 🔥 ACÁ VA LA LISTA -->
+        <div id="listaPendientes"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <script src="../js/config.js"></script>
 <script src="../js/calendarioLicencias.js"></script>

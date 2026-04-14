@@ -10,6 +10,9 @@ const filtroSubgrupo = document.getElementById("filtroSubgrupo");
 const fechaDesde = document.getElementById("fechaDesde");
 const fechaHasta = document.getElementById("fechaHasta");
 
+const btnAprobar = document.getElementById("btnAprobarLicencias");
+const listaPendientes = document.getElementById("listaPendientes");
+
 if (fechaDesde && fechaHasta) {
 
   fechaDesde.addEventListener("change", () => {
@@ -24,7 +27,111 @@ if (fechaDesde && fechaHasta) {
 
 }
 
-// MODAL
+//MODAL APROBAR LICENCIAS 
+
+btnAprobar.addEventListener("click", async () => {
+
+  const res = await fetch(`${basePath}/api/licencias/pendientes`);
+  const data = await res.json();
+
+if (!data.success) {
+  console.error("Error trayendo pendientes:", data.error);
+  listaPendientes.innerHTML = "<p>Error cargando licencias</p>";
+  return;
+}
+
+  renderPendientes(data.data);
+
+});
+
+function renderPendientes(licencias) {
+
+  listaPendientes.innerHTML = "";
+
+  if (!licencias.length) {
+    listaPendientes.innerHTML = "<p>No hay licencias pendientes</p>";
+    return;
+  }
+
+  licencias.forEach(l => {
+
+    const div = document.createElement("div");
+    div.classList.add("mb-2", "p-2", "border");
+
+    div.innerHTML = `
+  <div class="card-licencia">
+    
+    <div class="header-licencia">
+      <div class="nombre">${l.Apellido}, ${l.Nombre}</div>
+      <span class="badge bg-warning text-dark">PENDIENTE</span>
+    </div>
+
+    <div class="body-licencia">
+      <div class="fechas">
+         ${l.Fecha_Desde} → ${l.Fecha_Hasta}
+      </div>
+      <div class="tipo">
+        ${l.Licencia}
+      </div>
+    </div>
+
+    <div class="acciones">
+      <button class="btn btn-outline-success btn-sm btn-aprobar">
+        ✔ Aprobar
+      </button>
+      <button class="btn btn-outline-danger btn-sm btn-rechazar">
+        ✖ Rechazar
+      </button>
+    </div>
+
+  </div>
+    `;
+
+    // 🔥 BOTÓN APROBAR
+    div.querySelector(".btn-aprobar").addEventListener("click", async () => {
+      await cambiarEstado(l.Id, "APPROVED");
+      div.remove(); // lo sacás del modal
+    });
+
+    // 🔥 BOTÓN RECHAZAR
+    div.querySelector(".btn-rechazar").addEventListener("click", async () => {
+      await cambiarEstado(l.Id, "CANCELLED");
+      div.remove();
+    });
+
+    listaPendientes.appendChild(div);
+  });
+}
+
+async function cambiarEstado(id, estado) {
+
+  try {
+
+    const res = await fetch(`${basePath}/api/licencias/cambiar-estado`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id, estado })
+    });
+
+    const result = await res.json();
+
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+
+  } catch (error) {
+    console.error("Error cambiando estado:", error);
+    alert("Error al actualizar licencia");
+  }
+
+}
+
+
+
+
+// MODAL CREAR LICENCIA 
 const modalCrearLicencia = new bootstrap.Modal(
   document.getElementById("modalCrearLicencia")
 );
