@@ -470,16 +470,19 @@ router.get("/pendientes", async (req, res) => {
     // 🎯 detectar rol
     let rol = "USER";
     let subgrupoUsuario = null;
+    let grupoUsuario = null;
 
     if (usuario.Gerente === nombreCompleto) {
       rol = "GERENTE";
     } 
     else if (usuario.Coordinador === nombreCompleto) {
       rol = "COORDINADOR";
+      grupoUsuario = usuario.Grupo;
     } 
     else if (usuario.Referente === nombreCompleto) {
       rol = "REFERENTE";
       subgrupoUsuario = usuario.Subgrupo;
+      grupoUsuario = usuario.Grupo;
     }
 
     const request = pool.request();
