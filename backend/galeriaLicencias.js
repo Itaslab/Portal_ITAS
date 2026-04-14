@@ -512,50 +512,29 @@ router.get("/pendientes", async (req, res) => {
       WHERE l.Estado = 'PENDING'
     `;
 
-    // 🎯 FILTRO POR ROL
-if (!esAdmin) {
+    // 🔥 Actualizar solo el estado y el usuario que aprueba/rechaza
+    const queryUpdate = `
+      UPDATE ${schema}.LICENCIAS_SMART
+      SET Estado = @estado,
+          Aprobado_Por = @usuario
+      WHERE Id = @id
+    `;
 
-  if (rol === "GERENTE") {
-    // si querés que vea todo, lo dejás así
-  }
-
-  else if (rol === "COORDINADOR") {
-    request.input("grupoUsuario", sql.VarChar, grupoUsuario);
-    query += ` AND g.Grupo = @grupoUsuario `;
-  }
-
-  else if (rol === "REFERENTE") {
-    request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
-    query += ` AND g.Subgrupo = @subgrupoUsuario `;
-  } 
-
-  else if (rol === "USER") {
-    request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
-    query += ` AND l.ID_Usuario = @idUsuarioSesion `;
-  }
-
-}
-
-    // 🎯 FILTROS OPCIONALES
-    if (grupo) {
-      request.input("grupo", sql.VarChar, grupo);
-      query += ` AND g.Grupo = @grupo `;
+    // 🔐 Validar que el usuario sea coordinador antes de realizar el cambio
+    if (rol !== "COORDINADOR") {
+      return res.status(403).json({
+        success: false,
+        error: "Solo los coordinadores pueden aprobar o rechazar licencias"
+      });
     }
 
-    if (grupo && subgrupo) {
-      request.input("subgrupo", sql.VarChar, subgrupo);
-      query += ` AND g.Subgrupo = @subgrupo `;
-    }
+    await pool.request()
+      .input("id", sql.Int, id)
+      .input("estado", sql.VarChar, estado)
+      .input("usuario", sql.Int, idUsuarioSesion)
+      .query(queryUpdate);
 
-    // ✅ ORDEN FINAL
-    query += ` ORDER BY g.Grupo, u.Apellido, u.Nombre `;
-
-    const result = await request.query(query);
-
-    res.json({
-      success: true,
-      data: result.recordset
-    });
+    res.json({ success: true });
 
   } catch (err) {
     console.error("Error obteniendo licencias pendientes:", err);
@@ -683,13 +662,7 @@ router.post("/cambiar-estado", async (req, res) => {
       .input("id", sql.Int, id)
       .input("estado", sql.VarChar, estado)
       .input("usuario", sql.Int, idUsuarioSesion)
-      .query(`
-        UPDATE ${schema}.LICENCIAS_SMART
-        SET Estado = @estado,
-            Aprobado_Por = @usuario,
-            Fecha_Aprobacion = GETDATE()
-        WHERE Id = @id
-      `);
+      .query(queryUpdate);
 
     res.json({ success: true });
 
