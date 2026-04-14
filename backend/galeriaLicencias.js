@@ -592,10 +592,11 @@ router.post("/cambiar-estado", async (req, res) => {
   }
 
   // 🔥 validar estado permitido
-  if (!["APROBADA", "RECHAZADA"].includes(estado)) {
+  const estadosPermitidos = ["APPROVED", "CANCELLED"];
+  if (!estadosPermitidos.includes(estado)) {
     return res.status(400).json({
       success: false,
-      error: "Estado inválido"
+      error: `Estado inválido. Estados permitidos: ${estadosPermitidos.join(", ")}`
     });
   }
 
