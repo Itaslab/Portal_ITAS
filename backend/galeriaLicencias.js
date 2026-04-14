@@ -277,6 +277,7 @@ router.get("/usuarios", async (req, res) => {
 
     res.json({
       success: true,
+      rol,
       data: result.recordset
     });
 
@@ -478,6 +479,7 @@ if (!esAdmin) {
 
     res.json({
       success: true,
+      rol,
       data: result.recordset
     });
 
