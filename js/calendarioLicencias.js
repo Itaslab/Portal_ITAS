@@ -59,13 +59,32 @@ function renderPendientes(licencias) {
     div.classList.add("mb-2", "p-2", "border");
 
     div.innerHTML = `
-      <strong>${l.Apellido}, ${l.Nombre}</strong><br>
-      ${l.Fecha_Desde} → ${l.Fecha_Hasta}<br>
-      ${l.Licencia}
-      <div class="mt-2">
-        <button class="btn btn-success btn-sm btn-aprobar">Aprobar</button>
-        <button class="btn btn-danger btn-sm btn-rechazar">Rechazar</button>
+  <div class="card-licencia">
+    
+    <div class="header-licencia">
+      <div class="nombre">${l.Apellido}, ${l.Nombre}</div>
+      <span class="badge bg-warning text-dark">PENDIENTE</span>
+    </div>
+
+    <div class="body-licencia">
+      <div class="fechas">
+         ${l.Fecha_Desde} → ${l.Fecha_Hasta}
       </div>
+      <div class="tipo">
+        ${l.Licencia}
+      </div>
+    </div>
+
+    <div class="acciones">
+      <button class="btn btn-success btn-sm btn-aprobar">
+        ✔ Aprobar
+      </button>
+      <button class="btn btn-outline-danger btn-sm btn-rechazar">
+        ✖ Rechazar
+      </button>
+    </div>
+
+  </div>
     `;
 
     // 🔥 BOTÓN APROBAR
