@@ -519,24 +519,33 @@ router.get("/pendientes", async (req, res) => {
     const request = pool.request();
 
     let query = `
-      SELECT 
-          l.ID_Usuario,
-          u.Nombre,
-          u.Apellido,
-          g.Grupo,
-          g.Subgrupo,
-          CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
-          CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
-          l.TipoLic,
-          l.Estado
-      FROM ${schema}.LICENCIAS_SMART l
-      INNER JOIN ${schema}.USUARIO u 
-          ON u.ID_Usuario = l.ID_Usuario
-      INNER JOIN ${schema}.USUARIO_GRUPO ug
-          ON ug.ID_Usuario = u.ID_Usuario
-      INNER JOIN ${schema}.GRUPO g
-          ON g.ID_Grupo = ug.ID_Grupo
-      WHERE l.Estado = 'PENDING'
+SELECT 
+    l.ID_Usuario,
+    u.Nombre,
+    u.Apellido,
+    g.Grupo,
+    g.Subgrupo,
+    MIN(l.Fecha_Desde) AS Fecha_Desde,
+    MAX(l.Fecha_Hasta) AS Fecha_Hasta,
+    l.TipoLic,
+    l.Estado
+FROM ${schema}.LICENCIAS_SMART l
+INNER JOIN ${schema}.USUARIO u 
+    ON u.ID_Usuario = l.ID_Usuario
+INNER JOIN ${schema}.USUARIO_GRUPO ug
+    ON ug.ID_Usuario = u.ID_Usuario
+INNER JOIN ${schema}.GRUPO g
+    ON g.ID_Grupo = ug.ID_Grupo
+WHERE l.Estado = 'PENDING'
+GROUP BY 
+    l.ID_Usuario,
+    u.Nombre,
+    u.Apellido,
+    g.Grupo,
+    g.Subgrupo,
+    l.TipoLic,
+    l.Estado
+ORDER BY g.Grupo, u.Apellido, u.Nombre
     `;
 
     // 🎯 FILTRO POR ROL
