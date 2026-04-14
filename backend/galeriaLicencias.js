@@ -480,7 +480,7 @@ router.get("/pendientes", async (req, res) => {
               g.Subgrupo,
               CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
               CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
-              l.TipoLic,
+              l.Licencia,
               l.Estado
           FROM ${schema}.LICENCIAS_SMART l
           INNER JOIN ${schema}.USUARIO u 
@@ -518,7 +518,7 @@ router.get("/pendientes", async (req, res) => {
 
     const request = pool.request();
 
-    let query = `
+let query = `
 SELECT 
     l.ID_Usuario,
     u.Nombre,
@@ -537,6 +537,31 @@ INNER JOIN ${schema}.USUARIO_GRUPO ug
 INNER JOIN ${schema}.GRUPO g
     ON g.ID_Grupo = ug.ID_Grupo
 WHERE l.Estado = 'PENDING'
+`;
+
+// 🎯 FILTROS POR ROL (ACÁ, antes del GROUP BY)
+if (rol === "REFERENTE") {
+  request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
+  query += ` AND g.Subgrupo = @subgrupoUsuario `;
+} 
+else if (rol === "USER") {
+  request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
+  query += ` AND l.ID_Usuario = @idUsuarioSesion `;
+}
+
+// 🎯 FILTROS OPCIONALES
+if (grupo) {
+  request.input("grupo", sql.VarChar, grupo);
+  query += ` AND g.Grupo = @grupo `;
+}
+
+if (grupo && subgrupo) {
+  request.input("subgrupo", sql.VarChar, subgrupo);
+  query += ` AND g.Subgrupo = @subgrupo `;
+}
+
+// 🔥 RECIÉN ACÁ agrupás
+query += `
 GROUP BY 
     l.ID_Usuario,
     u.Nombre,
@@ -545,33 +570,7 @@ GROUP BY
     g.Subgrupo,
     l.Estado
 ORDER BY g.Grupo, u.Apellido, u.Nombre
-    `;
-
-    // 🎯 FILTRO POR ROL
-    if (rol === "GERENTE" || rol === "COORDINADOR") {
-      // ve todo el grupo
-    } 
-    else if (rol === "REFERENTE") {
-      request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
-      query += ` AND g.Subgrupo = @subgrupoUsuario `;
-    } 
-    else {
-      request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
-      query += ` AND l.ID_Usuario = @idUsuarioSesion `;
-    }
-
-    // 🎯 FILTROS OPCIONALES
-    if (grupo) {
-      request.input("grupo", sql.VarChar, grupo);
-      query += ` AND g.Grupo = @grupo `;
-    }
-
-    if (grupo && subgrupo) {
-      request.input("subgrupo", sql.VarChar, subgrupo);
-      query += ` AND g.Subgrupo = @subgrupo `;
-    }
-
-    query += ` ORDER BY g.Grupo, u.Apellido, u.Nombre `;
+`;
 
     const result = await request.query(query);
 
