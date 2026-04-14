@@ -223,8 +223,11 @@
   fetch(`${basePath}/api/licencias/pendientes`)
     .then(res => res.json())
     .then(data => {
+      console.log("Rol recibido:", data.rol); // Log para depurar
       if (data.rol !== "COORDINADOR") {
         document.getElementById("btnAprobarLicencias").style.display = "none";
+      } else {
+        document.getElementById("btnAprobarLicencias").style.display = "block";
       }
     })
     .catch(err => console.error("Error obteniendo rol del usuario:", err));
