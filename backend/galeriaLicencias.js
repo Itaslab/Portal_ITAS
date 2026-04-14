@@ -189,9 +189,13 @@ ORDER BY g.Grupo, u.Apellido, u.Nombre
 
     const result = await request.query(query);
 
+    // ✅ Asegurar que el campo `Id` esté incluido en la respuesta JSON
     res.json({
       success: true,
-      data: result.recordset
+      data: result.recordset.map(licencia => ({
+        Id: licencia.Id, // Asegurar que el campo Id esté presente
+        ...licencia
+      }))
     });
 
   } catch (err) {
