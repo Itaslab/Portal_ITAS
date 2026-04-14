@@ -520,6 +520,7 @@ router.get("/pendientes", async (req, res) => {
 
 let query = `
 SELECT 
+    l.Log,
     l.ID_Usuario,
     u.Nombre,
     u.Apellido,
@@ -563,6 +564,7 @@ if (grupo && subgrupo) {
 // 🔥 RECIÉN ACÁ agrupás
 query += `
 GROUP BY 
+    l.Log,  -- 🔥 clave
     l.ID_Usuario,
     u.Nombre,
     u.Apellido,
