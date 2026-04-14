@@ -69,121 +69,48 @@ const usuario = usuarioResult.recordset[0];
 
 const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
 
+// ✅ Validar que `usuario` esté definido y tenga las propiedades necesarias
+    if (!usuario || !usuario.Coordinador || !usuario.Gerente || !usuario.Referente) {
+      return res.status(500).json({
+        success: false,
+        error: "Error al determinar el rol del usuario. Datos incompletos."
+      });
+    }
 
-if (esAdmin) {
+    const rol = usuario.Coordinador === nombreCompleto ? "COORDINADOR" :
+                usuario.Gerente === nombreCompleto ? "GERENTE" :
+                usuario.Referente === nombreCompleto ? "REFERENTE" : "USER";
 
-  const licencias = await pool.request()
-    .input("inicioMes", sql.Date, inicioMes)
-    .input("finMes", sql.Date, finMes)
-    .query(`
-      SELECT 
-          l.ID_Usuario,
-          u.Nombre,
-          u.Apellido,
-          g.Grupo,
-          g.Subgrupo,
-          CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
-          CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
-          l.TipoLic
-      FROM ${schema}.LICENCIAS_SMART l
-      INNER JOIN ${schema}.USUARIO u 
-          ON u.ID_Usuario = l.ID_Usuario
-      INNER JOIN ${schema}.USUARIO_GRUPO ug
-          ON ug.ID_Usuario = u.ID_Usuario
-      INNER JOIN ${schema}.GRUPO g
-          ON g.ID_Grupo = ug.ID_Grupo
-      WHERE l.Fecha_Desde <= @finMes
-      AND l.Fecha_Hasta >= @inicioMes
-      ORDER BY g.Grupo, u.Apellido, u.Nombre
-    `);
-
-  return res.json({
-    success: true,
-    data: licencias.recordset
-  });
-}
-
-
-
-
-let rol = "USER";
-let grupoUsuario = null;
-let subgrupoUsuario = null;
-
-if (usuario.Gerente === nombreCompleto) {
-  rol = "GERENTE";
-}
-
-else if (usuario.Coordinador === nombreCompleto) {
-  rol = "COORDINADOR";
-  grupoUsuario = usuario.Grupo;
-}
-
-else if (usuario.Referente === nombreCompleto) {
-  rol = "REFERENTE";
-  grupoUsuario = usuario.Grupo;
-  subgrupoUsuario = usuario.Subgrupo;
-}
-
-
-
-
-    const request = pool.request()
+    const licencias = await pool.request()
       .input("inicioMes", sql.Date, inicioMes)
-      .input("finMes", sql.Date, finMes);
+      .input("finMes", sql.Date, finMes)
+      .query(`
+        SELECT 
+            l.ID_Usuario,
+            u.Nombre,
+            u.Apellido,
+            g.Grupo,
+            g.Subgrupo,
+            CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
+            CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
+            l.TipoLic
+        FROM ${schema}.LICENCIAS_SMART l
+        INNER JOIN ${schema}.USUARIO u 
+            ON u.ID_Usuario = l.ID_Usuario
+        INNER JOIN ${schema}.USUARIO_GRUPO ug
+            ON ug.ID_Usuario = u.ID_Usuario
+        INNER JOIN ${schema}.GRUPO g
+            ON g.ID_Grupo = ug.ID_Grupo
+        WHERE l.Fecha_Desde <= @finMes
+        AND l.Fecha_Hasta >= @inicioMes
+        ORDER BY g.Grupo, u.Apellido, u.Nombre
+      `);
 
-let query = `
-SELECT 
-    l.ID_Usuario,
-    u.Nombre,
-    u.Apellido,
-    g.Grupo,
-    g.Subgrupo,
-    CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
-    CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
-    l.TipoLic
-FROM ${schema}.LICENCIAS_SMART l
-INNER JOIN ${schema}.USUARIO u 
-    ON u.ID_Usuario = l.ID_Usuario
-INNER JOIN ${schema}.USUARIO_GRUPO ug
-    ON ug.ID_Usuario = u.ID_Usuario
-INNER JOIN ${schema}.GRUPO g
-    ON g.ID_Grupo = ug.ID_Grupo
-WHERE l.Fecha_Desde <= @finMes
-AND l.Fecha_Hasta >= @inicioMes
-`;
-
-// 🎯 FILTRO POR ROL
-if (rol === "GERENTE" || rol === "COORDINADOR") {
-  // ve todo
-} else if (rol === "REFERENTE") {
-  request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
-  query += ` AND g.Subgrupo = @subgrupoUsuario `;
-} else {
-  request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
-  query += ` AND l.ID_Usuario = @idUsuarioSesion `;
-}
-
-if (grupo) {
-  request.input("grupo", sql.VarChar, grupo);
-  query += ` AND g.Grupo = @grupo `;
-}
-
-if (grupo && subgrupo) {
-  request.input("subgrupo", sql.VarChar, subgrupo);
-  query += ` AND g.Subgrupo = @subgrupo `;
-}
-
-query += `
-ORDER BY g.Grupo, u.Apellido, u.Nombre
-`;
-
-    const result = await request.query(query);
-
-    res.json({
+    return res.json({
       success: true,
-      data: result.recordset
+      data: licencias.recordset
     });
+
 
   } catch (err) {
     console.error("Error obteniendo licencias:", err);
