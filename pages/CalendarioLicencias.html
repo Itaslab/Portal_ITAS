@@ -58,13 +58,13 @@
 
   <!-- Botón -->
   <div class="col ms-auto text-end">
-    <button id="btnCrearLicencia" class="btn btn-primary btn-sm">
+    <button id="btnCrearLicencia" class="btn btn-primary btn-sm text-white">
       Crear Licencia
     </button>
   </div>
 </div>
 <div class="col ms-auto text-end">
-  <button id="btnAprobarLicencias" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalAprobarLicencias">
+  <button id="btnAprobarLicencias" class="btn btn-primary btn-sm text-white" data-bs-toggle="modal" data-bs-target="#modalAprobarLicencias">
     Aprobar licencias
   </button>
 </div>
@@ -218,8 +218,20 @@
 <script src="../js/calendarioLicencias.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+  // 🔥 Verificar el rol del usuario y mostrar/ocultar el botón
+  fetch(`${basePath}/api/licencias/pendientes`)
+    .then(res => res.json())
+    .then(data => {
+      console.log("Rol recibido:", data.rol); // Log para depurar
+      if (data.rol !== "COORDINADOR") {
+        document.getElementById("btnAprobarLicencias").style.display = "none";
+      } else {
+        document.getElementById("btnAprobarLicencias").style.display = "block";
+      }
+    })
+    .catch(err => console.error("Error obteniendo rol del usuario:", err));
+</script>
 
-</body>
 
 
-    
