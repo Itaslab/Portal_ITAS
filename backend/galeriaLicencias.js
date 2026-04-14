@@ -413,4 +413,175 @@ router.get("/feriados", async (req, res) => {
 
 
 
+
+// =============================
+// OBTENER LICENCIAS PENDIENTES
+// =============================
+router.get("/pendientes", async (req, res) => {
+
+  const { grupo, subgrupo } = req.query;
+
+  const idUsuarioSesion = req.session?.user?.ID_Usuario;
+  const adminIds = [79, 81, 89, 88];
+  const esAdmin = adminIds.includes(idUsuarioSesion);
+
+  if (!idUsuarioSesion) {
+    return res.status(401).json({
+      success: false,
+      error: "No autorizado"
+    });
+  }
+
+  try {
+
+    const pool = await poolPromise;
+
+    // 🔎 Obtener datos del usuario logueado y detectar rol
+    const usuarioResult = await pool.request()
+      .input("idUsuario", sql.Int, idUsuarioSesion)
+      .query(`
+        SELECT 
+            u.ID_Usuario,
+            u.Nombre,
+            u.Apellido,
+            g.Grupo,
+            g.Subgrupo,
+            g.Gerente,
+            g.Coordinador,
+            g.Referente
+        FROM ${schema}.USUARIO u
+        LEFT JOIN ${schema}.GRUPO g
+            ON (u.Nombre + ' ' + u.Apellido = g.Gerente
+                OR u.Nombre + ' ' + u.Apellido = g.Coordinador
+                OR u.Nombre + ' ' + u.Apellido = g.Referente)
+        WHERE u.ID_Usuario = @idUsuario
+      `);
+
+    if (usuarioResult.recordset.length === 0) {
+      return res.status(403).json({
+        success: false,
+        error: "Usuario sin rol asignado"
+      });
+    }
+
+    const usuario = usuarioResult.recordset[0];
+    const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
+
+    // 🔐 ADMIN ve todo
+    if (esAdmin) {
+
+      const licencias = await pool.request()
+        .query(`
+          SELECT 
+              l.ID_Usuario,
+              u.Nombre,
+              u.Apellido,
+              g.Grupo,
+              g.Subgrupo,
+              CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
+              CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
+              l.TipoLic,
+              l.Estado
+          FROM ${schema}.LICENCIAS_SMART l
+          INNER JOIN ${schema}.USUARIO u 
+              ON u.ID_Usuario = l.ID_Usuario
+          INNER JOIN ${schema}.USUARIO_GRUPO ug
+              ON ug.ID_Usuario = u.ID_Usuario
+          INNER JOIN ${schema}.GRUPO g
+              ON g.ID_Grupo = ug.ID_Grupo
+          WHERE l.Estado = 'PENDING'
+          ORDER BY g.Grupo, u.Apellido, u.Nombre
+        `);
+
+      return res.json({
+        success: true,
+        data: licencias.recordset
+      });
+    }
+
+    let rol = "USER";
+    let grupoUsuario = null;
+    let subgrupoUsuario = null;
+
+    if (usuario.Gerente === nombreCompleto) {
+      rol = "GERENTE";
+    }
+    else if (usuario.Coordinador === nombreCompleto) {
+      rol = "COORDINADOR";
+      grupoUsuario = usuario.Grupo;
+    }
+    else if (usuario.Referente === nombreCompleto) {
+      rol = "REFERENTE";
+      grupoUsuario = usuario.Grupo;
+      subgrupoUsuario = usuario.Subgrupo;
+    }
+
+    const request = pool.request();
+
+    let query = `
+      SELECT 
+          l.ID_Usuario,
+          u.Nombre,
+          u.Apellido,
+          g.Grupo,
+          g.Subgrupo,
+          CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
+          CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
+          l.TipoLic,
+          l.Estado
+      FROM ${schema}.LICENCIAS_SMART l
+      INNER JOIN ${schema}.USUARIO u 
+          ON u.ID_Usuario = l.ID_Usuario
+      INNER JOIN ${schema}.USUARIO_GRUPO ug
+          ON ug.ID_Usuario = u.ID_Usuario
+      INNER JOIN ${schema}.GRUPO g
+          ON g.ID_Grupo = ug.ID_Grupo
+      WHERE l.Estado = 'PENDING'
+    `;
+
+    // 🎯 FILTRO POR ROL
+    if (rol === "GERENTE" || rol === "COORDINADOR") {
+      // ve todo el grupo
+    } 
+    else if (rol === "REFERENTE") {
+      request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
+      query += ` AND g.Subgrupo = @subgrupoUsuario `;
+    } 
+    else {
+      request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
+      query += ` AND l.ID_Usuario = @idUsuarioSesion `;
+    }
+
+    // 🎯 FILTROS OPCIONALES
+    if (grupo) {
+      request.input("grupo", sql.VarChar, grupo);
+      query += ` AND g.Grupo = @grupo `;
+    }
+
+    if (grupo && subgrupo) {
+      request.input("subgrupo", sql.VarChar, subgrupo);
+      query += ` AND g.Subgrupo = @subgrupo `;
+    }
+
+    query += ` ORDER BY g.Grupo, u.Apellido, u.Nombre `;
+
+    const result = await request.query(query);
+
+    res.json({
+      success: true,
+      data: result.recordset
+    });
+
+  } catch (err) {
+    console.error("Error obteniendo licencias pendientes:", err);
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
+  }
+
+});
+
+
+
 module.exports = router;
