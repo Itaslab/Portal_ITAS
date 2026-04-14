@@ -66,20 +66,17 @@ if (usuarioResult.recordset.length === 0) {
 }
 
 const usuario = usuarioResult.recordset[0];
-
 const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
 
-// ✅ Validar que `usuario` esté definido y tenga las propiedades necesarias
-    if (!usuario || !usuario.Coordinador || !usuario.Gerente || !usuario.Referente) {
-      return res.status(500).json({
-        success: false,
-        error: "Error al determinar el rol del usuario. Datos incompletos."
-      });
-    }
+// 🔍 Depurar cálculo del rol
+    console.log("Usuario logueado:", usuario);
+    console.log("Nombre completo calculado:", nombreCompleto);
 
-    const rol = usuario.Coordinador === nombreCompleto ? "COORDINADOR" :
+const rol = usuario.Coordinador === nombreCompleto ? "COORDINADOR" :
                 usuario.Gerente === nombreCompleto ? "GERENTE" :
                 usuario.Referente === nombreCompleto ? "REFERENTE" : "USER";
+
+    console.log("Rol asignado:", rol);
 
     const licencias = await pool.request()
       .input("inicioMes", sql.Date, inicioMes)
