@@ -591,22 +591,106 @@ router.post("/cambiar-estado", async (req, res) => {
     });
   }
 
+  // 🔥 validar estado permitido
+  if (!["APROBADA", "RECHAZADA"].includes(estado)) {
+    return res.status(400).json({
+      success: false,
+      error: "Estado inválido"
+    });
+  }
+
+  const adminIds = [79, 81, 89, 88];
+  const esAdmin = adminIds.includes(idUsuarioSesion);
+
   try {
 
     const pool = await poolPromise;
 
+    // 🔎 Obtener rol
+    const usuarioResult = await pool.request()
+      .input("idUsuario", sql.Int, idUsuarioSesion)
+      .query(`
+        SELECT 
+            u.Nombre,
+            u.Apellido,
+            g.Grupo,
+            g.Gerente,
+            g.Coordinador,
+            g.Referente
+        FROM ${schema}.USUARIO u
+        LEFT JOIN ${schema}.GRUPO g
+          ON (u.Nombre + ' ' + u.Apellido = g.Gerente
+              OR u.Nombre + ' ' + u.Apellido = g.Coordinador
+              OR u.Nombre + ' ' + u.Apellido = g.Referente)
+        WHERE u.ID_Usuario = @idUsuario
+      `);
+
+    const usuario = usuarioResult.recordset[0];
+    const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
+
+    let rol = "USER";
+    let grupoUsuario = null;
+
+    if (usuario.Gerente === nombreCompleto) {
+      rol = "GERENTE";
+    }
+    else if (usuario.Coordinador === nombreCompleto) {
+      rol = "COORDINADOR";
+      grupoUsuario = usuario.Grupo;
+    }
+
+    // 🔐 VALIDAR PERMISOS
+    if (!esAdmin && rol !== "GERENTE" && rol !== "COORDINADOR") {
+      return res.status(403).json({
+        success: false,
+        error: "No tenés permisos"
+      });
+    }
+
+    // 🔎 Traer grupo de la licencia
+    const licenciaResult = await pool.request()
+      .input("id", sql.Int, id)
+      .query(`
+        SELECT g.Grupo
+        FROM ${schema}.LICENCIAS_SMART l
+        INNER JOIN ${schema}.USUARIO_GRUPO ug
+          ON ug.ID_Usuario = l.ID_Usuario
+        INNER JOIN ${schema}.GRUPO g
+          ON g.ID_Grupo = ug.ID_Grupo
+        WHERE l.Id = @id
+      `);
+
+    if (licenciaResult.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Licencia no encontrada"
+      });
+    }
+
+    const licencia = licenciaResult.recordset[0];
+
+    // 🔐 VALIDAR GRUPO
+    if (rol === "COORDINADOR" && licencia.Grupo !== grupoUsuario) {
+      return res.status(403).json({
+        success: false,
+        error: "No podés modificar licencias de otro grupo"
+      });
+    }
+
+    // ✅ UPDATE SEGURO
     await pool.request()
       .input("id", sql.Int, id)
       .input("estado", sql.VarChar, estado)
+      .input("usuario", sql.Int, idUsuarioSesion)
       .query(`
         UPDATE ${schema}.LICENCIAS_SMART
-        SET Estado = @estado
+        SET Estado = @estado,
+            Aprobado_Por = @usuario,
+            Fecha_Aprobacion = GETDATE()
         WHERE Id = @id
       `);
 
-    res.json({
-      success: true
-    });
+    res.json({ success: true });
 
   } catch (err) {
     console.error("Error actualizando licencia:", err);
