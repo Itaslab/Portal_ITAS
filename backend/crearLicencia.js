@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
       .input("anioMes", sql.Int, anioMes)
       .query(`
         INSERT INTO ${schema}.LICENCIAS_SMART
-        (TipoLic, Fecha_Desde, Fecha_Hasta, ID_Usuario, Legajo, Smart, Estado, AnioMes)
+        (Licencia, Fecha_Desde, Fecha_Hasta, ID_Usuario, Legajo, Smart, Estado, AnioMes)
         VALUES
         (@tipoLic, @fechaDesde, @fechaHasta, @idUsuario, @legajo, 'No', 'PENDING', @anioMes)
       `);
