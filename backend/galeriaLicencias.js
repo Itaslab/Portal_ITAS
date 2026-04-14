@@ -19,7 +19,7 @@ router.get("/mes", async (req, res) => {
 
   // ✅ CAPTURAR USUARIO
   const idUsuarioSesion = req.session?.user?.ID_Usuario;
-  const adminIds = [79, 81, 89, 88];
+  const adminIds = [79,81,89,88];
   const esAdmin = adminIds.includes(idUsuarioSesion);
 
 
@@ -154,25 +154,16 @@ AND l.Fecha_Hasta >= @inicioMes
 `;
 
 // 🎯 FILTRO POR ROL
-if (!esAdmin) {
-  if (rol === "GERENTE") {
-    // ve todo
-  } else if (rol === "COORDINADOR") {
-    request.input("grupoUsuario", sql.VarChar, grupoUsuario);
-    query += ` AND g.Grupo = @grupoUsuario `;
-  } else if (rol === "REFERENTE") {
-    request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
-    query += ` AND g.Subgrupo = @subgrupoUsuario `;
-  } else if (rol === "USER") {
-    request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
-    query += ` AND l.ID_Usuario = @idUsuarioSesion `;
-  }
-} else {
-  // esAdmin
+if (rol === "GERENTE" || rol === "COORDINADOR") {
   // ve todo
+} else if (rol === "REFERENTE") {
+  request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
+  query += ` AND g.Subgrupo = @subgrupoUsuario `;
+} else {
+  request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
+  query += ` AND l.ID_Usuario = @idUsuarioSesion `;
 }
 
-// 🎯 FILTROS OPCIONALES
 if (grupo) {
   request.input("grupo", sql.VarChar, grupo);
   query += ` AND g.Grupo = @grupo `;
@@ -189,13 +180,9 @@ ORDER BY g.Grupo, u.Apellido, u.Nombre
 
     const result = await request.query(query);
 
-    // ✅ Asegurar que el campo `Id` esté incluido en la respuesta JSON
     res.json({
       success: true,
-      data: result.recordset.map(licencia => ({
-        Id: licencia.Id, // Asegurar que el campo Id esté presente
-        ...licencia
-      }))
+      data: result.recordset
     });
 
   } catch (err) {
@@ -425,7 +412,9 @@ router.get("/feriados", async (req, res) => {
 });
 
 
-// =============================
+
+
+/// =============================
 // OBTENER LICENCIAS PENDIENTES
 // =============================
 router.get("/pendientes", async (req, res) => {
@@ -523,29 +512,50 @@ router.get("/pendientes", async (req, res) => {
       WHERE l.Estado = 'PENDING'
     `;
 
-    // 🔥 Actualizar solo el estado y el usuario que aprueba/rechaza
-    const queryUpdate = `
-      UPDATE ${schema}.LICENCIAS_SMART
-      SET Estado = @estado,
-          Aprobado_Por = @usuario
-      WHERE Id = @id
-    `;
+    // 🎯 FILTRO POR ROL
+if (!esAdmin) {
 
-    // 🔐 Validar que el usuario sea coordinador antes de realizar el cambio
-    if (rol !== "COORDINADOR") {
-      return res.status(403).json({
-        success: false,
-        error: "Solo los coordinadores pueden aprobar o rechazar licencias"
-      });
+  if (rol === "GERENTE") {
+    // si querés que vea todo, lo dejás así
+  }
+
+  else if (rol === "COORDINADOR") {
+    request.input("grupoUsuario", sql.VarChar, grupoUsuario);
+    query += ` AND g.Grupo = @grupoUsuario `;
+  }
+
+  else if (rol === "REFERENTE") {
+    request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
+    query += ` AND g.Subgrupo = @subgrupoUsuario `;
+  } 
+
+  else if (rol === "USER") {
+    request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
+    query += ` AND l.ID_Usuario = @idUsuarioSesion `;
+  }
+
+}
+
+    // 🎯 FILTROS OPCIONALES
+    if (grupo) {
+      request.input("grupo", sql.VarChar, grupo);
+      query += ` AND g.Grupo = @grupo `;
     }
 
-    await pool.request()
-      .input("id", sql.Int, id)
-      .input("estado", sql.VarChar, estado)
-      .input("usuario", sql.Int, idUsuarioSesion)
-      .query(queryUpdate);
+    if (grupo && subgrupo) {
+      request.input("subgrupo", sql.VarChar, subgrupo);
+      query += ` AND g.Subgrupo = @subgrupo `;
+    }
 
-    res.json({ success: true });
+    // ✅ ORDEN FINAL
+    query += ` ORDER BY g.Grupo, u.Apellido, u.Nombre `;
+
+    const result = await request.query(query);
+
+    res.json({
+      success: true,
+      data: result.recordset
+    });
 
   } catch (err) {
     console.error("Error obteniendo licencias pendientes:", err);
@@ -581,101 +591,22 @@ router.post("/cambiar-estado", async (req, res) => {
     });
   }
 
-  // 🔥 validar estado permitido
-  const estadosPermitidos = ["APPROVED", "CANCELLED"];
-  if (!estadosPermitidos.includes(estado)) {
-    return res.status(400).json({
-      success: false,
-      error: `Estado inválido. Estados permitidos: ${estadosPermitidos.join(", ")}`
-    });
-  }
-
-  const adminIds = [79, 81, 89, 88];
-  const esAdmin = adminIds.includes(idUsuarioSesion);
-
   try {
 
     const pool = await poolPromise;
 
-    // 🔎 Obtener rol
-    const usuarioResult = await pool.request()
-      .input("idUsuario", sql.Int, idUsuarioSesion)
-      .query(`
-        SELECT 
-            u.Nombre,
-            u.Apellido,
-            g.Grupo,
-            g.Gerente,
-            g.Coordinador,
-            g.Referente
-        FROM ${schema}.USUARIO u
-        LEFT JOIN ${schema}.GRUPO g
-          ON (u.Nombre + ' ' + u.Apellido = g.Gerente
-              OR u.Nombre + ' ' + u.Apellido = g.Coordinador
-              OR u.Nombre + ' ' + u.Apellido = g.Referente)
-        WHERE u.ID_Usuario = @idUsuario
-      `);
-
-    const usuario = usuarioResult.recordset[0];
-    const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
-
-    let rol = "USER";
-    let grupoUsuario = null;
-
-    if (usuario.Gerente === nombreCompleto) {
-      rol = "GERENTE";
-    }
-    else if (usuario.Coordinador === nombreCompleto) {
-      rol = "COORDINADOR";
-      grupoUsuario = usuario.Grupo;
-    }
-
-    // 🔐 VALIDAR PERMISOS
-    if (!esAdmin && rol !== "GERENTE" && rol !== "COORDINADOR") {
-      return res.status(403).json({
-        success: false,
-        error: "No tenés permisos"
-      });
-    }
-
-    // 🔎 Traer grupo de la licencia
-    const licenciaResult = await pool.request()
-      .input("id", sql.Int, id)
-      .query(`
-        SELECT g.Grupo
-        FROM ${schema}.LICENCIAS_SMART l
-        INNER JOIN ${schema}.USUARIO_GRUPO ug
-          ON ug.ID_Usuario = l.ID_Usuario
-        INNER JOIN ${schema}.GRUPO g
-          ON g.ID_Grupo = ug.ID_Grupo
-        WHERE l.Id = @id
-      `);
-
-    if (licenciaResult.recordset.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: "Licencia no encontrada"
-      });
-    }
-
-    const licencia = licenciaResult.recordset[0];
-
-    // 🔐 VALIDAR GRUPO
-    if (rol === "COORDINADOR" && licencia.Grupo !== grupoUsuario) {
-      return res.status(403).json({
-        success: false,
-        error: "No podés modificar licencias de otro grupo"
-      });
-    }
-
-    // ✅ UPDATE SEGURO
     await pool.request()
       .input("id", sql.Int, id)
       .input("estado", sql.VarChar, estado)
-      .input("usuario", sql.Int, idUsuarioSesion)
-      .query(queryUpdate);
+      .query(`
+        UPDATE ${schema}.LICENCIAS_SMART
+        SET Estado = @estado
+        WHERE Id = @id
+      `);
 
-    res.json({ success: true });
+    res.json({
+      success: true
+    });
 
   } catch (err) {
     console.error("Error actualizando licencia:", err);
