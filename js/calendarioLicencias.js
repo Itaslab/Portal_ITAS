@@ -10,6 +10,9 @@ const filtroSubgrupo = document.getElementById("filtroSubgrupo");
 const fechaDesde = document.getElementById("fechaDesde");
 const fechaHasta = document.getElementById("fechaHasta");
 
+const btnAprobar = document.getElementById("btnAprobarLicencias");
+const listaPendientes = document.getElementById("listaPendientes");
+
 if (fechaDesde && fechaHasta) {
 
   fechaDesde.addEventListener("change", () => {
@@ -23,6 +26,53 @@ if (fechaDesde && fechaHasta) {
   });
 
 }
+
+//MODAL APROBAR LICENCIAS 
+
+btnAprobar.addEventListener("click", async () => {
+
+  const res = await fetch(`${basePath}/api/licencias/pendientes`);
+  const data = await res.json();
+
+if (!data.success) {
+  console.error("Error trayendo pendientes:", data.error);
+  listaPendientes.innerHTML = "<p>Error cargando licencias</p>";
+  return;
+}
+
+  renderPendientes(data.data);
+
+});
+
+function renderPendientes(licencias) {
+
+  listaPendientes.innerHTML = "";
+
+  if (!licencias.length) {
+    listaPendientes.innerHTML = "<p>No hay licencias pendientes</p>";
+    return;
+  }
+
+  licencias.forEach(l => {
+    const div = document.createElement("div");
+
+    div.classList.add("mb-2", "p-2", "border");
+
+    div.innerHTML = `
+      <strong>${l.Apellido}, ${l.Nombre}</strong><br>
+      ${l.Fecha_Desde} → ${l.Fecha_Hasta}<br>
+      ${l.TipoLic}
+    <div class="mt-2">
+      <button class="btn btn-success btn-sm" onclick="aprobarLicencia(${l.ID_Usuario}, '${l.Fecha_Desde}')">Aprobar</button>
+      <button class="btn btn-danger btn-sm" onclick="rechazarLicencia(${l.ID_Usuario}, '${l.Fecha_Desde}')">Rechazar</button>
+    </div>
+    `;
+
+    listaPendientes.appendChild(div);
+  });
+
+}
+
 
 // MODAL
 const modalCrearLicencia = new bootstrap.Modal(
