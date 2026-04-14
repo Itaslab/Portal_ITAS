@@ -556,5 +556,56 @@ router.get("/pendientes", async (req, res) => {
 });
 
 
+// =============================
+// APROBAR / RECHAZAR LICENCIA
+// =============================
+router.post("/cambiar-estado", async (req, res) => {
+
+  const { id, estado } = req.body;
+
+  const idUsuarioSesion = req.session?.user?.ID_Usuario;
+
+  if (!idUsuarioSesion) {
+    return res.status(401).json({
+      success: false,
+      error: "No autorizado"
+    });
+  }
+
+  if (!id || !estado) {
+    return res.status(400).json({
+      success: false,
+      error: "Faltan datos"
+    });
+  }
+
+  try {
+
+    const pool = await poolPromise;
+
+    await pool.request()
+      .input("id", sql.Int, id)
+      .input("estado", sql.VarChar, estado)
+      .query(`
+        UPDATE ${schema}.LICENCIAS_SMART
+        SET Estado = @estado
+        WHERE Id = @id
+      `);
+
+    res.json({
+      success: true
+    });
+
+  } catch (err) {
+    console.error("Error actualizando licencia:", err);
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
+  }
+
+});
+
+
 
 module.exports = router;

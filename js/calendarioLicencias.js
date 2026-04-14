@@ -54,27 +54,65 @@ function renderPendientes(licencias) {
   }
 
   licencias.forEach(l => {
-    const div = document.createElement("div");
 
+    const div = document.createElement("div");
     div.classList.add("mb-2", "p-2", "border");
 
     div.innerHTML = `
       <strong>${l.Apellido}, ${l.Nombre}</strong><br>
       ${l.Fecha_Desde} → ${l.Fecha_Hasta}<br>
       ${l.Licencia}
-    <div class="mt-2">
-      <button class="btn btn-success btn-sm" onclick="aprobarLicencia(${l.ID_Usuario}, '${l.Fecha_Desde}')">Aprobar</button>
-      <button class="btn btn-danger btn-sm" onclick="rechazarLicencia(${l.ID_Usuario}, '${l.Fecha_Desde}')">Rechazar</button>
-    </div>
+      <div class="mt-2">
+        <button class="btn btn-success btn-sm btn-aprobar">Aprobar</button>
+        <button class="btn btn-danger btn-sm btn-rechazar">Rechazar</button>
+      </div>
     `;
+
+    // 🔥 BOTÓN APROBAR
+    div.querySelector(".btn-aprobar").addEventListener("click", async () => {
+      await cambiarEstado(l.Id, "APPROVED");
+      div.remove(); // lo sacás del modal
+    });
+
+    // 🔥 BOTÓN RECHAZAR
+    div.querySelector(".btn-rechazar").addEventListener("click", async () => {
+      await cambiarEstado(l.Id, "CANCELLED");
+      div.remove();
+    });
 
     listaPendientes.appendChild(div);
   });
+}
+
+async function cambiarEstado(id, estado) {
+
+  try {
+
+    const res = await fetch(`${basePath}/api/licencias/cambiar-estado`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id, estado })
+    });
+
+    const result = await res.json();
+
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+
+  } catch (error) {
+    console.error("Error cambiando estado:", error);
+    alert("Error al actualizar licencia");
+  }
 
 }
 
 
-// MODAL
+
+
+// MODAL CREAR LICENCIA 
 const modalCrearLicencia = new bootstrap.Modal(
   document.getElementById("modalCrearLicencia")
 );
