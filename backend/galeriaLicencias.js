@@ -510,19 +510,28 @@ router.get("/pendientes", async (req, res) => {
     `;
 
     // 🎯 FILTRO POR ROL
-    if (!esAdmin) {
+if (!esAdmin) {
 
-      if (rol === "REFERENTE") {
-        request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
-        query += ` AND g.Subgrupo = @subgrupoUsuario `;
-      } 
-      else if (rol === "USER") {
-        request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
-        query += ` AND l.ID_Usuario = @idUsuarioSesion `;
-      }
+  if (rol === "GERENTE") {
+    // si querés que vea todo, lo dejás así
+  }
 
-      // ⚠️ GERENTE / COORDINADOR → ven todo (por ahora)
-    }
+  else if (rol === "COORDINADOR") {
+    request.input("grupoUsuario", sql.VarChar, grupoUsuario);
+    query += ` AND g.Grupo = @grupoUsuario `;
+  }
+
+  else if (rol === "REFERENTE") {
+    request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
+    query += ` AND g.Subgrupo = @subgrupoUsuario `;
+  } 
+
+  else if (rol === "USER") {
+    request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
+    query += ` AND l.ID_Usuario = @idUsuarioSesion `;
+  }
+
+}
 
     // 🎯 FILTROS OPCIONALES
     if (grupo) {

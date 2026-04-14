@@ -76,7 +76,7 @@ function renderPendientes(licencias) {
     </div>
 
     <div class="acciones">
-      <button class="btn btn-success btn-sm btn-aprobar">
+      <button class="btn btn-outline-success btn-sm btn-aprobar">
         ✔ Aprobar
       </button>
       <button class="btn btn-outline-danger btn-sm btn-rechazar">
