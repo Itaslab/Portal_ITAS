@@ -190,6 +190,75 @@ document.getElementById("btnCargarLicencia").addEventListener("click", async () 
 });
 
 
+  // =========================
+  // ABRIR MODAL OTRO
+  // =========================
+  const btnCrearLicenciaPara = document.getElementById("btnCrearLicenciaPara");
+
+  btnCrearLicenciaPara.addEventListener("click", async () => {
+
+    const modalActual = bootstrap.Modal.getInstance(document.getElementById("modalCrearLicencia"));
+    modalActual.hide();
+
+    const modalNuevo = new bootstrap.Modal(document.getElementById("modalCrearLicenciaOtro"));
+    modalNuevo.show();
+
+    const res = await fetch("/usuarios/grupo");
+    const data = await res.json();
+
+    const select = document.getElementById("usuarioDestino");
+    select.innerHTML = `<option value="">Seleccionar usuario</option>`;
+
+    data.data.forEach(u => {
+      select.innerHTML += `<option value="${u.ID_Usuario}">${u.Apellido}, ${u.Nombre}</option>`;
+    });
+
+  });
+
+  // =========================
+  // GUARDAR LICENCIA OTRO
+  // =========================
+  document.getElementById("btnCargarLicenciaOtro").addEventListener("click", async () => {
+
+    const idUsuarioDestino = document.getElementById("usuarioDestino").value;
+    const licencia = document.getElementById("tipoLicenciaOtro").value;
+    const desde = document.getElementById("fechaDesdeOtro").value;
+    const hasta = document.getElementById("fechaHastaOtro").value;
+    const comentario = document.getElementById("comentarioLicenciaOtro").value;
+
+    if (!idUsuarioDestino || !licencia || !desde || !hasta) {
+      alert("Completa todos los campos");
+      return;
+    }
+
+    const res = await fetch("/licencias/crear", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        idUsuarioDestino,
+        licencia,
+        fechaDesde: desde,
+        fechaHasta: hasta,
+        comentario
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Licencia cargada correctamente");
+      location.reload();
+    } else {
+      alert("Error: " + data.error);
+    }
+
+  });
+
+
+
+
 const modalMisLicencias = new bootstrap.Modal(
   document.getElementById("modalMisLicencias")
 );

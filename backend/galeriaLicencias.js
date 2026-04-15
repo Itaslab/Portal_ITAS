@@ -545,5 +545,80 @@ router.post("/cambiar-estado", async (req, res) => {
 });
 
 
+// =============================
+// OBTENER USUARIOS DEL MISMO GRUPO
+// =============================
+router.get("/usuarios/grupo", async (req, res) => {
+
+  const idUsuarioSesion = req.session?.user?.ID_Usuario;
+
+  if (!idUsuarioSesion) {
+    return res.status(401).json({
+      success: false,
+      error: "No autorizado"
+    });
+  }
+
+  try {
+
+    const pool = await poolPromise;
+
+    // 🔎 Obtener grupo del usuario logueado
+    const usuarioResult = await pool.request()
+      .input("idUsuario", sql.Int, idUsuarioSesion)
+      .query(`
+        SELECT TOP 1
+            g.Grupo
+        FROM ${schema}.USUARIO u
+        INNER JOIN ${schema}.USUARIO_GRUPO ug
+            ON ug.ID_Usuario = u.ID_Usuario
+        INNER JOIN ${schema}.GRUPO g
+            ON g.ID_Grupo = ug.ID_Grupo
+        WHERE u.ID_Usuario = @idUsuario
+      `);
+
+    if (usuarioResult.recordset.length === 0) {
+      return res.status(403).json({
+        success: false,
+        error: "Usuario sin grupo asignado"
+      });
+    }
+
+    const grupoUsuario = usuarioResult.recordset[0].Grupo;
+
+    // 🔎 Traer usuarios del mismo grupo
+    const result = await pool.request()
+      .input("grupoUsuario", sql.VarChar, grupoUsuario)
+      .query(`
+        SELECT DISTINCT
+            u.ID_Usuario,
+            u.Nombre,
+            u.Apellido
+        FROM ${schema}.USUARIO u
+        INNER JOIN ${schema}.USUARIO_GRUPO ug
+            ON ug.ID_Usuario = u.ID_Usuario
+        INNER JOIN ${schema}.GRUPO g
+            ON g.ID_Grupo = ug.ID_Grupo
+        WHERE g.Grupo = @grupoUsuario
+        ORDER BY u.Apellido, u.Nombre
+      `);
+
+    res.json({
+      success: true,
+      data: result.recordset
+    });
+
+  } catch (err) {
+    console.error("Error obteniendo usuarios del grupo:", err);
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
+  }
+
+});
+
+
+
 
 module.exports = router;
