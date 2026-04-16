@@ -666,7 +666,7 @@ if (licenciaDelDia) {
 
     claseExtra += " licencia-pendiente";
     letra = "P";
-    title = "Pendiente";
+    title = `${licenciaDelDia.TipoLic || "Pendiente"} (Pendiente)`;
 
   } else {
 
