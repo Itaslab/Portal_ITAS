@@ -37,10 +37,6 @@ module.exports = async (req, res) => {
  
     const result = await pool.request().query(query);
  
-    console.log('Primer registro:', result.recordset[0]);
-    console.log('Campos disponibles:', Object.keys(result.recordset[0] || {}));
-    console.log('Ejecuciones con Maquina:', result.recordset.map(r => ({ id: r.Id_Tasklist, maquina: r.Maquina })));
- 
     res.json({ success: true, data: result.recordset });
   } catch (err) {
     console.error("Error al consultar ejecucionesRealizadas:", err);
