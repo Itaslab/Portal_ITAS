@@ -204,7 +204,7 @@ document.getElementById("btnCargarLicencia").addEventListener("click", async () 
     modalNuevo.show();
 
     
-    const res = await fetch(`${basePath}/usuarios/grupo`);
+    const res = await fetch(`${basePath}/usuarios-grupo`);
     const data = await res.json();
 
     if (!data.success) {
