@@ -91,6 +91,7 @@ const rol = usuario.Coordinador === nombreCompleto ? "COORDINADOR" :
             CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
             CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
             l.TipoLic
+            l.Estado
         FROM ${schema}.LICENCIAS_SMART l
         INNER JOIN ${schema}.USUARIO u 
             ON u.ID_Usuario = l.ID_Usuario

@@ -625,7 +625,7 @@ textarea.disabled-field {
 }
 
 .tipo-compensacion {
-  background-color: #facc15 !important;
+  background-color: #e35aff !important;
 }
 
 .tipo-enfermedad {
@@ -645,7 +645,7 @@ textarea.disabled-field {
 }
 
 .tipo-paro {
-  background-color: #fb923c !important;
+  background-color: #72fb3c !important;
 }
 
 .tipo-otra {
@@ -657,12 +657,18 @@ textarea.disabled-field {
 }
 
 .tipo-examen {
-  background-color: #f59e0b !important;
+  background-color: #8bbfd3 !important;
 }
 
 .feriado {
   background-color: #7c66b9 !important; 
   font-weight: 600;
+}
+
+.licencia-pendiente {
+  background-color: #facc15 !important;
+  color: #000;
+  font-weight: bold;
 }
 
 /* 🔹 Truncado de texto opcional con ... (solo si elegís truncar) */

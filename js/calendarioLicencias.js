@@ -658,20 +658,31 @@ if (licenciaDelDia) {
 
   claseExtra = "licencia-activa";
 
-  switch (licenciaDelDia.TipoLic) {
-    case "VACACIONES": letra = "V"; claseExtra += " tipo-vacaciones"; break;
-    case "COMPENSACIÓN DIA": letra = "CD"; claseExtra += " tipo-compensacion"; break;
-    case "ENFERMEDAD": letra = "E"; claseExtra += " tipo-enfermedad"; break;
-    case "MUDANZA": letra = "M"; claseExtra += " tipo-mudanza"; break;
-    case "NACIMIENTO": letra = "N"; claseExtra += " tipo-nacimiento"; break;
-    case "ACCIDENTE": letra = "A"; claseExtra += " tipo-accidente"; break;
-    case "PARO/ASAMBLEA": letra = "PA"; claseExtra += " tipo-paro"; break;
-    case "OTRA": letra = "O"; claseExtra += " tipo-otra"; break;
-    case "COMPENSACIÓN HORAS": letra = "CH"; claseExtra += " tipo-compensacion-horas"; break;
-    case "EXAMEN": letra = "EX"; claseExtra += " tipo-examen"; break;
-  }
+  // 🔥 SI ESTÁ PENDIENTE → PINTA AMARILLO Y NO ENTRA AL SWITCH
+  if (licenciaDelDia.Estado === "PENDING") {
 
-  title = licenciaDelDia.TipoLic;
+    claseExtra += " licencia-pendiente";
+    letra = "P"; // opcional, podés dejarlo vacío si querés
+    title = "Pendiente";
+
+  } else {
+
+    // ✅ SI NO ESTÁ PENDIENTE → USA COLORES NORMALES
+    switch (licenciaDelDia.TipoLic) {
+      case "VACACIONES": letra = "V"; claseExtra += " tipo-vacaciones"; break;
+      case "COMPENSACIÓN DIA": letra = "CD"; claseExtra += " tipo-compensacion"; break;
+      case "ENFERMEDAD": letra = "E"; claseExtra += " tipo-enfermedad"; break;
+      case "MUDANZA": letra = "M"; claseExtra += " tipo-mudanza"; break;
+      case "NACIMIENTO": letra = "N"; claseExtra += " tipo-nacimiento"; break;
+      case "ACCIDENTE": letra = "A"; claseExtra += " tipo-accidente"; break;
+      case "PARO/ASAMBLEA": letra = "PA"; claseExtra += " tipo-paro"; break;
+      case "OTRA": letra = "O"; claseExtra += " tipo-otra"; break;
+      case "COMPENSACIÓN HORAS": letra = "CH"; claseExtra += " tipo-compensacion-horas"; break;
+      case "EXAMEN": letra = "EX"; claseExtra += " tipo-examen"; break;
+    }
+
+    title = licenciaDelDia.TipoLic;
+  }
 
 } else if (feriadoDescripcion) {
 
