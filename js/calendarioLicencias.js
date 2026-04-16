@@ -195,6 +195,12 @@ document.getElementById("btnCargarLicencia").addEventListener("click", async () 
   // =========================
   const btnCrearLicenciaPara = document.getElementById("btnCrearLicenciaPara");
 
+
+
+if (btnCrearLicenciaPara) {
+  btnCrearLicenciaPara.style.display = "none";
+}
+
   btnCrearLicenciaPara.addEventListener("click", async () => {
 
     const modalActual = bootstrap.Modal.getInstance(document.getElementById("modalCrearLicencia"));
