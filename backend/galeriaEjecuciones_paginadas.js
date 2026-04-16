@@ -72,7 +72,8 @@ if (estado) {
         T.Resultado,
         T.Reg_Totales,
         T.Reg_Proc_OK,
-        T.Reg_Proc_NOK
+        T.Reg_Proc_NOK,
+        ISNULL(T.Maquina, '') AS Maquina
       FROM ${schema}.USUARIO U
       JOIN ${schema}.RPA_TASKLIST T ON T.Id_Usuario = U.Id_Usuario
       JOIN ${schema}.RPA_TASKLIST_ESTADO TE ON T.Id_Estado = TE.Id_Estado

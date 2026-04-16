@@ -90,7 +90,8 @@ const rol = usuario.Coordinador === nombreCompleto ? "COORDINADOR" :
             g.Subgrupo,
             CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
             CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
-            l.TipoLic
+            l.TipoLic,
+            l.Estado
         FROM ${schema}.LICENCIAS_SMART l
         INNER JOIN ${schema}.USUARIO u 
             ON u.ID_Usuario = l.ID_Usuario
@@ -543,6 +544,78 @@ router.post("/cambiar-estado", async (req, res) => {
   }
 
 });
+
+
+// =============================
+// OBTENER USUARIOS DEL MISMO GRUPO
+// =============================
+router.get("/usuarios-grupo", async (req, res) => {
+
+  const idUsuarioSesion = req.session?.user?.ID_Usuario;
+
+  if (!idUsuarioSesion) {
+    return res.status(401).json({
+      success: false,
+      error: "No autorizado"
+    });
+  }
+
+  try {
+
+    const pool = await poolPromise;
+
+    // 🔎 Obtener grupo del usuario logueado
+    const usuarioResult = await pool.request()
+      .input("idUsuario", sql.Int, idUsuarioSesion)
+      .query(`
+        SELECT g.ID_Grupo, g.Grupo
+        FROM ${schema}.USUARIO_GRUPO ug
+        INNER JOIN ${schema}.GRUPO g
+          ON g.ID_Grupo = ug.ID_Grupo
+        WHERE ug.ID_Usuario = @idUsuario
+      `);
+
+    if (!usuarioResult.recordset.length) {
+      return res.status(404).json({
+        success: false,
+        error: "Usuario sin grupo asignado"
+      });
+    }
+
+    const grupoUsuario = usuarioResult.recordset[0];
+
+    console.log("Grupo usuario:", grupoUsuario);
+
+    // 🔎 Traer usuarios del mismo grupo
+    const result = await pool.request()
+      .input("idGrupo", sql.Int, grupoUsuario.ID_Grupo)
+      .query(`
+        SELECT DISTINCT
+            u.ID_Usuario,
+            u.Nombre,
+            u.Apellido
+        FROM ${schema}.USUARIO u
+        INNER JOIN ${schema}.USUARIO_GRUPO ug 
+            ON ug.ID_Usuario = u.ID_Usuario
+        WHERE ug.ID_Grupo = @idGrupo
+        ORDER BY u.Apellido, u.Nombre
+      `);
+
+    res.json({
+      success: true,
+      data: result.recordset
+    });
+
+  } catch (err) {
+    console.error("Error obteniendo usuarios del grupo:", err);
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
+  }
+
+});
+
 
 
 

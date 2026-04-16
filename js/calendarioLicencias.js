@@ -190,6 +190,87 @@ document.getElementById("btnCargarLicencia").addEventListener("click", async () 
 });
 
 
+  // =========================
+  // ABRIR MODAL OTRO
+  // =========================
+  const btnCrearLicenciaPara = document.getElementById("btnCrearLicenciaPara");
+
+
+
+if (btnCrearLicenciaPara) {
+  btnCrearLicenciaPara.style.display = "none";
+}
+
+  btnCrearLicenciaPara.addEventListener("click", async () => {
+
+    const modalActual = bootstrap.Modal.getInstance(document.getElementById("modalCrearLicencia"));
+    modalActual.hide();
+
+    const modalNuevo = new bootstrap.Modal(document.getElementById("modalCrearLicenciaOtro"));
+    modalNuevo.show();
+
+    
+    const res = await fetch(`${basePath}/api/licencias/usuarios-grupo`);
+    const data = await res.json();
+
+    if (!data.success) {
+      console.error("Error backend:", data.error);
+      return;
+      }
+
+    const select = document.getElementById("usuarioDestino");
+    select.innerHTML = `<option value="">Seleccionar usuario</option>`;
+
+    data.data.forEach(u => {
+      select.innerHTML += `<option value="${u.ID_Usuario}">${u.Apellido}, ${u.Nombre}</option>`;
+    });
+
+  });
+
+  // =========================
+  // GUARDAR LICENCIA OTRO
+  // =========================
+  document.getElementById("btnCargarLicenciaOtro").addEventListener("click", async () => {
+
+    const idUsuarioDestino = document.getElementById("usuarioDestino").value;
+    const licencia = document.getElementById("tipoLicenciaOtro").value;
+    const desde = document.getElementById("fechaDesdeOtro").value;
+    const hasta = document.getElementById("fechaHastaOtro").value;
+    const comentario = document.getElementById("comentarioLicenciaOtro").value;
+
+    if (!idUsuarioDestino || !licencia || !desde || !hasta) {
+      alert("Completa todos los campos");
+      return;
+    }
+    
+    const res = await fetch(`${basePath}/api/licencias`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        idUsuarioDestino, 
+        tipoLic: licencia,
+        fechaDesde: desde,
+        fechaHasta: hasta,
+        comentario: comentario
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Licencia cargada correctamente");
+      location.reload();
+    } else {
+      alert("Error: " + data.error);
+    }
+
+  });
+
+
+
+
 const modalMisLicencias = new bootstrap.Modal(
   document.getElementById("modalMisLicencias")
 );
@@ -277,7 +358,9 @@ document.getElementById("btnVerMisLicencias").addEventListener("click", async ()
 function parseFechaLocal(fechaStr) {
   if (!fechaStr) return null;
 
-  const [year, month, day] = fechaStr.split("-").map(Number);
+  // Soporta formatos YYYY-MM-DD y YYYY-MM-DDTHH:mm:ss
+  const fechaNormalizada = fechaStr.split("T")[0];
+  const [year, month, day] = fechaNormalizada.split("-").map(Number);
   return new Date(year, month - 1, day);
 }
 
@@ -576,21 +659,32 @@ let title = "";
 if (licenciaDelDia) {
 
   claseExtra = "licencia-activa";
+  const estadoLicencia = String(licenciaDelDia.Estado || "").trim().toUpperCase();
 
-  switch (licenciaDelDia.TipoLic) {
-    case "VACACIONES": letra = "V"; claseExtra += " tipo-vacaciones"; break;
-    case "COMPENSACIÓN DIA": letra = "CD"; claseExtra += " tipo-compensacion"; break;
-    case "ENFERMEDAD": letra = "E"; claseExtra += " tipo-enfermedad"; break;
-    case "MUDANZA": letra = "M"; claseExtra += " tipo-mudanza"; break;
-    case "NACIMIENTO": letra = "N"; claseExtra += " tipo-nacimiento"; break;
-    case "ACCIDENTE": letra = "A"; claseExtra += " tipo-accidente"; break;
-    case "PARO/ASAMBLEA": letra = "PA"; claseExtra += " tipo-paro"; break;
-    case "OTRA": letra = "O"; claseExtra += " tipo-otra"; break;
-    case "COMPENSACIÓN HORAS": letra = "CH"; claseExtra += " tipo-compensacion-horas"; break;
-    case "EXAMEN": letra = "EX"; claseExtra += " tipo-examen"; break;
+  if (estadoLicencia === "PENDING") {
+
+    claseExtra += " licencia-pendiente";
+    letra = "P";
+    title = `${licenciaDelDia.TipoLic || "Pendiente"} (Pendiente)`;
+
+  } else {
+
+    switch (licenciaDelDia.TipoLic) {
+      case "VACACIONES": letra = "V"; claseExtra += " tipo-vacaciones"; break;
+      case "COMPENSACIÓN DIA": letra = "CD"; claseExtra += " tipo-compensacion"; break;
+      case "ENFERMEDAD": letra = "E"; claseExtra += " tipo-enfermedad"; break;
+      case "MUDANZA": letra = "M"; claseExtra += " tipo-mudanza"; break;
+      case "NACIMIENTO": letra = "N"; claseExtra += " tipo-nacimiento"; break;
+      case "ACCIDENTE": letra = "A"; claseExtra += " tipo-accidente"; break;
+      case "PARO/ASAMBLEA": letra = "PA"; claseExtra += " tipo-paro"; break;
+      case "OTRA": letra = "O"; claseExtra += " tipo-otra"; break;
+      case "COMPENSACIÓN HORAS": letra = "CH"; claseExtra += " tipo-compensacion-horas"; break;
+      case "EXAMEN": letra = "EX"; claseExtra += " tipo-examen"; break;
+      default: letra = ""; break;
+    }
+
+    title = licenciaDelDia.TipoLic;
   }
-
-  title = licenciaDelDia.TipoLic;
 
 } else if (feriadoDescripcion) {
 
@@ -600,12 +694,15 @@ if (licenciaDelDia) {
 
 }
 
-      html += `
-        <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseExtra}" 
-            title="${title}">
-          ${letra}
-        </td>
-      `;
+// 🔥 SIEMPRE después de definir title
+const tooltipAttr = title ? ' data-bs-toggle="tooltip"' : "";
+
+html += `
+  <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseExtra}" 
+      title="${title}"${tooltipAttr}>
+    ${letra}
+  </td>
+`;
     });
 
     html += `</tr>`;
@@ -615,7 +712,24 @@ if (licenciaDelDia) {
 html += `</tbody></table>`;
 contenedor.innerHTML = html;
   activarSeleccionFilas();
+  inicializarTooltipsCalendario();
 
+}
+
+function inicializarTooltipsCalendario() {
+  if (!window.bootstrap || !bootstrap.Tooltip) return;
+
+  const tooltipTriggerList = Array.from(
+    document.querySelectorAll('[data-bs-toggle="tooltip"]')
+  );
+
+  tooltipTriggerList.forEach(el => {
+    const existing = bootstrap.Tooltip.getInstance(el);
+    if (existing) {
+      existing.dispose();
+    }
+    new bootstrap.Tooltip(el);
+  });
 }
 
 function activarSeleccionFilas() {

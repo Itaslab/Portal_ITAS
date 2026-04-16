@@ -23,7 +23,8 @@ module.exports = async (req, res) => {
              T.Resultado,
              T.Reg_Totales,
              T.Reg_Proc_OK,
-             T.Reg_Proc_NOK
+             T.Reg_Proc_NOK,
+             ISNULL(T.Maquina, '') AS Maquina
            FROM ${schema}.USUARIO U
            JOIN ${schema}.RPA_TASKLIST T 
              ON T.Id_Usuario = U.Id_Usuario
@@ -42,3 +43,4 @@ module.exports = async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 };
+

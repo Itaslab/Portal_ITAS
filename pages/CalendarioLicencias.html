@@ -147,6 +147,10 @@
               Ver mis licencias
             </button>
 
+            <button id="btnCrearLicenciaPara" class="btn btn-secondary">
+              Crear Licencia para..
+            </button>
+
           </div>
 
         </div>
@@ -156,6 +160,8 @@
     </div>
   </div>
 </div>
+
+><!-- Modal Mis Licencias -->
 
 <div class="modal fade" id="modalMisLicencias" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -189,6 +195,86 @@
   </div>
 </div>
 
+<!-- MODAL CREAR LICENCIA PARA OTRO -->
+
+<div class="modal fade" id="modalCrearLicenciaOtro" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Crear Licencia para otro</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="container">
+
+          <!-- Usuario -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">
+              Selecciona la persona
+            </label>
+            <select id="usuarioDestino" class="form-select">
+              <option value="">Seleccionar usuario</option>
+            </select>
+          </div>
+
+          <!-- Tipo de licencia -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Tipo de licencia</label>
+            <select id="tipoLicenciaOtro" class="form-select">
+              <option value="">Seleccionar</option>
+              <option>Franco Compensatorio</option>
+              <option>Compensación Horas Adic</option>
+              <option>Compensacion horas extras feriado</option>
+              <option>Examen de Estudios</option>
+              <option>Mudanza</option>
+              <option>Donación de sangre</option>
+              <option>Credito Permiso Gremial</option>
+              <option>Paro</option>
+              <option>Licencia por Enfermedad</option>
+              <option>Lic Enf Familiar</option>
+              <option>LicEnfFLiar C/Goce</option>
+              <option>Fallecimiento Familiar</option>
+              <option>Lic. por Nacimiento Adicional</option>
+              <option>Accidente de Trabajo</option>
+              <option>Vacaciones Legales</option>
+              <option>Vacaciones pactadas</option>
+            </select>
+          </div>
+
+          <!-- Desde -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Desde</label>
+            <input type="date" id="fechaDesdeOtro" class="form-control">
+          </div>
+
+          <!-- Hasta -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Hasta</label>
+            <input type="date" id="fechaHastaOtro" class="form-control">
+          </div>
+
+          <!-- Comentario -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Comentario</label>
+            <textarea id="comentarioLicenciaOtro" class="form-control" rows="4"></textarea>
+          </div>
+
+          <!-- Botón -->
+          <button id="btnCargarLicenciaOtro" class="btn btn-success">
+            Cargar Licencia
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <!-- Modal Aprobar Licencias -->
 <div class="modal fade" id="modalAprobarLicencias" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -200,7 +286,7 @@
       </div>
 
       <div class="modal-body">
-        <!-- 🔥 ACÁ VA LA LISTA -->
+        
         <div id="listaPendientes"></div>
       </div>
 
