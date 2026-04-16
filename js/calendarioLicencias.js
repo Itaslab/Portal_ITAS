@@ -243,6 +243,7 @@ document.getElementById("btnCargarLicencia").addEventListener("click", async () 
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
+        idUsuarioDestino, 
         tipoLic: licencia,
         fechaDesde: desde,
         fechaHasta: hasta,
