@@ -145,6 +145,7 @@ async function cargarEjecuciones(scrollear = false) {
 
         ejecuciones = await Promise.all(
             data.data.map(async item => {
+                console.log('Item Maquina:', item.Id_Tasklist, item.Maquina);
 
                 const { total, ok, error } =
                     await obtenerContadores(item.Id_Tasklist);
@@ -161,7 +162,7 @@ async function cargarEjecuciones(scrollear = false) {
                     resultado: item.Resultado,
                     fechaInicio: item.Fecha_Inicio,
                     fechaFin: item.Fecha_Fin,
-                    maquina: item.Maquina,
+                    maquina: item.Maquina || 'Sin máquina',
                     total,
                     ok,
                     error
