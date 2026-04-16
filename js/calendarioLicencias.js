@@ -661,7 +661,6 @@ if (licenciaDelDia) {
   claseExtra = "licencia-activa";
   const estadoLicencia = String(licenciaDelDia.Estado || "").trim().toUpperCase();
 
-  // 🔥 SI ESTÁ PENDIENTE → PINTA AMARILLO Y NO ENTRA AL SWITCH
   if (estadoLicencia === "PENDING") {
 
     claseExtra += " licencia-pendiente";
@@ -670,7 +669,6 @@ if (licenciaDelDia) {
 
   } else {
 
-    // ✅ SI NO ESTÁ PENDIENTE → USA COLORES NORMALES
     switch (licenciaDelDia.TipoLic) {
       case "VACACIONES": letra = "V"; claseExtra += " tipo-vacaciones"; break;
       case "COMPENSACIÓN DIA": letra = "CD"; claseExtra += " tipo-compensacion"; break;
@@ -685,6 +683,7 @@ if (licenciaDelDia) {
       default: letra = ""; break;
     }
 
+    title = licenciaDelDia.TipoLic;
   }
 
 } else if (feriadoDescripcion) {
@@ -695,13 +694,15 @@ if (licenciaDelDia) {
 
 }
 
-      
-      html += `
-        <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseExtra}" 
-            title="${title}">
-          ${letra}
-        </td>
-      `;
+// 🔥 SIEMPRE después de definir title
+const tooltipAttr = title ? ' data-bs-toggle="tooltip"' : "";
+
+html += `
+  <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseExtra}" 
+      title="${title}"${tooltipAttr}>
+    ${letra}
+  </td>
+`;
     });
 
     html += `</tr>`;
