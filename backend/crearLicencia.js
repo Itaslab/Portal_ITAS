@@ -9,13 +9,14 @@ router.post("/", async (req, res) => {
 
   try {
 
-    const { tipoLic, fechaDesde, fechaHasta } = req.body;
+    const { tipoLic, fechaDesde, fechaHasta, idUsuarioDestino } = req.body;
 
-    const idUsuario = req.session.user.ID_Usuario;
+    // 🔥 CLAVE: elegir a quién se le crea la licencia
+    const idUsuario = idUsuarioDestino || req.session.user.ID_Usuario;
 
     const pool = await poolPromise;
 
-    // Buscar legajo del usuario
+    // Buscar legajo del usuario destino
     const legajoResult = await pool.request()
       .input("idUsuario", sql.Int, idUsuario)
       .query(`
@@ -23,6 +24,13 @@ router.post("/", async (req, res) => {
         FROM ${schema}.USUARIO
         WHERE ID_Usuario = @idUsuario
       `);
+
+    if (!legajoResult.recordset.length) {
+      return res.status(400).json({
+        success: false,
+        error: "Usuario destino inválido"
+      });
+    }
 
     const legajo = legajoResult.recordset[0].Legajo;
 
@@ -60,7 +68,3 @@ router.post("/", async (req, res) => {
   }
 
 });
-
-module.exports = router;
-
-
