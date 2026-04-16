@@ -203,7 +203,8 @@ document.getElementById("btnCargarLicencia").addEventListener("click", async () 
     const modalNuevo = new bootstrap.Modal(document.getElementById("modalCrearLicenciaOtro"));
     modalNuevo.show();
 
-    const res = await fetch("/usuarios/grupo");
+    
+    const res = await fetch(`${basePath}/usuarios/grupo`);
     const data = await res.json();
 
     const select = document.getElementById("usuarioDestino");
@@ -230,8 +231,8 @@ document.getElementById("btnCargarLicencia").addEventListener("click", async () 
       alert("Completa todos los campos");
       return;
     }
-
-    const res = await fetch("/licencias/crear", {
+    
+    const res = await fetch(`${basePath}/licencias/crear`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
