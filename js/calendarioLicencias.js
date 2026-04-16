@@ -207,6 +207,11 @@ document.getElementById("btnCargarLicencia").addEventListener("click", async () 
     const res = await fetch(`${basePath}/usuarios/grupo`);
     const data = await res.json();
 
+    if (!data.success) {
+      console.error("Error backend:", data.error);
+      return;
+      }
+
     const select = document.getElementById("usuarioDestino");
     select.innerHTML = `<option value="">Seleccionar usuario</option>`;
 
