@@ -358,7 +358,9 @@ document.getElementById("btnVerMisLicencias").addEventListener("click", async ()
 function parseFechaLocal(fechaStr) {
   if (!fechaStr) return null;
 
-  const [year, month, day] = fechaStr.split("-").map(Number);
+  // Soporta formatos YYYY-MM-DD y YYYY-MM-DDTHH:mm:ss
+  const fechaNormalizada = fechaStr.split("T")[0];
+  const [year, month, day] = fechaNormalizada.split("-").map(Number);
   return new Date(year, month - 1, day);
 }
 
@@ -657,23 +659,33 @@ let title = "";
 if (licenciaDelDia) {
 
   claseExtra = "licencia-activa";
+  const estadoLicencia = String(licenciaDelDia.Estado || "").trim().toUpperCase();
 
-  
+  // 🔥 SI ESTÁ PENDIENTE → PINTA AMARILLO Y NO ENTRA AL SWITCH
+  if (estadoLicencia === "PENDING") {
 
-  switch (licenciaDelDia.TipoLic) {
-    case "VACACIONES": letra = "V"; claseExtra += " tipo-vacaciones"; break;
-    case "COMPENSACIÓN DIA": letra = "CD"; claseExtra += " tipo-compensacion"; break;
-    case "ENFERMEDAD": letra = "E"; claseExtra += " tipo-enfermedad"; break;
-    case "MUDANZA": letra = "M"; claseExtra += " tipo-mudanza"; break;
-    case "NACIMIENTO": letra = "N"; claseExtra += " tipo-nacimiento"; break;
-    case "ACCIDENTE": letra = "A"; claseExtra += " tipo-accidente"; break;
-    case "PARO/ASAMBLEA": letra = "PA"; claseExtra += " tipo-paro"; break;
-    case "OTRA": letra = "O"; claseExtra += " tipo-otra"; break;
-    case "COMPENSACIÓN HORAS": letra = "CH"; claseExtra += " tipo-compensacion-horas"; break;
-    case "EXAMEN": letra = "EX"; claseExtra += " tipo-examen"; break;
+    claseExtra += " licencia-pendiente";
+    letra = "P";
+    title = "Pendiente";
+
+  } else {
+
+    // ✅ SI NO ESTÁ PENDIENTE → USA COLORES NORMALES
+    switch (licenciaDelDia.TipoLic) {
+      case "VACACIONES": letra = "V"; claseExtra += " tipo-vacaciones"; break;
+      case "COMPENSACIÓN DIA": letra = "CD"; claseExtra += " tipo-compensacion"; break;
+      case "ENFERMEDAD": letra = "E"; claseExtra += " tipo-enfermedad"; break;
+      case "MUDANZA": letra = "M"; claseExtra += " tipo-mudanza"; break;
+      case "NACIMIENTO": letra = "N"; claseExtra += " tipo-nacimiento"; break;
+      case "ACCIDENTE": letra = "A"; claseExtra += " tipo-accidente"; break;
+      case "PARO/ASAMBLEA": letra = "PA"; claseExtra += " tipo-paro"; break;
+      case "OTRA": letra = "O"; claseExtra += " tipo-otra"; break;
+      case "COMPENSACIÓN HORAS": letra = "CH"; claseExtra += " tipo-compensacion-horas"; break;
+      case "EXAMEN": letra = "EX"; claseExtra += " tipo-examen"; break;
+      default: letra = ""; break;
+    }
+
   }
-
-  title = licenciaDelDia.TipoLic;
 
 } else if (feriadoDescripcion) {
 
