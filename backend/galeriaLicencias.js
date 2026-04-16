@@ -564,45 +564,41 @@ router.get("/usuarios-grupo", async (req, res) => {
     const pool = await poolPromise;
 
     // 🔎 Obtener grupo del usuario logueado
-    
-const usuarioResult = await pool.request()
-  .input("idUsuario", sql.Int, idUsuarioSesion)
-  .query(`
-    SELECT g.Grupo
-    FROM ${schema}.USUARIO_GRUPO ug
-    INNER JOIN ${schema}.GRUPO g
-      ON g.ID_Grupo = ug.ID_Grupo
-    WHERE ug.ID_Usuario = @idUsuario
-  `);
+    const usuarioResult = await pool.request()
+      .input("idUsuario", sql.Int, idUsuarioSesion)
+      .query(`
+        SELECT g.ID_Grupo, g.Grupo
+        FROM ${schema}.USUARIO_GRUPO ug
+        INNER JOIN ${schema}.GRUPO g
+          ON g.ID_Grupo = ug.ID_Grupo
+        WHERE ug.ID_Usuario = @idUsuario
+      `);
 
-if (!usuarioResult.recordset.length) {
-  throw new Error("Usuario sin grupo");
-}
+    if (!usuarioResult.recordset.length) {
+      return res.status(404).json({
+        success: false,
+        error: "Usuario sin grupo asignado"
+      });
+    }
 
-const grupoUsuario = usuarioResult.recordset[0].Grupo;
+    const grupoUsuario = usuarioResult.recordset[0];
 
-console.log("Grupo usuario:", grupoUsuario);
+    console.log("Grupo usuario:", grupoUsuario);
 
     // 🔎 Traer usuarios del mismo grupo
-const result = await pool.request()
-  .input("idUsuario", sql.Int, idUsuarioSesion)
-  .query(`
-    SELECT DISTINCT
-        u.ID_Usuario,
-        u.Nombre,
-        u.Apellido
-    FROM ${schema}.USUARIO u
-    INNER JOIN ${schema}.USUARIO_GRUPO ug 
-        ON ug.ID_Usuario = u.ID_Usuario
-    INNER JOIN ${schema}.GRUPO g 
-        ON g.ID_Grupo = ug.ID_Grupo
-    WHERE g.ID_Grupo IN (
-        SELECT ug2.ID_Grupo
-        FROM ${schema}.USUARIO_GRUPO ug2
-        WHERE ug2.ID_Usuario = @idUsuario
-    )
-    ORDER BY u.Apellido, u.Nombre
-  `);
+    const result = await pool.request()
+      .input("idGrupo", sql.Int, grupoUsuario.ID_Grupo)
+      .query(`
+        SELECT DISTINCT
+            u.ID_Usuario,
+            u.Nombre,
+            u.Apellido
+        FROM ${schema}.USUARIO u
+        INNER JOIN ${schema}.USUARIO_GRUPO ug 
+            ON ug.ID_Usuario = u.ID_Usuario
+        WHERE ug.ID_Grupo = @idGrupo
+        ORDER BY u.Apellido, u.Nombre
+      `);
 
     res.json({
       success: true,
