@@ -204,7 +204,7 @@ document.getElementById("btnCargarLicencia").addEventListener("click", async () 
     modalNuevo.show();
 
     
-    const res = await fetch(`${basePath}/usuarios-grupo`);
+    const res = await fetch(`${basePath}/api/licencias/usuarios-grupo`);
     const data = await res.json();
 
     if (!data.success) {
@@ -237,17 +237,16 @@ document.getElementById("btnCargarLicencia").addEventListener("click", async () 
       return;
     }
     
-    const res = await fetch(`${basePath}/licencias/crear`, {
+    const res = await fetch(`${basePath}/api/licencias`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        idUsuarioDestino,
-        licencia,
+        tipoLic: licencia,
         fechaDesde: desde,
         fechaHasta: hasta,
-        comentario
+        comentario: comentario
       })
     });
 
