@@ -695,9 +695,10 @@ if (licenciaDelDia) {
 
 }
 
+      const tooltipAttr = title ? 'data-bs-toggle="tooltip"' : "";
       html += `
         <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseExtra}" 
-            title="${title}">
+            title="${title}" ${tooltipAttr}>
           ${letra}
         </td>
       `;
@@ -710,7 +711,24 @@ if (licenciaDelDia) {
 html += `</tbody></table>`;
 contenedor.innerHTML = html;
   activarSeleccionFilas();
+  inicializarTooltipsCalendario();
 
+}
+
+function inicializarTooltipsCalendario() {
+  if (!window.bootstrap || !bootstrap.Tooltip) return;
+
+  const tooltipTriggerList = Array.from(
+    document.querySelectorAll('[data-bs-toggle="tooltip"]')
+  );
+
+  tooltipTriggerList.forEach(el => {
+    const existing = bootstrap.Tooltip.getInstance(el);
+    if (existing) {
+      existing.dispose();
+    }
+    new bootstrap.Tooltip(el);
+  });
 }
 
 function activarSeleccionFilas() {
