@@ -695,10 +695,10 @@ if (licenciaDelDia) {
 
 }
 
-      const tooltipAttr = title ? 'data-bs-toggle="tooltip"' : "";
+      
       html += `
         <td class="celda-dia ${esFinSemana ? "fin-semana" : ""} ${claseExtra}" 
-            title="${title}" ${tooltipAttr}>
+            title="${title}">
           ${letra}
         </td>
       `;
