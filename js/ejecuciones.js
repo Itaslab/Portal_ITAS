@@ -161,6 +161,7 @@ async function cargarEjecuciones(scrollear = false) {
                     resultado: item.Resultado,
                     fechaInicio: item.Fecha_Inicio,
                     fechaFin: item.Fecha_Fin,
+                    maquina: item.Maquina,
                     total,
                     ok,
                     error
@@ -384,6 +385,13 @@ function llenarFiltroSolicitante() {
                        style="width:${ejec.avance}%;"></div>
                 </div>
               </div>
+
+          <div class="small mt-2 text-muted">
+              <i class="fas fa-desktop me-1"></i>
+              <span>Maquina:</span>
+              <span class="fw-semibold">${ejec.maquina || '-'}</span>
+          </div>
+
 
               <div class="d-flex justify-content-end gap-2 mt-3">
 
