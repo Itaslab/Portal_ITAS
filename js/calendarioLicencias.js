@@ -585,6 +585,13 @@ licencias.forEach(l => {
     }));
 }
 
+// 🔥 FILTRO SOLO LICENCIAS
+if (filtroSoloLicencias && filtroSoloLicencias.checked) {
+  estructura = estructura.map(bloque => ({
+    ...bloque,
+    usuarios: bloque.usuarios.filter(u => u.licencias.length > 0)
+  })).filter(bloque => bloque.usuarios.length > 0);
+}
 
 if (estructura.length === 0 || estructura.every(b => b.usuarios.length === 0)) {
     contenedor.innerHTML = `
