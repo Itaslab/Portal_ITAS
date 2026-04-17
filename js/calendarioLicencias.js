@@ -738,6 +738,10 @@ html += `
 });
 
 html += `</tbody></table>`;
+
+// 🔥 Limpiar tooltips antiguos antes de actualizar DOM
+destruirTooltipsCalendario();
+
 contenedor.innerHTML = html;
   activarSeleccionFilas();
   inicializarTooltipsCalendario();
@@ -756,7 +760,21 @@ function inicializarTooltipsCalendario() {
     if (existing) {
       existing.dispose();
     }
-    new bootstrap.Tooltip(el);
+    new bootstrap.Tooltip(el, {
+      trigger: 'hover'
+    });
+  });
+}
+
+function destruirTooltipsCalendario() {
+  if (!window.bootstrap || !bootstrap.Tooltip) return;
+
+  const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  tooltips.forEach(el => {
+    const tooltip = bootstrap.Tooltip.getInstance(el);
+    if (tooltip) {
+      tooltip.dispose();
+    }
   });
 }
 
