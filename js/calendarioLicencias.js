@@ -13,6 +13,8 @@ const fechaHasta = document.getElementById("fechaHasta");
 const btnAprobar = document.getElementById("btnAprobarLicencias");
 const listaPendientes = document.getElementById("listaPendientes");
 
+const filtroSoloLicencias = document.getElementById("filtroSoloLicencias");
+
 if (fechaDesde && fechaHasta) {
 
   fechaDesde.addEventListener("change", () => {
@@ -528,41 +530,68 @@ licencias.forEach(l => {
     }));
 
 } else {
+  const subgrupoSeleccionado = (subgrupo || "").trim().toUpperCase();
+  const subgruposMap = {};
 
-  const usuariosMap = {};
-
-  // Primero, agregar TODOS los usuarios del grupo seleccionado
+  // 1. Usuarios
   usuarios.forEach(u => {
+    const sub = (u.Subgrupo || "Sin Subgrupo").trim().toUpperCase();
     const id = u.ID_Usuario;
-    usuariosMap[id] = {
+
+    if (!subgruposMap[sub]) {
+      subgruposMap[sub] = {};
+    }
+
+    subgruposMap[sub][id] = {
       id: id,
       nombre: `${u.Apellido} ${u.Nombre}`,
       licencias: []
     };
   });
 
-  // Luego, agregar licencias a los usuarios que las tienen
-  licencias.forEach(l => {
-    const id = l.ID_Usuario;
+  // 2. Licencias
+licencias.forEach(l => {
 
-    if (!usuariosMap[id]) {
-      usuariosMap[id] = {
-        id: id,
-        nombre: `${l.Apellido} ${l.Nombre}`,
-        licencias: []
-      };
-    }
+  const sub = (l.Subgrupo || "Sin Subgrupo").trim().toUpperCase();
 
-    usuariosMap[id].licencias.push(l);
-  });
+  // 🔥 ESTE ES EL FIX
+  if (subgrupoSeleccionado && sub !== subgrupoSeleccionado) return;
 
-  estructura = [{
-    tipo: "normal",
-    usuarios: Object.values(usuariosMap)
-      .sort((a,b) => a.nombre.localeCompare(b.nombre))
-  }];
+  const id = l.ID_Usuario;
+
+  if (!subgruposMap[sub]) {
+    subgruposMap[sub] = {};
+  }
+
+  if (!subgruposMap[sub][id]) {
+    subgruposMap[sub][id] = {
+      id: id,
+      nombre: `${l.Apellido} ${l.Nombre}`,
+      licencias: []
+    };
+  }
+
+  subgruposMap[sub][id].licencias.push(l);
+});
+
+  // 3. Estructura final
+  estructura = Object.keys(subgruposMap)
+    .sort()
+    .map(sub => ({
+      tipo: "subgrupo",
+      nombre: sub,
+      usuarios: Object.values(subgruposMap[sub])
+        .sort((a, b) => a.nombre.localeCompare(b.nombre))
+    }));
 }
 
+// 🔥 FILTRO SOLO LICENCIAS
+if (filtroSoloLicencias && filtroSoloLicencias.checked) {
+  estructura = estructura.map(bloque => ({
+    ...bloque,
+    usuarios: bloque.usuarios.filter(u => u.licencias.length > 0)
+  })).filter(bloque => bloque.usuarios.length > 0);
+}
 
 if (estructura.length === 0 || estructura.every(b => b.usuarios.length === 0)) {
     contenedor.innerHTML = `
@@ -599,33 +628,46 @@ if (estructura.length === 0 || estructura.every(b => b.usuarios.length === 0)) {
 estructura.forEach(bloque => {
 
   if (bloque.tipo === "grupo") {
-html += `<tr class="fila-grupo">`;
 
-// Primera columna (Usuario)
-html += `<td class="col-usuario grupo-titulo">${bloque.nombre}</td>`;
+    html += `<tr class="fila-grupo">`;
 
-// Resto de columnas vacías
-const hoy = new Date();
+    // Primera columna (Usuario)
+    html += `<td class="col-usuario grupo-titulo">${bloque.nombre}</td>`;
 
-dias.forEach(dia => {
+    // Resto de columnas vacías
+    const hoy = new Date();
 
-  const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
+    dias.forEach(dia => {
 
-  const esHoy =
-    dia.getDate() === hoy.getDate() &&
-    dia.getMonth() === hoy.getMonth() &&
-    dia.getFullYear() === hoy.getFullYear();
+      const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
 
-  let clases = "";
+      const esHoy =
+        dia.getDate() === hoy.getDate() &&
+        dia.getMonth() === hoy.getMonth() &&
+        dia.getFullYear() === hoy.getFullYear();
 
-  if (esFinSemana) clases += " fin-semana";
-  if (esHoy) clases += " hoy";
+      let clases = "";
 
-  html += `<td class="${clases}"></td>`;
+      if (esFinSemana) clases += " fin-semana";
+      if (esHoy) clases += " hoy";
 
-});
+      html += `<td class="${clases}"></td>`;
 
-html += `</tr>`;
+    });
+
+    html += `</tr>`;
+
+  } else if (bloque.tipo === "subgrupo") {
+
+    html += `<tr class="fila-subgrupo">`;
+
+    html += `<td class="col-usuario subgrupo-titulo">${bloque.nombre}</td>`;
+
+    dias.forEach(() => {
+      html += `<td></td>`;
+    });
+
+    html += `</tr>`;
   }
 
   bloque.usuarios.forEach(usuario => {
@@ -710,6 +752,20 @@ html += `
 });
 
 html += `</tbody></table>`;
+
+const soloLicencias = filtroSoloLicencias.checked;
+
+if (soloLicencias) {
+  estructura = estructura.map(bloque => ({
+    ...bloque,
+    usuarios: bloque.usuarios.filter(u => u.licencias.length > 0)
+  })).filter(bloque => bloque.usuarios.length > 0);
+}
+
+
+// 🔥 Limpiar tooltips antiguos antes de actualizar DOM
+destruirTooltipsCalendario();
+
 contenedor.innerHTML = html;
   activarSeleccionFilas();
   inicializarTooltipsCalendario();
@@ -728,7 +784,21 @@ function inicializarTooltipsCalendario() {
     if (existing) {
       existing.dispose();
     }
-    new bootstrap.Tooltip(el);
+    new bootstrap.Tooltip(el, {
+      trigger: 'hover'
+    });
+  });
+}
+
+function destruirTooltipsCalendario() {
+  if (!window.bootstrap || !bootstrap.Tooltip) return;
+
+  const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  tooltips.forEach(el => {
+    const tooltip = bootstrap.Tooltip.getInstance(el);
+    if (tooltip) {
+      tooltip.dispose();
+    }
   });
 }
 
@@ -815,6 +885,7 @@ filtroGrupo.addEventListener("change", async () => {
 
 filtroSubgrupo.addEventListener("change", renderCalendario);
 filtroMes.addEventListener("change", renderCalendario);
+filtroSoloLicencias.addEventListener("change", renderCalendario);
 generarOpcionesMes();
 renderCalendario();
 

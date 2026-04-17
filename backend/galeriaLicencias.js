@@ -17,11 +17,9 @@ router.get("/mes", async (req, res) => {
     });
   }
 
-  // ✅ CAPTURAR USUARIO
   const idUsuarioSesion = req.session?.user?.ID_Usuario;
   const adminIds = [79,81,89,88];
   const esAdmin = adminIds.includes(idUsuarioSesion);
-
 
   if (!idUsuarioSesion) {
     return res.status(401).json({
@@ -37,78 +35,89 @@ router.get("/mes", async (req, res) => {
 
     const pool = await poolPromise;
 
-// 🔎 Obtener datos del usuario logueado y detectar rol
-const usuarioResult = await pool.request()
-  .input("idUsuario", sql.Int, idUsuarioSesion)
-  .query(`
-    SELECT 
-        u.ID_Usuario,
-        u.Nombre,
-        u.Apellido,
-        g.Grupo,
-        g.Subgrupo,
-        g.Gerente,
-        g.Coordinador,
-        g.Referente
-    FROM ${schema}.USUARIO u
-    LEFT JOIN ${schema}.GRUPO g
-        ON (u.Nombre + ' ' + u.Apellido = g.Gerente
-            OR u.Nombre + ' ' + u.Apellido = g.Coordinador
-            OR u.Nombre + ' ' + u.Apellido = g.Referente)
-    WHERE u.ID_Usuario = @idUsuario
-  `);
+    // 🔎 Obtener usuario logueado
+    const usuarioResult = await pool.request()
+      .input("idUsuario", sql.Int, idUsuarioSesion)
+      .query(`
+        SELECT 
+            u.ID_Usuario,
+            u.Nombre,
+            u.Apellido,
+            g.Grupo,
+            g.Subgrupo,
+            g.Gerente,
+            g.Coordinador,
+            g.Referente
+        FROM ${schema}.USUARIO u
+        LEFT JOIN ${schema}.GRUPO g
+            ON (u.Nombre + ' ' + u.Apellido = g.Gerente
+                OR u.Nombre + ' ' + u.Apellido = g.Coordinador
+                OR u.Nombre + ' ' + u.Apellido = g.Referente)
+        WHERE u.ID_Usuario = @idUsuario
+      `);
 
-if (usuarioResult.recordset.length === 0) {
-  return res.status(403).json({
-    success: false,
-    error: "Usuario sin rol asignado"
-  });
-}
+    if (usuarioResult.recordset.length === 0) {
+      return res.status(403).json({
+        success: false,
+        error: "Usuario sin rol asignado"
+      });
+    }
 
-const usuario = usuarioResult.recordset[0];
-const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
+    const usuario = usuarioResult.recordset[0];
+    const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
 
-// 🔍 Depurar cálculo del rol
-    console.log("Usuario logueado:", usuario);
-    console.log("Nombre completo calculado:", nombreCompleto);
-
-const rol = usuario.Coordinador === nombreCompleto ? "COORDINADOR" :
+    const rol = usuario.Coordinador === nombreCompleto ? "COORDINADOR" :
                 usuario.Gerente === nombreCompleto ? "GERENTE" :
                 usuario.Referente === nombreCompleto ? "REFERENTE" : "USER";
 
     console.log("Rol asignado:", rol);
 
-    const licencias = await pool.request()
+    // 🔥 QUERY DINÁMICA (ACA ESTÁ LA CLAVE)
+    const request = pool.request()
       .input("inicioMes", sql.Date, inicioMes)
-      .input("finMes", sql.Date, finMes)
-      .query(`
-        SELECT 
-            l.ID_Usuario,
-            u.Nombre,
-            u.Apellido,
-            g.Grupo,
-            g.Subgrupo,
-            CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
-            CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
-            l.TipoLic,
-            l.Estado
-        FROM ${schema}.LICENCIAS_SMART l
-        INNER JOIN ${schema}.USUARIO u 
-            ON u.ID_Usuario = l.ID_Usuario
-        INNER JOIN ${schema}.USUARIO_GRUPO ug
-            ON ug.ID_Usuario = u.ID_Usuario
-        INNER JOIN ${schema}.GRUPO g
-            ON g.ID_Grupo = ug.ID_Grupo
-        WHERE l.Fecha_Desde <= @finMes
-        AND l.Fecha_Hasta >= @inicioMes
-        ORDER BY g.Grupo, u.Apellido, u.Nombre
-      `);
+      .input("finMes", sql.Date, finMes);
+
+    let query = `
+      SELECT 
+          l.ID_Usuario,
+          u.Nombre,
+          u.Apellido,
+          g.Grupo,
+          g.Subgrupo,
+          CONVERT(varchar(10), l.Fecha_Desde, 23) AS Fecha_Desde,
+          CONVERT(varchar(10), l.Fecha_Hasta, 23) AS Fecha_Hasta,
+          l.TipoLic,
+          l.Estado
+      FROM ${schema}.LICENCIAS_SMART l
+      INNER JOIN ${schema}.USUARIO u 
+          ON u.ID_Usuario = l.ID_Usuario
+      INNER JOIN ${schema}.USUARIO_GRUPO ug
+          ON ug.ID_Usuario = u.ID_Usuario
+      INNER JOIN ${schema}.GRUPO g
+          ON g.ID_Grupo = ug.ID_Grupo
+      WHERE l.Fecha_Desde <= @finMes
+      AND l.Fecha_Hasta >= @inicioMes
+    `;
+
+    // 🎯 FILTROS
+    if (grupo) {
+      request.input("grupo", sql.VarChar, grupo);
+      query += ` AND g.Grupo = @grupo `;
+    }
+
+    if (grupo && subgrupo) {
+      request.input("subgrupo", sql.VarChar, subgrupo);
+      query += ` AND g.Subgrupo = @subgrupo `;
+    }
+
+    query += ` ORDER BY g.Grupo, g.Subgrupo, u.Apellido, u.Nombre`;
+
+    const licencias = await request.query(query);
 
     return res.json({
       success: true,
       data: licencias.recordset
     });
-
 
   } catch (err) {
     console.error("Error obteniendo licencias:", err);
@@ -234,7 +243,7 @@ router.get("/usuarios", async (req, res) => {
     const request = pool.request();
 
     let query = `
-      SELECT 
+      SELECT DISTINCT
           u.ID_Usuario,
           u.Nombre,
           u.Apellido,
@@ -262,17 +271,19 @@ router.get("/usuarios", async (req, res) => {
     }
 
     // 🎯 FILTROS OPCIONALES
-    if (grupo) {
+    if (grupo && subgrupo) {
+      // Si se especifican ambos, filtrar por ambos
+      request.input("grupo", sql.VarChar, grupo);
+      request.input("subgrupo", sql.VarChar, subgrupo);
+      query += ` AND g.Grupo = @grupo AND g.Subgrupo = @subgrupo `;
+    } 
+    else if (grupo) {
+      // Si solo se especifica grupo, filtrar SOLO por ese grupo
       request.input("grupo", sql.VarChar, grupo);
       query += ` AND g.Grupo = @grupo `;
     }
 
-    if (grupo && subgrupo) {
-      request.input("subgrupo", sql.VarChar, subgrupo);
-      query += ` AND g.Subgrupo = @subgrupo `;
-    }
-
-    query += ` ORDER BY g.Grupo, u.Apellido, u.Nombre `;
+    query += ` ORDER BY g.Grupo, g.Subgrupo, u.Apellido, u.Nombre `;
 
     const result = await request.query(query);
 
