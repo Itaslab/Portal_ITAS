@@ -234,7 +234,7 @@ router.get("/usuarios", async (req, res) => {
     const request = pool.request();
 
     let query = `
-      SELECT 
+      SELECT DISTINCT
           u.ID_Usuario,
           u.Nombre,
           u.Apellido,
@@ -262,17 +262,19 @@ router.get("/usuarios", async (req, res) => {
     }
 
     // 🎯 FILTROS OPCIONALES
-    if (grupo) {
+    if (grupo && subgrupo) {
+      // Si se especifican ambos, filtrar por ambos
+      request.input("grupo", sql.VarChar, grupo);
+      request.input("subgrupo", sql.VarChar, subgrupo);
+      query += ` AND g.Grupo = @grupo AND g.Subgrupo = @subgrupo `;
+    } 
+    else if (grupo) {
+      // Si solo se especifica grupo, filtrar SOLO por ese grupo
       request.input("grupo", sql.VarChar, grupo);
       query += ` AND g.Grupo = @grupo `;
     }
 
-    if (grupo && subgrupo) {
-      request.input("subgrupo", sql.VarChar, subgrupo);
-      query += ` AND g.Subgrupo = @subgrupo `;
-    }
-
-    query += ` ORDER BY g.Grupo, u.Apellido, u.Nombre `;
+    query += ` ORDER BY g.Grupo, g.Subgrupo, u.Apellido, u.Nombre `;
 
     const result = await request.query(query);
 
