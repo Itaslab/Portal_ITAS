@@ -101,7 +101,7 @@ const rol = usuario.Coordinador === nombreCompleto ? "COORDINADOR" :
             ON g.ID_Grupo = ug.ID_Grupo
         WHERE l.Fecha_Desde <= @finMes
         AND l.Fecha_Hasta >= @inicioMes
-        ORDER BY g.Grupo, u.Apellido, u.Nombre
+        ORDER BY g.Grupo, g.Subgrupo, u.Apellido, u.Nombre
       `);
 
     return res.json({

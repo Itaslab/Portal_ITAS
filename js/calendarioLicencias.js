@@ -529,38 +529,53 @@ licencias.forEach(l => {
 
 } else {
 
-  const usuariosMap = {};
+  const subgruposMap = {};
 
-  // Primero, agregar TODOS los usuarios del grupo seleccionado
+  // 1. Usuarios
   usuarios.forEach(u => {
+    const sub = (u.Subgrupo || "Sin Subgrupo").trim().toUpperCase();
     const id = u.ID_Usuario;
-    usuariosMap[id] = {
+
+    if (!subgruposMap[sub]) {
+      subgruposMap[sub] = {};
+    }
+
+    subgruposMap[sub][id] = {
       id: id,
       nombre: `${u.Apellido} ${u.Nombre}`,
       licencias: []
     };
   });
 
-  // Luego, agregar licencias a los usuarios que las tienen
+  // 2. Licencias
   licencias.forEach(l => {
+    const sub = (l.Subgrupo || "Sin Subgrupo").trim().toUpperCase();
     const id = l.ID_Usuario;
 
-    if (!usuariosMap[id]) {
-      usuariosMap[id] = {
+    if (!subgruposMap[sub]) {
+      subgruposMap[sub] = {};
+    }
+
+    if (!subgruposMap[sub][id]) {
+      subgruposMap[sub][id] = {
         id: id,
         nombre: `${l.Apellido} ${l.Nombre}`,
         licencias: []
       };
     }
 
-    usuariosMap[id].licencias.push(l);
+    subgruposMap[sub][id].licencias.push(l);
   });
 
-  estructura = [{
-    tipo: "normal",
-    usuarios: Object.values(usuariosMap)
-      .sort((a,b) => a.nombre.localeCompare(b.nombre))
-  }];
+  // 3. Estructura final
+  estructura = Object.keys(subgruposMap)
+    .sort()
+    .map(sub => ({
+      tipo: "subgrupo",
+      nombre: sub,
+      usuarios: Object.values(subgruposMap[sub])
+        .sort((a, b) => a.nombre.localeCompare(b.nombre))
+    }));
 }
 
 
@@ -599,6 +614,20 @@ if (estructura.length === 0 || estructura.every(b => b.usuarios.length === 0)) {
 estructura.forEach(bloque => {
 
   if (bloque.tipo === "grupo") {
+
+    if (bloque.tipo === "subgrupo") {
+
+  html += `<tr class="fila-subgrupo">`;
+
+  html += `<td class="col-usuario subgrupo-titulo">${bloque.nombre}</td>`;
+
+  dias.forEach(() => {
+    html += `<td></td>`;
+  });
+
+  html += `</tr>`;
+}
+
 html += `<tr class="fila-grupo">`;
 
 // Primera columna (Usuario)
