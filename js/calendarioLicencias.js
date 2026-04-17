@@ -13,6 +13,8 @@ const fechaHasta = document.getElementById("fechaHasta");
 const btnAprobar = document.getElementById("btnAprobarLicencias");
 const listaPendientes = document.getElementById("listaPendientes");
 
+const filtroSoloLicencias = document.getElementById("filtroSoloLicencias");
+
 if (fechaDesde && fechaHasta) {
 
   fechaDesde.addEventListener("change", () => {
@@ -744,6 +746,16 @@ html += `
 
 html += `</tbody></table>`;
 
+const soloLicencias = filtroSoloLicencias.checked;
+
+if (soloLicencias) {
+  estructura = estructura.map(bloque => ({
+    ...bloque,
+    usuarios: bloque.usuarios.filter(u => u.licencias.length > 0)
+  })).filter(bloque => bloque.usuarios.length > 0);
+}
+
+
 // 🔥 Limpiar tooltips antiguos antes de actualizar DOM
 destruirTooltipsCalendario();
 
@@ -866,6 +878,7 @@ filtroGrupo.addEventListener("change", async () => {
 
 filtroSubgrupo.addEventListener("change", renderCalendario);
 filtroMes.addEventListener("change", renderCalendario);
+filtroSoloLicencias.addEventListener("change", renderCalendario);
 generarOpcionesMes();
 renderCalendario();
 
