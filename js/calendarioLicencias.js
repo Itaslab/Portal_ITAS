@@ -615,46 +615,45 @@ estructura.forEach(bloque => {
 
   if (bloque.tipo === "grupo") {
 
-    if (bloque.tipo === "subgrupo") {
+    html += `<tr class="fila-grupo">`;
 
-  html += `<tr class="fila-subgrupo">`;
+    // Primera columna (Usuario)
+    html += `<td class="col-usuario grupo-titulo">${bloque.nombre}</td>`;
 
-  html += `<td class="col-usuario subgrupo-titulo">${bloque.nombre}</td>`;
+    // Resto de columnas vacías
+    const hoy = new Date();
 
-  dias.forEach(() => {
-    html += `<td></td>`;
-  });
+    dias.forEach(dia => {
 
-  html += `</tr>`;
-}
+      const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
 
-html += `<tr class="fila-grupo">`;
+      const esHoy =
+        dia.getDate() === hoy.getDate() &&
+        dia.getMonth() === hoy.getMonth() &&
+        dia.getFullYear() === hoy.getFullYear();
 
-// Primera columna (Usuario)
-html += `<td class="col-usuario grupo-titulo">${bloque.nombre}</td>`;
+      let clases = "";
 
-// Resto de columnas vacías
-const hoy = new Date();
+      if (esFinSemana) clases += " fin-semana";
+      if (esHoy) clases += " hoy";
 
-dias.forEach(dia => {
+      html += `<td class="${clases}"></td>`;
 
-  const esFinSemana = dia.getDay() === 0 || dia.getDay() === 6;
+    });
 
-  const esHoy =
-    dia.getDate() === hoy.getDate() &&
-    dia.getMonth() === hoy.getMonth() &&
-    dia.getFullYear() === hoy.getFullYear();
+    html += `</tr>`;
 
-  let clases = "";
+  } else if (bloque.tipo === "subgrupo") {
 
-  if (esFinSemana) clases += " fin-semana";
-  if (esHoy) clases += " hoy";
+    html += `<tr class="fila-subgrupo">`;
 
-  html += `<td class="${clases}"></td>`;
+    html += `<td class="col-usuario subgrupo-titulo">${bloque.nombre}</td>`;
 
-});
+    dias.forEach(() => {
+      html += `<td></td>`;
+    });
 
-html += `</tr>`;
+    html += `</tr>`;
   }
 
   bloque.usuarios.forEach(usuario => {
