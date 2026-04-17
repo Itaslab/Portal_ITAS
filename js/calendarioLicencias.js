@@ -528,7 +528,7 @@ licencias.forEach(l => {
     }));
 
 } else {
-
+  const subgrupoSeleccionado = (subgrupo || "").trim().toUpperCase();
   const subgruposMap = {};
 
   // 1. Usuarios
@@ -548,24 +548,29 @@ licencias.forEach(l => {
   });
 
   // 2. Licencias
-  licencias.forEach(l => {
-    const sub = (l.Subgrupo || "Sin Subgrupo").trim().toUpperCase();
-    const id = l.ID_Usuario;
+licencias.forEach(l => {
 
-    if (!subgruposMap[sub]) {
-      subgruposMap[sub] = {};
-    }
+  const sub = (l.Subgrupo || "Sin Subgrupo").trim().toUpperCase();
 
-    if (!subgruposMap[sub][id]) {
-      subgruposMap[sub][id] = {
-        id: id,
-        nombre: `${l.Apellido} ${l.Nombre}`,
-        licencias: []
-      };
-    }
+  // 🔥 ESTE ES EL FIX
+  if (subgrupoSeleccionado && sub !== subgrupoSeleccionado) return;
 
-    subgruposMap[sub][id].licencias.push(l);
-  });
+  const id = l.ID_Usuario;
+
+  if (!subgruposMap[sub]) {
+    subgruposMap[sub] = {};
+  }
+
+  if (!subgruposMap[sub][id]) {
+    subgruposMap[sub][id] = {
+      id: id,
+      nombre: `${l.Apellido} ${l.Nombre}`,
+      licencias: []
+    };
+  }
+
+  subgruposMap[sub][id].licencias.push(l);
+});
 
   // 3. Estructura final
   estructura = Object.keys(subgruposMap)
