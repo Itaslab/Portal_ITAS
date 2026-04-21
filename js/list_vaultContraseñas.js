@@ -44,9 +44,6 @@ function mostrarContraseñas(credenciales) {
           <button class="btn btn-outline-secondary btn-sm" type="button" onclick="togglePassword(${cred.id})">
             <i class="bi bi-eye"></i> Ver
           </button>
-          <button class="btn btn-outline-primary btn-sm" type="button" onclick="copiarAlPortapapeles(${cred.id})">
-            Copiar
-          </button>
         </div>
       </td>
       <td>
@@ -85,7 +82,6 @@ async function desencriptarYMostrar(id) {
   try {
     const input = document.getElementById(`pass-${id}`);
     
-    // Mostrar que estamos cargando
     input.value = 'Cargando...';
     
     const res = await fetch(basePath + `/vault/desencriptar/${id}`, {
@@ -97,7 +93,16 @@ async function desencriptarYMostrar(id) {
     const data = await res.json();
 
     if (data.success) {
-      input.value = data.password;
+      const password = data.password;
+
+      // 👇 Nueva lógica de enmascarado
+      const visibleInicio = password.slice(0, 2);
+      const visibleFinal = password.slice(-2);
+      const oculto = '*'.repeat(Math.max(password.length - 4, 0));
+
+      const passwordMasked = visibleInicio + oculto + visibleFinal;
+
+      input.value = passwordMasked;
       input.type = 'text';
     } else {
       input.value = 'Error al desencriptar';
