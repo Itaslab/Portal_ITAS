@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const selectModo = document.getElementById("modalModoEditable");
     const checkboxDesasignador = document.getElementById("modalDesasignador");
     const textareaScript = document.getElementById("modalScript");
+    
 
     // cargar selects del modal
     const grupos = [
@@ -209,12 +210,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             renderTabla(filtrados);
         }
 
+    let logUsuarioActual = "";
     async function abrirModal(id_usuario) {
         try {
             const resp = await fetch(basePath + `/usuarios/${id_usuario}`);
             const data = await resp.json();
             if (!data.success) throw new Error(data.error || "Error al obtener detalle del usuario");
             const u = data.usuario || {};
+             logUsuarioActual = u.log || "";
             document.getElementById("modalIdUsuario").value = id_usuario;
             spanNombre.textContent = u.nombre ?? "-";
             spanEmail.textContent = u.email ?? "-";
@@ -306,9 +309,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             alert("❌ No se pudieron guardar los cambios.");
         }
     }
+    function mostrarLog() {
+    const logContent = document.getElementById('logContent');
+    if (logContent) {
+        logContent.textContent = logUsuarioActual || 'No hay log disponible';
+        const logModal = new bootstrap.Modal(document.getElementById('logModal'));
+        logModal.show();
+    }
+}
 
     const btnGuardar = document.getElementById("modalBtnGuardar");
     if (btnGuardar) {
         btnGuardar.addEventListener("click", guardarCambiosUsuario);
     }
+    const btnVerLog = document.getElementById("modalBtnVerLog");
+    if (btnVerLog) {
+    btnVerLog.addEventListener("click", mostrarLog);
+}
 });

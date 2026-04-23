@@ -21,10 +21,11 @@ module.exports = async (req, res) => {
         ap.Grupo,
         ap.Grupo2,
         ap.Max_Por_Trabajar,
-        ap.Asc_Desc,            -- asegúrate que exista esa columna
+        ap.Asc_Desc,            
         ap.Modo,
-        ap.Des_Asignar,     -- idem
-        ap.Script            -- idem
+        ap.Des_Asignar,     
+        ap.Script,
+        ap.LogDeCambios            
       FROM 
         ${schema}.APP_ORDENES_USR ap
       INNER JOIN 
@@ -54,7 +55,8 @@ module.exports = async (req, res) => {
       forma: u.Asc_Desc,
       modo: u.Modo,
       des_asignar: !!u.Des_Asignar,
-      script: u.Script
+      script: u.Script,
+      log: u.LogDeCambios
     };
 
     res.json({ success: true, usuario });
