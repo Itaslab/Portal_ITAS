@@ -54,4 +54,109 @@ router.get("/", async (req, res) => {
 }
 });
 
+// GUARDAR CONFIGURACION 
+
+// ============================
+// UPDATE AWA
+// ============================
+router.put("/", async (req, res) => {
+  try {
+    const pool = await poolPromise;
+
+    const {
+      ID_AWA,
+      ID_WA,
+      Titulo,
+      Estado,
+      Origen,
+      Sistema,
+      Negocio,
+      ERR_AppORD,
+      Jira_Tarea,
+      Fdesde,
+      Fhasta,
+      Id_Flujo_RPA,
+      Prioridad_RPA,
+      Max_Encoladas_RPA,
+      FrecuenciaRPA,
+      FrecuenciaRPA2,
+      Volumen_Diario,
+      Esfuerzo,
+      HS_Antiguedad_Bajada,
+      RevITSS_x100,
+      RevITSS_Max
+    } = req.body;
+
+    await pool.request()
+      // IDs
+      .input("ID_AWA", sql.Int, ID_AWA)
+      .input("ID_WA", sql.VarChar, ID_WA || null)
+
+      // Básico
+      .input("Titulo", sql.VarChar, Titulo || null)
+
+      // Operativo
+      .input("Estado", sql.VarChar, Estado || null)
+      .input("Origen", sql.VarChar, Origen || null)
+      .input("Sistema", sql.VarChar, Sistema || null)
+      .input("Negocio", sql.VarChar, Negocio || null)
+      .input("ERR_AppORD", sql.VarChar, ERR_AppORD || null)
+      .input("Jira_Tarea", sql.VarChar, Jira_Tarea || null)
+
+      // Fechas
+      .input("Fdesde", sql.Date, Fdesde || null)
+      .input("Fhasta", sql.Date, Fhasta || null)
+
+      // RPA
+      .input("Id_Flujo_RPA", sql.Int, Id_Flujo_RPA || null)
+      .input("Prioridad_RPA", sql.Int, Prioridad_RPA || null)
+      .input("Max_Encoladas_RPA", sql.Int, Max_Encoladas_RPA || null)
+      .input("FrecuenciaRPA", sql.Int, FrecuenciaRPA || null)
+      .input("FrecuenciaRPA2", sql.Int, FrecuenciaRPA2 || null)
+
+      // Métricas
+      .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario || null)
+      .input("Esfuerzo", sql.VarChar, Esfuerzo || null)
+      .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada || null)
+      .input("RevITSS_x100", sql.Int, RevITSS_x100 || null)
+      .input("RevITSS_Max", sql.Int, RevITSS_Max || null)
+
+      .query(`
+        UPDATE ${schema}.AWAs
+        SET
+          ID_WA = @ID_WA,
+          Titulo = @Titulo,
+          Estado = @Estado,
+          Origen = @Origen,
+          Sistema = @Sistema,
+          Negocio = @Negocio,
+          ERR_AppORD = @ERR_AppORD,
+          Jira_Tarea = @Jira_Tarea,
+          Fdesde = @Fdesde,
+          Fhasta = @Fhasta,
+          Id_Flujo_RPA = @Id_Flujo_RPA,
+          Prioridad_RPA = @Prioridad_RPA,
+          Max_Encoladas_RPA = @Max_Encoladas_RPA,
+          FrecuenciaRPA = @FrecuenciaRPA,
+          FrecuenciaRPA2 = @FrecuenciaRPA2,
+          Volumen_Diario = @Volumen_Diario,
+          Esfuerzo = @Esfuerzo,
+          HS_Antiguedad_Bajada = @HS_Antiguedad_Bajada,
+          RevITSS_x100 = @RevITSS_x100,
+          RevITSS_Max = @RevITSS_Max
+        WHERE ID_AWA = @ID_AWA
+      `);
+
+    res.json({ success: true });
+
+  } catch (error) {
+    console.error("💥 ERROR UPDATE AWAS:", error.message);
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;
