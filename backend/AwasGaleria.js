@@ -46,10 +46,12 @@ router.get("/", async (req, res) => {
     res.json(result.recordset);
 
   } catch (error) {
-    console.error("Error trayendo AWAS:", error);
-    console.log("👉 SCHEMA AWAS:", schema);
-    res.status(500).json({ error: "Error al obtener AWAS" });
-  }
+  console.error("💥 ERROR AWAS:", error.message);
+  console.error("💥 STACK:", error);
+  res.status(500).json({
+    error: error.message
+  });
+}
 });
 
 module.exports = router;
