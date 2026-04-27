@@ -246,6 +246,17 @@ document.getElementById("btnConfirmarAccion").addEventListener("click", async ()
 
   awaPendienteAccion = null;
 });
+
+function mostrarToast(mensaje, tipo = "success") {
+  const toastEl = document.getElementById("toastMsg");
+
+  toastEl.className = `toast align-items-center text-white bg-${tipo} border-0`;
+
+  document.getElementById("toastTexto").innerText = mensaje;
+
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
+}
 // ============================
 // Init
 // ============================
