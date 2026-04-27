@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
         Sistemas_Accion,
         Volumen_Diario,
         Esfuerzo,
-        Tiempo_Manual,
+        Tiempo_Manual_min,
         Referentes_ITSS,
         Referentes_N2,
         Id_Flujo_RPA,
