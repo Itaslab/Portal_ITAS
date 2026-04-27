@@ -51,6 +51,7 @@ const galeriaEjecucionesFiltroDato = require("./galeriaEjecuciones_FiltroDato");
 const galeriaLicencias = require("./galeriaLicencias");
 const crearLicencia = require("./crearLicencia");
 const misLicencias = require("./misLicencias");
+const awasGaleria = require("./AwasGaleria");
 
 
 
@@ -178,6 +179,7 @@ app.get("/api/galeriaEjecuciones_FiltroDato",galeriaEjecucionesFiltroDato);
 app.use("/api/licencias", galeriaLicencias);
 app.use("/api/licencias", crearLicencia);
 app.use("/api/mis-licencias", misLicencias);
+app.use("/api/awas", awasGaleria);
 
  
 // ------------------- BÓVEDA DE CONTRASEÑAS (SEGURIDAD INFORMÁTICA) -------------------
