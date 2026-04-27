@@ -1,41 +1,45 @@
 //galeriaAwas.js
 
 async function cargarAWAS() {
-  const res = await fetch(`${basePath}/api/awas`); 
-  const awas = await res.json();
+  const res = await fetch(`${basePath}/api/awas`);
+  const data = await res.json();
 
-  const contenedor = document.getElementById("contenedorAwas");
-  contenedor.innerHTML = "";
+  if (!Array.isArray(data)) {
+    console.error("Error backend:", data);
+    return;
+  }
 
-  awas.forEach(awa => {
-    const col = document.createElement("div");
-    col.className = "col-md-4";
+  const tbody = document.querySelector("#tablaAwas tbody");
+  tbody.innerHTML = "";
 
-    col.innerHTML = `
-      <div class="card shadow-sm h-100">
-        <div class="card-body">
-          <h5 class="card-title">
-            ID_WA: ${awa.ID_WA} | ID_AWA: ${awa.ID_AWA}
-          </h5>
+  data.forEach(awa => {
+    const estadoColor =
+      awa.Estado === "Activo"
+        ? "text-success"
+        : awa.Estado === "Backlog"
+        ? "text-warning"
+        : "text-secondary";
 
-          <p class="card-text">
-            <strong>Título:</strong> ${awa.Titulo || "-"}<br>
-            <strong>Estado:</strong> ${awa.Estado || "-"}
-          </p>
+    const row = document.createElement("tr");
 
-          <div class="d-flex justify-content-between">
-            <button class="btn btn-success btn-sm" onclick="activarAWA(${awa.ID_AWA})">
-              Activar
-            </button>
-            <button class="btn btn-primary btn-sm" onclick="configurarAWA(${awa.ID_AWA})">
-              Configurar
-            </button>
-          </div>
-        </div>
-      </div>
+    row.innerHTML = `
+      <td>${awa.ID_WA ?? "-"}</td>
+      <td>${awa.ID_AWA ?? "-"}</td>
+      <td>${awa.Titulo || "-"}</td>
+      <td class="${estadoColor} fw-bold">${awa.Estado || "-"}</td>
+      <td class="text-end">
+        ${
+          awa.Estado === "Activo"
+            ? `<button class="btn btn-danger btn-sm me-2" onclick="activarAWA(${awa.ID_AWA})">Desactivar</button>`
+            : `<button class="btn btn-success btn-sm me-2" onclick="activarAWA(${awa.ID_AWA})">Activar</button>`
+        }
+        <button class="btn btn-primary btn-sm" onclick="configurarAWA(${awa.ID_AWA})">
+          Configurar
+        </button>
+      </td>
     `;
 
-    contenedor.appendChild(col);
+    tbody.appendChild(row);
   });
 }
 

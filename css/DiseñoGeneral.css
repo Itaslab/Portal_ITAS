@@ -843,3 +843,14 @@ textarea.disabled-field {
 .btn-rechazar {
   flex: 1;
 }
+
+
+/* Awas */
+
+.table td {
+  vertical-align: middle;
+}
+
+.table tr:hover {
+  background-color: rgba(0,0,0,0.03);
+}
