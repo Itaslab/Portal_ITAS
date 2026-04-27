@@ -1,6 +1,7 @@
 // galeriaAwas.js
 
 let awasGlobal = [];
+let awaPendienteAccion = null;
 
 // ============================
 // Helpers
@@ -198,40 +199,53 @@ async function guardarAWA() {
 // Activar / Desactivar (placeholder)
 // ============================
 
-async function activarAWA(id) {
+function activarAWA(id) {
   const awa = awasGlobal.find(a => a.ID_AWA == id);
   if (!awa) return;
 
+  awaPendienteAccion = awa;
+
   const accion = awa.Estado === "Activo" ? "desactivar" : "activar";
 
-  const confirmacion = confirm(
-    `¿Seguro que querés ${accion} el AWA "${awa.Titulo}"?`
-  );
+  document.getElementById("textoConfirmacion").innerText =
+    `¿Seguro que querés ${accion} el AWA "${awa.Titulo}"?`;
 
-  if (!confirmacion) return;
+  const modal = new bootstrap.Modal(document.getElementById("modalConfirmacion"));
+  modal.show();
+}
+
+document.getElementById("btnConfirmarAccion").addEventListener("click", async () => {
+  if (!awaPendienteAccion) return;
 
   try {
-    const res = await fetch(`${basePath}/api/awas/toggle/${id}`, {
-      method: "PUT"
-    });
+    const res = await fetch(
+      `${basePath}/api/awas/toggle/${awaPendienteAccion.ID_AWA}`,
+      { method: "PUT" }
+    );
 
     const data = await res.json();
 
     if (!res.ok) {
       console.error("Error backend:", data);
-      alert("Error al cambiar estado");
+      mostrarToast("Error al cambiar estado", "danger");
       return;
     }
 
-    // 🔥 refrescar
+    // cerrar modal
+    bootstrap.Modal.getInstance(document.getElementById("modalConfirmacion")).hide();
+
+    // refrescar tabla
     await cargarAWAS();
 
-  } catch (err) {
-    console.error("Error toggle:", err);
-    alert("Error de conexión");
-  }
-}
+    mostrarToast("Estado actualizado correctamente", "success");
 
+  } catch (err) {
+    console.error(err);
+    mostrarToast("Error de conexión", "danger");
+  }
+
+  awaPendienteAccion = null;
+});
 // ============================
 // Init
 // ============================
