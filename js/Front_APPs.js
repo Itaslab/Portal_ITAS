@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const modal = new bootstrap.Modal(document.getElementById("appModal"));
   const modalMessage = document.querySelector("#modal-message");
 
-  // --- USER PROFILE ---
+  
   const userGreeting = document.getElementById('userGreeting');
   const openProfile = document.getElementById('openProfile');
   const perfilModalEl = document.getElementById('perfilModal');
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const perfilSaveBtn = document.getElementById('perfilSaveBtn');
   const perfilResult = document.getElementById('perfilResult');
 
-  // --- MODAL CAMBIO OBLIGATORIO DE CONTRASEÑA ---
+ 
   const forcePasswordModalEl = document.getElementById('forcePasswordModal');
   const forcePasswordModal = forcePasswordModalEl ? new bootstrap.Modal(forcePasswordModalEl, { backdrop: 'static', keyboard: false }) : null;
   const forceNewPass1 = document.getElementById('forceNewPass1');
@@ -33,12 +33,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   const forcePassSaveBtn = document.getElementById('forcePassSaveBtn');
   const forcePassResult = document.getElementById('forcePassResult');
 
-  // --- DETECTAR SI ES CAMBIO OBLIGATORIO DE CONTRASEÑA ---
+  
   const urlParams = new URLSearchParams(window.location.search);
   const forcePass = urlParams.get('forcePass') === '1';
   let passwordChangedOnce = false;
 
-  // Si es cambio obligatorio, mostrar modal inmediatamente
+  
   if (forcePass && forcePasswordModal) {
     setTimeout(() => {
       forceNewPass1.value = '';
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }, 800);
   }
 
-  // Evento del botón para cambiar contraseña forzado
+  
   if (forcePassSaveBtn) {
     forcePassSaveBtn.addEventListener('click', async () => {
       forcePassResult.innerHTML = '';
@@ -77,15 +77,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       try {
-        // Para cambio forzado, usamos la contraseña actual del usuario (que está en la sesión)
-        // El servidor la validará. El cliente envía la nueva contraseña dos veces para confirmar.
+
         const r = await fetch(basePath + '/me/password', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ currentPassword: '', newPassword: pass1, forcePassword: true })
         });
 
-        // Verificar si la sesión es válida
+   
         await verificarSesionValida(r, '/me/password');
 
         const d = await r.json();
@@ -114,7 +113,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     { id: 12, name: "Licencias", category: "Personal", collection: "Gestión", img: "../images/descarga.jpg",url: "../pages/CalendarioLicencias.html"  },
     { id: 11, name: "Seguridad Informatica", category: "Privado", collection: "Gestión", img: "../images/SeguridadInformatica.jpg", url: "../pages/SeguridadInformatica.html" },
     { id: 8, name: "Monitoreo", category: "Personal", collection: "Gestión", img: "../images/Grafana.png", url: "https://portal-itas.telecom.com.ar:3000/grafana/public-dashboards/e5368ad7e39f41d99b6f28c003e9f998" },
-    { id: 13, name: "ABM Usuarios", category: "Privado", collection: "Gestión", img: "../images/ABM.jpg", url: "../pages/ModulosAbmUsuarios.html" }
+    { id: 13, name: "ABM Usuarios", category: "Privado", collection: "Gestión", img: "../images/ABM.jpg", url: "../pages/ModulosAbmUsuarios.html" },
+    { id: 14, name: "Awas", category: "Privado", collection: "Gestión", img: "../images/awas.png", url: "../pages/GaleriaAWAS.html" }
   ];
 
   // ------------------------------
