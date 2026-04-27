@@ -47,6 +47,7 @@ router.get("/", async (req, res) => {
 
   } catch (error) {
     console.error("Error trayendo AWAS:", error);
+    console.log("👉 SCHEMA AWAS:", schema);
     res.status(500).json({ error: "Error al obtener AWAS" });
   }
 });
