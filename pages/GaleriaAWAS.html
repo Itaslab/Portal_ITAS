@@ -45,6 +45,168 @@
       </tbody>
     </table>
   </div>
+  <div class="modal fade" id="modalAwa" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content p-4">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Configuración AWA</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <input type="hidden" id="inputIdAwa">
+
+        <!-- 🟦 SECCIÓN 1: IDENTIFICACIÓN -->
+        <h6 class="mt-2">Identificación</h6>
+        <div class="row g-3 mb-3">
+
+          <div class="col-md-3">
+            <label>ID_WA</label>
+            <input type="text" id="inputIdWa" class="form-control">
+          </div>
+
+          <div class="col-md-3">
+            <label>ID_AWA</label>
+            <input type="text" id="inputIdAwaVisible" class="form-control" disabled>
+          </div>
+
+          <div class="col-md-6">
+            <label>Título</label>
+            <input type="text" id="inputTitulo" class="form-control">
+          </div>
+
+        </div>
+
+        <!-- 🟩 SECCIÓN 2: OPERATIVO -->
+        <h6>Operativo</h6>
+        <div class="row g-3 mb-3">
+
+          <div class="col-md-4">
+            <label>Estado</label>
+            <select id="inputEstado" class="form-select">
+              <option>Activo</option>
+              <option>Backlog</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label>Origen</label>
+            <input type="text" id="inputOrigen" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label>Sistema</label>
+            <input type="text" id="inputSistema" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label>Negocio</label>
+            <input type="text" id="inputNegocio" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label>ERR_AppORD</label>
+            <input type="text" id="inputErr" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label>Jira</label>
+            <input type="text" id="inputJira" class="form-control">
+          </div>
+
+        </div>
+
+        <!-- 🟨 SECCIÓN 3: FECHAS -->
+        <h6>Fechas</h6>
+        <div class="row g-3 mb-3">
+
+          <div class="col-md-6">
+            <label>Desde</label>
+            <input type="date" id="inputDesde" class="form-control">
+          </div>
+
+          <div class="col-md-6">
+            <label>Hasta</label>
+            <input type="date" id="inputHasta" class="form-control">
+          </div>
+
+        </div>
+
+        <!-- 🟧 SECCIÓN 4: RPA -->
+        <h6>RPA</h6>
+        <div class="row g-3 mb-3">
+
+          <div class="col-md-3">
+            <label>ID Flujo</label>
+            <input type="number" id="inputFlujo" class="form-control">
+          </div>
+
+          <div class="col-md-3">
+            <label>Prioridad</label>
+            <input type="number" id="inputPrioridad" class="form-control">
+          </div>
+
+          <div class="col-md-3">
+            <label>Max Encoladas</label>
+            <input type="number" id="inputMaxCola" class="form-control">
+          </div>
+
+          <div class="col-md-3">
+            <label>Frecuencia</label>
+            <input type="number" id="inputFrecuencia" class="form-control">
+          </div>
+
+          <div class="col-md-3">
+            <label>Frecuencia 2</label>
+            <input type="number" id="inputFrecuencia2" class="form-control">
+          </div>
+
+        </div>
+
+        <!-- 🟪 SECCIÓN 5: MÉTRICAS -->
+        <h6>Métricas</h6>
+        <div class="row g-3">
+
+          <div class="col-md-4">
+            <label>Volumen Diario</label>
+            <input type="number" step="0.01" id="inputVolumen" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label>Esfuerzo</label>
+            <input type="text" id="inputEsfuerzo" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label>HS Antigüedad</label>
+            <input type="number" id="inputHS" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label>RevITSS x100</label>
+            <input type="number" id="inputRev100" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label>RevITSS Max</label>
+            <input type="number" id="inputRevMax" class="form-control">
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-primary text-white" onclick="guardarAWA()">Guardar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </div>
 
 
