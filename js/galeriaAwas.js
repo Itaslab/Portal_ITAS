@@ -30,10 +30,10 @@ async function cargarAWAS() {
       <td class="text-end">
         ${
           awa.Estado === "Activo"
-            ? `<button class="btn btn-danger btn-sm me-2" onclick="activarAWA(${awa.ID_AWA})">Desactivar</button>`
-            : `<button class="btn btn-success btn-sm me-2" onclick="activarAWA(${awa.ID_AWA})">Activar</button>`
+            ? `<button class="btn btn-danger btn-sm me-2 text-white" onclick="activarAWA(${awa.ID_AWA})">Desactivar</button>`
+            : `<button class="btn btn-success btn-sm me-2 text-white" onclick="activarAWA(${awa.ID_AWA})">Activar</button>`
         }
-        <button class="btn btn-primary btn-sm" onclick="configurarAWA(${awa.ID_AWA})">
+        <button class="btn btn-primary btn-sm text-white" onclick="configurarAWA(${awa.ID_AWA})">
           Configurar
         </button>
       </td>
