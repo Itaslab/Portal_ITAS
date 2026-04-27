@@ -39,7 +39,7 @@ router.get("/", async (req, res) => {
         HS_Antiguedad_Bajada,
         RevITSS_x100,
         RevITSS_Max
-      FROM ${schema}.AWAS
+      FROM ${schema}.AWAs
       ORDER BY ID_AWA DESC
     `);
 
