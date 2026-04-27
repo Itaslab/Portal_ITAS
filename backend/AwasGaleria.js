@@ -159,4 +159,51 @@ router.put("/", async (req, res) => {
   }
 });
 
+// ============================
+// TOGGLE ESTADO AWA
+// ============================
+router.put("/toggle/:id", async (req, res) => {
+  try {
+    const pool = await poolPromise;
+    const { id } = req.params;
+
+    // 1. Obtener estado actual
+    const result = await pool.request()
+      .input("ID_AWA", sql.Int, id)
+      .query(`
+        SELECT Estado
+        FROM ${schema}.AWAs
+        WHERE ID_AWA = @ID_AWA
+      `);
+
+    if (result.recordset.length === 0) {
+      return res.status(404).json({ error: "AWA no encontrada" });
+    }
+
+    const estadoActual = result.recordset[0].Estado;
+
+    // 2. Definir nuevo estado
+    const nuevoEstado = estadoActual === "Activo" ? "Inactivo" : "Activo";
+
+    // 3. Update
+    await pool.request()
+      .input("ID_AWA", sql.Int, id)
+      .input("Estado", sql.VarChar, nuevoEstado)
+      .query(`
+        UPDATE ${schema}.AWAs
+        SET Estado = @Estado
+        WHERE ID_AWA = @ID_AWA
+      `);
+
+    res.json({
+      success: true,
+      nuevoEstado
+    });
+
+  } catch (error) {
+    console.error("💥 ERROR TOGGLE AWA:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;

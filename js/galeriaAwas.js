@@ -74,6 +74,9 @@ async function cargarAWAS() {
   }
 }
 
+
+
+
 // ============================
 // Abrir modal
 // ============================
@@ -195,8 +198,38 @@ async function guardarAWA() {
 // Activar / Desactivar (placeholder)
 // ============================
 
-function activarAWA(id) {
-  alert("Después hacemos activar/desactivar 😄");
+async function activarAWA(id) {
+  const awa = awasGlobal.find(a => a.ID_AWA == id);
+  if (!awa) return;
+
+  const accion = awa.Estado === "Activo" ? "desactivar" : "activar";
+
+  const confirmacion = confirm(
+    `¿Seguro que querés ${accion} el AWA "${awa.Titulo}"?`
+  );
+
+  if (!confirmacion) return;
+
+  try {
+    const res = await fetch(`${basePath}/api/awas/toggle/${id}`, {
+      method: "PUT"
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Error backend:", data);
+      alert("Error al cambiar estado");
+      return;
+    }
+
+    // 🔥 refrescar
+    await cargarAWAS();
+
+  } catch (err) {
+    console.error("Error toggle:", err);
+    alert("Error de conexión");
+  }
 }
 
 // ============================
