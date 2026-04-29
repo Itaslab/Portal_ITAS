@@ -101,6 +101,7 @@ function nuevoAWA() {
   document.getElementById("inputMaxCola").value = "";
   document.getElementById("inputFrecuencia").value = "";
   document.getElementById("inputFrecuencia2").value = "";
+  document.getElementById("inputLimiteBajada").value = "";
   document.getElementById("inputVolumen").value = "";
   document.getElementById("inputEsfuerzo").value = "";
   document.getElementById("inputHS").value = "";
@@ -144,6 +145,7 @@ function configurarAWA(id) {
   document.getElementById("inputMaxCola").value = awa.Max_Encoladas_RPA ?? "";
   document.getElementById("inputFrecuencia").value = awa.FrecuenciaRPA ?? "";
   document.getElementById("inputFrecuencia2").value = awa.FrecuenciaRPA2 ?? "";
+  document.getElementById("inputLimiteBajada").value = awa.Limite_Bajada ?? "";
 
   // 🟪 Métricas
   document.getElementById("inputVolumen").value = awa.Volumen_Diario ?? "";
@@ -191,6 +193,7 @@ async function guardarAWA() {
       Max_Encoladas_RPA: getNumber(document.getElementById("inputMaxCola").value),
       FrecuenciaRPA: getNumber(document.getElementById("inputFrecuencia").value),
       FrecuenciaRPA2: getNumber(document.getElementById("inputFrecuencia2").value),
+      Limite_Bajada: getNumber(document.getElementById("inputLimiteBajada").value),
 
       // Métricas
       Volumen_Diario: getNumber(document.getElementById("inputVolumen").value),

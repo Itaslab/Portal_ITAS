@@ -81,7 +81,8 @@ router.post("/", async (req, res) => {
       Esfuerzo,
       HS_Antiguedad_Bajada,
       RevITSS_x100,
-      RevITSS_Max
+      RevITSS_Max,
+      Limite_Bajada
     } = req.body;
 
     // Insertar nuevo registro
@@ -106,6 +107,7 @@ router.post("/", async (req, res) => {
       .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada || null)
       .input("RevITSS_x100", sql.Int, RevITSS_x100 || null)
       .input("RevITSS_Max", sql.Int, RevITSS_Max || null)
+      .input("Limite_Bajada", sql.Int, Limite_Bajada || null)
       .input("En_Ejecucion", sql.Int, 0)
 
       .query(`
@@ -114,14 +116,14 @@ router.post("/", async (req, res) => {
           ERR_AppORD, Jira_Tarea, Fdesde, Fhasta,
           Id_Flujo_RPA, Prioridad_RPA, Max_Encoladas_RPA, 
           FrecuenciaRPA, FrecuenciaRPA2, Volumen_Diario, Esfuerzo,
-          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, En_Ejecucion
+          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, Limite_Bajada, En_Ejecucion
         )
         VALUES (
           @ID_WA, @Titulo, @Estado, @Origen, @Sistema, @Negocio,
           @ERR_AppORD, @Jira_Tarea, @Fdesde, @Fhasta,
           @Id_Flujo_RPA, @Prioridad_RPA, @Max_Encoladas_RPA,
           @FrecuenciaRPA, @FrecuenciaRPA2, @Volumen_Diario, @Esfuerzo,
-          @HS_Antiguedad_Bajada, @RevITSS_x100, @RevITSS_Max, @En_Ejecucion
+          @HS_Antiguedad_Bajada, @RevITSS_x100, @RevITSS_Max, @Limite_Bajada, @En_Ejecucion
         );
         SELECT SCOPE_IDENTITY() AS newId;
       `);
@@ -171,7 +173,8 @@ router.put("/", async (req, res) => {
       Esfuerzo,
       HS_Antiguedad_Bajada,
       RevITSS_x100,
-      RevITSS_Max
+      RevITSS_Max,
+      Limite_Bajada
     } = req.body;
 
     await pool.request()
@@ -200,6 +203,7 @@ router.put("/", async (req, res) => {
       .input("Max_Encoladas_RPA", sql.Int, Max_Encoladas_RPA || null)
       .input("FrecuenciaRPA", sql.Int, FrecuenciaRPA || null)
       .input("FrecuenciaRPA2", sql.Int, FrecuenciaRPA2 || null)
+      .input("Limite_Bajada", sql.Int, Limite_Bajada || null)
 
       // Métricas
       .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario || null)
@@ -226,6 +230,7 @@ router.put("/", async (req, res) => {
           Max_Encoladas_RPA = @Max_Encoladas_RPA,
           FrecuenciaRPA = @FrecuenciaRPA,
           FrecuenciaRPA2 = @FrecuenciaRPA2,
+          Limite_Bajada = @Limite_Bajada,
           Volumen_Diario = @Volumen_Diario,
           Esfuerzo = @Esfuerzo,
           HS_Antiguedad_Bajada = @HS_Antiguedad_Bajada,
