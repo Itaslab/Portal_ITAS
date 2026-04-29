@@ -18,7 +18,7 @@ function formatDate(d) {
 }
 
 function getNumber(value) {
-  return value === "" ? null : Number(value);
+  return value === "" ? 0 : Number(value);
 }
 
 // ============================
