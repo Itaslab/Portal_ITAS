@@ -87,6 +87,7 @@ router.post("/", async (req, res) => {
 
     // Insertar nuevo registro
     const result = await pool.request()
+      .input("ID_AWA", sql.Int, ID_AWA || null)
       .input("ID_WA", sql.VarChar, ID_WA || null)
       .input("Titulo", sql.VarChar, Titulo || null)
       .input("Estado", sql.VarChar, Estado || "Activo")
@@ -112,14 +113,14 @@ router.post("/", async (req, res) => {
 
       .query(`
         INSERT INTO ${schema}.AWAs (
-          ID_WA, Titulo, Estado, Origen, Sistema, Negocio, 
+          ID_AWA, ID_WA, Titulo, Estado, Origen, Sistema, Negocio, 
           ERR_AppORD, Jira_Tarea, Fdesde, Fhasta,
           Id_Flujo_RPA, Prioridad_RPA, Max_Encoladas_RPA, 
           FrecuenciaRPA, FrecuenciaRPA2, Volumen_Diario, Esfuerzo,
           HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, Limite_Bajada, En_Ejecucion
         )
         VALUES (
-          @ID_WA, @Titulo, @Estado, @Origen, @Sistema, @Negocio,
+          @ID_AWA, @ID_WA, @Titulo, @Estado, @Origen, @Sistema, @Negocio,
           @ERR_AppORD, @Jira_Tarea, @Fdesde, @Fhasta,
           @Id_Flujo_RPA, @Prioridad_RPA, @Max_Encoladas_RPA,
           @FrecuenciaRPA, @FrecuenciaRPA2, @Volumen_Diario, @Esfuerzo,

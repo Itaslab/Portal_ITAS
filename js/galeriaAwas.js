@@ -165,11 +165,11 @@ function configurarAWA(id) {
 
 async function guardarAWA() {
   try {
-    const idAwa = document.getElementById("inputIdAwa").value;
+    const idAwa = document.getElementById("inputIdAwaVisible").value;
     const isNew = !idAwa || idAwa === "";
 
     const payload = {
-      ID_AWA: isNew ? null : Number(idAwa),
+      ID_AWA: isNew ? Number(idAwa) : Number(idAwa),
 
       // Básico
       ID_WA: document.getElementById("inputIdWa").value,
@@ -218,6 +218,13 @@ async function guardarAWA() {
       console.error("Error:", result);
       alert("Error al guardar");
       return;
+    }
+
+    // Mensaje según operación
+    if (isNew) {
+      mostrarToast("El AWA ha sido creado", "success");
+    } else {
+      mostrarToast("El AWA ha sido actualizado", "success");
     }
 
     // cerrar modal
