@@ -106,6 +106,7 @@ router.post("/", async (req, res) => {
       .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada || null)
       .input("RevITSS_x100", sql.Int, RevITSS_x100 || null)
       .input("RevITSS_Max", sql.Int, RevITSS_Max || null)
+      .input("En_Ejecucion", sql.Int, 0)
 
       .query(`
         INSERT INTO ${schema}.AWAs (
@@ -113,14 +114,14 @@ router.post("/", async (req, res) => {
           ERR_AppORD, Jira_Tarea, Fdesde, Fhasta,
           Id_Flujo_RPA, Prioridad_RPA, Max_Encoladas_RPA, 
           FrecuenciaRPA, FrecuenciaRPA2, Volumen_Diario, Esfuerzo,
-          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max
+          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, En_Ejecucion
         )
         VALUES (
           @ID_WA, @Titulo, @Estado, @Origen, @Sistema, @Negocio,
           @ERR_AppORD, @Jira_Tarea, @Fdesde, @Fhasta,
           @Id_Flujo_RPA, @Prioridad_RPA, @Max_Encoladas_RPA,
           @FrecuenciaRPA, @FrecuenciaRPA2, @Volumen_Diario, @Esfuerzo,
-          @HS_Antiguedad_Bajada, @RevITSS_x100, @RevITSS_Max
+          @HS_Antiguedad_Bajada, @RevITSS_x100, @RevITSS_Max, @En_Ejecucion
         );
         SELECT SCOPE_IDENTITY() AS newId;
       `);
