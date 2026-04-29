@@ -165,11 +165,11 @@ function configurarAWA(id) {
 
 async function guardarAWA() {
   try {
-    const idAwa = document.getElementById("inputIdAwaVisible").value;
+    const idAwa = document.getElementById("inputIdAwa").value;
     const isNew = !idAwa || idAwa === "";
 
     const payload = {
-      ID_AWA: isNew ? Number(idAwa) : Number(idAwa),
+      ID_AWA: isNew ? null : Number(idAwa),
 
       // Básico
       ID_WA: document.getElementById("inputIdWa").value,
