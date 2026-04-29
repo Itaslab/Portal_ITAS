@@ -107,7 +107,7 @@ router.post("/", async (req, res) => {
       .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada || null)
       .input("RevITSS_x100", sql.Int, RevITSS_x100 || null)
       .input("RevITSS_Max", sql.Int, RevITSS_Max || null)
-      .input("Limite_Bajada", sql.Int, Limite_Bajada || null)
+      .input("Limite_Bajada", sql.Int, Limite_Bajada || 0)
       .input("En_Ejecucion", sql.Int, 0)
 
       .query(`
@@ -203,7 +203,7 @@ router.put("/", async (req, res) => {
       .input("Max_Encoladas_RPA", sql.Int, Max_Encoladas_RPA || null)
       .input("FrecuenciaRPA", sql.Int, FrecuenciaRPA || null)
       .input("FrecuenciaRPA2", sql.Int, FrecuenciaRPA2 || null)
-      .input("Limite_Bajada", sql.Int, Limite_Bajada || null)
+      .input("Limite_Bajada", sql.Int, Limite_Bajada || 0)
 
       // Métricas
       .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario || null)
