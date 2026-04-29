@@ -54,6 +54,92 @@ router.get("/", async (req, res) => {
 }
 });
 
+// ============================
+// CREATE AWA
+// ============================
+router.post("/", async (req, res) => {
+  try {
+    const pool = await poolPromise;
+
+    const {
+      ID_WA,
+      Titulo,
+      Estado,
+      Origen,
+      Sistema,
+      Negocio,
+      ERR_AppORD,
+      Jira_Tarea,
+      Fdesde,
+      Fhasta,
+      Id_Flujo_RPA,
+      Prioridad_RPA,
+      Max_Encoladas_RPA,
+      FrecuenciaRPA,
+      FrecuenciaRPA2,
+      Volumen_Diario,
+      Esfuerzo,
+      HS_Antiguedad_Bajada,
+      RevITSS_x100,
+      RevITSS_Max
+    } = req.body;
+
+    // Insertar nuevo registro
+    const result = await pool.request()
+      .input("ID_WA", sql.VarChar, ID_WA || null)
+      .input("Titulo", sql.VarChar, Titulo || null)
+      .input("Estado", sql.VarChar, Estado || "Activo")
+      .input("Origen", sql.VarChar, Origen || "Ordenes")
+      .input("Sistema", sql.VarChar, Sistema || null)
+      .input("Negocio", sql.VarChar, Negocio || "Hogar")
+      .input("ERR_AppORD", sql.VarChar, ERR_AppORD || null)
+      .input("Jira_Tarea", sql.VarChar, Jira_Tarea || null)
+      .input("Fdesde", sql.Date, Fdesde || null)
+      .input("Fhasta", sql.Date, Fhasta || null)
+      .input("Id_Flujo_RPA", sql.Int, Id_Flujo_RPA || null)
+      .input("Prioridad_RPA", sql.Int, Prioridad_RPA || null)
+      .input("Max_Encoladas_RPA", sql.Int, Max_Encoladas_RPA || null)
+      .input("FrecuenciaRPA", sql.Int, FrecuenciaRPA || null)
+      .input("FrecuenciaRPA2", sql.Int, FrecuenciaRPA2 || null)
+      .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario || null)
+      .input("Esfuerzo", sql.VarChar, Esfuerzo || null)
+      .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada || null)
+      .input("RevITSS_x100", sql.Int, RevITSS_x100 || null)
+      .input("RevITSS_Max", sql.Int, RevITSS_Max || null)
+
+      .query(`
+        INSERT INTO ${schema}.AWAs (
+          ID_WA, Titulo, Estado, Origen, Sistema, Negocio, 
+          ERR_AppORD, Jira_Tarea, Fdesde, Fhasta,
+          Id_Flujo_RPA, Prioridad_RPA, Max_Encoladas_RPA, 
+          FrecuenciaRPA, FrecuenciaRPA2, Volumen_Diario, Esfuerzo,
+          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max
+        )
+        VALUES (
+          @ID_WA, @Titulo, @Estado, @Origen, @Sistema, @Negocio,
+          @ERR_AppORD, @Jira_Tarea, @Fdesde, @Fhasta,
+          @Id_Flujo_RPA, @Prioridad_RPA, @Max_Encoladas_RPA,
+          @FrecuenciaRPA, @FrecuenciaRPA2, @Volumen_Diario, @Esfuerzo,
+          @HS_Antiguedad_Bajada, @RevITSS_x100, @RevITSS_Max
+        );
+        SELECT SCOPE_IDENTITY() AS newId;
+      `);
+
+    res.json({ 
+      success: true, 
+      newId: result.recordset[0].newId 
+    });
+
+  } catch (error) {
+    console.error("💥 ERROR CREATE AWA:", error.message);
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // GUARDAR CONFIGURACION 
 
 // ============================

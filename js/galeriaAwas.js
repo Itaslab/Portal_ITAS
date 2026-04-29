@@ -82,6 +82,36 @@ async function cargarAWAS() {
 // Abrir modal
 // ============================
 
+function nuevoAWA() {
+  // Limpiar todos los inputs
+  document.getElementById("inputIdAwa").value = "";
+  document.getElementById("inputIdAwaVisible").value = "";
+  document.getElementById("inputIdWa").value = "";
+  document.getElementById("inputTitulo").value = "";
+  document.getElementById("inputSistema").value = "";
+  document.getElementById("inputEstado").value = "Activo";
+  document.getElementById("inputOrigen").value = "Ordenes";
+  document.getElementById("inputNegocio").value = "Hogar";
+  document.getElementById("inputErr").value = "";
+  document.getElementById("inputJira").value = "";
+  document.getElementById("inputDesde").value = "";
+  document.getElementById("inputHasta").value = "";
+  document.getElementById("inputFlujo").value = "";
+  document.getElementById("inputPrioridad").value = "";
+  document.getElementById("inputMaxCola").value = "";
+  document.getElementById("inputFrecuencia").value = "";
+  document.getElementById("inputFrecuencia2").value = "";
+  document.getElementById("inputVolumen").value = "";
+  document.getElementById("inputEsfuerzo").value = "";
+  document.getElementById("inputHS").value = "";
+  document.getElementById("inputRev100").value = "";
+  document.getElementById("inputRevMax").value = "";
+
+  // Abrir modal
+  const modal = new bootstrap.Modal(document.getElementById("modalAwa"));
+  modal.show();
+}
+
 function configurarAWA(id) {
   const awa = awasGlobal.find(a => a.ID_AWA == id);
 
@@ -133,8 +163,11 @@ function configurarAWA(id) {
 
 async function guardarAWA() {
   try {
+    const idAwa = document.getElementById("inputIdAwa").value;
+    const isNew = !idAwa || idAwa === "";
+
     const payload = {
-      ID_AWA: document.getElementById("inputIdAwa").value,
+      ID_AWA: isNew ? null : Number(idAwa),
 
       // Básico
       ID_WA: document.getElementById("inputIdWa").value,
@@ -167,8 +200,9 @@ async function guardarAWA() {
       RevITSS_Max: getNumber(document.getElementById("inputRevMax").value)
     };
 
+    const method = isNew ? "POST" : "PUT";
     const res = await fetch(`${basePath}/api/awas`, {
-      method: "PUT",
+      method: method,
       headers: {
         "Content-Type": "application/json"
       },
