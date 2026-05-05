@@ -89,7 +89,7 @@ router.post("/", async (req, res) => {
     const result = await pool.request()
       .input("ID_WA", sql.VarChar, ID_WA || null)
       .input("Titulo", sql.VarChar, Titulo || null)
-      .input("Estado", sql.VarChar, Estado || "Activo")
+      .input("Estado", sql.VarChar, Estado || "Pendiente")
       .input("Origen", sql.VarChar, Origen || "Ordenes")
       .input("Sistema", sql.VarChar, Sistema || null)
       .input("Negocio", sql.VarChar, Negocio || "Hogar")

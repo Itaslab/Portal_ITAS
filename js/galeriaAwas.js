@@ -41,6 +41,8 @@ async function cargarAWAS() {
     tbody.innerHTML = "";
 
     data.forEach(awa => {
+      if (awa.Estado === "Pendiente") return; // No mostrar registros Pendientes
+      
       const estadoColor =
         awa.Estado === "Activo"
           ? "text-success"
@@ -50,17 +52,21 @@ async function cargarAWAS() {
 
       const row = document.createElement("tr");
 
+      // Determinar si el botón debe estar deshabilitado
+      const botonDeshabilitado = awa.Estado === "Backlog";
+      const disabledAttr = botonDeshabilitado ? "disabled" : "";
+      const btnClass = botonDeshabilitado ? "btn-secondary" : (awa.Estado === "Activo" ? "btn-danger" : "btn-success");
+      const btnTexto = awa.Estado === "Activo" ? "Desactivar" : "Activar";
+
       row.innerHTML = `
         <td>${awa.ID_WA ?? "-"}</td>
         <td>${awa.ID_AWA ?? "-"}</td>
         <td>${awa.Titulo ?? "-"}</td>
         <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
         <td class="text-end">
-          ${
-            awa.Estado === "Activo"
-              ? `<button class="btn btn-danger btn-sm me-2 text-white" onclick="activarAWA(${awa.ID_AWA})">Desactivar</button>`
-              : `<button class="btn btn-success btn-sm me-2 text-white" onclick="activarAWA(${awa.ID_AWA})">Activar</button>`
-          }
+          <button class="btn ${btnClass} btn-sm me-2 text-white" onclick="activarAWA(${awa.ID_AWA})" ${disabledAttr}>
+            ${btnTexto}
+          </button>
           <button class="btn btn-primary btn-sm text-white" onclick="configurarAWA(${awa.ID_AWA})">
             Configurar
           </button>
@@ -89,7 +95,7 @@ function nuevoAWA() {
   document.getElementById("inputIdWa").value = "";
   document.getElementById("inputTitulo").value = "";
   document.getElementById("inputSistema").value = "";
-  document.getElementById("inputEstado").value = "Activo";
+  document.getElementById("inputEstado").value = "Pendiente";
   document.getElementById("inputOrigen").value = "Ordenes";
   document.getElementById("inputNegocio").value = "Hogar";
   document.getElementById("inputErr").value = "";
