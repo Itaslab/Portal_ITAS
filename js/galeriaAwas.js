@@ -129,7 +129,7 @@ function configurarAWA(id) {
   setSelectValue("inputOrigen", awa.Origen);
   setSelectValue("inputNegocio", awa.Negocio);
   document.getElementById("inputDetalle").value = awa.Detalle ?? "";
-  document.getElementById("inputUrl").value = awa.URL ?? "";
+  document.getElementById("inputUrl").value = awa.Url_Wa ?? "";
   document.getElementById("inputSistemaAnalisis").value = awa.Sistemas_Analisis ?? "";
   document.getElementById("inputSistemaAccion").value = awa.Sistemas_Accion ?? "";
   document.getElementById("inputErr").value = awa.ERR_AppORD ?? "";
@@ -180,8 +180,8 @@ async function guardarAWA() {
       Origen: document.getElementById("inputOrigen").value,
       Sistema: document.getElementById("inputSistema").value,
       Negocio: document.getElementById("inputNegocio").value,
-      Detalle: document.getElementById("inputDetalle").value,
-      URL: document.getElementById("inputUrl").value,
+      Detalle: document.getElementById("inputDetalle").value || null,
+      URL: document.getElementById("inputUrl").value || null,
       Sistemas_Analisis: document.getElementById("inputSistemaAnalisis").value,
       Sistemas_Accion: document.getElementById("inputSistemaAccion").value,
       ERR_AppORD: document.getElementById("inputErr").value,
