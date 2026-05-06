@@ -39,6 +39,7 @@ router.get("/", async (req, res) => {
         HS_Antiguedad_Bajada,
         RevITSS_x100,
         RevITSS_Max,
+        Url_Wa,
         TKT_Resolution_Category,
         TKT_Resolution_Category_Tier_2
       FROM ${schema}.AWAs
@@ -130,7 +131,7 @@ router.post("/", async (req, res) => {
           ERR_AppORD, Jira_Tarea, Fdesde, Fhasta,
           Id_Flujo_RPA, Prioridad_RPA, Max_Encoladas_RPA, 
           FrecuenciaRPA, FrecuenciaRPA2, Volumen_Diario, Esfuerzo,
-          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, Limite_Bajada, Detalle, URL, Sistemas_Analisis, Sistemas_Accion, TKT_Resolution_Category, TKT_Resolution_Category_Tier_2, En_Ejecucion
+          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, Limite_Bajada, Detalle, Url_Wa, Sistemas_Analisis, Sistemas_Accion, TKT_Resolution_Category, TKT_Resolution_Category_Tier_2, En_Ejecucion
         )
         VALUES (
           @ID_WA, @Titulo, @Estado, @Origen, @Sistema, @Negocio,
@@ -230,9 +231,11 @@ router.put("/", async (req, res) => {
       .input("RevITSS_x100", sql.Int, RevITSS_x100 ?? 0)
       .input("RevITSS_Max", sql.Int, RevITSS_Max ?? 0)
       .input("Detalle", sql.VarChar, Detalle || null)
-      .input("URL", sql.VarChar, URL || null)
+      .input("Url_Wa", sql.VarChar, URL || null)
       .input("Sistemas_Analisis", sql.VarChar, Sistemas_Analisis || null)
       .input("Sistemas_Accion", sql.VarChar, Sistemas_Accion || null)
+      .input("TKT_Resolution_Category", sql.VarChar, TKT_Resolution_Category || null)
+      .input("TKT_Resolution_Category_Tier_2", sql.VarChar, TKT_Resolution_Category_Tier_2 || null)
 
       .query(`
         UPDATE ${schema}.AWAs
@@ -259,9 +262,11 @@ router.put("/", async (req, res) => {
           RevITSS_x100 = @RevITSS_x100,
           RevITSS_Max = @RevITSS_Max,
           Detalle = @Detalle,
-          URL = @URL,
+          Url_Wa = @Url_Wa,
           Sistemas_Analisis = @Sistemas_Analisis,
-          Sistemas_Accion = @Sistemas_Accion
+          Sistemas_Accion = @Sistemas_Accion,
+          TKT_Resolution_Category = @TKT_Resolution_Category,
+          TKT_Resolution_Category_Tier_2 = @TKT_Resolution_Category_Tier_2
         WHERE ID_AWA = @ID_AWA
       `);
 
