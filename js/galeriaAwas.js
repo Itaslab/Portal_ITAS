@@ -153,6 +153,8 @@ function configurarAWA(id) {
   document.getElementById("inputHS").value = awa.HS_Antiguedad_Bajada ?? "";
   document.getElementById("inputRev100").value = awa.RevITSS_x100 ?? "";
   document.getElementById("inputRevMax").value = awa.RevITSS_Max ?? "";
+  document.getElementById("inputTKTResolutionCategory").value = awa.TKT_Resolution_Category ?? "";
+  document.getElementById("inputTKTResolutionCategoryTier2").value = awa.TKT_Resolution_Category_Tier_2 ?? "";
 
   // 🔥 abrir modal
   const modal = new bootstrap.Modal(document.getElementById("modalAwa"));
@@ -204,7 +206,9 @@ async function guardarAWA() {
       Esfuerzo: document.getElementById("inputEsfuerzo").value,
       HS_Antiguedad_Bajada: getNumber(document.getElementById("inputHS").value),
       RevITSS_x100: getNumber(document.getElementById("inputRev100").value),
-      RevITSS_Max: getNumber(document.getElementById("inputRevMax").value)
+      RevITSS_Max: getNumber(document.getElementById("inputRevMax").value),
+      TKT_Resolution_Category: document.getElementById("inputTKTResolutionCategory").value || null,
+      TKT_Resolution_Category_Tier_2: document.getElementById("inputTKTResolutionCategoryTier2").value || null
     };
 
     const method = isNew ? "POST" : "PUT";
