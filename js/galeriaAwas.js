@@ -87,33 +87,18 @@ async function cargarAWAS() {
 // ============================
 
 function nuevoAWA() {
-  // Limpiar todos los inputs
-  document.getElementById("inputIdAwa").value = "";
-  document.getElementById("inputIdAwaVisible").value = "";
-  document.getElementById("inputIdWa").value = "";
-  document.getElementById("inputTitulo").value = "";
-  document.getElementById("inputSistema").value = "";
-  document.getElementById("inputEstado").value = "Pendiente";
-  document.getElementById("inputOrigen").value = "Ordenes";
-  document.getElementById("inputNegocio").value = "Hogar";
-  document.getElementById("inputErr").value = "";
-  document.getElementById("inputJira").value = "";
-  document.getElementById("inputDesde").value = "";
-  document.getElementById("inputHasta").value = "";
-  document.getElementById("inputFlujo").value = "";
-  document.getElementById("inputPrioridad").value = "";
-  document.getElementById("inputMaxCola").value = "";
-  document.getElementById("inputFrecuencia").value = "";
-  document.getElementById("inputFrecuencia2").value = "";
-  document.getElementById("inputLimiteBajada").value = "";
-  document.getElementById("inputVolumen").value = "";
-  document.getElementById("inputEsfuerzo").value = "";
-  document.getElementById("inputHS").value = "";
-  document.getElementById("inputRev100").value = "";
-  document.getElementById("inputRevMax").value = "";
+  // Limpiar solo los inputs del modal de creación
+  document.getElementById("inputIdWaNuevo").value = "";
+  document.getElementById("inputTituloNuevo").value = "";
+  document.getElementById("inputOrigenNuevo").value = "Ordenes";
+  document.getElementById("inputSistemaNuevo").value = "";
+  document.getElementById("inputNegocioNuevo").value = "Hogar";
+  document.getElementById("inputErrNuevo").value = "";
+  document.getElementById("inputJiraNuevo").value = "";
+  document.getElementById("inputVolumenNuevo").value = "";
+  document.getElementById("inputEsfuerzoNuevo").value = "";
 
-  // Abrir modal
-  const modal = new bootstrap.Modal(document.getElementById("modalAwa"));
+  const modal = new bootstrap.Modal(document.getElementById("modalAwaNuevo"));
   modal.show();
 }
 
@@ -239,6 +224,58 @@ async function guardarAWA() {
 
   } catch (error) {
     console.error("Error guardando AWA:", error);
+    alert("Error inesperado");
+  }
+}
+
+async function guardarNuevoAWA() {
+  try {
+    const payload = {
+      ID_AWA: null,
+      ID_WA: document.getElementById("inputIdWaNuevo").value,
+      Titulo: document.getElementById("inputTituloNuevo").value,
+      Estado: "Pendiente",
+      Origen: document.getElementById("inputOrigenNuevo").value,
+      Sistema: document.getElementById("inputSistemaNuevo").value,
+      Negocio: document.getElementById("inputNegocioNuevo").value,
+      ERR_AppORD: document.getElementById("inputErrNuevo").value,
+      Jira_Tarea: document.getElementById("inputJiraNuevo").value,
+      Fdesde: null,
+      Fhasta: null,
+      Id_Flujo_RPA: 0,
+      Prioridad_RPA: 0,
+      Max_Encoladas_RPA: 0,
+      FrecuenciaRPA: 0,
+      FrecuenciaRPA2: 0,
+      Limite_Bajada: 0,
+      Volumen_Diario: getNumber(document.getElementById("inputVolumenNuevo").value),
+      Esfuerzo: document.getElementById("inputEsfuerzoNuevo").value,
+      HS_Antiguedad_Bajada: 0,
+      RevITSS_x100: 0,
+      RevITSS_Max: 0
+    };
+
+    const res = await fetch(`${basePath}/api/awas`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      console.error("Error:", result);
+      alert("Error al crear el AWA");
+      return;
+    }
+
+    mostrarToast("El AWA ha sido creado", "success");
+    bootstrap.Modal.getInstance(document.getElementById("modalAwaNuevo")).hide();
+    await cargarAWAS();
+  } catch (error) {
+    console.error("Error guardando nuevo AWA:", error);
     alert("Error inesperado");
   }
 }
