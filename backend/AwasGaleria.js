@@ -97,17 +97,17 @@ router.post("/", async (req, res) => {
       .input("Jira_Tarea", sql.VarChar, Jira_Tarea || null)
       .input("Fdesde", sql.Date, Fdesde || null)
       .input("Fhasta", sql.Date, Fhasta || null)
-      .input("Id_Flujo_RPA", sql.Int, Id_Flujo_RPA || null)
-      .input("Prioridad_RPA", sql.Int, Prioridad_RPA || null)
-      .input("Max_Encoladas_RPA", sql.Int, Max_Encoladas_RPA || null)
-      .input("FrecuenciaRPA", sql.Int, FrecuenciaRPA || null)
-      .input("FrecuenciaRPA2", sql.Int, FrecuenciaRPA2 || null)
-      .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario || null)
+      .input("Id_Flujo_RPA", sql.Int, Id_Flujo_RPA ?? 0)
+      .input("Prioridad_RPA", sql.Int, Prioridad_RPA ?? 0)
+      .input("Max_Encoladas_RPA", sql.Int, Max_Encoladas_RPA ?? 0)
+      .input("FrecuenciaRPA", sql.Int, FrecuenciaRPA ?? 0)
+      .input("FrecuenciaRPA2", sql.Int, FrecuenciaRPA2 ?? 0)
+      .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario ?? 0)
       .input("Esfuerzo", sql.VarChar, Esfuerzo || null)
-      .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada || null)
-      .input("RevITSS_x100", sql.Int, RevITSS_x100 || null)
-      .input("RevITSS_Max", sql.Int, RevITSS_Max || null)
-      .input("Limite_Bajada", sql.Int, Limite_Bajada || 0)
+      .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada ?? 0)
+      .input("RevITSS_x100", sql.Int, RevITSS_x100 ?? 0)
+      .input("RevITSS_Max", sql.Int, RevITSS_Max ?? 0)
+      .input("Limite_Bajada", sql.Int, Limite_Bajada ?? 0)
       .input("En_Ejecucion", sql.Int, 0)
 
       .query(`
@@ -198,19 +198,19 @@ router.put("/", async (req, res) => {
       .input("Fhasta", sql.Date, Fhasta || null)
 
       // RPA
-      .input("Id_Flujo_RPA", sql.Int, Id_Flujo_RPA || null)
-      .input("Prioridad_RPA", sql.Int, Prioridad_RPA || null)
-      .input("Max_Encoladas_RPA", sql.Int, Max_Encoladas_RPA || null)
-      .input("FrecuenciaRPA", sql.Int, FrecuenciaRPA || null)
-      .input("FrecuenciaRPA2", sql.Int, FrecuenciaRPA2 || null)
-      .input("Limite_Bajada", sql.Int, Limite_Bajada || 0)
+      .input("Id_Flujo_RPA", sql.Int, Id_Flujo_RPA ?? 0)
+      .input("Prioridad_RPA", sql.Int, Prioridad_RPA ?? 0)
+      .input("Max_Encoladas_RPA", sql.Int, Max_Encoladas_RPA ?? 0)
+      .input("FrecuenciaRPA", sql.Int, FrecuenciaRPA ?? 0)
+      .input("FrecuenciaRPA2", sql.Int, FrecuenciaRPA2 ?? 0)
+      .input("Limite_Bajada", sql.Int, Limite_Bajada ?? 0)
 
       // Métricas
-      .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario || null)
+      .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario ?? 0)
       .input("Esfuerzo", sql.VarChar, Esfuerzo || null)
-      .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada || null)
-      .input("RevITSS_x100", sql.Int, RevITSS_x100 || null)
-      .input("RevITSS_Max", sql.Int, RevITSS_Max || null)
+      .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada ?? 0)
+      .input("RevITSS_x100", sql.Int, RevITSS_x100 ?? 0)
+      .input("RevITSS_Max", sql.Int, RevITSS_Max ?? 0)
 
       .query(`
         UPDATE ${schema}.AWAs
