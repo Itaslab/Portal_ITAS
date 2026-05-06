@@ -100,6 +100,8 @@ function nuevoAWA() {
   document.getElementById("inputNegocioNuevo").value = "Hogar";
   document.getElementById("inputErrNuevo").value = "";
   document.getElementById("inputJiraNuevo").value = "";
+  document.getElementById("inputDetalleNuevo").value = "";
+  document.getElementById("inputUrlNuevo").value = "";
   document.getElementById("inputVolumenNuevo").value = "";
   document.getElementById("inputEsfuerzoNuevo").value = "";
 
@@ -126,6 +128,10 @@ function configurarAWA(id) {
   setSelectValue("inputEstado", awa.Estado);
   setSelectValue("inputOrigen", awa.Origen);
   setSelectValue("inputNegocio", awa.Negocio);
+  document.getElementById("inputDetalle").value = awa.Detalle ?? "";
+  document.getElementById("inputUrl").value = awa.URL ?? "";
+  document.getElementById("inputSistemaAnalisis").value = awa.Sistema_Analisis ?? "";
+  document.getElementById("inputSistemaAccion").value = awa.Sistema_Accion ?? "";
   document.getElementById("inputErr").value = awa.ERR_AppORD ?? "";
   document.getElementById("inputJira").value = awa.Jira_Tarea ?? "";
 
@@ -174,6 +180,10 @@ async function guardarAWA() {
       Origen: document.getElementById("inputOrigen").value,
       Sistema: document.getElementById("inputSistema").value,
       Negocio: document.getElementById("inputNegocio").value,
+      Detalle: document.getElementById("inputDetalle").value,
+      URL: document.getElementById("inputUrl").value,
+      Sistema_Analisis: document.getElementById("inputSistemaAnalisis").value,
+      Sistema_Accion: document.getElementById("inputSistemaAccion").value,
       ERR_AppORD: document.getElementById("inputErr").value,
       Jira_Tarea: document.getElementById("inputJira").value,
 
@@ -243,6 +253,10 @@ async function guardarNuevoAWA() {
       Origen: document.getElementById("inputOrigenNuevo").value,
       Sistema: document.getElementById("inputSistemaNuevo").value,
       Negocio: document.getElementById("inputNegocioNuevo").value,
+      Detalle: document.getElementById("inputDetalleNuevo").value,
+      URL: document.getElementById("inputUrlNuevo").value,
+      Sistema_Analisis: "",
+      Sistema_Accion: "",
       ERR_AppORD: document.getElementById("inputErrNuevo").value,
       Jira_Tarea: document.getElementById("inputJiraNuevo").value,
       Fdesde: null,

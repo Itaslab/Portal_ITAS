@@ -118,9 +118,28 @@
             <select id="inputNegocio" class="form-select">
               <option>Hogar</option>
               <option>Movil</option>
-              <option>Fija</option>
-              <option>Fija - Movil</option>
+              <option>Hogar - Movil</option>
             </select>
+          </div>
+
+          <div class="col-md-4">
+            <label>Detalle</label>
+            <input type="text" id="inputDetalle" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label>URL</label>
+            <input type="url" id="inputUrl" class="form-control" onclick="if(this.value.trim()) window.open(this.value.trim(), '_blank');">
+          </div>
+
+          <div class="col-md-6">
+            <label>Sistema Análisis</label>
+            <input type="text" id="inputSistemaAnalisis" class="form-control">
+          </div>
+
+          <div class="col-md-6">
+            <label>Sistema Acción</label>
+            <input type="text" id="inputSistemaAccion" class="form-control">
           </div>
 
           <div class="col-md-4">
@@ -274,6 +293,14 @@
           <div class="col-md-6">
             <label>Jira</label>
             <input type="text" id="inputJiraNuevo" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label>Detalle</label>
+            <input type="text" id="inputDetalleNuevo" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label>URL</label>
+            <input type="url" id="inputUrlNuevo" class="form-control" onclick="if(this.value.trim()) window.open(this.value.trim(), '_blank');">
           </div>
           <div class="col-md-4">
             <label>Volumen Diario</label>
