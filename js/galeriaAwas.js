@@ -41,12 +41,10 @@ async function cargarAWAS() {
     tbody.innerHTML = "";
 
     data.forEach(awa => {
-      if (awa.Estado === "Pendiente") return; // No mostrar registros Pendientes
-      
       const estadoColor =
         awa.Estado === "Activo"
           ? "text-success"
-          : awa.Estado === "Backlog"
+          : awa.Estado === "Backlog" || awa.Estado === "Desarrollo" || awa.Estado === "Pendiente"
           ? "text-warning"
           : "text-secondary";
 
