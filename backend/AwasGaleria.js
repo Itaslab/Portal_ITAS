@@ -193,7 +193,9 @@ router.put("/", async (req, res) => {
       Detalle,
       URL,
       Sistemas_Analisis,
-      Sistemas_Accion
+      Sistemas_Accion,
+      TKT_Resolution_Category,
+      TKT_Resolution_Category_Tier_2
     } = req.body;
 
     await pool.request()
