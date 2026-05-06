@@ -22,6 +22,7 @@ router.get("/", async (req, res) => {
         Origen,
         Sistema,
         Negocio,
+        Detalle,
         Sistemas_Analisis,
         Sistemas_Accion,
         Volumen_Diario,
