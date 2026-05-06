@@ -82,6 +82,16 @@
             <input type="text" id="inputTitulo" class="form-control">
           </div>
 
+          <div class="col-md-6">
+            <label>Detalle</label>
+            <input type="text" id="inputDetalle" class="form-control">
+          </div>
+
+          <div class="col-md-6">
+            <label>URL</label>
+            <input type="url" id="inputUrl" class="form-control" onclick="if(this.value.trim()) window.open(this.value.trim(), '_blank');">
+          </div>
+
         </div>
 
         <!-- 🟩 SECCIÓN 2: OPERATIVO -->
@@ -122,16 +132,6 @@
             </select>
           </div>
 
-          <div class="col-md-4">
-            <label>Detalle</label>
-            <input type="text" id="inputDetalle" class="form-control">
-          </div>
-
-          <div class="col-md-4">
-            <label>URL</label>
-            <input type="url" id="inputUrl" class="form-control" onclick="if(this.value.trim()) window.open(this.value.trim(), '_blank');">
-          </div>
-
           <div class="col-md-6">
             <label>Sistema Análisis</label>
             <input type="text" id="inputSistemaAnalisis" class="form-control">
@@ -170,7 +170,28 @@
 
         </div>
 
-        <!-- 🟧 SECCIÓN 4: RPA -->
+        <!-- 🟧 SECCIÓN 4: PARÁMETROS -->
+        <h6>Parámetros</h6>
+        <div class="row g-3 mb-3">
+
+          <div class="col-md-4">
+            <label>HS Antigüedad</label>
+            <input type="number" min="0" max="100" id="inputHS" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label>RevITSS x100</label>
+            <input type="number" min="0" max="100" id="inputRev100" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label>RevITSS Max</label>
+            <input type="number" min="0" max="100" id="inputRevMax" class="form-control">
+          </div>
+
+        </div>
+
+        <!-- 🟧 SECCIÓN 5: RPA -->
         <h6>RPA</h6>
         <div class="row g-3 mb-3">
 
@@ -206,7 +227,7 @@
 
         </div>
 
-        <!-- 🟪 SECCIÓN 5: MÉTRICAS -->
+        <!-- 🟪 SECCIÓN 6: MÉTRICAS -->
         <h6>Métricas</h6>
         <div class="row g-3">
 
@@ -217,22 +238,22 @@
 
           <div class="col-md-4">
             <label>Esfuerzo</label>
-            <input type="text" id="inputEsfuerzo" class="form-control">
+            <select id="inputEsfuerzo" class="form-select">
+              <option></option>
+              <option>Bajo</option>
+              <option>Medio</option>
+              <option>Alto</option>
+            </select>
           </div>
 
-          <div class="col-md-4">
-            <label>HS Antigüedad</label>
-            <input type="number" min="0" max="100" id="inputHS" class="form-control">
+          <div class="col-md-6">
+            <label>TKT Resolution Category</label>
+            <input type="text" id="inputTKTResolutionCategory" class="form-control">
           </div>
 
-          <div class="col-md-4">
-            <label>RevITSS x100</label>
-            <input type="number" min="0" max="100" id="inputRev100" class="form-control">
-          </div>
-
-          <div class="col-md-4">
-            <label>RevITSS Max</label>
-            <input type="number" min="0" max="100" id="inputRevMax" class="form-control">
+          <div class="col-md-6">
+            <label>TKT Resolution Category Tier 2</label>
+            <input type="text" id="inputTKTResolutionCategoryTier2" class="form-control">
           </div>
 
         </div>
@@ -308,7 +329,12 @@
           </div>
           <div class="col-md-4">
             <label>Esfuerzo</label>
-            <input type="text" id="inputEsfuerzoNuevo" class="form-control">
+            <select id="inputEsfuerzoNuevo" class="form-select">
+              <option></option>
+              <option>Bajo</option>
+              <option>Medio</option>
+              <option>Alto</option>
+            </select>
           </div>
         </div>
       </div>

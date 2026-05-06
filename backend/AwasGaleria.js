@@ -38,7 +38,9 @@ router.get("/", async (req, res) => {
         FrecuenciaRPA2,
         HS_Antiguedad_Bajada,
         RevITSS_x100,
-        RevITSS_Max
+        RevITSS_Max,
+        TKT_Resolution_Category,
+        TKT_Resolution_Category_Tier_2
       FROM ${schema}.AWAs
       ORDER BY ID_AWA DESC
     `);
@@ -86,7 +88,9 @@ router.post("/", async (req, res) => {
       Detalle,
       URL,
       Sistemas_Analisis,
-      Sistemas_Accion
+      Sistemas_Accion,
+      TKT_Resolution_Category,
+      TKT_Resolution_Category_Tier_2
     } = req.body;
 
     // Insertar nuevo registro
@@ -116,6 +120,8 @@ router.post("/", async (req, res) => {
       .input("URL", sql.VarChar, URL || null)
       .input("Sistemas_Analisis", sql.VarChar, Sistemas_Analisis || null)
       .input("Sistemas_Accion", sql.VarChar, Sistemas_Accion || null)
+      .input("TKT_Resolution_Category", sql.VarChar, TKT_Resolution_Category || null)
+      .input("TKT_Resolution_Category_Tier_2", sql.VarChar, TKT_Resolution_Category_Tier_2 || null)
       .input("En_Ejecucion", sql.Int, 0)
 
       .query(`
@@ -124,14 +130,14 @@ router.post("/", async (req, res) => {
           ERR_AppORD, Jira_Tarea, Fdesde, Fhasta,
           Id_Flujo_RPA, Prioridad_RPA, Max_Encoladas_RPA, 
           FrecuenciaRPA, FrecuenciaRPA2, Volumen_Diario, Esfuerzo,
-          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, Limite_Bajada, Detalle, URL, Sistemas_Analisis, Sistemas_Accion, En_Ejecucion
+          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, Limite_Bajada, Detalle, URL, Sistemas_Analisis, Sistemas_Accion, TKT_Resolution_Category, TKT_Resolution_Category_Tier_2, En_Ejecucion
         )
         VALUES (
           @ID_WA, @Titulo, @Estado, @Origen, @Sistema, @Negocio,
           @ERR_AppORD, @Jira_Tarea, @Fdesde, @Fhasta,
           @Id_Flujo_RPA, @Prioridad_RPA, @Max_Encoladas_RPA,
           @FrecuenciaRPA, @FrecuenciaRPA2, @Volumen_Diario, @Esfuerzo,
-          @HS_Antiguedad_Bajada, @RevITSS_x100, @RevITSS_Max, @Limite_Bajada, @Detalle, @URL, @Sistemas_Analisis, @Sistemas_Accion, @En_Ejecucion
+          @HS_Antiguedad_Bajada, @RevITSS_x100, @RevITSS_Max, @Limite_Bajada, @Detalle, @URL, @Sistemas_Analisis, @Sistemas_Accion, @TKT_Resolution_Category, @TKT_Resolution_Category_Tier_2, @En_Ejecucion
         );
         SELECT SCOPE_IDENTITY() AS newId;
       `);
