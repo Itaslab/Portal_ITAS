@@ -9,8 +9,13 @@ let awaPendienteAccion = null;
 
 function setSelectValue(id, value) {
   const select = document.getElementById(id);
-  const exists = [...select.options].some(opt => opt.value === value);
-  select.value = exists ? value : select.options[0].value;
+  if (!select) return;
+
+  const normalizedValue = value == null ? "" : String(value).trim().toLowerCase();
+  const match = [...select.options].find(opt => String(opt.value).trim().toLowerCase() === normalizedValue)
+    || [...select.options].find(opt => String(opt.text).trim().toLowerCase() === normalizedValue);
+
+  select.value = match ? match.value : select.options[0]?.value || "";
 }
 
 function formatDate(d) {
