@@ -51,7 +51,7 @@ async function cargarAWAS() {
       const row = document.createElement("tr");
 
       // Determinar si el botón debe estar deshabilitado
-      const botonDeshabilitado = awa.Estado === "Backlog";
+      const botonDeshabilitado = ["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado);
       const disabledAttr = botonDeshabilitado ? "disabled" : "";
       const btnClass = botonDeshabilitado ? "btn-secondary" : (awa.Estado === "Activo" ? "btn-danger" : "btn-success");
       const btnTexto = awa.Estado === "Activo" ? "Desactivar" : "Activar";
@@ -250,6 +250,7 @@ async function guardarAWA() {
 function activarAWA(id) {
   const awa = awasGlobal.find(a => a.ID_AWA == id);
   if (!awa) return;
+  if (["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado)) return;
 
   awaPendienteAccion = awa;
 
