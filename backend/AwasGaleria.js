@@ -38,9 +38,7 @@ router.get("/", async (req, res) => {
         FrecuenciaRPA2,
         HS_Antiguedad_Bajada,
         RevITSS_x100,
-        RevITSS_Max,
-        Detalle,
-        URL
+        RevITSS_Max
       FROM ${schema}.AWAs
       ORDER BY ID_AWA DESC
     `);
@@ -87,8 +85,8 @@ router.post("/", async (req, res) => {
       Limite_Bajada,
       Detalle,
       URL,
-      Sistema_Analisis,
-      Sistema_Accion
+      Sistemas_Analisis,
+      Sistemas_Accion
     } = req.body;
 
     // Insertar nuevo registro
@@ -116,8 +114,8 @@ router.post("/", async (req, res) => {
       .input("Limite_Bajada", sql.Int, Limite_Bajada ?? 0)
       .input("Detalle", sql.VarChar, Detalle || null)
       .input("URL", sql.VarChar, URL || null)
-      .input("Sistema_Analisis", sql.VarChar, Sistema_Analisis || null)
-      .input("Sistema_Accion", sql.VarChar, Sistema_Accion || null)
+      .input("Sistemas_Analisis", sql.VarChar, Sistemas_Analisis || null)
+      .input("Sistemas_Accion", sql.VarChar, Sistemas_Accion || null)
       .input("En_Ejecucion", sql.Int, 0)
 
       .query(`
@@ -126,14 +124,14 @@ router.post("/", async (req, res) => {
           ERR_AppORD, Jira_Tarea, Fdesde, Fhasta,
           Id_Flujo_RPA, Prioridad_RPA, Max_Encoladas_RPA, 
           FrecuenciaRPA, FrecuenciaRPA2, Volumen_Diario, Esfuerzo,
-          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, Limite_Bajada, Detalle, URL, Sistema_Analisis, Sistema_Accion, En_Ejecucion
+          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, Limite_Bajada, Detalle, URL, Sistemas_Analisis, Sistemas_Accion, En_Ejecucion
         )
         VALUES (
           @ID_WA, @Titulo, @Estado, @Origen, @Sistema, @Negocio,
           @ERR_AppORD, @Jira_Tarea, @Fdesde, @Fhasta,
           @Id_Flujo_RPA, @Prioridad_RPA, @Max_Encoladas_RPA,
           @FrecuenciaRPA, @FrecuenciaRPA2, @Volumen_Diario, @Esfuerzo,
-          @HS_Antiguedad_Bajada, @RevITSS_x100, @RevITSS_Max, @Limite_Bajada, @Detalle, @URL, @Sistema_Analisis, @Sistema_Accion, @En_Ejecucion
+          @HS_Antiguedad_Bajada, @RevITSS_x100, @RevITSS_Max, @Limite_Bajada, @Detalle, @URL, @Sistemas_Analisis, @Sistemas_Accion, @En_Ejecucion
         );
         SELECT SCOPE_IDENTITY() AS newId;
       `);
@@ -187,8 +185,8 @@ router.put("/", async (req, res) => {
       Limite_Bajada,
       Detalle,
       URL,
-      Sistema_Analisis,
-      Sistema_Accion
+      Sistemas_Analisis,
+      Sistemas_Accion
     } = req.body;
 
     await pool.request()
@@ -227,8 +225,8 @@ router.put("/", async (req, res) => {
       .input("RevITSS_Max", sql.Int, RevITSS_Max ?? 0)
       .input("Detalle", sql.VarChar, Detalle || null)
       .input("URL", sql.VarChar, URL || null)
-      .input("Sistema_Analisis", sql.VarChar, Sistema_Analisis || null)
-      .input("Sistema_Accion", sql.VarChar, Sistema_Accion || null)
+      .input("Sistemas_Analisis", sql.VarChar, Sistemas_Analisis || null)
+      .input("Sistemas_Accion", sql.VarChar, Sistemas_Accion || null)
 
       .query(`
         UPDATE ${schema}.AWAs
@@ -256,8 +254,8 @@ router.put("/", async (req, res) => {
           RevITSS_Max = @RevITSS_Max,
           Detalle = @Detalle,
           URL = @URL,
-          Sistema_Analisis = @Sistema_Analisis,
-          Sistema_Accion = @Sistema_Accion
+          Sistemas_Analisis = @Sistemas_Analisis,
+          Sistemas_Accion = @Sistemas_Accion
         WHERE ID_AWA = @ID_AWA
       `);
 

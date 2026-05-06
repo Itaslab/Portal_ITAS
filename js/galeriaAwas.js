@@ -130,8 +130,8 @@ function configurarAWA(id) {
   setSelectValue("inputNegocio", awa.Negocio);
   document.getElementById("inputDetalle").value = awa.Detalle ?? "";
   document.getElementById("inputUrl").value = awa.URL ?? "";
-  document.getElementById("inputSistemaAnalisis").value = awa.Sistema_Analisis ?? "";
-  document.getElementById("inputSistemaAccion").value = awa.Sistema_Accion ?? "";
+  document.getElementById("inputSistemaAnalisis").value = awa.Sistemas_Analisis ?? "";
+  document.getElementById("inputSistemaAccion").value = awa.Sistemas_Accion ?? "";
   document.getElementById("inputErr").value = awa.ERR_AppORD ?? "";
   document.getElementById("inputJira").value = awa.Jira_Tarea ?? "";
 
@@ -182,8 +182,8 @@ async function guardarAWA() {
       Negocio: document.getElementById("inputNegocio").value,
       Detalle: document.getElementById("inputDetalle").value,
       URL: document.getElementById("inputUrl").value,
-      Sistema_Analisis: document.getElementById("inputSistemaAnalisis").value,
-      Sistema_Accion: document.getElementById("inputSistemaAccion").value,
+      Sistemas_Analisis: document.getElementById("inputSistemaAnalisis").value,
+      Sistemas_Accion: document.getElementById("inputSistemaAccion").value,
       ERR_AppORD: document.getElementById("inputErr").value,
       Jira_Tarea: document.getElementById("inputJira").value,
 
@@ -255,8 +255,8 @@ async function guardarNuevoAWA() {
       Negocio: document.getElementById("inputNegocioNuevo").value,
       Detalle: document.getElementById("inputDetalleNuevo").value,
       URL: document.getElementById("inputUrlNuevo").value,
-      Sistema_Analisis: "",
-      Sistema_Accion: "",
+      Sistemas_Analisis: "",
+      Sistemas_Accion: "",
       ERR_AppORD: document.getElementById("inputErrNuevo").value,
       Jira_Tarea: document.getElementById("inputJiraNuevo").value,
       Fdesde: null,
