@@ -61,20 +61,31 @@ async function cargarAWAS() {
       const btnClass = botonDeshabilitado ? "btn-secondary" : (awa.Estado === "Activo" ? "btn-danger" : "btn-success");
       const btnTexto = awa.Estado === "Activo" ? "Desactivar" : "Activar";
 
-      row.innerHTML = `
-        <td>${awa.ID_WA ?? "-"}</td>
-        <td>${awa.ID_AWA ?? "-"}</td>
-        <td>${awa.Titulo ?? "-"}</td>
-        <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
-        <td class="text-end">
-          <button class="btn ${btnClass} btn-sm me-2 text-white" onclick="activarAWA(${awa.ID})" ${disabledAttr}>
-            ${btnTexto}
-          </button>
-          <button class="btn btn-primary btn-sm text-white" onclick="configurarAWA(${awa.ID})">
-            Configurar
-          </button>
-        </td>
-      `;
+row.innerHTML = `
+  <td>${awa.ID_WA ?? "-"}</td>
+  <td>${awa.ID_AWA ?? "-"}</td>
+  <td>${awa.Titulo ?? "-"}</td>
+  <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
+
+  <td>
+    <div class="d-flex justify-content-end flex-wrap gap-2 acciones-awa">
+
+      <button 
+        class="btn ${btnClass} btn-sm text-white"
+        onclick="activarAWA(${awa.ID})"
+        ${disabledAttr}>
+        ${btnTexto}
+      </button>
+
+      <button 
+        class="btn btn-primary btn-sm text-white"
+        onclick="configurarAWA(${awa.ID})">
+        Configurar
+      </button>
+
+    </div>
+  </td>
+`;
 
       tbody.appendChild(row);
     });

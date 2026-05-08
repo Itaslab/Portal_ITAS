@@ -871,3 +871,21 @@ textarea.disabled-field {
   max-height: 70vh;
   overflow-y: auto;
 }
+
+#tablaAwas td:last-child {
+  white-space: nowrap;
+}
+
+#tablaAwas td:last-child .btn {
+  font-size: clamp(11px, 0.75vw, 14px);
+  padding: clamp(2px, 0.3vw, 6px) clamp(6px, 0.6vw, 12px);
+}
+
+.acciones-awa {
+  white-space: nowrap;
+}
+
+.acciones-awa .btn {
+  font-size: clamp(11px, 0.75vw, 14px);
+  padding: clamp(2px, 0.3vw, 6px) clamp(6px, 0.6vw, 12px);
+}
