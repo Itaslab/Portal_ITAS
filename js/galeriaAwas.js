@@ -70,7 +70,7 @@ async function cargarAWAS() {
           <button class="btn ${btnClass} btn-sm me-2 text-white" onclick="activarAWA(${awa.ID_AWA})" ${disabledAttr}>
             ${btnTexto}
           </button>
-          <button class="btn btn-primary btn-sm text-white" onclick="configurarAWA(${awa.ID_AWA})">
+          <button class="btn btn-primary btn-sm text-white" onclick="configurarAWA(${awa.ID})">
             Configurar
           </button>
         </td>
@@ -104,13 +104,14 @@ function nuevoAWA() {
   document.getElementById("inputUrlNuevo").value = "";
   document.getElementById("inputVolumenNuevo").value = "";
   document.getElementById("inputEsfuerzoNuevo").value = "";
+  document.getElementById("inputIdRegistro").value = awa.ID;
 
   const modal = new bootstrap.Modal(document.getElementById("modalAwaNuevo"));
   modal.show();
 }
 
 function configurarAWA(id) {
-  const awa = awasGlobal.find(a => a.ID_AWA == id);
+  const awa = awasGlobal.find(a => a.ID == id);
 
   if (!awa) {
     console.error("AWA no encontrada:", id);
@@ -138,6 +139,13 @@ function configurarAWA(id) {
   // 🟨 Fechas
   document.getElementById("inputDesde").value = formatDate(awa.Fdesde);
   document.getElementById("inputHasta").value = formatDate(awa.Fhasta);
+
+  // Setear min en inputHasta si hay fecha desde
+  const inputDesde = document.getElementById("inputDesde");
+  const inputHasta = document.getElementById("inputHasta");
+  if (inputDesde.value) {
+    inputHasta.min = inputDesde.value;
+  }
 
   // 🟧 RPA
   document.getElementById("inputFlujo").value = awa.Id_Flujo_RPA ?? "";
@@ -167,11 +175,18 @@ function configurarAWA(id) {
 
 async function guardarAWA() {
   try {
-    const idAwa = document.getElementById("inputIdAwa").value;
-    const isNew = !idAwa || idAwa === "";
+    const idRegistro = document.getElementById("inputIdRegistro").value;
+
+const isNew =
+  idRegistro === null ||
+  idRegistro === undefined ||
+  idRegistro === "";
+    
 
     const payload = {
-      ID_AWA: isNew ? null : Number(idAwa),
+      
+        ID: isNew ? null : Number(idRegistro),
+        ID_AWA: document.getElementById("inputIdAwa").value || null,
 
       // Básico
       ID_WA: document.getElementById("inputIdWa").value,
@@ -308,7 +323,7 @@ async function guardarNuevoAWA() {
 // ============================
 
 function activarAWA(id) {
-  const awa = awasGlobal.find(a => a.ID_AWA == id);
+  const awa = awasGlobal.find(a => a.ID == id);
   if (!awa) return;
   if (["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado)) return;
 
@@ -369,5 +384,16 @@ function mostrarToast(mensaje, tipo = "success") {
 // ============================
 // Init
 // ============================
+
+// Agregar validaciones de longitud y fecha
+document.getElementById("inputDesde").addEventListener("change", function() {
+  const desde = this.value;
+  const hastaInput = document.getElementById("inputHasta");
+  if (desde) {
+    hastaInput.min = desde;
+  } else {
+    hastaInput.removeAttribute("min");
+  }
+});
 
 cargarAWAS();
