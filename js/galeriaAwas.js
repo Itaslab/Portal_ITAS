@@ -104,7 +104,7 @@ function nuevoAWA() {
   document.getElementById("inputUrlNuevo").value = "";
   document.getElementById("inputVolumenNuevo").value = "";
   document.getElementById("inputEsfuerzoNuevo").value = "";
-  document.getElementById("inputIdRegistro").value = awa.ID;
+  // Nota: inputIdRegistro pertenece al modal de configuración, no se toca aquí
 
   const modal = new bootstrap.Modal(document.getElementById("modalAwaNuevo"));
   modal.show();
