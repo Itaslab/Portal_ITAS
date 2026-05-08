@@ -67,7 +67,7 @@ async function cargarAWAS() {
         <td>${awa.Titulo ?? "-"}</td>
         <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
         <td class="text-end">
-          <button class="btn ${btnClass} btn-sm me-2 text-white" onclick="activarAWA(${awa.ID_AWA})" ${disabledAttr}>
+          <button class="btn ${btnClass} btn-sm me-2 text-white" onclick="activarAWA(${awa.ID})" ${disabledAttr}>
             ${btnTexto}
           </button>
           <button class="btn btn-primary btn-sm text-white" onclick="configurarAWA(${awa.ID})">
@@ -119,6 +119,7 @@ function configurarAWA(id) {
   }
 
   // 🟦 Identificación
+  document.getElementById("inputIdRegistro").value = awa.ID;
   document.getElementById("inputIdAwa").value = awa.ID_AWA;
   document.getElementById("inputIdAwaVisible").value = awa.ID_AWA;
   document.getElementById("inputIdWa").value = awa.ID_WA ?? "";
@@ -343,7 +344,7 @@ document.getElementById("btnConfirmarAccion").addEventListener("click", async ()
 
   try {
     const res = await fetch(
-      `${basePath}/api/awas/toggle/${awaPendienteAccion.ID_AWA}`,
+      `${basePath}/api/awas/toggle/${awaPendienteAccion.ID}`,
       { method: "PUT" }
     );
 

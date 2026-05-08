@@ -12,6 +12,7 @@ router.get("/", async (req, res) => {
     const result = await pool.request().query(`
       SELECT 
         ID_WA,
+        ID,
         ID_AWA,
         ERR_AppORD,
         Titulo,
@@ -169,6 +170,7 @@ router.put("/", async (req, res) => {
     const pool = await poolPromise;
 
     const {
+      ID,
       ID_AWA,
       ID_WA,
       Titulo,
@@ -201,6 +203,7 @@ router.put("/", async (req, res) => {
 
     await pool.request()
       // IDs
+      .input("ID", sql.Int, ID)
       .input("ID_AWA", sql.Int, ID_AWA)
       .input("ID_WA", sql.VarChar, ID_WA || null)
 
@@ -270,7 +273,7 @@ router.put("/", async (req, res) => {
           Sistemas_Accion = @Sistemas_Accion,
           TKT_Resolution_Category = @TKT_Resolution_Category,
           TKT_Resolution_Category_Tier_2 = @TKT_Resolution_Category_Tier_2
-        WHERE ID_AWA = @ID_AWA
+        WHERE ID = @ID
       `);
 
     res.json({ success: true });
@@ -295,11 +298,11 @@ router.put("/toggle/:id", async (req, res) => {
 
     // 1. Obtener estado actual
     const result = await pool.request()
-      .input("ID_AWA", sql.Int, id)
+      .input("ID", sql.Int, id)
       .query(`
         SELECT Estado
         FROM ${schema}.AWAs
-        WHERE ID_AWA = @ID_AWA
+        WHERE ID = @ID
       `);
 
     if (result.recordset.length === 0) {
@@ -313,12 +316,12 @@ router.put("/toggle/:id", async (req, res) => {
 
     // 3. Update
     await pool.request()
-      .input("ID_AWA", sql.Int, id)
+      .input("ID", sql.Int, id)
       .input("Estado", sql.VarChar, nuevoEstado)
       .query(`
         UPDATE ${schema}.AWAs
         SET Estado = @Estado
-        WHERE ID_AWA = @ID_AWA
+        WHERE ID = @ID
       `);
 
     res.json({
