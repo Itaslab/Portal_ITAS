@@ -12,6 +12,7 @@ router.get("/", async (req, res) => {
     const result = await pool.request().query(`
       SELECT 
         ID_WA,
+        ID,
         ID_AWA,
         ERR_AppORD,
         Titulo,
@@ -22,6 +23,7 @@ router.get("/", async (req, res) => {
         Origen,
         Sistema,
         Negocio,
+        Detalle,
         Sistemas_Analisis,
         Sistemas_Accion,
         Volumen_Diario,
@@ -38,7 +40,10 @@ router.get("/", async (req, res) => {
         FrecuenciaRPA2,
         HS_Antiguedad_Bajada,
         RevITSS_x100,
-        RevITSS_Max
+        RevITSS_Max,
+        Url_Wa,
+        TKT_Resolution_Category,
+        TKT_Resolution_Category_Tier_2
       FROM ${schema}.AWAs
       ORDER BY ID_AWA DESC
     `);
@@ -82,14 +87,20 @@ router.post("/", async (req, res) => {
       HS_Antiguedad_Bajada,
       RevITSS_x100,
       RevITSS_Max,
-      Limite_Bajada
+      Limite_Bajada,
+      Detalle,
+      URL,
+      Sistemas_Analisis,
+      Sistemas_Accion,
+      TKT_Resolution_Category,
+      TKT_Resolution_Category_Tier_2
     } = req.body;
 
     // Insertar nuevo registro
     const result = await pool.request()
       .input("ID_WA", sql.VarChar, ID_WA || null)
       .input("Titulo", sql.VarChar, Titulo || null)
-      .input("Estado", sql.VarChar, Estado || "Activo")
+      .input("Estado", sql.VarChar, Estado || "Pendiente")
       .input("Origen", sql.VarChar, Origen || "Ordenes")
       .input("Sistema", sql.VarChar, Sistema || null)
       .input("Negocio", sql.VarChar, Negocio || "Hogar")
@@ -97,17 +108,23 @@ router.post("/", async (req, res) => {
       .input("Jira_Tarea", sql.VarChar, Jira_Tarea || null)
       .input("Fdesde", sql.Date, Fdesde || null)
       .input("Fhasta", sql.Date, Fhasta || null)
-      .input("Id_Flujo_RPA", sql.Int, Id_Flujo_RPA || null)
-      .input("Prioridad_RPA", sql.Int, Prioridad_RPA || null)
-      .input("Max_Encoladas_RPA", sql.Int, Max_Encoladas_RPA || null)
-      .input("FrecuenciaRPA", sql.Int, FrecuenciaRPA || null)
-      .input("FrecuenciaRPA2", sql.Int, FrecuenciaRPA2 || null)
-      .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario || null)
+      .input("Id_Flujo_RPA", sql.Int, Id_Flujo_RPA ?? 0)
+      .input("Prioridad_RPA", sql.Int, Prioridad_RPA ?? 0)
+      .input("Max_Encoladas_RPA", sql.Int, Max_Encoladas_RPA ?? 0)
+      .input("FrecuenciaRPA", sql.Int, FrecuenciaRPA ?? 0)
+      .input("FrecuenciaRPA2", sql.Int, FrecuenciaRPA2 ?? 0)
+      .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario ?? 0)
       .input("Esfuerzo", sql.VarChar, Esfuerzo || null)
-      .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada || null)
-      .input("RevITSS_x100", sql.Int, RevITSS_x100 || null)
-      .input("RevITSS_Max", sql.Int, RevITSS_Max || null)
-      .input("Limite_Bajada", sql.Int, Limite_Bajada || 0)
+      .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada ?? 0)
+      .input("RevITSS_x100", sql.Int, RevITSS_x100 ?? 0)
+      .input("RevITSS_Max", sql.Int, RevITSS_Max ?? 0)
+      .input("Limite_Bajada", sql.Int, Limite_Bajada ?? 0)
+      .input("Detalle", sql.VarChar, Detalle || null)
+      .input("URL", sql.VarChar, URL || null)
+      .input("Sistemas_Analisis", sql.VarChar, Sistemas_Analisis || null)
+      .input("Sistemas_Accion", sql.VarChar, Sistemas_Accion || null)
+      .input("TKT_Resolution_Category", sql.VarChar, TKT_Resolution_Category || null)
+      .input("TKT_Resolution_Category_Tier_2", sql.VarChar, TKT_Resolution_Category_Tier_2 || null)
       .input("En_Ejecucion", sql.Int, 0)
 
       .query(`
@@ -116,14 +133,14 @@ router.post("/", async (req, res) => {
           ERR_AppORD, Jira_Tarea, Fdesde, Fhasta,
           Id_Flujo_RPA, Prioridad_RPA, Max_Encoladas_RPA, 
           FrecuenciaRPA, FrecuenciaRPA2, Volumen_Diario, Esfuerzo,
-          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, Limite_Bajada, En_Ejecucion
+          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, Limite_Bajada, Detalle, Url_Wa, Sistemas_Analisis, Sistemas_Accion, TKT_Resolution_Category, TKT_Resolution_Category_Tier_2, En_Ejecucion
         )
         VALUES (
           @ID_WA, @Titulo, @Estado, @Origen, @Sistema, @Negocio,
           @ERR_AppORD, @Jira_Tarea, @Fdesde, @Fhasta,
           @Id_Flujo_RPA, @Prioridad_RPA, @Max_Encoladas_RPA,
           @FrecuenciaRPA, @FrecuenciaRPA2, @Volumen_Diario, @Esfuerzo,
-          @HS_Antiguedad_Bajada, @RevITSS_x100, @RevITSS_Max, @Limite_Bajada, @En_Ejecucion
+          @HS_Antiguedad_Bajada, @RevITSS_x100, @RevITSS_Max, @Limite_Bajada, @Detalle, @URL, @Sistemas_Analisis, @Sistemas_Accion, @TKT_Resolution_Category, @TKT_Resolution_Category_Tier_2, @En_Ejecucion
         );
         SELECT SCOPE_IDENTITY() AS newId;
       `);
@@ -153,6 +170,7 @@ router.put("/", async (req, res) => {
     const pool = await poolPromise;
 
     const {
+      ID,
       ID_AWA,
       ID_WA,
       Titulo,
@@ -174,11 +192,18 @@ router.put("/", async (req, res) => {
       HS_Antiguedad_Bajada,
       RevITSS_x100,
       RevITSS_Max,
-      Limite_Bajada
+      Limite_Bajada,
+      Detalle,
+      URL,
+      Sistemas_Analisis,
+      Sistemas_Accion,
+      TKT_Resolution_Category,
+      TKT_Resolution_Category_Tier_2
     } = req.body;
 
     await pool.request()
       // IDs
+      .input("ID", sql.Int, ID)
       .input("ID_AWA", sql.Int, ID_AWA)
       .input("ID_WA", sql.VarChar, ID_WA || null)
 
@@ -198,19 +223,25 @@ router.put("/", async (req, res) => {
       .input("Fhasta", sql.Date, Fhasta || null)
 
       // RPA
-      .input("Id_Flujo_RPA", sql.Int, Id_Flujo_RPA || null)
-      .input("Prioridad_RPA", sql.Int, Prioridad_RPA || null)
-      .input("Max_Encoladas_RPA", sql.Int, Max_Encoladas_RPA || null)
-      .input("FrecuenciaRPA", sql.Int, FrecuenciaRPA || null)
-      .input("FrecuenciaRPA2", sql.Int, FrecuenciaRPA2 || null)
-      .input("Limite_Bajada", sql.Int, Limite_Bajada || 0)
+      .input("Id_Flujo_RPA", sql.Int, Id_Flujo_RPA ?? 0)
+      .input("Prioridad_RPA", sql.Int, Prioridad_RPA ?? 0)
+      .input("Max_Encoladas_RPA", sql.Int, Max_Encoladas_RPA ?? 0)
+      .input("FrecuenciaRPA", sql.Int, FrecuenciaRPA ?? 0)
+      .input("FrecuenciaRPA2", sql.Int, FrecuenciaRPA2 ?? 0)
+      .input("Limite_Bajada", sql.Int, Limite_Bajada ?? 0)
 
       // Métricas
-      .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario || null)
+      .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario ?? 0)
       .input("Esfuerzo", sql.VarChar, Esfuerzo || null)
-      .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada || null)
-      .input("RevITSS_x100", sql.Int, RevITSS_x100 || null)
-      .input("RevITSS_Max", sql.Int, RevITSS_Max || null)
+      .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada ?? 0)
+      .input("RevITSS_x100", sql.Int, RevITSS_x100 ?? 0)
+      .input("RevITSS_Max", sql.Int, RevITSS_Max ?? 0)
+      .input("Detalle", sql.VarChar, Detalle || null)
+      .input("Url_Wa", sql.VarChar, URL || null)
+      .input("Sistemas_Analisis", sql.VarChar, Sistemas_Analisis || null)
+      .input("Sistemas_Accion", sql.VarChar, Sistemas_Accion || null)
+      .input("TKT_Resolution_Category", sql.VarChar, TKT_Resolution_Category || null)
+      .input("TKT_Resolution_Category_Tier_2", sql.VarChar, TKT_Resolution_Category_Tier_2 || null)
 
       .query(`
         UPDATE ${schema}.AWAs
@@ -235,8 +266,14 @@ router.put("/", async (req, res) => {
           Esfuerzo = @Esfuerzo,
           HS_Antiguedad_Bajada = @HS_Antiguedad_Bajada,
           RevITSS_x100 = @RevITSS_x100,
-          RevITSS_Max = @RevITSS_Max
-        WHERE ID_AWA = @ID_AWA
+          RevITSS_Max = @RevITSS_Max,
+          Detalle = @Detalle,
+          Url_Wa = @Url_Wa,
+          Sistemas_Analisis = @Sistemas_Analisis,
+          Sistemas_Accion = @Sistemas_Accion,
+          TKT_Resolution_Category = @TKT_Resolution_Category,
+          TKT_Resolution_Category_Tier_2 = @TKT_Resolution_Category_Tier_2
+        WHERE ID = @ID
       `);
 
     res.json({ success: true });
@@ -261,11 +298,11 @@ router.put("/toggle/:id", async (req, res) => {
 
     // 1. Obtener estado actual
     const result = await pool.request()
-      .input("ID_AWA", sql.Int, id)
+      .input("ID", sql.Int, id)
       .query(`
         SELECT Estado
         FROM ${schema}.AWAs
-        WHERE ID_AWA = @ID_AWA
+        WHERE ID = @ID
       `);
 
     if (result.recordset.length === 0) {
@@ -279,12 +316,12 @@ router.put("/toggle/:id", async (req, res) => {
 
     // 3. Update
     await pool.request()
-      .input("ID_AWA", sql.Int, id)
+      .input("ID", sql.Int, id)
       .input("Estado", sql.VarChar, nuevoEstado)
       .query(`
         UPDATE ${schema}.AWAs
         SET Estado = @Estado
-        WHERE ID_AWA = @ID_AWA
+        WHERE ID = @ID
       `);
 
     res.json({

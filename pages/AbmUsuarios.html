@@ -23,11 +23,30 @@
             <span class="ms-2">PORTAL ITAS</span>
           </a>
           <span class="navbar-text nvbar navbar-center">ABM de Usuarios</span>
-          <button class="nvbar" onclick="history.back()" style="background:none; border:1px solid white; color:white; padding:4px 10px; border-radius:4px;">
-            Volver
-          </button>
+          <div class="d-flex align-items-center gap-2">
+            <button class="nvbar" onclick="history.back()" style="background:none; border:1px solid white; color:white; padding:4px 10px; border-radius:4px;">
+              Volver
+            </button>
+          </div>
         </div>
     </nav>
+
+  <!-- Modal de éxito -->
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="successModalLabel">Aviso</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="successModalBody"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <div class="container mt-4">
     <h5 class="mb-3">Alta de Usuario:</h5>
   <!-- Contenedor del formulario -->
@@ -184,6 +203,7 @@
   </div>
 
   <script src="../js/config.js"></script>
+  <script src="../js/Front_APPs.js"></script>
   <script src="../js/abmUsuarios.js"></script>
 </body>
 </html>

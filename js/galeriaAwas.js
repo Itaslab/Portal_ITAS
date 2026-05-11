@@ -9,8 +9,13 @@ let awaPendienteAccion = null;
 
 function setSelectValue(id, value) {
   const select = document.getElementById(id);
-  const exists = [...select.options].some(opt => opt.value === value);
-  select.value = exists ? value : select.options[0].value;
+  if (!select) return;
+
+  const normalizedValue = value == null ? "" : String(value).trim().toLowerCase();
+  const match = [...select.options].find(opt => String(opt.value).trim().toLowerCase() === normalizedValue)
+    || [...select.options].find(opt => String(opt.text).trim().toLowerCase() === normalizedValue);
+
+  select.value = match ? match.value : select.options[0]?.value || "";
 }
 
 function formatDate(d) {
@@ -44,28 +49,43 @@ async function cargarAWAS() {
       const estadoColor =
         awa.Estado === "Activo"
           ? "text-success"
-          : awa.Estado === "Backlog"
+          : awa.Estado === "Backlog" || awa.Estado === "Desarrollo" || awa.Estado === "Pendiente"
           ? "text-warning"
           : "text-secondary";
 
       const row = document.createElement("tr");
 
-      row.innerHTML = `
-        <td>${awa.ID_WA ?? "-"}</td>
-        <td>${awa.ID_AWA ?? "-"}</td>
-        <td>${awa.Titulo ?? "-"}</td>
-        <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
-        <td class="text-end">
-          ${
-            awa.Estado === "Activo"
-              ? `<button class="btn btn-danger btn-sm me-2 text-white" onclick="activarAWA(${awa.ID_AWA})">Desactivar</button>`
-              : `<button class="btn btn-success btn-sm me-2 text-white" onclick="activarAWA(${awa.ID_AWA})">Activar</button>`
-          }
-          <button class="btn btn-primary btn-sm text-white" onclick="configurarAWA(${awa.ID_AWA})">
-            Configurar
-          </button>
-        </td>
-      `;
+      // Determinar si el botón debe estar deshabilitado
+      const botonDeshabilitado = ["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado);
+      const disabledAttr = botonDeshabilitado ? "disabled" : "";
+      const btnClass = botonDeshabilitado ? "btn-secondary" : (awa.Estado === "Activo" ? "btn-danger" : "btn-success");
+      const btnTexto = awa.Estado === "Activo" ? "Desactivar" : "Activar";
+
+row.innerHTML = `
+  <td>${awa.ID_WA ?? "-"}</td>
+  <td>${awa.ID_AWA ?? "-"}</td>
+  <td>${awa.Titulo ?? "-"}</td>
+  <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
+
+  <td>
+    <div class="d-flex justify-content-end flex-wrap gap-2 acciones-awa">
+
+      <button 
+        class="btn ${btnClass} btn-sm text-white"
+        onclick="activarAWA(${awa.ID})"
+        ${disabledAttr}>
+        ${btnTexto}
+      </button>
+
+      <button 
+        class="btn btn-primary btn-sm text-white"
+        onclick="configurarAWA(${awa.ID})">
+        Configurar
+      </button>
+
+    </div>
+  </td>
+`;
 
       tbody.appendChild(row);
     });
@@ -83,38 +103,26 @@ async function cargarAWAS() {
 // ============================
 
 function nuevoAWA() {
-  // Limpiar todos los inputs
-  document.getElementById("inputIdAwa").value = "";
-  document.getElementById("inputIdAwaVisible").value = "";
-  document.getElementById("inputIdWa").value = "";
-  document.getElementById("inputTitulo").value = "";
-  document.getElementById("inputSistema").value = "";
-  document.getElementById("inputEstado").value = "Activo";
-  document.getElementById("inputOrigen").value = "Ordenes";
-  document.getElementById("inputNegocio").value = "Hogar";
-  document.getElementById("inputErr").value = "";
-  document.getElementById("inputJira").value = "";
-  document.getElementById("inputDesde").value = "";
-  document.getElementById("inputHasta").value = "";
-  document.getElementById("inputFlujo").value = "";
-  document.getElementById("inputPrioridad").value = "";
-  document.getElementById("inputMaxCola").value = "";
-  document.getElementById("inputFrecuencia").value = "";
-  document.getElementById("inputFrecuencia2").value = "";
-  document.getElementById("inputLimiteBajada").value = "";
-  document.getElementById("inputVolumen").value = "";
-  document.getElementById("inputEsfuerzo").value = "";
-  document.getElementById("inputHS").value = "";
-  document.getElementById("inputRev100").value = "";
-  document.getElementById("inputRevMax").value = "";
+  // Limpiar solo los inputs del modal de creación
+  document.getElementById("inputIdWaNuevo").value = "";
+  document.getElementById("inputTituloNuevo").value = "";
+  document.getElementById("inputOrigenNuevo").value = "Ordenes";
+  document.getElementById("inputSistemaNuevo").value = "";
+  document.getElementById("inputNegocioNuevo").value = "Hogar";
+  document.getElementById("inputErrNuevo").value = "";
+  document.getElementById("inputJiraNuevo").value = "";
+  document.getElementById("inputDetalleNuevo").value = "";
+  document.getElementById("inputUrlNuevo").value = "";
+  document.getElementById("inputVolumenNuevo").value = "";
+  document.getElementById("inputEsfuerzoNuevo").value = "";
+  // Nota: inputIdRegistro pertenece al modal de configuración, no se toca aquí
 
-  // Abrir modal
-  const modal = new bootstrap.Modal(document.getElementById("modalAwa"));
+  const modal = new bootstrap.Modal(document.getElementById("modalAwaNuevo"));
   modal.show();
 }
 
 function configurarAWA(id) {
-  const awa = awasGlobal.find(a => a.ID_AWA == id);
+  const awa = awasGlobal.find(a => a.ID == id);
 
   if (!awa) {
     console.error("AWA no encontrada:", id);
@@ -122,6 +130,7 @@ function configurarAWA(id) {
   }
 
   // 🟦 Identificación
+  document.getElementById("inputIdRegistro").value = awa.ID;
   document.getElementById("inputIdAwa").value = awa.ID_AWA;
   document.getElementById("inputIdAwaVisible").value = awa.ID_AWA;
   document.getElementById("inputIdWa").value = awa.ID_WA ?? "";
@@ -132,12 +141,23 @@ function configurarAWA(id) {
   setSelectValue("inputEstado", awa.Estado);
   setSelectValue("inputOrigen", awa.Origen);
   setSelectValue("inputNegocio", awa.Negocio);
+  document.getElementById("inputDetalle").value = awa.Detalle ?? "";
+  document.getElementById("inputUrl").value = awa.Url_Wa ?? "";
+  document.getElementById("inputSistemaAnalisis").value = awa.Sistemas_Analisis ?? "";
+  document.getElementById("inputSistemaAccion").value = awa.Sistemas_Accion ?? "";
   document.getElementById("inputErr").value = awa.ERR_AppORD ?? "";
   document.getElementById("inputJira").value = awa.Jira_Tarea ?? "";
 
   // 🟨 Fechas
   document.getElementById("inputDesde").value = formatDate(awa.Fdesde);
   document.getElementById("inputHasta").value = formatDate(awa.Fhasta);
+
+  // Setear min en inputHasta si hay fecha desde
+  const inputDesde = document.getElementById("inputDesde");
+  const inputHasta = document.getElementById("inputHasta");
+  if (inputDesde.value) {
+    inputHasta.min = inputDesde.value;
+  }
 
   // 🟧 RPA
   document.getElementById("inputFlujo").value = awa.Id_Flujo_RPA ?? "";
@@ -153,6 +173,8 @@ function configurarAWA(id) {
   document.getElementById("inputHS").value = awa.HS_Antiguedad_Bajada ?? "";
   document.getElementById("inputRev100").value = awa.RevITSS_x100 ?? "";
   document.getElementById("inputRevMax").value = awa.RevITSS_Max ?? "";
+  document.getElementById("inputTKTResolutionCategory").value = awa.TKT_Resolution_Category ?? "";
+  document.getElementById("inputTKTResolutionCategoryTier2").value = awa.TKT_Resolution_Category_Tier_2 ?? "";
 
   // 🔥 abrir modal
   const modal = new bootstrap.Modal(document.getElementById("modalAwa"));
@@ -165,11 +187,18 @@ function configurarAWA(id) {
 
 async function guardarAWA() {
   try {
-    const idAwa = document.getElementById("inputIdAwa").value;
-    const isNew = !idAwa || idAwa === "";
+    const idRegistro = document.getElementById("inputIdRegistro").value;
+
+const isNew =
+  idRegistro === null ||
+  idRegistro === undefined ||
+  idRegistro === "";
+    
 
     const payload = {
-      ID_AWA: isNew ? null : Number(idAwa),
+      
+        ID: isNew ? null : Number(idRegistro),
+        ID_AWA: document.getElementById("inputIdAwa").value || null,
 
       // Básico
       ID_WA: document.getElementById("inputIdWa").value,
@@ -180,6 +209,10 @@ async function guardarAWA() {
       Origen: document.getElementById("inputOrigen").value,
       Sistema: document.getElementById("inputSistema").value,
       Negocio: document.getElementById("inputNegocio").value,
+      Detalle: document.getElementById("inputDetalle").value || null,
+      URL: document.getElementById("inputUrl").value || null,
+      Sistemas_Analisis: document.getElementById("inputSistemaAnalisis").value,
+      Sistemas_Accion: document.getElementById("inputSistemaAccion").value,
       ERR_AppORD: document.getElementById("inputErr").value,
       Jira_Tarea: document.getElementById("inputJira").value,
 
@@ -200,7 +233,9 @@ async function guardarAWA() {
       Esfuerzo: document.getElementById("inputEsfuerzo").value,
       HS_Antiguedad_Bajada: getNumber(document.getElementById("inputHS").value),
       RevITSS_x100: getNumber(document.getElementById("inputRev100").value),
-      RevITSS_Max: getNumber(document.getElementById("inputRevMax").value)
+      RevITSS_Max: getNumber(document.getElementById("inputRevMax").value),
+      TKT_Resolution_Category: document.getElementById("inputTKTResolutionCategory").value || null,
+      TKT_Resolution_Category_Tier_2: document.getElementById("inputTKTResolutionCategoryTier2").value || null
     };
 
     const method = isNew ? "POST" : "PUT";
@@ -239,13 +274,70 @@ async function guardarAWA() {
   }
 }
 
+async function guardarNuevoAWA() {
+  try {
+    const payload = {
+      ID_AWA: null,
+      ID_WA: document.getElementById("inputIdWaNuevo").value,
+      Titulo: document.getElementById("inputTituloNuevo").value,
+      Estado: "Pendiente",
+      Origen: document.getElementById("inputOrigenNuevo").value,
+      Sistema: document.getElementById("inputSistemaNuevo").value,
+      Negocio: document.getElementById("inputNegocioNuevo").value,
+      Detalle: document.getElementById("inputDetalleNuevo").value,
+      URL: document.getElementById("inputUrlNuevo").value,
+      Sistemas_Analisis: "",
+      Sistemas_Accion: "",
+      ERR_AppORD: document.getElementById("inputErrNuevo").value,
+      Jira_Tarea: document.getElementById("inputJiraNuevo").value,
+      Fdesde: null,
+      Fhasta: null,
+      Id_Flujo_RPA: 0,
+      Prioridad_RPA: 0,
+      Max_Encoladas_RPA: 0,
+      FrecuenciaRPA: 0,
+      FrecuenciaRPA2: 0,
+      Limite_Bajada: 0,
+      Volumen_Diario: getNumber(document.getElementById("inputVolumenNuevo").value),
+      Esfuerzo: document.getElementById("inputEsfuerzoNuevo").value,
+      HS_Antiguedad_Bajada: 0,
+      RevITSS_x100: 0,
+      RevITSS_Max: 0
+    };
+
+    const res = await fetch(`${basePath}/api/awas`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      console.error("Error:", result);
+      alert("Error al crear el AWA");
+      return;
+    }
+
+    mostrarToast("El AWA ha sido creado", "success");
+    bootstrap.Modal.getInstance(document.getElementById("modalAwaNuevo")).hide();
+    await cargarAWAS();
+  } catch (error) {
+    console.error("Error guardando nuevo AWA:", error);
+    alert("Error inesperado");
+  }
+}
+
 // ============================
 // Activar / Desactivar (placeholder)
 // ============================
 
 function activarAWA(id) {
-  const awa = awasGlobal.find(a => a.ID_AWA == id);
+  const awa = awasGlobal.find(a => a.ID == id);
   if (!awa) return;
+  if (["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado)) return;
 
   awaPendienteAccion = awa;
 
@@ -263,7 +355,7 @@ document.getElementById("btnConfirmarAccion").addEventListener("click", async ()
 
   try {
     const res = await fetch(
-      `${basePath}/api/awas/toggle/${awaPendienteAccion.ID_AWA}`,
+      `${basePath}/api/awas/toggle/${awaPendienteAccion.ID}`,
       { method: "PUT" }
     );
 
@@ -304,5 +396,16 @@ function mostrarToast(mensaje, tipo = "success") {
 // ============================
 // Init
 // ============================
+
+// Agregar validaciones de longitud y fecha
+document.getElementById("inputDesde").addEventListener("change", function() {
+  const desde = this.value;
+  const hastaInput = document.getElementById("inputHasta");
+  if (desde) {
+    hastaInput.min = desde;
+  } else {
+    hastaInput.removeAttribute("min");
+  }
+});
 
 cargarAWAS();
