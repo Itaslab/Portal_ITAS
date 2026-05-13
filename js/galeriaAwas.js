@@ -2,6 +2,7 @@
 
 let awasGlobal = [];
 let awaPendienteAccion = null;
+let usuarioEsAdmin = false;
 
 // ============================
 // Helpers
@@ -24,6 +25,67 @@ function formatDate(d) {
 
 function getNumber(value) {
   return value === "" ? 0 : Number(value);
+}
+
+
+
+
+// ============================
+// Permisos usuario
+// ============================
+
+async function cargarPermisosUsuario() {
+  try {
+
+    const res = await fetch(`${basePath}/api/permisos/actual`);
+
+    const data = await res.json();
+
+    usuarioEsAdmin = data.esAdmin === true;
+
+  } catch (error) {
+
+    console.error("Error obteniendo permisos:", error);
+
+    // seguridad: si falla, NO admin
+    usuarioEsAdmin = false;
+  }
+}
+
+
+
+// ============================
+// URL visual
+// ============================
+
+function editarUrl() {
+  document.getElementById("urlView").classList.add("d-none");
+  document.getElementById("urlEdit").classList.remove("d-none");
+}
+
+function guardarUrlVisual() {
+
+  const input = document.getElementById("inputUrl");
+  const link = document.getElementById("urlLink");
+
+  let url = input.value.trim();
+
+  // Agrega https:// automáticamente
+  if (url && !url.startsWith("http")) {
+    url = "https://" + url;
+    input.value = url;
+  }
+
+  link.href = url || "#";
+  link.textContent = url || "Sin URL";
+
+  document.getElementById("urlEdit").classList.add("d-none");
+  document.getElementById("urlView").classList.remove("d-none");
+}
+
+function cancelarEdicionUrl() {
+  document.getElementById("urlEdit").classList.add("d-none");
+  document.getElementById("urlView").classList.remove("d-none");
 }
 
 // ============================
@@ -55,8 +117,14 @@ async function cargarAWAS() {
 
       const row = document.createElement("tr");
 
-      // Determinar si el botón debe estar deshabilitado
-      const botonDeshabilitado = ["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado);
+    // Determinar si el botón debe estar deshabilitado
+      const deshabilitadoPorEstado =["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado);
+
+    // nueva lógica permisos
+      const deshabilitadoPorPermiso = !usuarioEsAdmin;
+
+// si alguna condición se cumple → disabled
+      const botonDeshabilitado =deshabilitadoPorEstado || deshabilitadoPorPermiso;
       const disabledAttr = botonDeshabilitado ? "disabled" : "";
       const btnClass = botonDeshabilitado ? "btn-secondary" : (awa.Estado === "Activo" ? "btn-danger" : "btn-success");
       const btnTexto = awa.Estado === "Activo" ? "Desactivar" : "Activar";
@@ -79,7 +147,8 @@ row.innerHTML = `
 
       <button 
         class="btn btn-primary btn-sm text-white"
-        onclick="configurarAWA(${awa.ID})">
+        onclick="configurarAWA(${awa.ID})"
+        ${!usuarioEsAdmin ? "disabled" : ""}>
         Configurar
       </button>
 
@@ -142,7 +211,18 @@ function configurarAWA(id) {
   setSelectValue("inputOrigen", awa.Origen);
   setSelectValue("inputNegocio", awa.Negocio);
   document.getElementById("inputDetalle").value = awa.Detalle ?? "";
-  document.getElementById("inputUrl").value = awa.Url_Wa ?? "";
+  const url = awa.Url_Wa ?? "";
+
+      document.getElementById("inputUrl").value = url;
+
+      const urlLink = document.getElementById("urlLink");
+
+      urlLink.href = url || "#";
+      urlLink.textContent = url || "Sin URL";
+
+// Siempre mostrar vista link al abrir
+  document.getElementById("urlView").classList.remove("d-none");
+  document.getElementById("urlEdit").classList.add("d-none");
   document.getElementById("inputSistemaAnalisis").value = awa.Sistemas_Analisis ?? "";
   document.getElementById("inputSistemaAccion").value = awa.Sistemas_Accion ?? "";
   document.getElementById("inputErr").value = awa.ERR_AppORD ?? "";
@@ -210,7 +290,7 @@ const isNew =
       Sistema: document.getElementById("inputSistema").value,
       Negocio: document.getElementById("inputNegocio").value,
       Detalle: document.getElementById("inputDetalle").value || null,
-      URL: document.getElementById("inputUrl").value || null,
+      URL: document.getElementById("inputUrl").value.trim() || null,
       Sistemas_Analisis: document.getElementById("inputSistemaAnalisis").value,
       Sistemas_Accion: document.getElementById("inputSistemaAccion").value,
       ERR_AppORD: document.getElementById("inputErr").value,
@@ -408,4 +488,10 @@ document.getElementById("inputDesde").addEventListener("change", function() {
   }
 });
 
-cargarAWAS();
+(async () => {
+
+  await cargarPermisosUsuario();
+
+  await cargarAWAS();
+
+})();
