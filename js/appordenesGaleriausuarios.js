@@ -1,15 +1,15 @@
-// appordenesGaleriausuarios.js (versión corregida)
+// appordenesGaleriausuarios.js 
 document.addEventListener("DOMContentLoaded", async () => {
     const filtroGrupo = document.getElementById("filtroGrupo");
     const filtroNombre = document.getElementById("filtroNombre");
     const filtroActivo = document.getElementById("filtroActivo");
     const tabla = document.querySelector("table tbody");
 
-    // Modal Bootstrap
+    
     const usuarioModalEl = document.getElementById("usuarioModal");
     const bsModal = new bootstrap.Modal(usuarioModalEl, { backdrop: true });
 
-    // Referencias dentro del modal
+    
     const spanNombre = document.getElementById("modalNombre");
     const spanEmail = document.getElementById("modalEmail");
     const spanSfID = document.getElementById("modalSfID");
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const textareaScript = document.getElementById("modalScript");
     
 
-    // cargar selects del modal
+    
     const grupos = [
         "ORDEN-POSVENTA_A", "ORDEN-POSVENTA_B", "ORDEN-REJECTED",
         "INC-NPLAY_ACTIVACIONES", "INC-FAN_POSVENTA", "INC-FAN_VENTA",
@@ -50,11 +50,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     populateSelectModal(selectGrupoEditable);
     populateSelectModal(selectGrupoBKPEditable);
 
-    // Cargar usuarios
+    
     let usuarios = [];
     await cargarUsuarios();
 
-    // Debounce util
+    
     function debounce(fn, wait) {
         let t = null;
         return function (...args) {
@@ -235,7 +235,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (checkboxDesasignador) checkboxDesasignador.checked = !!u.des_asignar;
             if (textareaScript) textareaScript.value = u.script ?? "";
 
-            // ✅ NUEVA LÓGICA: habilitar/deshabilitar script según modo
+            
             function updateScriptState() {
                 const modoVal = selectModo.value;
                 if (modoVal === 'SCRIPT') {

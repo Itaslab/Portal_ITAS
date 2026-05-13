@@ -2,6 +2,7 @@
 
 let awasGlobal = [];
 let awaPendienteAccion = null;
+let usuarioEsAdmin = false;
 
 // ============================
 // Helpers
@@ -25,6 +26,33 @@ function formatDate(d) {
 function getNumber(value) {
   return value === "" ? 0 : Number(value);
 }
+
+
+
+
+// ============================
+// Permisos usuario
+// ============================
+
+async function cargarPermisosUsuario() {
+  try {
+
+    const res = await fetch(`${basePath}/api/permisos/actual`);
+
+    const data = await res.json();
+
+    usuarioEsAdmin = data.esAdmin === true;
+
+  } catch (error) {
+
+    console.error("Error obteniendo permisos:", error);
+
+    // seguridad: si falla, NO admin
+    usuarioEsAdmin = false;
+  }
+}
+
+
 
 // ============================
 // URL visual
@@ -89,8 +117,14 @@ async function cargarAWAS() {
 
       const row = document.createElement("tr");
 
-      // Determinar si el botón debe estar deshabilitado
-      const botonDeshabilitado = ["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado);
+    // Determinar si el botón debe estar deshabilitado
+      const deshabilitadoPorEstado =["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado);
+
+    // nueva lógica permisos
+      const deshabilitadoPorPermiso = !usuarioEsAdmin;
+
+// si alguna condición se cumple → disabled
+      const botonDeshabilitado =deshabilitadoPorEstado || deshabilitadoPorPermiso;
       const disabledAttr = botonDeshabilitado ? "disabled" : "";
       const btnClass = botonDeshabilitado ? "btn-secondary" : (awa.Estado === "Activo" ? "btn-danger" : "btn-success");
       const btnTexto = awa.Estado === "Activo" ? "Desactivar" : "Activar";
@@ -113,7 +147,8 @@ row.innerHTML = `
 
       <button 
         class="btn btn-primary btn-sm text-white"
-        onclick="configurarAWA(${awa.ID})">
+        onclick="configurarAWA(${awa.ID})"
+        ${!usuarioEsAdmin ? "disabled" : ""}>
         Configurar
       </button>
 
@@ -453,4 +488,10 @@ document.getElementById("inputDesde").addEventListener("change", function() {
   }
 });
 
-cargarAWAS();
+(async () => {
+
+  await cargarPermisosUsuario();
+
+  await cargarAWAS();
+
+})();
