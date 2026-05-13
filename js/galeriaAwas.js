@@ -3,6 +3,7 @@
 let awasGlobal = [];
 let awaPendienteAccion = null;
 let usuarioEsAdmin = false;
+let esAdminAwas = false;
 
 // ============================
 // Helpers
@@ -88,9 +89,33 @@ function cancelarEdicionUrl() {
   document.getElementById("urlView").classList.remove("d-none");
 }
 
+
+
+
+
+
 // ============================
 // Cargar tabla
 // ============================
+
+
+async function cargarPermisosAwas() {
+
+  const res = await fetch(`${basePath}/api/permisos/actual`);
+  const data = await res.json();
+
+  const esSuperAdmin = data.esAdmin;
+
+  esAdminAwas =
+    esSuperAdmin ||
+    data.permisos.some(p =>
+      p.ID_Perfil === 39 &&
+      p.ID_Aplicacion === 14
+    );
+}
+
+
+
 
 async function cargarAWAS() {
   try {
@@ -121,7 +146,7 @@ async function cargarAWAS() {
       const deshabilitadoPorEstado =["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado);
 
     // nueva lógica permisos
-      const deshabilitadoPorPermiso = !usuarioEsAdmin;
+      const deshabilitadoPorPermiso = !esAdminAwas;
 
 // si alguna condición se cumple → disabled
       const botonDeshabilitado =deshabilitadoPorEstado || deshabilitadoPorPermiso;
@@ -148,7 +173,7 @@ row.innerHTML = `
       <button 
         class="btn btn-primary btn-sm text-white"
         onclick="configurarAWA(${awa.ID})"
-        ${!usuarioEsAdmin ? "disabled" : ""}>
+        ${!esAdminAwas  ? "disabled" : ""}>
         Configurar
       </button>
 
@@ -490,7 +515,7 @@ document.getElementById("inputDesde").addEventListener("change", function() {
 
 (async () => {
 
-  await cargarPermisosUsuario();
+await cargarPermisosAwas();
 
   await cargarAWAS();
 
