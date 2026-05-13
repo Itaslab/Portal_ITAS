@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="icon" type="image/png" href="../images/Favicon.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
   <title>Galería AWAS</title>
 </head>
@@ -31,8 +32,7 @@
         </div>
     </nav>
 
-  <!-- Modal Perfil -->
-  <!-- Eliminado -->
+
 
 <div class="container mt-5">
     <div class="d-flex justify-content-end mb-3">
@@ -89,15 +89,73 @@
             <input type="text" id="inputTitulo" class="form-control" maxlength="40">
           </div>
 
-          <div class="col-md-6">
-            <label>Detalle</label>
-            <input type="text" id="inputDetalle" class="form-control"maxlength="80">
-          </div>
+
 
           <div class="col-md-6">
-            <label>URL</label>
-            <input type="url" id="inputUrl" class="form-control" onclick="if(this.value.trim()) window.open(this.value.trim(), '_blank');">
+            <span class="input-group-text">Detalle</span>
+              <textarea class="form-control" id="inputDetalle" aria-label="With textarea"></textarea>
           </div>
+
+<div class="col-md-6">
+
+  <label class="form-label">URL del WA</label>
+
+  <!-- Vista normal -->
+  <div id="urlView" class="d-flex align-items-center gap-2">
+
+    <a
+      id="urlLink"
+      href="#"
+      target="_blank"
+      class="link-primary text-truncate"
+      style="max-width: 400px;"
+    >
+      Sin URL
+    </a>
+
+<button
+  type="button"
+  class="btn btn-sm btn-outline-secondary"
+  onclick="editarUrl()"
+>
+  <i class="bi bi-pencil"></i>
+</button>
+
+  </div>
+
+  <!-- Vista edición -->
+  <div id="urlEdit" class="d-none">
+
+    <div class="input-group">
+
+      <input
+        type="url"
+        id="inputUrl"
+        class="form-control"
+        placeholder="https://..."
+      >
+
+<button
+  class="btn btn-success text-white"
+  type="button"
+  onclick="guardarUrlVisual()"
+>
+  <i class="bi bi-check-lg"></i>
+</button>
+
+<button
+  class="btn btn-secondary"
+  type="button"
+  onclick="cancelarEdicionUrl()"
+>
+  <i class="bi bi-x-lg"></i>
+</button>
+
+    </div>
+
+  </div>
+
+</div>
 
         </div>
 
@@ -140,17 +198,17 @@
           </div>
 
           <div class="col-md-6">
-            <label>Sistema Análisis</label>
+            <label>Sistema que interviene en Análisis</label>
             <input type="text" id="inputSistemaAnalisis" class="form-control" maxlength="50">
           </div>
 
           <div class="col-md-6">
-            <label>Sistema Acción</label>
+            <label>Sistema que interviene en Acción</label>
             <input type="text" id="inputSistemaAccion" class="form-control" maxlength="50">
           </div>
 
           <div class="col-md-4">
-            <label>ERR_AppORD</label>
+            <label>Codigo de error en la aplicacion de Ordenes</label>
             <input type="text" id="inputErr" class="form-control">
           </div>
 
@@ -314,19 +372,20 @@
             </select>
           </div>
           <div class="col-md-6">
-            <label>ERR_AppORD</label>
+            <label>Codigo de error en la aplicacion de Ordenes</label>
             <input type="text" id="inputErrNuevo" class="form-control">
           </div>
           <div class="col-md-6">
             <label>Jira</label>
             <input type="text" id="inputJiraNuevo" class="form-control">
           </div>
+
           <div class="col-md-6">
-            <label>Detalle</label>
-            <input type="text" id="inputDetalleNuevo" class="form-control">
+            <span class="input-group-text">Detalle</span>
+            <textarea class="form-control" id="inputDetalleNuevo" aria-label="With textarea"></textarea>
           </div>
           <div class="col-md-6">
-            <label>URL</label>
+            <label>URL del WA</label>
             <input type="url" id="inputUrlNuevo" class="form-control" onclick="if(this.value.trim()) window.open(this.value.trim(), '_blank');">
           </div>
           <div class="col-md-4">
