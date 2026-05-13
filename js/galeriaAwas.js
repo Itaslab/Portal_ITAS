@@ -101,17 +101,35 @@ function cancelarEdicionUrl() {
 
 async function cargarPermisosAwas() {
 
-  const res = await fetch(`${basePath}/api/permisos/actual`);
-  const data = await res.json();
+  try {
 
-  const esSuperAdmin = data.esAdmin;
+    const res = await fetch(`${basePath}/permisos`);
 
-  esAdminAwas =
-    esSuperAdmin ||
-    data.permisos.some(p =>
-      p.ID_Perfil === 39 &&
-      p.ID_Aplicacion === 14
-    );
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    console.log("PERMISOS AWAS:", data);
+
+    const esSuperAdmin = data.esAdmin === true;
+
+    esAdminAwas =
+      esSuperAdmin ||
+      (data.permisos || []).some(p =>
+        Number(p.ID_Perfil) === 39 &&
+        Number(p.ID_Aplicacion) === 14
+      );
+
+    console.log("esAdminAwas:", esAdminAwas);
+
+  } catch (err) {
+
+    console.error("Error permisos AWAS:", err);
+
+    esAdminAwas = false;
+  }
 }
 
 
