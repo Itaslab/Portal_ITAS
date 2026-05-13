@@ -38,7 +38,7 @@ function getNumber(value) {
 async function cargarPermisosUsuario() {
   try {
 
-    const res = await fetch(`${basePath}/api/permisos/actual`);
+    const res = await fetch(`${basePath}/permisos`);
 
     const data = await res.json();
 
