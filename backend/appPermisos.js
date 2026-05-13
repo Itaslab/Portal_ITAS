@@ -24,44 +24,48 @@ async function obtenerPermisosUsuarioActual(req, res) {
       .input("id", sql.Int, id_usuario)
       .query(query);
 
-    // Si no hay resultados, el usuario no está en la tabla
+    // Si no hay resultados
     if (result.recordset.length === 0) {
       return res.json({
         ok: true,
         usuarioEncontrado: false,
         esAdmin: false,
-        aplicacionesPermitidas: [] // Array vacío → no mostrar nada
+        aplicacionesPermitidas: [],
+        permisos: []
       });
     }
 
-    // Verificar si algún registro tiene ID_Perfil = 1 (Admin)
+    // SUPER ADMIN
     const esAdmin = result.recordset.some(r =>
-            r.ID_Perfil === 1 &&
-            r.ID_Aplicacion === 1
-          );
+      r.ID_Perfil === 1 &&
+      r.ID_Aplicacion === 1
+    );
 
-    // Si es admin, retornar vacío (señal de mostrar todas)
+    // Si es super admin
     if (esAdmin) {
       return res.json({
         ok: true,
         usuarioEncontrado: true,
         esAdmin: true,
-        aplicacionesPermitidas: []
+        aplicacionesPermitidas: [],
+        permisos: result.recordset
       });
     }
 
-    // Si no es admin, extraer solo los ID_Aplicacion permitidos
+    // Apps permitidas
     const aplicacionesPermitidas = result.recordset.map(r => r.ID_Aplicacion);
 
     return res.json({
       ok: true,
       usuarioEncontrado: true,
       esAdmin: false,
-      aplicacionesPermitidas: aplicacionesPermitidas
+      aplicacionesPermitidas: aplicacionesPermitidas,
+      permisos: result.recordset
     });
 
   } catch (error) {
     console.error("Error obteniendo permisos:", error);
+
     return res.status(500).json({
       ok: false,
       error: "Error al obtener permisos"
@@ -92,46 +96,48 @@ async function obtenerPermisosUsuario(req, res) {
       .input("id", sql.Int, id_usuario)
       .query(query);
 
-    // Si no hay resultados, el usuario no está en la tabla
+    // Si no hay resultados
     if (result.recordset.length === 0) {
       return res.json({
         ok: true,
         usuarioEncontrado: false,
         esAdmin: false,
-        aplicacionesPermitidas: [] // Array vacío → no mostrar nada
+        aplicacionesPermitidas: [],
+        permisos: []
       });
     }
 
-    // Verificar si algún registro tiene ID_Perfil = 1 (Admin)
+    // SUPER ADMIN
     const esAdmin = result.recordset.some(r =>
-          r.ID_Perfil === 1 &&
-          r.ID_Aplicacion === 1
-        );
+      r.ID_Perfil === 1 &&
+      r.ID_Aplicacion === 1
+    );
 
-    // Si es admin, retornar vacío (señal de mostrar todas)
+    // Si es super admin
     if (esAdmin) {
-     return res.json({
-  ok: true,
-  usuarioEncontrado: true,
-  esAdmin: true,
-  aplicacionesPermitidas: [],
-  permisos: result.recordset
-});
+      return res.json({
+        ok: true,
+        usuarioEncontrado: true,
+        esAdmin: true,
+        aplicacionesPermitidas: [],
+        permisos: result.recordset
+      });
     }
 
-    // Si no es admin, extraer solo los ID_Aplicacion permitidos
+    // Apps permitidas
     const aplicacionesPermitidas = result.recordset.map(r => r.ID_Aplicacion);
 
-return res.json({
-  ok: true,
-  usuarioEncontrado: true,
-  esAdmin: false,
-  aplicacionesPermitidas: aplicacionesPermitidas,
-  permisos: result.recordset
-});
+    return res.json({
+      ok: true,
+      usuarioEncontrado: true,
+      esAdmin: false,
+      aplicacionesPermitidas: aplicacionesPermitidas,
+      permisos: result.recordset
+    });
 
   } catch (error) {
     console.error("Error obteniendo permisos:", error);
+
     return res.status(500).json({
       ok: false,
       error: "Error al obtener permisos"
@@ -139,4 +145,7 @@ return res.json({
   }
 }
 
-module.exports = { obtenerPermisosUsuarioActual, obtenerPermisosUsuario };
+module.exports = {
+  obtenerPermisosUsuarioActual,
+  obtenerPermisosUsuario
+};
