@@ -3,6 +3,7 @@
 let awasGlobal = [];
 let awaPendienteAccion = null;
 let usuarioEsAdmin = false;
+let esAdminAwas = false;
 
 // ============================
 // Helpers
@@ -37,7 +38,7 @@ function getNumber(value) {
 async function cargarPermisosUsuario() {
   try {
 
-    const res = await fetch(`${basePath}/api/permisos/actual`);
+    const res = await fetch(`${basePath}/permisos`);
 
     const data = await res.json();
 
@@ -88,9 +89,51 @@ function cancelarEdicionUrl() {
   document.getElementById("urlView").classList.remove("d-none");
 }
 
+
+
+
+
+
 // ============================
 // Cargar tabla
 // ============================
+
+
+async function cargarPermisosAwas() {
+
+  try {
+
+    const res = await fetch(`${basePath}/permisos`);
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    console.log("PERMISOS AWAS:", data);
+
+    const esSuperAdmin = data.esAdmin === true;
+
+    esAdminAwas =
+      esSuperAdmin ||
+      (data.permisos || []).some(p =>
+        Number(p.ID_Perfil) === 39 &&
+        Number(p.ID_Aplicacion) === 14
+      );
+
+    console.log("esAdminAwas:", esAdminAwas);
+
+  } catch (err) {
+
+    console.error("Error permisos AWAS:", err);
+
+    esAdminAwas = false;
+  }
+}
+
+
+
 
 async function cargarAWAS() {
   try {
@@ -121,7 +164,7 @@ async function cargarAWAS() {
       const deshabilitadoPorEstado =["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado);
 
     // nueva lógica permisos
-      const deshabilitadoPorPermiso = !usuarioEsAdmin;
+      const deshabilitadoPorPermiso = !esAdminAwas;
 
 // si alguna condición se cumple → disabled
       const botonDeshabilitado =deshabilitadoPorEstado || deshabilitadoPorPermiso;
@@ -148,7 +191,7 @@ row.innerHTML = `
       <button 
         class="btn btn-primary btn-sm text-white"
         onclick="configurarAWA(${awa.ID})"
-        ${!usuarioEsAdmin ? "disabled" : ""}>
+        ${!esAdminAwas  ? "disabled" : ""}>
         Configurar
       </button>
 
@@ -490,7 +533,7 @@ document.getElementById("inputDesde").addEventListener("change", function() {
 
 (async () => {
 
-  await cargarPermisosUsuario();
+await cargarPermisosAwas();
 
   await cargarAWAS();
 
