@@ -437,19 +437,44 @@ router.get("/usuario_perfil_app/:legajo", async (req, res) => {
 
     const pool = await poolPromise;
 
-    const result = await pool.request()
+    // ============================================
+    // 1️⃣ BUSCAR ID_USUARIO
+    // ============================================
+
+    const usuarioResult = await pool.request()
       .input("Legajo", sql.VarChar, legajo)
+      .query(`
+        SELECT ID_Usuario
+        FROM ${schema}.USUARIO
+        WHERE Legajo = @Legajo
+      `);
+
+    if (usuarioResult.recordset.length === 0) {
+
+      return res.status(404).json({
+        success: false,
+        mensaje: "Usuario no encontrado"
+      });
+
+    }
+
+    const ID_Usuario =
+      usuarioResult.recordset[0].ID_Usuario;
+
+    // ============================================
+    // 2️⃣ OBTENER PERMISOS
+    // ============================================
+
+    const result = await pool.request()
+      .input("ID_Usuario", sql.Int, ID_Usuario)
       .query(`
 
         SELECT
           UPA.ID_UsuarioPerfilApp,
           A.Nombre AS Aplicacion,
           P.Nombre AS Perfil
-          
-        FROM ${schema}.USUARIO_PERFIL_APP UPA
 
-        INNER JOIN ${schema}.USUARIO U
-          ON U.ID_Usuario = UPA.ID_Usuario
+        FROM ${schema}.USUARIO_PERFIL_APP UPA
 
         INNER JOIN ${schema}.APLICACION A
           ON A.ID_Aplicacion = UPA.ID_Aplicacion
@@ -457,9 +482,11 @@ router.get("/usuario_perfil_app/:legajo", async (req, res) => {
         INNER JOIN ${schema}.PERFIL P
           ON P.ID_Perfil = UPA.ID_Perfil
 
-        WHERE U.Legajo = @Legajo
+        WHERE UPA.ID_Usuario = @ID_Usuario
 
-        ORDER BY A.Nombre, P.Nombre
+        ORDER BY
+          A.Nombre,
+          P.Nombre
 
       `);
 
@@ -483,5 +510,7 @@ router.get("/usuario_perfil_app/:legajo", async (req, res) => {
   }
 
 });
+
+
 
 module.exports = router;
