@@ -105,6 +105,90 @@ router.get("/abm_usuarios/:legajo", async (req, res) => {
 
 });
 
+
+
+// =====================================================
+// OBTENER APLICACIONES
+// =====================================================
+
+router.get("/aplicaciones", async (req, res) => {
+
+  try {
+
+    const pool = await poolPromise;
+
+    const result = await pool.request().query(`
+      SELECT
+        ID_Aplicacion,
+        Nombre
+      FROM ${schema}.APLICACION
+      ORDER BY Nombre
+    `);
+
+    res.json({
+      success: true,
+      aplicaciones: result.recordset
+    });
+
+  } catch (error) {
+
+    console.error("Error obteniendo aplicaciones:", error);
+
+    res.status(500).json({
+      success: false,
+      mensaje: "Error obteniendo aplicaciones"
+    });
+
+  }
+
+});
+
+
+
+
+
+// =====================================================
+// OBTENER PERFILES SEGUN APLICACION
+// =====================================================
+
+router.get("/perfiles/:idAplicacion", async (req, res) => {
+
+  const { idAplicacion } = req.params;
+
+  try {
+
+    const pool = await poolPromise;
+
+    const result = await pool.request()
+      .input("ID_Aplicacion", sql.Int, idAplicacion)
+      .query(`
+        SELECT
+          ID_Perfil,
+          Nombre
+        FROM ${schema}.PERFIL
+        WHERE ID_Aplicacion = @ID_Aplicacion
+        ORDER BY Nombre
+      `);
+
+    res.json({
+      success: true,
+      perfiles: result.recordset
+    });
+
+  } catch (error) {
+
+    console.error("Error obteniendo perfiles:", error);
+
+    res.status(500).json({
+      success: false,
+      mensaje: "Error obteniendo perfiles"
+    });
+
+  }
+
+});
+
+
 // =========================================================
 // 3️⃣ MODIFICAR USUARIO
 // =========================================================
@@ -215,6 +299,121 @@ router.put("/abm_usuarios/:legajo", async (req, res) => {
   } catch (error) {
 
     console.error("Error actualizando usuario:", error);
+
+    res.status(500).json({
+      success: false,
+      mensaje: "Error interno del servidor"
+    });
+
+  }
+
+});
+
+
+
+// =====================================================
+// AGREGAR PERMISO A USUARIO
+// =====================================================
+
+router.post("/usuario_perfil_app", async (req, res) => {
+
+  const {
+    legajo,
+    ID_Aplicacion,
+    ID_Perfil
+  } = req.body;
+
+  try {
+
+    const pool = await poolPromise;
+
+    // =================================================
+    // 1️⃣ OBTENER ID_USUARIO
+    // =================================================
+
+    const usuarioResult = await pool.request()
+      .input("Legajo", sql.VarChar, legajo)
+      .query(`
+        SELECT ID_Usuario
+        FROM ${schema}.USUARIO
+        WHERE Legajo = @Legajo
+      `);
+
+    if (usuarioResult.recordset.length === 0) {
+
+      return res.status(404).json({
+        success: false,
+        mensaje: "Usuario no encontrado"
+      });
+
+    }
+
+    const ID_Usuario =
+      usuarioResult.recordset[0].ID_Usuario;
+
+    // =================================================
+    // 2️⃣ VALIDAR SI YA EXISTE
+    // =================================================
+
+    const existeResult = await pool.request()
+      .input("ID_Usuario", sql.Int, ID_Usuario)
+      .input("ID_Aplicacion", sql.Int, ID_Aplicacion)
+      .input("ID_Perfil", sql.Int, ID_Perfil)
+      .query(`
+        SELECT 1
+        FROM ${schema}.USUARIO_PERFIL_APP
+        WHERE ID_Usuario = @ID_Usuario
+          AND ID_Aplicacion = @ID_Aplicacion
+          AND ID_Perfil = @ID_Perfil
+      `);
+
+    if (existeResult.recordset.length > 0) {
+
+      return res.status(400).json({
+        success: false,
+        mensaje: "Ese permiso ya existe para el usuario"
+      });
+
+    }
+
+    // =================================================
+    // 3️⃣ INSERT
+    // =================================================
+
+    await pool.request()
+      .input("ID_Usuario", sql.Int, ID_Usuario)
+      .input("ID_Aplicacion", sql.Int, ID_Aplicacion)
+      .input("ID_Perfil", sql.Int, ID_Perfil)
+      .query(`
+        INSERT INTO ${schema}.USUARIO_PERFIL_APP
+        (
+          ID_Usuario,
+          ID_Aplicacion,
+          ID_Perfil
+        )
+        VALUES
+        (
+          @ID_Usuario,
+          @ID_Aplicacion,
+          @ID_Perfil
+        )
+      `);
+
+    // =================================================
+    // 4️⃣ OK
+    // =================================================
+
+    res.json({
+      success: true,
+      mensaje: "Permiso agregado correctamente"
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Error agregando permiso:",
+      error
+    );
 
     res.status(500).json({
       success: false,

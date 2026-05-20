@@ -324,4 +324,227 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   });
 
+
+
+// =====================================================
+// MODAL PERMISOS
+// =====================================================
+
+const selectAplicacion = document.getElementById("selectAplicacion");
+const selectPerfil = document.getElementById("selectPerfil");
+const btnGuardarPermiso = document.getElementById("btnGuardarPermiso");
+const resultadoPermiso = document.getElementById("resultadoPermiso");
+
+
+// =====================================================
+// 1️⃣ CARGAR APLICACIONES
+// =====================================================
+
+async function cargarAplicaciones() {
+
+  try {
+
+    const res = await fetch(basePath + "/aplicaciones");
+    const data = await res.json();
+
+    selectAplicacion.innerHTML = `
+      <option value="">
+        Seleccione aplicación
+      </option>
+    `;
+
+    if (data.success) {
+
+      data.aplicaciones.forEach(app => {
+
+        const option = document.createElement("option");
+
+        option.value = app.ID_Aplicacion;
+        option.textContent = app.Nombre;
+
+        selectAplicacion.appendChild(option);
+
+      });
+
+    }
+
+  } catch (error) {
+
+    console.error("Error cargando aplicaciones:", error);
+
+  }
+
+}
+
+
+// =====================================================
+// 2️⃣ CARGAR PERFILES SEGUN APP
+// =====================================================
+
+selectAplicacion.addEventListener("change", async () => {
+
+  const idAplicacion = selectAplicacion.value;
+
+  selectPerfil.innerHTML = `
+    <option value="">
+      Seleccione perfil
+    </option>
+  `;
+
+  if (!idAplicacion) return;
+
+  try {
+
+    const res = await fetch(
+      basePath + `/perfiles/${idAplicacion}`
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+
+      data.perfiles.forEach(perfil => {
+
+        const option = document.createElement("option");
+
+        option.value = perfil.ID_Perfil;
+        option.textContent = perfil.Nombre;
+
+        selectPerfil.appendChild(option);
+
+      });
+
+    }
+
+  } catch (error) {
+
+    console.error("Error cargando perfiles:", error);
+
+  }
+
+});
+
+
+// =====================================================
+// 3️⃣ ABRIR MODAL
+// =====================================================
+
+const modalPermisos = document.getElementById("modalPermisos");
+
+modalPermisos.addEventListener("show.bs.modal", async () => {
+
+  resultadoPermiso.innerHTML = "";
+
+  await cargarAplicaciones();
+
+});
+
+
+// =====================================================
+// 4️⃣ GUARDAR PERMISO
+// =====================================================
+
+btnGuardarPermiso.addEventListener("click", async () => {
+
+  const legajo = document.getElementById("legajo").value;
+
+  const idAplicacion = selectAplicacion.value;
+  const idPerfil = selectPerfil.value;
+
+  // ----------------------------
+  // VALIDACIONES
+  // ----------------------------
+
+  if (!legajo) {
+
+    resultadoPermiso.innerHTML = `
+      <div class="alert alert-warning">
+        Debe cargar un usuario primero
+      </div>
+    `;
+
+    return;
+
+  }
+
+  if (!idAplicacion) {
+
+    resultadoPermiso.innerHTML = `
+      <div class="alert alert-warning">
+        Seleccione una aplicación
+      </div>
+    `;
+
+    return;
+
+  }
+
+  if (!idPerfil) {
+
+    resultadoPermiso.innerHTML = `
+      <div class="alert alert-warning">
+        Seleccione un perfil
+      </div>
+    `;
+
+    return;
+
+  }
+
+  // ----------------------------
+  // GUARDAR
+  // ----------------------------
+
+  try {
+
+    const res = await fetch(
+      basePath + "/usuario_perfil_app",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          legajo,
+          ID_Aplicacion: idAplicacion,
+          ID_Perfil: idPerfil
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if (res.ok) {
+
+      resultadoPermiso.innerHTML = `
+        <div class="alert alert-success">
+          Permiso agregado correctamente
+        </div>
+      `;
+
+    } else {
+
+      resultadoPermiso.innerHTML = `
+        <div class="alert alert-danger">
+          ${data.mensaje || "Error guardando permiso"}
+        </div>
+      `;
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    resultadoPermiso.innerHTML = `
+      <div class="alert alert-danger">
+        Error de conexión
+      </div>
+    `;
+
+  }
+
+});
+
+
 });
