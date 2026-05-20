@@ -332,7 +332,7 @@
 
   </div>
 
-  <!-- ===================================================== -->
+ <!-- ===================================================== -->
 <!-- MODAL PERMISOS -->
 <!-- ===================================================== -->
 
@@ -342,6 +342,7 @@
 
     <div class="modal-content">
 
+      <!-- HEADER -->
       <div class="modal-header">
 
         <h5 class="modal-title">
@@ -356,12 +357,10 @@
 
       </div>
 
+      <!-- BODY -->
       <div class="modal-body">
 
-        <!-- ================================ -->
         <!-- APLICACION -->
-        <!-- ================================ -->
-
         <div class="mb-3">
 
           <label class="form-label">
@@ -381,10 +380,7 @@
 
         </div>
 
-        <!-- ================================ -->
         <!-- PERFIL -->
-        <!-- ================================ -->
-
         <div class="mb-3">
 
           <label class="form-label">
@@ -405,25 +401,30 @@
         </div>
 
         <!-- MENSAJES -->
-
         <div id="resultadoPermiso"></div>
 
+        <!-- ============================== -->
+        <!-- PERMISOS ACTUALES -->
+        <!-- ============================== -->
+
+        <hr>
+
+        <h6 class="mb-3">
+          Permisos actuales
+        </h6>
+
+        <div id="listaPermisosActuales">
+
+          <div class="text-muted">
+            Sin permisos cargados
+          </div>
+
+        </div>
+
       </div>
-    <div class="modal-footer">
 
-   <hr>
-
-<h6 class="mb-3">
-  Permisos actuales
-</h6>
-
-<div id="listaPermisosActuales">
-
-  <div class="text-muted">
-    Sin permisos cargados
-  </div>
-
-</div>
+      <!-- FOOTER -->
+      <div class="modal-footer">
 
         <button
           type="button"
