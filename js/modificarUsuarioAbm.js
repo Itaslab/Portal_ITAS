@@ -674,7 +674,7 @@ async function cargarPermisosActuales() {
 
           <button
             class="btn btn-danger btn-sm btnEliminarPermiso text-white"
-            data-id="${permiso.ID_UsuarioPerfilApp}"
+            data-id="${permiso.ID_Usuario_Perfil_App}"
           >
             Eliminar
           </button>
