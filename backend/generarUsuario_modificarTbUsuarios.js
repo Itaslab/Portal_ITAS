@@ -512,5 +512,57 @@ router.get("/usuario_perfil_app/:legajo", async (req, res) => {
 });
 
 
+// =====================================================
+// ELIMINAR PERMISO
+// =====================================================
+
+router.delete(
+  "/usuario_perfil_app/:id",
+  async (req, res) => {
+
+    const { id } = req.params;
+
+    try {
+
+      const pool = await poolPromise;
+
+      await pool.request()
+        .input(
+          "ID",
+          sql.Int,
+          id
+        )
+        .query(`
+
+          DELETE FROM
+            ${schema}.USUARIO_PERFIL_APP
+
+          WHERE
+            ID_Usuario_Perfil_App = @ID
+
+        `);
+
+      res.json({
+        success: true,
+        mensaje: "Permiso eliminado"
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Error eliminando permiso:",
+        error
+      );
+
+      res.status(500).json({
+        success: false,
+        mensaje: "Error eliminando permiso"
+      });
+
+    }
+
+});
+
+
 
 module.exports = router;

@@ -551,6 +551,70 @@ btnGuardarPermiso.addEventListener("click", async () => {
 
 
 // =====================================================
+// ELIMINAR PERMISO
+// =====================================================
+
+document.addEventListener("click", async (e) => {
+
+  // Detecta botón eliminar
+  if (!e.target.classList.contains("btnEliminarPermiso")) {
+    return;
+  }
+
+  const idUsuarioPerfilApp =
+    e.target.dataset.id;
+
+  if (!idUsuarioPerfilApp) {
+    return;
+  }
+
+  // Confirmación
+  const confirmar = confirm(
+    "¿Eliminar permiso?"
+  );
+
+  if (!confirmar) {
+    return;
+  }
+
+  try {
+
+    const res = await fetch(
+      `${basePath}/usuario_perfil_app/${idUsuarioPerfilApp}`,
+      {
+        method: "DELETE"
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+
+      alert(
+        data.mensaje ||
+        "Error eliminando permiso"
+      );
+
+      return;
+    }
+
+    // Recargar lista permisos
+    cargarPermisosActuales();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      "Error eliminando permiso"
+    );
+
+  }
+
+});
+
+
+// =====================================================
 // CARGAR PERMISOS ACTUALES
 // =====================================================
 
