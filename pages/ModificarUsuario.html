@@ -1,54 +1,331 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/DiseñoGeneral.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="icon" type="image/png" href="../images/Favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/DiseñoGeneral.css">
+
+  <link rel="icon" type="image/png" href="../images/Favicon.png">
+
   <title>Modificar Usuario</title>
 </head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar position-relative">
-        <div class="container-fluid d-flex justify-content-between align-items-center navbar-container">
-          <a class="navbar-brand nvbar d-flex align-items-center" href="../pages/Front_APPs.html">
-            <img src="../images/teco.png" alt="Logo" width="70" height="22" class="d-inline-block">
-            <span class="ms-2">PORTAL ITAS</span>
-          </a>
-          <span class="navbar-text nvbar navbar-center">ABM de Usuarios</span>
-          <div class="d-flex align-items-center gap-2">
-        <button class="nvbar" onclick="history.back()" style="background:none; border:1px solid white; color:white; padding:4px 10px; border-radius:4px;">
-            Volver
-          </button>
-      </div>
-        </div>
-      </nav>
 
-  <!-- Modal de éxito -->
-  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar position-relative">
+    <div class="container-fluid d-flex justify-content-between align-items-center navbar-container">
+
+      <a class="navbar-brand nvbar d-flex align-items-center" href="../pages/Front_APPs.html">
+        <img src="../images/teco.png" alt="Logo" width="70" height="22">
+        <span class="ms-2">PORTAL ITAS</span>
+      </a>
+
+      <span class="navbar-text nvbar navbar-center">
+        Modificación de Usuarios
+      </span>
+
+      <div class="d-flex align-items-center gap-2">
+        <button
+          class="nvbar"
+          onclick="history.back()"
+          style="background:none; border:1px solid white; color:white; padding:4px 10px; border-radius:4px;"
+        >
+          Volver
+        </button>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- MODAL -->
+  <div class="modal fade" id="successModal" tabindex="-1">
+
     <div class="modal-dialog modal-dialog-centered">
+
       <div class="modal-content">
+
         <div class="modal-header">
-          <h5 class="modal-title" id="successModalLabel">Aviso</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          <h5 class="modal-title">Aviso</h5>
+
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+          ></button>
         </div>
+
         <div class="modal-body" id="successModalBody"></div>
+
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-dismiss="modal"
+          >
+            Aceptar
+          </button>
         </div>
+
       </div>
     </div>
   </div>
 
+  <!-- CONTENIDO -->
+  <div class="container mt-4">
+
+    <h4 class="mb-4">
+      Modificar Usuario
+    </h4>
+
+    <div class="form-container">
+
+      <!-- SELECT USUARIO -->
+      <div class="row mb-4">
+
+        <div class="col-md-8">
+
+          <label class="form-label">
+            Seleccionar usuario
+          </label>
+
+          <select class="form-select" id="selectUsuario">
+            <option value="">
+              Seleccione un usuario
+            </option>
+          </select>
+
+        </div>
+
+        <div class="col-md-4 d-flex align-items-end">
+
+          <button
+            type="button"
+            class="btn btn-primary w-100"
+            id="btnCargar"
+          >
+            Cargar Usuario
+          </button>
+
+        </div>
+
+      </div>
+
+      <!-- FORM -->
+      <form id="userForm">
+
+        <!-- FILA -->
+        <div class="row mb-3">
+
+          <div class="col-md-4">
+            <label class="form-label">Legajo</label>
+
+            <input
+              type="text"
+              class="form-control"
+              id="legajo"
+              readonly
+            >
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Apellido</label>
+
+            <input
+              type="text"
+              class="form-control"
+              id="apellido"
+              maxlength="20"
+            >
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Nombre</label>
+
+            <input
+              type="text"
+              class="form-control"
+              id="nombre"
+              maxlength="15"
+            >
+          </div>
+
+        </div>
+
+        <!-- FILA -->
+        <div class="row mb-3">
+
+          <div class="col-md-4">
+            <label class="form-label">Email</label>
+
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              maxlength="50"
+            >
+          </div>
+
+          <div class="col-md-4">
+
+            <label class="form-label">Referente</label>
+
+            <select class="form-select" id="referente">
+              <option value="">
+                Seleccione un referente
+              </option>
+            </select>
+
+          </div>
+
+          <div class="col-md-4">
+
+            <label class="form-label">
+              Fecha de Nacimiento
+            </label>
+
+            <input
+              type="date"
+              class="form-control"
+              id="fecha_nacimiento"
+            >
+
+          </div>
+
+        </div>
+
+        <!-- FILA -->
+        <div class="row mb-3">
+
+          <div class="col-md-4">
+
+            <label class="form-label">Empresa</label>
+
+            <select class="form-select" id="empresa">
+
+              <option value="">Seleccione una empresa</option>
+
+              <option value="MEGA TECH S.A.">
+                MEGA TECH S.A.
+              </option>
+
+              <option value="SOFRE DIGITAL S.A.">
+                SOFRE DIGITAL S.A.
+              </option>
+
+              <option value="TELECOM">
+                TELECOM
+              </option>
+
+            </select>
+
+          </div>
+
+          <div class="col-md-4">
+
+            <label class="form-label">
+              Convenio
+            </label>
+
+            <select class="form-select" id="convenio">
+
+              <option value="">
+                Seleccione un convenio
+              </option>
+
+              <option value="FC">FC</option>
+              <option value="SAT">SAT</option>
+              <option value="FOETRA">FOETRA</option>
+              <option value="N/A">N/A</option>
+              <option value="FOETRA M">FOETRA M</option>
+              <option value="FOEESITRA">FOEESITRA</option>
+              <option value="FOEESITRA M">FOEESITRA M</option>
+              <option value="FATEL">FATEL</option>
+              <option value="SITRATEL">SITRATEL</option>
+              <option value="UPJET">UPJET</option>
+
+            </select>
+
+          </div>
+
+          <div class="col-md-4">
+
+            <label class="form-label">Ciudad</label>
+
+            <select class="form-select" id="ciudad">
+
+              <option value="">
+                Seleccione una ciudad
+              </option>
+
+              <option value="Bs As">Bs As</option>
+              <option value="Córdoba">Córdoba</option>
+              <option value="Entre Ríos">Entre Ríos</option>
+              <option value="La Pampa">La Pampa</option>
+              <option value="Misiones">Misiones</option>
+              <option value="Rosario">Rosario</option>
+              <option value="Santa Fe">Santa Fe</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <!-- FILA -->
+        <div class="row mb-4">
+
+          <div class="col-md-4">
+
+            <label class="form-label">Alias</label>
+
+            <input
+              type="text"
+              class="form-control"
+              id="alias"
+              maxlength="15"
+            >
+
+          </div>
+
+        </div>
+
+        <!-- BOTONES -->
+        <div class="d-flex justify-content-end">
+
+          <button
+            type="reset"
+            class="btn btn-secondary me-2"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+          >
+            Guardar Cambios
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
   <script src="../js/config.js"></script>
+
   <script src="../js/Front_APPs.js"></script>
+
   <script src="../js/modificarUsuarioAbm.js"></script>
+
 </body>
 </html>
