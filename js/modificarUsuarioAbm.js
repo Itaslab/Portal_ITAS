@@ -551,67 +551,82 @@ btnGuardarPermiso.addEventListener("click", async () => {
 
 
 // =====================================================
-// ELIMINAR PERMISO
+// MODAL ELIMINAR PERMISO
 // =====================================================
 
-document.addEventListener("click", async (e) => {
+const modalEliminarPermiso = new bootstrap.Modal(
+  document.getElementById("modalEliminarPermiso")
+);
 
-  // Detecta botón eliminar
+let permisoAEliminar = null;
+
+
+// =====================================================
+// CLICK BOTON ELIMINAR
+// =====================================================
+
+document.addEventListener("click", (e) => {
+
   if (!e.target.classList.contains("btnEliminarPermiso")) {
     return;
   }
 
-  const idUsuarioPerfilApp =
-    e.target.dataset.id;
+  permisoAEliminar = e.target.dataset.id;
 
-  if (!idUsuarioPerfilApp) {
-    return;
-  }
+  modalEliminarPermiso.show();
 
-  // Confirmación
-  const confirmar = confirm(
-    "¿Eliminar permiso?"
-  );
+});
 
-  if (!confirmar) {
-    return;
-  }
 
-  try {
+// =====================================================
+// CONFIRMAR ELIMINACION
+// =====================================================
 
-    const res = await fetch(
-      `${basePath}/usuario_perfil_app/${idUsuarioPerfilApp}`,
-      {
-        method: "DELETE"
-      }
-    );
+document
+  .getElementById("btnConfirmarEliminarPermiso")
+  .addEventListener("click", async () => {
 
-    const data = await res.json();
-
-    if (!res.ok) {
-
-      alert(
-        data.mensaje ||
-        "Error eliminando permiso"
-      );
-
+    if (!permisoAEliminar) {
       return;
     }
 
-    // Recargar lista permisos
-    cargarPermisosActuales();
+    try {
 
-  } catch (error) {
+      const res = await fetch(
+        `${basePath}/usuario_perfil_app/${permisoAEliminar}`,
+        {
+          method: "DELETE"
+        }
+      );
 
-    console.error(error);
+      const data = await res.json();
 
-    alert(
-      "Error eliminando permiso"
-    );
+      if (!res.ok) {
 
-  }
+        alert(
+          data.mensaje ||
+          "Error eliminando permiso"
+        );
 
-});
+        return;
+
+      }
+
+      // Recargar permisos
+      await cargarPermisosActuales();
+
+      // Cerrar modal
+      modalEliminarPermiso.hide();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("Error eliminando permiso");
+
+    }
+
+  });
 
 
 // =====================================================
