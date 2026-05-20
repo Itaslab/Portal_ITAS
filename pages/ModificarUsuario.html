@@ -313,12 +313,128 @@
           </button>
 
         </div>
+        <hr class="mt-4 mb-4">
+
+<div class="d-flex justify-content-end">
+  <button 
+    type="button"
+    class="btn btn-warning"
+    data-bs-toggle="modal"
+    data-bs-target="#modalPermisos"
+  >
+    Agregar / Modificar Permisos
+  </button>
+</div>
 
       </form>
 
     </div>
 
   </div>
+
+  <!-- ===================================================== -->
+<!-- MODAL PERMISOS -->
+<!-- ===================================================== -->
+
+<div class="modal fade" id="modalPermisos" tabindex="-1">
+
+  <div class="modal-dialog modal-dialog-centered">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h5 class="modal-title">
+          Agregar Permiso
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <!-- ================================ -->
+        <!-- APLICACION -->
+        <!-- ================================ -->
+
+        <div class="mb-3">
+
+          <label class="form-label">
+            Aplicación
+          </label>
+
+          <select
+            class="form-select"
+            id="selectAplicacion"
+          >
+
+            <option value="">
+              Seleccione aplicación
+            </option>
+
+          </select>
+
+        </div>
+
+        <!-- ================================ -->
+        <!-- PERFIL -->
+        <!-- ================================ -->
+
+        <div class="mb-3">
+
+          <label class="form-label">
+            Perfil
+          </label>
+
+          <select
+            class="form-select"
+            id="selectPerfil"
+          >
+
+            <option value="">
+              Seleccione perfil
+            </option>
+
+          </select>
+
+        </div>
+
+        <!-- MENSAJES -->
+
+        <div id="resultadoPermiso"></div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="btnGuardarPermiso"
+        >
+          Guardar Permiso
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
   <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
