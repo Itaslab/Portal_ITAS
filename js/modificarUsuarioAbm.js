@@ -334,6 +334,7 @@ const selectAplicacion = document.getElementById("selectAplicacion");
 const selectPerfil = document.getElementById("selectPerfil");
 const btnGuardarPermiso = document.getElementById("btnGuardarPermiso");
 const resultadoPermiso = document.getElementById("resultadoPermiso");
+const listaPermisosActuales =document.getElementById("listaPermisosActuales");
 
 
 // =====================================================
@@ -435,7 +436,8 @@ modalPermisos.addEventListener("show.bs.modal", async () => {
 
   resultadoPermiso.innerHTML = "";
 
-  await cargarAplicaciones();
+ await cargarAplicaciones();
+await cargarPermisosActuales();
 
 });
 
@@ -521,6 +523,7 @@ btnGuardarPermiso.addEventListener("click", async () => {
           Permiso agregado correctamente
         </div>
       `;
+      await cargarPermisosActuales();
 
     } else {
 
@@ -545,6 +548,89 @@ btnGuardarPermiso.addEventListener("click", async () => {
   }
 
 });
+
+
+// =====================================================
+// CARGAR PERMISOS ACTUALES
+// =====================================================
+
+async function cargarPermisosActuales() {
+
+  const legajo =
+    document.getElementById("legajo").value;
+
+  if (!legajo) return;
+
+  try {
+
+    const res = await fetch(
+      basePath + `/usuario_perfil_app/${legajo}`
+    );
+
+    const data = await res.json();
+
+    listaPermisosActuales.innerHTML = "";
+
+    if (
+      !data.success ||
+      data.permisos.length === 0
+    ) {
+
+      listaPermisosActuales.innerHTML = `
+        <div class="text-muted">
+          Sin permisos cargados
+        </div>
+      `;
+
+      return;
+
+    }
+
+    data.permisos.forEach(permiso => {
+
+      listaPermisosActuales.innerHTML += `
+
+        <div class="
+          d-flex
+          justify-content-between
+          align-items-center
+          border
+          rounded
+          p-2
+          mb-2
+        ">
+
+          <div>
+            <strong>
+              ${permiso.Aplicacion}
+            </strong>
+            →
+            ${permiso.Perfil}
+          </div>
+
+          <button
+            class="btn btn-danger btn-sm btnEliminarPermiso"
+            data-id="${permiso.ID_UsuarioPerfilApp}"
+          >
+            Eliminar
+          </button>
+
+        </div>
+
+      `;
+
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Error cargando permisos actuales:",
+      error
+    );
+
+  }
+
+}
 
 
 });

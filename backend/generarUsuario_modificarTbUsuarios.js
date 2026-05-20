@@ -424,4 +424,64 @@ router.post("/usuario_perfil_app", async (req, res) => {
 
 });
 
+
+// =====================================================
+// OBTENER PERMISOS ACTUALES DEL USUARIO
+// =====================================================
+
+router.get("/usuario_perfil_app/:legajo", async (req, res) => {
+
+  const { legajo } = req.params;
+
+  try {
+
+    const pool = await poolPromise;
+
+    const result = await pool.request()
+      .input("Legajo", sql.VarChar, legajo)
+      .query(`
+
+        SELECT
+          UPA.ID_UsuarioPerfilApp,
+          A.Nombre AS Aplicacion,
+          P.Nombre AS Perfil
+          
+        FROM ${schema}.USUARIO_PERFIL_APP UPA
+
+        INNER JOIN ${schema}.USUARIO U
+          ON U.ID_Usuario = UPA.ID_Usuario
+
+        INNER JOIN ${schema}.APLICACION A
+          ON A.ID_Aplicacion = UPA.ID_Aplicacion
+
+        INNER JOIN ${schema}.PERFIL P
+          ON P.ID_Perfil = UPA.ID_Perfil
+
+        WHERE U.Legajo = @Legajo
+
+        ORDER BY A.Nombre, P.Nombre
+
+      `);
+
+    res.json({
+      success: true,
+      permisos: result.recordset
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Error obteniendo permisos:",
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      mensaje: "Error obteniendo permisos"
+    });
+
+  }
+
+});
+
 module.exports = router;
