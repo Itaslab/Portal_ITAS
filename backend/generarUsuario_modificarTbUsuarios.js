@@ -470,7 +470,7 @@ router.get("/usuario_perfil_app/:legajo", async (req, res) => {
       .query(`
 
         SELECT
-          UPA.ID_UsuarioPerfilApp,
+          UPA.ID_Usuario_Perfil_App,
           A.Nombre AS Aplicacion,
           P.Nombre AS Perfil
 
