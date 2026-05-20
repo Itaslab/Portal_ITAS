@@ -138,11 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
           Empresa: valores.empresa,
           Convenio: valores.convenio,
           Ciudad: valores.ciudad,
-          // Permisos (front)
-          Perm_Robot: !!document.getElementById('perm_robot')?.checked,
-          Perm_AppOrdenes: !!document.getElementById('perm_appordenes')?.checked,
-          Perm_Grafana: !!document.getElementById('perm_grafana')?.checked,
-          Perm_ABMUsuarios: !!document.getElementById('perm_abm')?.checked
+
         })
       });
 
