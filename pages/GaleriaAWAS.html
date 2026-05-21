@@ -35,6 +35,29 @@
 
 
 <div class="container mt-5">
+
+  <!-- 🔹 Filtros -->
+<div class="row mb-3 align-items-end">
+
+
+  <div class="col-md-3">
+    <label for="filtroEstado" class="form-label">Filtrar por estado:</label>
+    <select id="filtroEstado" class="form-select">
+      <option value="">Todos</option>
+      <option value="Activo">Activo</option>
+      <option value="Inactivo">Inactivo</option>
+      <option value="Backlog">Backlog</option>
+      <option value="Pendiente">Pendiente</option>
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <label for="filtroTitulo" class="form-label">Buscar por Titulo:</label>
+    <input type="text" id="filtroTitulo" class="form-control"
+           placeholder="Ingrese Titulo">
+  </div>
+</div>
+
     <div class="d-flex justify-content-end mb-3">
         <button class="btn btn-success text-white" onclick="nuevoAWA()">
             + Crear nuevo AWA
