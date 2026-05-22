@@ -82,7 +82,7 @@ router.delete("/:id", async (req, res) => {
       .query(`
         DELETE FROM ${schema}.LICENCIAS_SMART
         WHERE ID = @id
-        AND Estado = 'PENDING'
+        AND UPPER(Estado) = 'PENDING'
       `);
 
     if (result.rowsAffected[0] === 0) {
@@ -131,8 +131,8 @@ router.put("/:id", async (req, res) => {
           Fecha_Desde = @fechaDesde,
           Fecha_Hasta = @fechaHasta
         WHERE ID = @id
-        AND ID_Usuario = @idUsuario
-        AND Estado = 'PENDING'
+        AND UPPER(Estado) = 'PENDING'
+
       `);
 
     if (result.rowsAffected[0] === 0) {
