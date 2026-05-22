@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     selectUsuario.addEventListener("change", () => {
 
         const usuarioSeleccionado = usuarios.find(
-            u => u.ID == selectUsuario.value
+            u => u.ID_Usuario == selectUsuario.value
         );
 
         if (!usuarioSeleccionado) {
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
-        emailInput.value = usuarioSeleccionado.EMAIL || "";
+        emailInput.value = usuarioSeleccionado.Email || "";
 
     });
 
