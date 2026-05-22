@@ -83,6 +83,7 @@ form.addEventListener("submit", async (e) => {
 
         const idUsuario = selectUsuario.value;
         const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
 
         // VALIDACIONES
         if (!idUsuario) {
@@ -91,6 +92,10 @@ form.addEventListener("submit", async (e) => {
 
         if (password.length < 8 || password.length > 15) {
             return alert("La contraseña debe tener entre 8 y 15 caracteres");
+        }
+
+        if (password !== confirmPassword) {
+             return alert("Las contraseñas no coinciden");
         }
 
         const response = await fetch(
