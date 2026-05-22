@@ -82,7 +82,6 @@ router.delete("/:id", async (req, res) => {
       .query(`
         DELETE FROM ${schema}.LICENCIAS_SMART
         WHERE ID = @id
-        AND ID_Usuario = @idUsuario
         AND Estado = 'PENDING'
       `);
 
