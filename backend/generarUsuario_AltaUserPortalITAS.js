@@ -16,11 +16,12 @@ router.get("/usuarios", async (req, res) => {
 
         const result = await pool.request().query(`
             SELECT
-                ID,
-                NOMBRE,
-                EMAIL
+                ID_Usuario,
+                Nombre,
+                Apellido,
+                Email
             FROM ${schema}.USUARIO
-            ORDER BY NOMBRE
+            ORDER BY Nombre, Apellido
         `);
 
         res.json(result.recordset);
