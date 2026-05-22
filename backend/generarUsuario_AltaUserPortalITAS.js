@@ -8,7 +8,7 @@ const schema = process.env.DB_SCHEMA;
 // ==========================================
 // OBTENER USUARIOS
 // ==========================================
-router.get("/usuarios", async (req, res) => {
+router.get("/usuariosPortalAlta", async (req, res) => {
 
     try {
 
