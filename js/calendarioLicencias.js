@@ -297,21 +297,77 @@ document.getElementById("btnVerMisLicencias").addEventListener("click", async ()
       if (l.Estado === "RECHAZADA") estadoColor = "danger";
 
 
-      const fila = `
-        <tr>
-          <td>${l.TipoLic}</td>
-          <td>${l.Fecha_Desde.split("T")[0]}</td>
-          <td>${l.Fecha_Hasta.split("T")[0]}</td>
-          <td>
-          <span class="badge bg-${estadoColor}">
-              ${l.Estado}
-          </span>
-          </td>
-        </tr>
-      `;
+      const estado = (l.Estado || "").toUpperCase();
+
+let accionesHTML = "";
+
+// ✅ SOLO PENDING tiene acciones
+if (estado === "PENDING") {
+  accionesHTML = `
+    <button class="btn btn-sm btn-outline-primary btn-editar me-2" data-id="${l.Id}">
+      ✏
+    </button>
+    <button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="${l.Id}">
+      🗑
+    </button>
+  `;
+}
+
+const fila = `
+  <tr>
+    <td>${l.TipoLic}</td>
+    <td>${l.Fecha_Desde.split("T")[0]}</td>
+    <td>${l.Fecha_Hasta.split("T")[0]}</td>
+    <td>
+      <span class="badge bg-${estadoColor}">
+        ${l.Estado}
+      </span>
+    </td>
+    <td>${accionesHTML}</td>
+  </tr>
+`;
+
 
       tabla.innerHTML += fila;
 
+    } );
+// ✅ EDITAR
+document.querySelectorAll(".btn-editar").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    const id = e.currentTarget.dataset.id;
+
+    console.log("Editar licencia ID:", id);
+
+    // Más adelante acá abrís el modal
+  });
+  
+});
+// ✅ ELIMINAR
+    document.querySelectorAll(".btn-eliminar").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const id = e.currentTarget.dataset.id;
+    
+        if (!confirm("¿Eliminar licencia?")) return;
+    
+        try {
+          const res = await fetch(`${basePath}/api/licencias/${id}`, {
+            method: "DELETE"
+          });
+    
+          const data = await res.json();
+    
+          if (!data.success) throw new Error(data.error);
+    
+          alert("Licencia eliminada");
+    
+          // 🔥 recargar lista
+          document.getElementById("btnVerMisLicencias").click();
+    
+        } catch (err) {
+          console.error(err);
+          alert("Error eliminando licencia");
+        }
+      });
     });
 
     modalMisLicencias.show();
