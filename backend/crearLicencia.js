@@ -70,7 +70,7 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
 
-    const id = req.params.id;
+    const id = parseInt(req.params.id)
     const idUsuario = req.session.user.ID_Usuario;
 
     const pool = await poolPromise;
@@ -111,7 +111,8 @@ router.put("/:id", async (req, res) => {
 
   try {
 
-    const id = req.params.id;
+ 
+    const id = parseInt(req.params.id)
     const { tipoLic, fechaDesde, fechaHasta } = req.body;
 
     const idUsuario = req.session.user.ID_Usuario;
