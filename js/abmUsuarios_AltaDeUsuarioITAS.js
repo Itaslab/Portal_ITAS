@@ -27,11 +27,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             `;
 
             usuarios.forEach(usuario => {
-
                 const option = document.createElement("option");
 
-                option.value = usuario.ID;
-                option.textContent = usuario.NOMBRE;
+                option.value = usuario.ID_Usuario;
+
+                option.textContent = `
+                    ${usuario.Nombre} ${usuario.Apellido}
+                `;
 
                 selectUsuario.appendChild(option);
 
