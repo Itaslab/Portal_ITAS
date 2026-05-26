@@ -364,7 +364,7 @@ document.querySelectorAll(".btn-editar").forEach(btn => {
     btnGuardar.replaceWith(btnGuardar.cloneNode(true));
     btnGuardar = document.getElementById("btnCargarLicencia");
 
-    btnGuardar.textContent = "Guardar cambios";
+    btnGuardar.textContent = "Guardar cambiOs";
 
     btnGuardar.addEventListener("click", async () => {
 
