@@ -331,16 +331,80 @@ const fila = `
       tabla.innerHTML += fila;
 
     } );
+    
 // ✅ EDITAR
 document.querySelectorAll(".btn-editar").forEach(btn => {
   btn.addEventListener("click", (e) => {
-    const id = e.currentTarget.dataset.id;
 
+    const id = e.currentTarget.dataset.id;
     console.log("Editar licencia ID:", id);
 
-    // Más adelante acá abrís el modal
+    // 🔥 buscar licencia
+    const licencia = licencias.find(l => l.Id == id);
+    if (!licencia) {
+      console.error("No se encontró la licencia");
+      return;
+    }
+
+    // 🔥 cargar datos en el modal
+    document.getElementById("tipoLicencia").value = licencia.TipoLic;
+    document.getElementById("fechaDesde").value = licencia.Fecha_Desde.split("T")[0];
+    document.getElementById("fechaHasta").value = licencia.Fecha_Hasta.split("T")[0];
+
+    const modal = new bootstrap.Modal(
+      document.getElementById("modalCrearLicencia")
+    );
+
+    modal.show();
+
+    // 🔥 cambiar comportamiento del botón
+    let btnGuardar = document.getElementById("btnCargarLicencia");
+
+    // eliminar eventos viejos
+    btnGuardar.replaceWith(btnGuardar.cloneNode(true));
+    btnGuardar = document.getElementById("btnCargarLicencia");
+
+    btnGuardar.textContent = "Guardar cambios";
+
+    btnGuardar.addEventListener("click", async () => {
+
+      const tipo = document.getElementById("tipoLicencia").value;
+      const desde = document.getElementById("fechaDesde").value;
+      const hasta = document.getElementById("fechaHasta").value;
+
+      try {
+
+        const res = await fetch(`${basePath}/api/licencias/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            tipoLic: tipo,
+            fechaDesde: desde,
+            fechaHasta: hasta
+          })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) throw new Error(data.error);
+
+        alert("Licencia actualizada ✅");
+
+        modal.hide();
+
+        // 🔥 refrescar tabla
+        document.getElementById("btnVerMisLicencias").click();
+
+      } catch (error) {
+        console.error(error);
+        alert("Error al actualizar licencia");
+      }
+
+    });
+
   });
-  
 });
 // ✅ ELIMINAR
     document.querySelectorAll(".btn-eliminar").forEach(btn => {
