@@ -340,7 +340,7 @@ document.querySelectorAll(".btn-editar").forEach(btn => {
     console.log("Editar licencia ID:", id);
 
     // 🔥 buscar licencia
-    const licencia = licencias.find(l => l.Id == id);
+    const licencia = licencias.find(l => l.id == id);
     if (!licencia) {
       console.error("No se encontró la licencia");
       return;
