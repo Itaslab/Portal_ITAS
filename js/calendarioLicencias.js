@@ -350,6 +350,8 @@ document.querySelectorAll(".btn-editar").forEach(btn => {
     document.getElementById("fechaDesde").value = licencia.Fecha_Desde.split("T")[0];
     document.getElementById("fechaHasta").value = licencia.Fecha_Hasta.split("T")[0];
  
+  modalMisLicencias.hide();
+  
   const modalEl = document.getElementById("modalCrearLicencia");
 
   const modal =
@@ -358,7 +360,7 @@ document.querySelectorAll(".btn-editar").forEach(btn => {
 
   modal.show();
  
-    modal.show();
+  
  
     // 🔥 cambiar comportamiento del botón
     let btnGuardar = document.getElementById("btnCargarLicencia");
