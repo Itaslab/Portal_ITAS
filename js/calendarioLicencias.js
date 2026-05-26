@@ -344,7 +344,7 @@ document.querySelectorAll(".btn-editar").forEach(btn => {
       console.error("No se encontró la licencia");
       return;
     }
- 
+    console.log(licencia);
     // 🔥 cargar datos en el modal
     document.getElementById("tipoLicencia").value = licencia.TipoLic;
     document.getElementById("fechaDesde").value = licencia.Fecha_Desde.split("T")[0];
