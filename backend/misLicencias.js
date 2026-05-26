@@ -16,6 +16,7 @@ router.get("/", async (req, res) => {
       .input("idUsuario", sql.Int, idUsuario)
       .query(`
         SELECT 
+          Id,
           TipoLic,
           Fecha_Desde,
           Fecha_Hasta,

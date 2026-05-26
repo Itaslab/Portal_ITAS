@@ -70,18 +70,22 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
 
-    const id = parseInt(req.params.id)
-    const idUsuario = req.session.user.ID_Usuario;
+    const id = parseInt(req.params.id, 10);
+    const idUsuario = req.session?.user?.ID_Usuario;
+
+    if (!idUsuario) {
+      return res.status(401).json({ success: false, error: "No autorizado" });
+    }
 
     const pool = await poolPromise;
 
-    // 🔥 Solo permite borrar si es del usuario y está PENDING
     const result = await pool.request()
       .input("id", sql.Int, id)
       .input("idUsuario", sql.Int, idUsuario)
       .query(`
         DELETE FROM ${schema}.LICENCIAS_SMART
-        WHERE ID = @id
+        WHERE Id = @id
+        AND ID_Usuario = @idUsuario
         AND UPPER(Estado) = 'PENDING'
       `);
 
@@ -109,12 +113,13 @@ router.delete("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
 
   try {
-
- 
-    const id = parseInt(req.params.id)
+    const id = parseInt(req.params.id, 10);
     const { tipoLic, fechaDesde, fechaHasta } = req.body;
+    const idUsuario = req.session?.user?.ID_Usuario;
 
-    const idUsuario = req.session.user.ID_Usuario;
+    if (!idUsuario) {
+      return res.status(401).json({ success: false, error: "No autorizado" });
+    }
 
     const pool = await poolPromise;
 
@@ -130,9 +135,9 @@ router.put("/:id", async (req, res) => {
           Licencia = @tipoLic,
           Fecha_Desde = @fechaDesde,
           Fecha_Hasta = @fechaHasta
-        WHERE ID = @id
+        WHERE Id = @id
+        AND ID_Usuario = @idUsuario
         AND UPPER(Estado) = 'PENDING'
-
       `);
 
     if (result.rowsAffected[0] === 0) {
@@ -145,19 +150,13 @@ router.put("/:id", async (req, res) => {
     res.json({ success: true });
 
   } catch (error) {
-
     console.error("Error editando licencia:", error);
-
     res.status(500).json({
       success: false,
       error: "Error al editar licencia"
     });
-
   }
-
 });
-``
-
 
 module.exports = router;
 
