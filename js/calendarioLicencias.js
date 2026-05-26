@@ -297,21 +297,148 @@ document.getElementById("btnVerMisLicencias").addEventListener("click", async ()
       if (l.Estado === "RECHAZADA") estadoColor = "danger";
 
 
-      const fila = `
-        <tr>
-          <td>${l.TipoLic}</td>
-          <td>${l.Fecha_Desde.split("T")[0]}</td>
-          <td>${l.Fecha_Hasta.split("T")[0]}</td>
-          <td>
-          <span class="badge bg-${estadoColor}">
-              ${l.Estado}
-          </span>
-          </td>
-        </tr>
-      `;
+      const estado = (l.Estado || "").toUpperCase();
+
+let accionesHTML = "";
+
+// ✅ SOLO PENDING tiene acciones
+if (estado === "PENDING") {
+  accionesHTML = `
+    <button class="btn btn-sm btn-outline-primary btn-editar me-2" data-id="${l.Id}">
+      ✏
+    </button>
+    <button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="${l.Id}">
+      🗑
+    </button>
+  `;
+}
+
+const fila = `
+  <tr>
+    <td>${l.TipoLic}</td>
+    <td>${l.Fecha_Desde.split("T")[0]}</td>
+    <td>${l.Fecha_Hasta.split("T")[0]}</td>
+    <td>
+      <span class="badge bg-${estadoColor}">
+        ${l.Estado}
+      </span>
+    </td>
+    <td>${accionesHTML}</td>
+  </tr>
+`;
+
 
       tabla.innerHTML += fila;
 
+    } );
+// ✅ EDITAR
+document.querySelectorAll(".btn-editar").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+ 
+    const id = e.currentTarget.dataset.id;
+    console.log("Editar licencia ID:", id);
+ 
+    // 🔥 buscar licencia
+    const licencia = licencias.find(l => l.Id == id);
+    if (!licencia) {
+      console.error("No se encontró la licencia");
+      return;
+    }
+    console.log(licencia);
+    // 🔥 cargar datos en el modal
+    document.getElementById("tipoLicencia").value = licencia.TipoLic;
+    document.getElementById("fechaDesde").value = licencia.Fecha_Desde.split("T")[0];
+    document.getElementById("fechaHasta").value = licencia.Fecha_Hasta.split("T")[0];
+ 
+  modalMisLicencias.hide();
+  
+  const modalEl = document.getElementById("modalCrearLicencia");
+
+  const modal =
+  bootstrap.Modal.getInstance(modalEl) ||
+  new bootstrap.Modal(modalEl);
+
+  modal.show();
+ 
+  
+ 
+    // 🔥 cambiar comportamiento del botón
+    let btnGuardar = document.getElementById("btnCargarLicencia");
+ 
+    // eliminar eventos viejos
+    btnGuardar.replaceWith(btnGuardar.cloneNode(true));
+    btnGuardar = document.getElementById("btnCargarLicencia");
+ 
+    btnGuardar.textContent = "Guardar cambiOs";
+ 
+    btnGuardar.addEventListener("click", async () => {
+ 
+      const tipo = document.getElementById("tipoLicencia").value;
+      const desde = document.getElementById("fechaDesde").value;
+      const hasta = document.getElementById("fechaHasta").value;
+ 
+      try {
+ 
+        const res = await fetch(`${basePath}/api/licencias/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            tipoLic: tipo,
+            fechaDesde: desde,
+            fechaHasta: hasta
+          })
+        });
+ 
+        const data = await res.json();
+ 
+        if (!data.success) throw new Error(data.error);
+ 
+        alert("Licencia actualizada ✅");
+ 
+        modal.hide();
+ 
+        // 🔥 refrescar tabla
+        document.getElementById("btnVerMisLicencias").click();
+ 
+      } catch (error) {
+        console.error(error);
+        alert("Error al actualizar licencia");
+      }
+ 
+    });
+ 
+  });
+});
+  
+
+// ✅ ELIMINAR
+    document.querySelectorAll(".btn-eliminar").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        const id = e.currentTarget.dataset.id;
+    
+        if (!confirm("¿Eliminar licencia?")) return;
+    
+        try {
+          const res = await fetch(`${basePath}/api/licencias/${id}`, {
+            method: "DELETE"
+          });
+    
+          const data = await res.json();
+    
+          if (!data.success) throw new Error(data.error);
+    
+          alert("Licencia eliminada");
+    
+          // 🔥 recargar lista
+          document.getElementById("btnVerMisLicencias").click();
+    
+        } catch (err) {
+          console.error(err);
+          alert("Error eliminando licencia");
+        }
+      });
     });
 
     modalMisLicencias.show();

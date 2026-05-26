@@ -201,7 +201,8 @@ row.innerHTML = `
 
       tbody.appendChild(row);
     });
-
+    aplicarFiltros();
+    
   } catch (error) {
     console.error("Error cargando AWAS:", error);
   }
@@ -516,6 +517,44 @@ function mostrarToast(mensaje, tipo = "success") {
   const toast = new bootstrap.Toast(toastEl);
   toast.show();
 }
+
+// ============================
+// Filtros
+// ============================
+
+function aplicarFiltros() {
+  const filtroTitulo = document.getElementById("filtroTitulo").value.toLowerCase();
+  const filtroEstado = document.getElementById("filtroEstado").value;
+
+  const filas = document.querySelectorAll("#tablaAwas tbody tr");
+
+  filas.forEach(fila => {
+    const titulo = fila.children[2].textContent.toLowerCase();
+    const estado = fila.children[3].textContent;
+
+    let mostrar = true;
+
+    // Filtrar por título
+    if (filtroTitulo && !titulo.includes(filtroTitulo)) {
+      mostrar = false;
+    }
+
+    // Filtrar por estado
+    if (filtroEstado && estado !== filtroEstado) {
+      mostrar = false;
+    }
+
+    fila.style.display = mostrar ? "" : "none";
+  });
+}
+function inicializarFiltros() {
+  document.getElementById("filtroTitulo")
+    .addEventListener("input", aplicarFiltros);
+
+  document.getElementById("filtroEstado")
+    .addEventListener("change", aplicarFiltros);
+}
+
 // ============================
 // Init
 // ============================
@@ -536,5 +575,7 @@ document.getElementById("inputDesde").addEventListener("change", function() {
 await cargarPermisosAwas();
 
   await cargarAWAS();
+
+  inicializarFiltros();
 
 })();
