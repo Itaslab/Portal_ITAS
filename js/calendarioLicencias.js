@@ -350,9 +350,13 @@ document.querySelectorAll(".btn-editar").forEach(btn => {
     document.getElementById("fechaDesde").value = licencia.Fecha_Desde.split("T")[0];
     document.getElementById("fechaHasta").value = licencia.Fecha_Hasta.split("T")[0];
  
-    const modal = new bootstrap.Modal(
-      document.getElementById("modalCrearLicencia")
-    );
+  const modalEl = document.getElementById("modalCrearLicencia");
+
+  const modal =
+  bootstrap.Modal.getInstance(modalEl) ||
+  new bootstrap.Modal(modalEl);
+
+  modal.show();
  
     modal.show();
  
