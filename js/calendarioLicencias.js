@@ -304,10 +304,10 @@ let accionesHTML = "";
 // ✅ SOLO PENDING tiene acciones
 if (estado === "PENDING") {
   accionesHTML = `
-    <button class="btn btn-sm btn-outline-primary btn-editar me-2" data-id="${l.ID}">
+    <button class="btn btn-sm btn-outline-primary btn-editar me-2" data-id="${l.Id}">
       ✏
     </button>
-    <button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="${l.ID}">
+    <button class="btn btn-sm btn-outline-danger btn-eliminar" data-id="${l.Id}">
       🗑
     </button>
   `;
