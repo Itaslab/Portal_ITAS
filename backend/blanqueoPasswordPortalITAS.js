@@ -75,16 +75,16 @@ router.post('/blanquear-password', async (req, res) => {
 
     // Actualizar la contraseña en WEB_PORTAL_ITAS_USR
     // Cambiar PasswordHash a la nueva contraseña hasheada
-    // Cambiar Blanquear_Pass a 0 para FORZAR cambio de contraseña en próximo login
+    // Cambiar Blanquear_Pass a 1 para indicar que el blanqueo fue realizado
     const updateResult = await pool
       .request()
       .input('id_usuario', sql.Int, idUsuarioNum)
-      .input('newPass', sql.VarChar, hashedPassword)
+      .input('newPass', sql.VarChar(255), hashedPassword)
       .query(`
         UPDATE ${schema}.WEB_PORTAL_ITAS_USR 
         SET 
           PasswordHash = @newPass,
-          Blanquear_Pass = 0
+          Blanquear_Pass = 1
         WHERE 
           ID_Usuario = @id_usuario
       `);
