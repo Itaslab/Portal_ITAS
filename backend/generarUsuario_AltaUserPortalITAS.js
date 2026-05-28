@@ -101,7 +101,7 @@ router.post("/altaUsuarioPortal", async (req, res) => {
                 (
                     @idUsuario,
                     1,
-                    1,
+                    0,
                     @passwordHash
                 )
             `);
