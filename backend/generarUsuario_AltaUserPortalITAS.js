@@ -65,6 +65,15 @@ router.post("/altaUsuarioPortal", async (req, res) => {
 
         const pool = await poolPromise;
 
+        // RESOLVER ID DE APLICACIÓN PORTAL EN PRODUCCIÓN O TEST
+        const appResult = await pool.request().query(`
+            SELECT TOP 1 ID_Aplicacion
+            FROM ${schema}.APLICACION
+            WHERE Nombre LIKE '%Portal%' OR Nombre LIKE '%ITAS%'
+        `);
+
+        const idAplicacionPortal = appResult.recordset[0]?.ID_Aplicacion || 1;
+
         // VALIDAR EXISTENCIA
         const existe = await pool.request()
             .input("idUsuario", sql.Int, idUsuario)
@@ -88,7 +97,8 @@ router.post("/altaUsuarioPortal", async (req, res) => {
         // INSERT
         await pool.request()
             .input("idUsuario", sql.Int, idUsuario)
-            .input("passwordHash", sql.VarChar(255), passwordHash)
+            .input("idAplicacion", sql.Int, idAplicacionPortal)
+            .input("passwordHash", sql.NVarChar(255), passwordHash)
             .query(`
                 INSERT INTO ${schema}.WEB_PORTAL_ITAS_USR
                 (
@@ -100,7 +110,7 @@ router.post("/altaUsuarioPortal", async (req, res) => {
                 VALUES
                 (
                     @idUsuario,
-                    1,
+                    @idAplicacion,
                     0,
                     @passwordHash
                 )
@@ -115,7 +125,7 @@ router.post("/altaUsuarioPortal", async (req, res) => {
         console.error("Error alta usuario portal:", error);
 
         res.status(500).json({
-            error: "Error al crear usuario portal"
+            error: error.message || "Error al crear usuario portal"
         });
 
     }

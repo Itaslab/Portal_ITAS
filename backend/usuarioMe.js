@@ -62,7 +62,7 @@ router.put('/me/password', async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await pool.request()
       .input('id', sql.Int, idUsuario)
-      .input('newPass', sql.VarChar(255), hashedPassword)
+      .input('newPass', sql.NVarChar(255), hashedPassword)
       .query(`UPDATE ${schema}.WEB_PORTAL_ITAS_USR SET PasswordHash = @newPass, Blanquear_Pass = 1 WHERE ID_Usuario = @id`);
 
     res.json({ success: true, mensaje: 'Contraseña actualizada' });
