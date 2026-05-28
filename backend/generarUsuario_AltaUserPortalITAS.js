@@ -104,6 +104,7 @@ router.post("/altaUsuarioPortal", async (req, res) => {
                 (
                     ID_Usuario,
                     ID_Aplicacion,
+                    Password,
                     Blanquear_Pass,
                     PasswordHash
                 )
@@ -111,6 +112,7 @@ router.post("/altaUsuarioPortal", async (req, res) => {
                 (
                     @idUsuario,
                     @idAplicacion,
+                    1234,
                     0,
                     @passwordHash
                 )
