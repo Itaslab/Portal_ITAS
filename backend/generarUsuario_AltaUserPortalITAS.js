@@ -88,7 +88,7 @@ router.post("/altaUsuarioPortal", async (req, res) => {
         // INSERT
         await pool.request()
             .input("idUsuario", sql.Int, idUsuario)
-            .input("passwordHash", sql.VarChar, passwordHash)
+            .input("passwordHash", sql.VarChar(255), passwordHash)
             .query(`
                 INSERT INTO ${schema}.WEB_PORTAL_ITAS_USR
                 (
