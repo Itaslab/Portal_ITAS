@@ -79,7 +79,7 @@ router.post('/blanquear-password', async (req, res) => {
     const updateResult = await pool
       .request()
       .input('id_usuario', sql.Int, idUsuarioNum)
-      .input('newPass', sql.VarChar, hashedPassword)
+      .input('newPass', sql.VarChar(255), hashedPassword)
       .query(`
         UPDATE ${schema}.WEB_PORTAL_ITAS_USR 
         SET 
