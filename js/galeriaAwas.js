@@ -4,6 +4,7 @@ let awasGlobal = [];
 let awaPendienteAccion = null;
 let usuarioEsAdmin = false;
 let esAdminAwas = false;
+let idAwaGrillaActual = null;
 
 // ============================
 // Helpers
@@ -315,6 +316,11 @@ function configurarAWA(id) {
 
 function abrirGrillaHoraria() {
 
+  idAwaGrillaActual =
+    document.getElementById("inputIdAwa").value;
+
+  console.log("AWA seleccionado:", idAwaGrillaActual);
+
   const modalConfiguracion =
     bootstrap.Modal.getInstance(
       document.getElementById("modalAwa")
@@ -331,6 +337,8 @@ function abrirGrillaHoraria() {
   modalGrilla.show();
 }
 
+document.getElementById("tituloGrillaAwa").innerText =
+  `Configuración horaria AWA ${idAwaGrillaActual}`;
 
 // ============================
 // Guardar
