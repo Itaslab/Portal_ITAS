@@ -395,30 +395,34 @@ function renderizarGrillaHoraria() {
     "Sábado"
   ];
 
-let html = `
-  <div class="alert alert-light border mb-3">
+  let html = `
+    <div class="alert alert-light border mb-3">
 
-    <strong>Leyenda:</strong>
+      <strong>Leyenda:</strong>
 
-    <span class="ms-3">
-      <span style="color:#f1979e;font-weight:bold;">0</span>
-      = No ejecutar
-    </span>
+      <span class="ms-3">
+        <span style="color:#f1979e;font-weight:bold;">0</span>
+        = No ejecutar
+      </span>
 
-    <span class="ms-3">
-      <span style="color:#86ddb6;font-weight:bold;">1</span>
-      = Cada ${frecuenciaRPAActual} hs
-    </span>
+      <span class="ms-3">
+        <span style="color:#86ddb6;font-weight:bold;">1</span>
+        = Cada ${frecuenciaRPAActual} hs
+      </span>
 
-    <span class="ms-3">
-      <span style="color:#89b7fc;font-weight:bold;">2</span>
-      = Cada ${frecuenciaRPA2Actual} hs
-    </span>
+      <span class="ms-3">
+        <span style="color:#89b7fc;font-weight:bold;">2</span>
+        = Cada ${frecuenciaRPA2Actual} hs
+      </span>
 
-  </div>
+    </div>
 
-  <div class="table-responsive">
-`;
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm text-center">
+        <thead>
+          <tr>
+            <th>Día</th>
+  `;
 
   for (let hora = 0; hora < 24; hora++) {
     html += `<th>${hora}</th>`;
@@ -443,29 +447,29 @@ let html = `
           x.Hora_Dia === hora
       );
 
-const frecuencia = registro
-  ? registro.Frecuencia
-  : "";
+      const frecuencia = registro
+        ? registro.Frecuencia
+        : "";
 
-let colorFondo = "";
+      let colorFondo = "";
 
-if (frecuencia === 0) {
-  colorFondo = "#f1979e"; // rojo suave
-}
-else if (frecuencia === 1) {
-  colorFondo = "#86ddb6"; // verde suave
-}
-else if (frecuencia === 2) {
-  colorFondo = "#89b7fc"; // azul suave
-}
+      if (frecuencia === 0) {
+        colorFondo = "#f1979e"; // rojo
+      }
+      else if (frecuencia === 1) {
+        colorFondo = "#86ddb6"; // verde
+      }
+      else if (frecuencia === 2) {
+        colorFondo = "#89b7fc"; // azul
+      }
 
-html += `
-  <td
-    style="background-color:${colorFondo};cursor:pointer"
-    onclick="cambiarFrecuencia(${registro.Id})">
-    ${frecuencia}
-  </td>
-`;
+      html += `
+        <td
+          style="background-color:${colorFondo};cursor:pointer"
+          onclick="cambiarFrecuencia(${registro.Id})">
+          ${frecuencia}
+        </td>
+      `;
     }
 
     html += `</tr>`;
