@@ -429,7 +429,9 @@ else if (frecuencia === 2) {
 }
 
 html += `
-  <td style="background-color:${colorFondo}">
+  <td
+    style="background-color:${colorFondo};cursor:pointer"
+    onclick="cambiarFrecuencia(${registro.Id})">
     ${frecuencia}
   </td>
 `;
@@ -445,6 +447,29 @@ html += `
   `;
 
   document.getElementById("contenidoGrillaHoraria").innerHTML = html;
+}
+
+function cambiarFrecuencia(idRegistro) {
+
+  const registro = grillaHorariaActual.find(
+    x => x.Id === idRegistro
+  );
+
+  if (!registro) {
+    return;
+  }
+
+  if (registro.Frecuencia === 0) {
+    registro.Frecuencia = 1;
+  }
+  else if (registro.Frecuencia === 1) {
+    registro.Frecuencia = 2;
+  }
+  else {
+    registro.Frecuencia = 0;
+  }
+
+  renderizarGrillaHoraria();
 }
 
 
