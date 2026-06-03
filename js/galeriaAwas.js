@@ -333,6 +333,8 @@ async function abrirGrillaHoraria() {
   }
 
   console.log("AWA seleccionado:", idAwaGrillaActual);
+  console.log("Frecuencia 1:", frecuenciaRPAActual);
+console.log("Frecuencia 2:", frecuenciaRPA2Actual);
 
   await cargarGrillaHoraria(idAwaGrillaActual);
   renderizarGrillaHoraria();
