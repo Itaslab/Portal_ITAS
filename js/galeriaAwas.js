@@ -315,10 +315,20 @@ function configurarAWA(id) {
 
 function abrirGrillaHoraria() {
 
-  const idAwa = document.getElementById("inputIdAwa").value;
+  const modalConfiguracion =
+    bootstrap.Modal.getInstance(
+      document.getElementById("modalAwa")
+    );
 
-  console.log("Abrir grilla horaria para AWA:", idAwa);
+  if (modalConfiguracion) {
+    modalConfiguracion.hide();
+  }
 
+  const modalGrilla = new bootstrap.Modal(
+    document.getElementById("modalGrillaHoraria")
+  );
+
+  modalGrilla.show();
 }
 
 
