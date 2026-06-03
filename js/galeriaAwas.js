@@ -333,12 +333,14 @@ function abrirGrillaHoraria() {
   const modalGrilla = new bootstrap.Modal(
     document.getElementById("modalGrillaHoraria")
   );
+  
+  document.getElementById("tituloGrillaAwa").innerText =
+  `Configuración horaria AWA ${idAwaGrillaActual}`;
 
   modalGrilla.show();
 }
 
-document.getElementById("tituloGrillaAwa").innerText =
-  `Configuración horaria AWA ${idAwaGrillaActual}`;
+
 
 // ============================
 // Guardar
