@@ -419,13 +419,13 @@ const frecuencia = registro
 let colorFondo = "";
 
 if (frecuencia === 0) {
-  colorFondo = "#f8d7da"; // rojo suave
+  colorFondo = "#f1979e"; // rojo suave
 }
 else if (frecuencia === 1) {
-  colorFondo = "#d1e7dd"; // verde suave
+  colorFondo = "#86ddb6"; // verde suave
 }
 else if (frecuencia === 2) {
-  colorFondo = "#cfe2ff"; // azul suave
+  colorFondo = "#89b7fc"; // azul suave
 }
 
 html += `
