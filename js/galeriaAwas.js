@@ -314,12 +314,14 @@ function configurarAWA(id) {
 // Grilla Horaria
 // ============================
 
-function abrirGrillaHoraria() {
+async function abrirGrillaHoraria() {
 
   idAwaGrillaActual =
     document.getElementById("inputIdAwa").value;
 
   console.log("AWA seleccionado:", idAwaGrillaActual);
+
+  await cargarGrillaHoraria(idAwaGrillaActual);
 
   const modalConfiguracion =
     bootstrap.Modal.getInstance(
@@ -333,11 +335,35 @@ function abrirGrillaHoraria() {
   const modalGrilla = new bootstrap.Modal(
     document.getElementById("modalGrillaHoraria")
   );
-  
+
   document.getElementById("tituloGrillaAwa").innerText =
-  `Configuración horaria AWA ${idAwaGrillaActual}`;
+    `Configuración horaria AWA ${idAwaGrillaActual}`;
 
   modalGrilla.show();
+}
+
+async function cargarGrillaHoraria(idAwa) {
+
+  try {
+
+    const res = await fetch(
+      `${basePath}/api/awas/grilla/${idAwa}`
+    );
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    console.log("GRILLA:", data);
+
+  } catch (err) {
+
+    console.error(err);
+
+  }
+
 }
 
 

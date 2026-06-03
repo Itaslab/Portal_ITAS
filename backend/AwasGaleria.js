@@ -335,4 +335,49 @@ router.put("/toggle/:id", async (req, res) => {
   }
 });
 
+// ============================
+// GRILLA HORARIA AWA
+// ============================
+
+
+router.get("/grilla/:idAwa", async (req, res) => {
+
+  try {
+
+    const pool = await poolPromise;
+
+    const { idAwa } = req.params;
+
+    const result = await pool.request()
+      .input("ID_AWA", sql.Int, idAwa)
+      .query(`
+        SELECT
+          Id,
+          Id_AWA,
+          Dia_Semana,
+          Hora_Dia,
+          Frecuencia
+        FROM ${schema}.AWAs_Grilla_Horaria
+        WHERE Id_AWA = @ID_AWA
+        ORDER BY Dia_Semana, Hora_Dia
+      `);
+
+    res.json(result.recordset);
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      error: error.message
+    });
+
+  }
+
+});
+
+
+
+
+
 module.exports = router;
