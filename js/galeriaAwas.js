@@ -5,6 +5,7 @@ let awaPendienteAccion = null;
 let usuarioEsAdmin = false;
 let esAdminAwas = false;
 let idAwaGrillaActual = null;
+let grillaHorariaActual = [];
 
 // ============================
 // Helpers
@@ -322,6 +323,7 @@ async function abrirGrillaHoraria() {
   console.log("AWA seleccionado:", idAwaGrillaActual);
 
   await cargarGrillaHoraria(idAwaGrillaActual);
+  renderizarGrillaHoraria();
 
   const modalConfiguracion =
     bootstrap.Modal.getInstance(
@@ -355,6 +357,7 @@ async function cargarGrillaHoraria(idAwa) {
     }
 
     const data = await res.json();
+    grillaHorariaActual = data;
 
     console.log("GRILLA:", data);
 
@@ -363,6 +366,15 @@ async function cargarGrillaHoraria(idAwa) {
     console.error(err);
 
   }
+
+}
+
+function renderizarGrillaHoraria() {
+
+  console.log(
+    "Registros recibidos:",
+    grillaHorariaActual.length
+  );
 
 }
 
