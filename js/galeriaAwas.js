@@ -371,11 +371,64 @@ async function cargarGrillaHoraria(idAwa) {
 
 function renderizarGrillaHoraria() {
 
-  console.log(
-    "Registros recibidos:",
-    grillaHorariaActual.length
-  );
+  const dias = [
+    "Domingo",
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado"
+  ];
 
+  let html = `
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm text-center">
+        <thead>
+          <tr>
+            <th>Día</th>
+  `;
+
+  for (let hora = 0; hora < 24; hora++) {
+    html += `<th>${hora}</th>`;
+  }
+
+  html += `
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  for (let dia = 0; dia < 7; dia++) {
+
+    html += `<tr>`;
+    html += `<td><strong>${dias[dia]}</strong></td>`;
+
+    for (let hora = 0; hora < 24; hora++) {
+
+      const registro = grillaHorariaActual.find(
+        x =>
+          x.Dia_Semana === dia &&
+          x.Hora_Dia === hora
+      );
+
+      const frecuencia = registro
+        ? registro.Frecuencia
+        : "";
+
+      html += `<td>${frecuencia}</td>`;
+    }
+
+    html += `</tr>`;
+  }
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  document.getElementById("contenidoGrillaHoraria").innerHTML = html;
 }
 
 
