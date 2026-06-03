@@ -395,13 +395,30 @@ function renderizarGrillaHoraria() {
     "Sábado"
   ];
 
-  let html = `
-    <div class="table-responsive">
-      <table class="table table-bordered table-sm text-center">
-        <thead>
-          <tr>
-            <th>Día</th>
-  `;
+let html = `
+  <div class="alert alert-light border mb-3">
+
+    <strong>Leyenda:</strong>
+
+    <span class="ms-3">
+      <span style="color:#f1979e;font-weight:bold;">0</span>
+      = No ejecutar
+    </span>
+
+    <span class="ms-3">
+      <span style="color:#86ddb6;font-weight:bold;">1</span>
+      = Cada ${frecuenciaRPAActual} hs
+    </span>
+
+    <span class="ms-3">
+      <span style="color:#89b7fc;font-weight:bold;">2</span>
+      = Cada ${frecuenciaRPA2Actual} hs
+    </span>
+
+  </div>
+
+  <div class="table-responsive">
+`;
 
   for (let hora = 0; hora < 24; hora++) {
     html += `<th>${hora}</th>`;
