@@ -7,6 +7,9 @@ let esAdminAwas = false;
 let idAwaGrillaActual = null;
 let grillaHorariaActual = [];
 
+let frecuenciaRPAActual = null;
+let frecuenciaRPA2Actual = null;
+
 // ============================
 // Helpers
 // ============================
@@ -319,6 +322,15 @@ async function abrirGrillaHoraria() {
 
   idAwaGrillaActual =
     document.getElementById("inputIdAwa").value;
+
+  const awa = awasGlobal.find(
+    x => x.Id_AWA == idAwaGrillaActual
+  );
+
+  if (awa) {
+    frecuenciaRPAActual = awa.FrecuenciaRPA;
+    frecuenciaRPA2Actual = awa.FrecuenciaRPA2;
+  }
 
   console.log("AWA seleccionado:", idAwaGrillaActual);
 
