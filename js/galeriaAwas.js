@@ -324,7 +324,7 @@ async function abrirGrillaHoraria() {
     document.getElementById("inputIdAwa").value;
 
   const awa = awasGlobal.find(
-    x => x.Id_AWA == idAwaGrillaActual
+    x => x.ID_AWA == idAwaGrillaActual
   );
 
   if (awa) {
