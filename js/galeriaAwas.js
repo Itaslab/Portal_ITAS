@@ -412,11 +412,27 @@ function renderizarGrillaHoraria() {
           x.Hora_Dia === hora
       );
 
-      const frecuencia = registro
-        ? registro.Frecuencia
-        : "";
+const frecuencia = registro
+  ? registro.Frecuencia
+  : "";
 
-      html += `<td>${frecuencia}</td>`;
+let colorFondo = "";
+
+if (frecuencia === 0) {
+  colorFondo = "#f8d7da"; // rojo suave
+}
+else if (frecuencia === 1) {
+  colorFondo = "#d1e7dd"; // verde suave
+}
+else if (frecuencia === 2) {
+  colorFondo = "#cfe2ff"; // azul suave
+}
+
+html += `
+  <td style="background-color:${colorFondo}">
+    ${frecuencia}
+  </td>
+`;
     }
 
     html += `</tr>`;
