@@ -94,6 +94,8 @@ function cancelarEdicionUrl() {
 
 
 
+
+
 // ============================
 // Cargar tabla
 // ============================
@@ -304,6 +306,21 @@ function configurarAWA(id) {
   const modal = new bootstrap.Modal(document.getElementById("modalAwa"));
   modal.show();
 }
+
+
+
+// ============================
+// Grilla Horaria
+// ============================
+
+function abrirGrillaHoraria() {
+
+  const idAwa = document.getElementById("inputIdAwa").value;
+
+  console.log("Abrir grilla horaria para AWA:", idAwa);
+
+}
+
 
 // ============================
 // Guardar
