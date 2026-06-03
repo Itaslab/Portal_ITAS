@@ -337,6 +337,14 @@ async function abrirGrillaHoraria() {
 console.log("Frecuencia 2:", frecuenciaRPA2Actual);
 
   await cargarGrillaHoraria(idAwaGrillaActual);
+  if (!grillaHorariaActual || grillaHorariaActual.length === 0) {
+
+  alert(
+    "No es posible configurar la grilla horaria. Verificar con grupo ITAS."
+  );
+
+  return;
+}
   renderizarGrillaHoraria();
 
   const modalConfiguracion =
@@ -358,7 +366,11 @@ console.log("Frecuencia 2:", frecuenciaRPA2Actual);
   modalGrilla.show();
 }
 
+
+
 async function cargarGrillaHoraria(idAwa) {
+
+grillaHorariaActual = [];
 
   try {
 
