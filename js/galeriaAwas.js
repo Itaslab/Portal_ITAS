@@ -521,6 +521,8 @@ function cambiarFrecuencia(idRegistro) {
 
 async function guardarGrillaHoraria() {
 
+   console.log("CLICK GUARDAR");
+
   try {
 
     const res = await fetch(
