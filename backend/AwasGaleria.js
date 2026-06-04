@@ -377,6 +377,53 @@ router.get("/grilla/:idAwa", async (req, res) => {
 });
 
 
+// ============================
+// GUARDAR GRILLA HORARIA AWA
+// ============================
+
+router.put("/grilla", async (req, res) => {
+
+  try {
+
+    const pool = await poolPromise;
+
+    const grilla = req.body;
+
+    if (!Array.isArray(grilla)) {
+      return res.status(400).json({
+        error: "La grilla debe ser un array"
+      });
+    }
+
+    for (const registro of grilla) {
+
+      await pool.request()
+        .input("Id", sql.Int, registro.Id)
+        .input("Frecuencia", sql.Int, registro.Frecuencia)
+        .query(`
+          UPDATE ${schema}.AWAs_Grilla_Horaria
+          SET Frecuencia = @Frecuencia
+          WHERE Id = @Id
+        `);
+
+    }
+
+    res.json({
+      success: true
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      error: error.message
+    });
+
+  }
+
+});
+
 
 
 

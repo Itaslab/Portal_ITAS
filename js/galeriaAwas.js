@@ -521,10 +521,37 @@ function cambiarFrecuencia(idRegistro) {
 
 async function guardarGrillaHoraria() {
 
-  console.log(
-    "Grilla a guardar:",
-    grillaHorariaActual
-  );
+  try {
+
+    const res = await fetch(
+      `${basePath}/api/awas/grilla`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(grillaHorariaActual)
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Error al guardar");
+    }
+
+        mostrarToast(
+      "Grilla guardada correctamente",
+      "success"
+    );
+
+  } catch (err) {
+
+    console.error(err);
+
+    mostrarToast("Error al guardar la grilla", "error");
+
+  }
 
 }
 
