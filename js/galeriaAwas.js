@@ -519,6 +519,15 @@ function cambiarFrecuencia(idRegistro) {
   renderizarGrillaHoraria();
 }
 
+async function guardarGrillaHoraria() {
+
+  console.log(
+    "Grilla a guardar:",
+    grillaHorariaActual
+  );
+
+}
+
 
 
 // ============================
