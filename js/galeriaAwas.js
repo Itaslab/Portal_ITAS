@@ -143,11 +143,16 @@ async function cargarAWAS() {
 
       if (awa.Estado === "Pendiente" || awa.Estado === "Backlog") {
         if (awa.Esfuerzo === "Alto") {
-          estrellas = " ⭐⭐⭐";
+          estrellas = estrellas =
+            '<i class="bi bi-star-fill text-warning"></i>' +
+            '<i class="bi bi-star-fill text-warning"></i>' +
+            '<i class="bi bi-star-fill text-warning"></i>';
         } else if (awa.Esfuerzo === "Medio") {
-          estrellas = " ⭐⭐";
+          estrellas =
+            '<i class="bi bi-star-fill text-warning"></i>' +
+            '<i class="bi bi-star-fill text-warning"></i>';
         } else if (awa.Esfuerzo === "Bajo") {
-          estrellas = " ⭐";
+          estrellas = '<i class="bi bi-star-fill text-warning"></i>';
         }
       }
       const estadoColor =
