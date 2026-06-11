@@ -5,6 +5,29 @@ const router = express.Router();
 const { sql, poolPromise } = require("./db");
 const schema = process.env.DB_SCHEMA;
 
+// ============================
+// FUNCIÓN AUXILIAR: Registrar modificaciones en Log_Modificacion
+// ============================
+async function registrarLog(pool, idAwa, idUsuario, accion, detalles) {
+  try {
+    const ahora = new Date().toISOString();
+    const mensajeLog = `[${ahora}] Usuario: ${idUsuario} | Acción: ${accion} | Detalles: ${detalles}`;
+
+    await pool
+      .request()
+      .input("ID_AWA", sql.Int, idAwa)
+      .input("Log_Modificacion", sql.VarChar(sql.MAX), mensajeLog)
+      .query(`
+        UPDATE ${schema}.AWAs
+        SET Log_Modificacion = ISNULL(Log_Modificacion, '') + CHAR(10) + @Log_Modificacion
+        WHERE ID = @ID_AWA
+      `);
+  } catch (error) {
+    console.error("⚠️  Error al registrar log:", error.message);
+    // No lanzamos error, solo registramos en consola
+  }
+}
+
 router.get("/", async (req, res) => {
   try {
     const pool = await poolPromise;
@@ -151,9 +174,16 @@ router.post("/", async (req, res) => {
         SELECT SCOPE_IDENTITY() AS newId;
       `);
 
+    const newId = result.recordset[0].newId;
+
+    // Registrar en log
+    const idUsuario = req.session?.user?.ID_Usuario || "desconocido";
+    const detalles = `AWA creado: Título="${Titulo}", Estado="${Estado}", Origen="${Origen}"`;
+    await registrarLog(pool, newId, idUsuario, "CREATE", detalles);
+
     res.json({
       success: true,
-      newId: result.recordset[0].newId,
+      newId: newId,
     });
   } catch (error) {
     console.error("💥 ERROR CREATE AWA:", error.message);
@@ -205,6 +235,25 @@ router.put("/", async (req, res) => {
       TKT_Resolution_Category,
       TKT_Resolution_Category_Tier_2,
     } = req.body;
+
+    // Obtener valores anteriores para comparación
+    const prevResult = await pool
+      .request()
+      .input("ID", sql.Int, ID)
+      .query(`
+        SELECT Titulo, Estado, Origen, Sistema, Esfuerzo
+        FROM ${schema}.AWAs
+        WHERE ID = @ID
+      `);
+
+    const prevValues = prevResult.recordset[0] || {};
+    const cambios = [];
+
+    if (prevValues.Titulo !== Titulo) cambios.push(`Título: "${prevValues.Titulo}" → "${Titulo}"`);
+    if (prevValues.Estado !== Estado) cambios.push(`Estado: "${prevValues.Estado}" → "${Estado}"`);
+    if (prevValues.Origen !== Origen) cambios.push(`Origen: "${prevValues.Origen}" → "${Origen}"`);
+    if (prevValues.Sistema !== Sistema) cambios.push(`Sistema: "${prevValues.Sistema}" → "${Sistema}"`);
+    if (prevValues.Esfuerzo !== Esfuerzo) cambios.push(`Esfuerzo: "${prevValues.Esfuerzo}" → "${Esfuerzo}"`);
 
     await pool
       .request()
@@ -288,6 +337,13 @@ router.put("/", async (req, res) => {
         WHERE ID = @ID
       `);
 
+    // Registrar en log si hubo cambios
+    if (cambios.length > 0) {
+      const idUsuario = req.session?.user?.ID_Usuario || "desconocido";
+      const detalles = cambios.join("; ");
+      await registrarLog(pool, ID, idUsuario, "UPDATE", detalles);
+    }
+
     res.json({ success: true });
   } catch (error) {
     console.error("💥 ERROR UPDATE AWAS:", error.message);
@@ -332,6 +388,11 @@ router.put("/toggle/:id", async (req, res) => {
         SET Estado = @Estado
         WHERE ID = @ID
       `);
+
+    // Registrar en log
+    const idUsuario = req.session?.user?.ID_Usuario || "desconocido";
+    const detalles = `Estado: "${estadoActual}" → "${nuevoEstado}"`;
+    await registrarLog(pool, id, idUsuario, "TOGGLE", detalles);
 
     res.json({
       success: true,
@@ -444,7 +505,12 @@ router.delete("/:id", async (req, res) => {
       });
     }
 
-    // 3. Eliminar el AWA
+    // 3. Registrar en log antes de eliminar
+    const idUsuario = req.session?.user?.ID_Usuario || "desconocido";
+    const detalles = `AWA eliminado: Título="${awa.Titulo}", Estado="${awa.Estado}"`;
+    await registrarLog(pool, id, idUsuario, "DELETE", detalles);
+
+    // 4. Eliminar el AWA
     await pool.request().input("ID", sql.Int, id).query(`
         DELETE FROM ${schema}.AWAs
         WHERE ID = @ID
