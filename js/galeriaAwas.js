@@ -139,6 +139,17 @@ async function cargarAWAS() {
     tbody.innerHTML = "";
 
     data.forEach((awa) => {
+      let estrellas = "";
+
+      if (awa.Estado === "Pendiente" || awa.Estado === "Backlog") {
+        if (awa.Esfuerzo === "Alto") {
+          estrellas = " ⭐⭐⭐";
+        } else if (awa.Esfuerzo === "Medio") {
+          estrellas = " ⭐⭐";
+        } else if (awa.Esfuerzo === "Bajo") {
+          estrellas = " ⭐";
+        }
+      }
       const estadoColor =
         awa.Estado === "Activo"
           ? "text-success"
@@ -174,7 +185,7 @@ async function cargarAWAS() {
       row.innerHTML = `
   <td>${awa.ID_WA ?? "-"}</td>
   <td>${awa.ID_AWA ?? "-"}</td>
-  <td>${awa.Titulo ?? "-"}</td>
+  <td>${awa.Titulo ?? "-"}${estrellas}</td>
   <td>${awa.Origen ?? "-"}</td>
   <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
 
