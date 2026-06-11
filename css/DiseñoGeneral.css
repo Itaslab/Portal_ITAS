@@ -922,6 +922,11 @@ textarea.disabled-field {
   text-overflow: ellipsis;
   white-space: nowrap;
   vertical-align: middle;
+  cursor: help;
+}
+
+.titulo-awa[title] {
+  cursor: help;
 }
 
 .estrellas-awa {
