@@ -190,7 +190,10 @@ async function cargarAWAS() {
       row.innerHTML = `
   <td>${awa.ID_WA ?? "-"}</td>
   <td>${awa.ID_AWA ?? "-"}</td>
-  <td style="white-space:nowrap;">${awa.Titulo ?? "-"}${estrellas}</td>
+  <td style="width:50%;">
+    <span class="titulo-awa">${awa.Titulo}</span>
+    <span class="estrellas-awa">${estrellas}</span>
+  </td>
   <td>${awa.Origen ?? "-"}</td>
   <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
 

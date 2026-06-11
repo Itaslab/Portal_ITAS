@@ -3,7 +3,7 @@
   font-family: "Orbitron" !important;
   color: white !important;
   font-weight: bold;
-  font-size: 1.0rem;
+  font-size: 1rem;
 }
 
 nav {
@@ -46,7 +46,7 @@ h1,
 h5,
 p,
 div {
-  font-family: 'Chakra Petch';
+  font-family: "Chakra Petch";
 }
 
 h1 {
@@ -54,7 +54,7 @@ h1 {
 }
 
 h5 {
-  font-size: 1.0rem;
+  font-size: 1rem;
 }
 
 p {
@@ -63,7 +63,9 @@ p {
 
 /* ──────────────── EFECTOS Y ANIMACIONES GENERALES ──────────────── */
 .card-hover {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .card-hover:hover {
@@ -104,7 +106,9 @@ p {
 
 /* ──────────────── SELECTS Y BOTONES ──────────────── */
 .animated-c {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .animated-select:focus {
@@ -113,7 +117,9 @@ p {
 }
 
 .btn-animated {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .btn-animated:hover {
@@ -128,7 +134,9 @@ p {
 
 /* ──────────────── EFECTOS ADICIONALES ──────────────── */
 .ver-animated {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .ver-animated:hover {
@@ -205,105 +213,106 @@ p {
   }
 }
 
-
 /* Aplica a la columna Grupo (2ª) y Grupo BKP (3ª) */
 td:nth-child(2),
 td:nth-child(3) {
   text-transform: capitalize; /* Primera letra en mayúscula, resto minúscula */
-  font-size: 0.75rem;         /* Achica la letra */
+  font-size: 0.75rem; /* Achica la letra */
 }
 
 .switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 20px;
-        }
-        .switch input {
-            display: none;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0;
-            right: 0; bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 20px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 14px;
-            width: 14px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
-            background-color: #28a745;
-        }
-        input:checked + .slider:before {
-            transform: translateX(18px);
-        }
-        .estado-icons {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .estado-icons i {
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .switch {
-    position: relative;
-    display: inline-block;
-    width: 40px;
-    height: 20px;
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
 }
 .switch input {
-    display: none;
+  display: none;
 }
 .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0; left: 0;
-    right: 0; bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 20px;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
 }
 .slider:before {
-    position: absolute;
-    content: "";
-    height: 14px;
-    width: 14px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
 }
 input:checked + .slider {
-    background-color: #28a745;
+  background-color: #28a745;
 }
 input:checked + .slider:before {
-    transform: translateX(18px);
+  transform: translateX(18px);
 }
 .estado-icons {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .estado-icons i {
-    font-size: 22px;
-    cursor: pointer;
+  font-size: 20px;
+  cursor: pointer;
 }
 
-
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+.switch input {
+  display: none;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #28a745;
+}
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+.estado-icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.estado-icons i {
+  font-size: 22px;
+  cursor: pointer;
+}
 
 :root {
   --color-success: #28a745;
@@ -317,10 +326,18 @@ input:checked + .slider:before {
 }
 
 /* Íconos y efectos */
-.icon-ok { color: var(--color-success); }
-.icon-error { color: var(--color-danger); }
-.eye-hover { transition: transform .15s ease; }
-.eye-hover:hover { transform: scale(1.15); }
+.icon-ok {
+  color: var(--color-success);
+}
+.icon-error {
+  color: var(--color-danger);
+}
+.eye-hover {
+  transition: transform 0.15s ease;
+}
+.eye-hover:hover {
+  transform: scale(1.15);
+}
 
 /* Contenedor principal */
 td.text-start,
@@ -337,13 +354,21 @@ td.text-start .d-flex {
   padding: 6px 0;
   border-bottom: 1px solid #e0e0e0;
 }
-td.text-start .d-flex:last-child { border-bottom: none; }
+td.text-start .d-flex:last-child {
+  border-bottom: none;
+}
 
 /* Íconos y texto */
 td.text-start i.fas,
 .table i.fas,
-.table i.bi { font-size: 14px; }
-.fw-bold, .fw-semibold { color: #333; font-weight: 600; }
+.table i.bi {
+  font-size: 14px;
+}
+.fw-bold,
+.fw-semibold {
+  color: #333;
+  font-weight: 600;
+}
 
 /* Botones pequeños */
 .btn-sm,
@@ -369,17 +394,25 @@ td.text-start i.fas,
 .progress-bar {
   transition: width 0.4s ease;
 }
-.progress-bar.bg-success { background-color: var(--color-success); }
-.progress-bar.bg-warning { background-color: var(--color-warning); }
-.progress-bar.bg-danger { background-color: var(--color-danger); }
+.progress-bar.bg-success {
+  background-color: var(--color-success);
+}
+.progress-bar.bg-warning {
+  background-color: var(--color-warning);
+}
+.progress-bar.bg-danger {
+  background-color: var(--color-danger);
+}
 
 /* Tabla interna */
 .table.table-bordered {
   background-color: #fff;
   border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
-.table td.text-start div { margin-bottom: 6px; }
+.table td.text-start div {
+  margin-bottom: 6px;
+}
 
 /* Badges */
 .badge.bg-secondary {
@@ -397,7 +430,6 @@ td.text-start i.fas,
   color: var(--color-primary);
 }
 
-
 .d-flex.flex-column.gap-2 button {
   justify-content: flex-start; /* ícono + texto alineados a la izquierda */
   width: 100%; /* ocupa todo el ancho del contenedor */
@@ -412,9 +444,8 @@ td.text-start i.fas,
   color: white !important;
 }
 
-
 #userGreetingBar * {
-  font-family: 'Chakra Petch' !important;
+  font-family: "Chakra Petch" !important;
 }
 
 /* ──────────────── ESTILOS PARA ELEMENTOS DESHABILITADOS ──────────────── */
@@ -478,13 +509,12 @@ textarea.disabled-field {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255,255,255,0.6);
+  background: rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
-
 
 /** CALENDARIO LICENCIAS */
 
@@ -501,7 +531,7 @@ textarea.disabled-field {
   text-align: center;
   font-size: 12px;
   padding: 2px;
-  color: #ffffff
+  color: #ffffff;
 }
 
 /* HEADER DIAS */
@@ -519,10 +549,8 @@ textarea.disabled-field {
   color: white;
 }
 
-
-
 .fila-seleccionada td {
-  background-color: #c6dcfa  !important;
+  background-color: #c6dcfa !important;
 }
 
 .fila-seleccionada td:first-child {
@@ -551,14 +579,11 @@ textarea.disabled-field {
   height: 24px;
 }
 
-
- /* FINES DE SEMANA */ 
-
+/* FINES DE SEMANA */
 
 .calendario-table th.fin-semana {
   background-color: #162033; /* header un poco más oscuro */
 }
-
 
 .calendario-table td.celda-dia.fin-semana {
   filter: brightness(0.75);
@@ -600,7 +625,6 @@ textarea.disabled-field {
 .hoy {
   border: 2px solid #3b82f6;
 }
-
 
 /* TITULO GRUPO */
 .fila-grupo {
@@ -675,7 +699,7 @@ textarea.disabled-field {
 }
 
 .feriado {
-  background-color: #7c66b9 !important; 
+  background-color: #7c66b9 !important;
   font-weight: 600;
 }
 
@@ -694,11 +718,14 @@ textarea.disabled-field {
   text-overflow: ellipsis;
 }
 /* Permite que columnas o contenedores flex se achiquen de verdad */
-.col-min-0, .min-w-0 { min-width: 0; }
+.col-min-0,
+.min-w-0 {
+  min-width: 0;
+}
 
 /* (Opcional) Helper específico para truncar dentro de flex */
 .truncate-flex {
-  display: block;          /* o inline-block */
+  display: block; /* o inline-block */
   overflow: hidden;
   text-overflow: ellipsis; /* ... */
   white-space: nowrap;
@@ -721,35 +748,34 @@ textarea.disabled-field {
   overflow: auto;
 }
 
-
 .modal-dialog.modal-lg .modal-content,
 .modal-dialog.modal-xl .modal-content {
-  max-height: 90vh;               /* altura limitada */
+  max-height: 90vh; /* altura limitada */
   display: flex;
   flex-direction: column;
 }
 .modal-dialog.modal-lg .modal-body,
 .modal-dialog.modal-xl .modal-body {
-  overflow: auto;                  /* scroll vertical/horizontal si hace falta */
+  overflow: auto; /* scroll vertical/horizontal si hace falta */
 }
 
 /* ✅ Dentro del modal, la tabla se adapta y hace scroll horizontal si necesita */
 .modal .table-responsive {
-  max-height: 65vh;                /* limita el alto de la tabla dentro del modal */
-  overflow: auto;                  /* permite scroll vertical/horizontal */
+  max-height: 65vh; /* limita el alto de la tabla dentro del modal */
+  overflow: auto; /* permite scroll vertical/horizontal */
 }
 
 /* ✅ Evitar desbordes por cadenas largas en celdas */
 .table-wrap-anywhere td,
 .table-wrap-anywhere th {
-  overflow-wrap: anywhere;         /* corta cadenas largas en donde sea */
-  word-break: break-word;          /* fallback */
+  overflow-wrap: anywhere; /* corta cadenas largas en donde sea */
+  word-break: break-word; /* fallback */
 }
 
 /* (Opcional) Si preferís no cortar y permitir scroll horizontal “tipo código” */
 .table-nowrap td,
 .table-nowrap th {
-  white-space: nowrap;             /* todo en una línea */
+  white-space: nowrap; /* todo en una línea */
 }
 
 /* (Opcional) Si renderizás log/detalle como texto “tipo código” */
@@ -778,9 +804,8 @@ textarea.disabled-field {
   word-break: break-word;
 }
 
-
 #modalMisLicencias .modal-content {
-  box-shadow: 0 25px 60px rgba(0,0,0,0.45);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
   border-radius: 10px;
 }
 
@@ -804,7 +829,7 @@ textarea.disabled-field {
 }
 
 .card-licencia:hover {
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
 
@@ -844,7 +869,6 @@ textarea.disabled-field {
   flex: 1;
 }
 
-
 /* Awas */
 
 .table td {
@@ -852,9 +876,8 @@ textarea.disabled-field {
 }
 
 .table tr:hover {
-  background-color: rgba(0,0,0,0.03);
+  background-color: rgba(0, 0, 0, 0.03);
 }
-
 
 .modal-content {
   border-radius: 12px;
@@ -888,4 +911,28 @@ textarea.disabled-field {
 .acciones-awa .btn {
   font-size: clamp(11px, 0.75vw, 14px);
   padding: clamp(2px, 0.3vw, 6px) clamp(6px, 0.6vw, 12px);
+}
+
+/** GALERIA AWAS */
+
+.titulo-awa {
+  display: inline-block;
+  max-width: 700px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.estrellas-awa {
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+#tablaAwas td:nth-child(3) {
+  width: 50%;
+}
+
+#tablaAwas td:nth-child(6) {
+  white-space: nowrap;
 }
