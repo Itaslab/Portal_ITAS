@@ -917,7 +917,7 @@ textarea.disabled-field {
 
 .titulo-awa {
   display: inline-block;
-  max-width: 700px;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -929,10 +929,43 @@ textarea.disabled-field {
   white-space: nowrap;
 }
 
-#tablaAwas td:nth-child(3) {
-  width: 50%;
+#tablaAwas {
+  table-layout: fixed;
+  width: 100%;
 }
 
+#tablaAwas th:nth-child(1),
+#tablaAwas td:nth-child(1) {
+  width: 8%;
+}
+
+#tablaAwas th:nth-child(2),
+#tablaAwas td:nth-child(2) {
+  width: 8%;
+}
+
+#tablaAwas th:nth-child(3),
+#tablaAwas td:nth-child(3) {
+  width: 50%;
+  min-width: 0;
+}
+
+#tablaAwas th:nth-child(4),
+#tablaAwas td:nth-child(4) {
+  width: 12%;
+}
+
+#tablaAwas th:nth-child(5),
+#tablaAwas td:nth-child(5) {
+  width: 10%;
+}
+
+#tablaAwas th:nth-child(6),
 #tablaAwas td:nth-child(6) {
+  width: 12%;
+  white-space: nowrap;
+}
+
+.acciones-awa {
   white-space: nowrap;
 }

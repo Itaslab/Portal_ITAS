@@ -186,19 +186,24 @@ async function cargarAWAS() {
           ? "btn-danger"
           : "btn-success";
       const btnTexto = awa.Estado === "Activo" ? "Desactivar" : "Activar";
+      const tituloCompleto = awa.Titulo ?? "";
+      const tituloVisible =
+        tituloCompleto.length > 65
+          ? `${tituloCompleto.slice(0, 65)}...`
+          : tituloCompleto;
 
       row.innerHTML = `
   <td>${awa.ID_WA ?? "-"}</td>
   <td>${awa.ID_AWA ?? "-"}</td>
-  <td style="width:50%;">
-    <span class="titulo-awa">${awa.Titulo}</span>
+  <td>
+    <span class="titulo-awa" title="${tituloCompleto.replace(/"/g, '&quot;')}">${tituloVisible}</span>
     <span class="estrellas-awa">${estrellas}</span>
   </td>
   <td>${awa.Origen ?? "-"}</td>
   <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
 
-  <td>
-    <div class="d-flex justify-content-end flex-wrap gap-2 acciones-awa">
+  <td class="text-end">
+    <div class="d-flex justify-content-end flex-nowrap gap-2 acciones-awa">
 
       <button 
         class="btn ${btnClass} btn-sm text-white"
