@@ -18,9 +18,15 @@ function setSelectValue(id, value) {
   const select = document.getElementById(id);
   if (!select) return;
 
-  const normalizedValue = value == null ? "" : String(value).trim().toLowerCase();
-  const match = [...select.options].find(opt => String(opt.value).trim().toLowerCase() === normalizedValue)
-    || [...select.options].find(opt => String(opt.text).trim().toLowerCase() === normalizedValue);
+  const normalizedValue =
+    value == null ? "" : String(value).trim().toLowerCase();
+  const match =
+    [...select.options].find(
+      (opt) => String(opt.value).trim().toLowerCase() === normalizedValue,
+    ) ||
+    [...select.options].find(
+      (opt) => String(opt.text).trim().toLowerCase() === normalizedValue,
+    );
 
   select.value = match ? match.value : select.options[0]?.value || "";
 }
@@ -33,32 +39,24 @@ function getNumber(value) {
   return value === "" ? 0 : Number(value);
 }
 
-
-
-
 // ============================
 // Permisos usuario
 // ============================
 
 async function cargarPermisosUsuario() {
   try {
-
     const res = await fetch(`${basePath}/permisos`);
 
     const data = await res.json();
 
     usuarioEsAdmin = data.esAdmin === true;
-
   } catch (error) {
-
     console.error("Error obteniendo permisos:", error);
 
     // seguridad: si falla, NO admin
     usuarioEsAdmin = false;
   }
 }
-
-
 
 // ============================
 // URL visual
@@ -70,7 +68,6 @@ function editarUrl() {
 }
 
 function guardarUrlVisual() {
-
   const input = document.getElementById("inputUrl");
   const link = document.getElementById("urlLink");
 
@@ -94,22 +91,12 @@ function cancelarEdicionUrl() {
   document.getElementById("urlView").classList.remove("d-none");
 }
 
-
-
-
-
-
-
-
 // ============================
 // Cargar tabla
 // ============================
 
-
 async function cargarPermisosAwas() {
-
   try {
-
     const res = await fetch(`${basePath}/permisos`);
 
     if (!res.ok) {
@@ -124,23 +111,17 @@ async function cargarPermisosAwas() {
 
     esAdminAwas =
       esSuperAdmin ||
-      (data.permisos || []).some(p =>
-        Number(p.ID_Perfil) === 39 &&
-        Number(p.ID_Aplicacion) === 14
+      (data.permisos || []).some(
+        (p) => Number(p.ID_Perfil) === 39 && Number(p.ID_Aplicacion) === 14,
       );
 
     console.log("esAdminAwas:", esAdminAwas);
-
   } catch (err) {
-
     console.error("Error permisos AWAS:", err);
 
     esAdminAwas = false;
   }
 }
-
-
-
 
 async function cargarAWAS() {
   try {
@@ -157,32 +138,44 @@ async function cargarAWAS() {
     const tbody = document.querySelector("#tablaAwas tbody");
     tbody.innerHTML = "";
 
-    data.forEach(awa => {
+    data.forEach((awa) => {
       const estadoColor =
         awa.Estado === "Activo"
           ? "text-success"
-          : awa.Estado === "Backlog" || awa.Estado === "Desarrollo" || awa.Estado === "Pendiente"
-          ? "text-warning"
-          : "text-secondary";
+          : awa.Estado === "Backlog" ||
+              awa.Estado === "Desarrollo" ||
+              awa.Estado === "Pendiente"
+            ? "text-warning"
+            : "text-secondary";
 
       const row = document.createElement("tr");
 
-    // Determinar si el botón debe estar deshabilitado
-      const deshabilitadoPorEstado =["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado);
+      // Determinar si el botón debe estar deshabilitado
+      const deshabilitadoPorEstado = [
+        "Backlog",
+        "Desarrollo",
+        "Pendiente",
+      ].includes(awa.Estado);
 
-    // nueva lógica permisos
+      // nueva lógica permisos
       const deshabilitadoPorPermiso = !esAdminAwas;
 
-// si alguna condición se cumple → disabled
-      const botonDeshabilitado =deshabilitadoPorEstado || deshabilitadoPorPermiso;
+      // si alguna condición se cumple → disabled
+      const botonDeshabilitado =
+        deshabilitadoPorEstado || deshabilitadoPorPermiso;
       const disabledAttr = botonDeshabilitado ? "disabled" : "";
-      const btnClass = botonDeshabilitado ? "btn-secondary" : (awa.Estado === "Activo" ? "btn-danger" : "btn-success");
+      const btnClass = botonDeshabilitado
+        ? "btn-secondary"
+        : awa.Estado === "Activo"
+          ? "btn-danger"
+          : "btn-success";
       const btnTexto = awa.Estado === "Activo" ? "Desactivar" : "Activar";
 
-row.innerHTML = `
+      row.innerHTML = `
   <td>${awa.ID_WA ?? "-"}</td>
   <td>${awa.ID_AWA ?? "-"}</td>
   <td>${awa.Titulo ?? "-"}</td>
+  <td>${awa.Origen ?? "-"}</td>
   <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
 
   <td>
@@ -198,7 +191,7 @@ row.innerHTML = `
       <button 
         class="btn btn-primary btn-sm text-white"
         onclick="configurarAWA(${awa.ID})"
-        ${!esAdminAwas  ? "disabled" : ""}>
+        ${!esAdminAwas ? "disabled" : ""}>
         Configurar
       </button>
 
@@ -209,14 +202,10 @@ row.innerHTML = `
       tbody.appendChild(row);
     });
     aplicarFiltros();
-    
   } catch (error) {
     console.error("Error cargando AWAS:", error);
   }
 }
-
-
-
 
 // ============================
 // Abrir modal
@@ -242,7 +231,7 @@ function nuevoAWA() {
 }
 
 function configurarAWA(id) {
-  const awa = awasGlobal.find(a => a.ID == id);
+  const awa = awasGlobal.find((a) => a.ID == id);
 
   if (!awa) {
     console.error("AWA no encontrada:", id);
@@ -264,18 +253,20 @@ function configurarAWA(id) {
   document.getElementById("inputDetalle").value = awa.Detalle ?? "";
   const url = awa.Url_Wa ?? "";
 
-      document.getElementById("inputUrl").value = url;
+  document.getElementById("inputUrl").value = url;
 
-      const urlLink = document.getElementById("urlLink");
+  const urlLink = document.getElementById("urlLink");
 
-      urlLink.href = url || "#";
-      urlLink.textContent = url || "Sin URL";
+  urlLink.href = url || "#";
+  urlLink.textContent = url || "Sin URL";
 
-// Siempre mostrar vista link al abrir
+  // Siempre mostrar vista link al abrir
   document.getElementById("urlView").classList.remove("d-none");
   document.getElementById("urlEdit").classList.add("d-none");
-  document.getElementById("inputSistemaAnalisis").value = awa.Sistemas_Analisis ?? "";
-  document.getElementById("inputSistemaAccion").value = awa.Sistemas_Accion ?? "";
+  document.getElementById("inputSistemaAnalisis").value =
+    awa.Sistemas_Analisis ?? "";
+  document.getElementById("inputSistemaAccion").value =
+    awa.Sistemas_Accion ?? "";
   document.getElementById("inputErr").value = awa.ERR_AppORD ?? "";
   document.getElementById("inputJira").value = awa.Jira_Tarea ?? "";
 
@@ -304,28 +295,24 @@ function configurarAWA(id) {
   document.getElementById("inputHS").value = awa.HS_Antiguedad_Bajada ?? "";
   document.getElementById("inputRev100").value = awa.RevITSS_x100 ?? "";
   document.getElementById("inputRevMax").value = awa.RevITSS_Max ?? "";
-  document.getElementById("inputTKTResolutionCategory").value = awa.TKT_Resolution_Category ?? "";
-  document.getElementById("inputTKTResolutionCategoryTier2").value = awa.TKT_Resolution_Category_Tier_2 ?? "";
+  document.getElementById("inputTKTResolutionCategory").value =
+    awa.TKT_Resolution_Category ?? "";
+  document.getElementById("inputTKTResolutionCategoryTier2").value =
+    awa.TKT_Resolution_Category_Tier_2 ?? "";
 
   // 🔥 abrir modal
   const modal = new bootstrap.Modal(document.getElementById("modalAwa"));
   modal.show();
 }
 
-
-
 // ============================
 // Grilla Horaria
 // ============================
 
 async function abrirGrillaHoraria() {
+  idAwaGrillaActual = document.getElementById("inputIdAwa").value;
 
-  idAwaGrillaActual =
-    document.getElementById("inputIdAwa").value;
-
-  const awa = awasGlobal.find(
-    x => x.ID_AWA == idAwaGrillaActual
-  );
+  const awa = awasGlobal.find((x) => x.ID_AWA == idAwaGrillaActual);
 
   if (awa) {
     frecuenciaRPAActual = awa.FrecuenciaRPA;
@@ -334,30 +321,28 @@ async function abrirGrillaHoraria() {
 
   console.log("AWA seleccionado:", idAwaGrillaActual);
   console.log("Frecuencia 1:", frecuenciaRPAActual);
-console.log("Frecuencia 2:", frecuenciaRPA2Actual);
+  console.log("Frecuencia 2:", frecuenciaRPA2Actual);
 
   await cargarGrillaHoraria(idAwaGrillaActual);
   if (!grillaHorariaActual || grillaHorariaActual.length === 0) {
+    alert(
+      "No es posible configurar la grilla horaria. Verificar con grupo ITAS.",
+    );
 
-  alert(
-    "No es posible configurar la grilla horaria. Verificar con grupo ITAS."
-  );
-
-  return;
-}
+    return;
+  }
   renderizarGrillaHoraria();
 
-  const modalConfiguracion =
-    bootstrap.Modal.getInstance(
-      document.getElementById("modalAwa")
-    );
+  const modalConfiguracion = bootstrap.Modal.getInstance(
+    document.getElementById("modalAwa"),
+  );
 
   if (modalConfiguracion) {
     modalConfiguracion.hide();
   }
 
   const modalGrilla = new bootstrap.Modal(
-    document.getElementById("modalGrillaHoraria")
+    document.getElementById("modalGrillaHoraria"),
   );
 
   document.getElementById("tituloGrillaAwa").innerText =
@@ -366,17 +351,11 @@ console.log("Frecuencia 2:", frecuenciaRPA2Actual);
   modalGrilla.show();
 }
 
-
-
 async function cargarGrillaHoraria(idAwa) {
-
-grillaHorariaActual = [];
+  grillaHorariaActual = [];
 
   try {
-
-    const res = await fetch(
-      `${basePath}/api/awas/grilla/${idAwa}`
-    );
+    const res = await fetch(`${basePath}/api/awas/grilla/${idAwa}`);
 
     if (!res.ok) {
       throw new Error(`HTTP ${res.status}`);
@@ -386,17 +365,12 @@ grillaHorariaActual = [];
     grillaHorariaActual = data;
 
     console.log("GRILLA:", data);
-
   } catch (err) {
-
     console.error(err);
-
   }
-
 }
 
 function renderizarGrillaHoraria() {
-
   const dias = [
     "Domingo",
     "Lunes",
@@ -404,7 +378,7 @@ function renderizarGrillaHoraria() {
     "Miércoles",
     "Jueves",
     "Viernes",
-    "Sábado"
+    "Sábado",
   ];
 
   let html = `
@@ -447,31 +421,23 @@ function renderizarGrillaHoraria() {
   `;
 
   for (let dia = 0; dia < 7; dia++) {
-
     html += `<tr>`;
     html += `<td><strong>${dias[dia]}</strong></td>`;
 
     for (let hora = 0; hora < 24; hora++) {
-
       const registro = grillaHorariaActual.find(
-        x =>
-          x.Dia_Semana === dia &&
-          x.Hora_Dia === hora
+        (x) => x.Dia_Semana === dia && x.Hora_Dia === hora,
       );
 
-      const frecuencia = registro
-        ? registro.Frecuencia
-        : "";
+      const frecuencia = registro ? registro.Frecuencia : "";
 
       let colorFondo = "";
 
       if (frecuencia === 0) {
         colorFondo = "#f1979e"; // rojo
-      }
-      else if (frecuencia === 1) {
+      } else if (frecuencia === 1) {
         colorFondo = "#86ddb6"; // verde
-      }
-      else if (frecuencia === 2) {
+      } else if (frecuencia === 2) {
         colorFondo = "#89b7fc"; // azul
       }
 
@@ -497,10 +463,7 @@ function renderizarGrillaHoraria() {
 }
 
 function cambiarFrecuencia(idRegistro) {
-
-  const registro = grillaHorariaActual.find(
-    x => x.Id === idRegistro
-  );
+  const registro = grillaHorariaActual.find((x) => x.Id === idRegistro);
 
   if (!registro) {
     return;
@@ -508,11 +471,9 @@ function cambiarFrecuencia(idRegistro) {
 
   if (registro.Frecuencia === 0) {
     registro.Frecuencia = 1;
-  }
-  else if (registro.Frecuencia === 1) {
+  } else if (registro.Frecuencia === 1) {
     registro.Frecuencia = 2;
-  }
-  else {
+  } else {
     registro.Frecuencia = 0;
   }
 
@@ -520,21 +481,16 @@ function cambiarFrecuencia(idRegistro) {
 }
 
 async function guardarGrillaHoraria() {
-
-   console.log("CLICK GUARDAR");
+  console.log("CLICK GUARDAR");
 
   try {
-
-    const res = await fetch(
-      `${basePath}/api/awas/grilla`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(grillaHorariaActual)
-      }
-    );
+    const res = await fetch(`${basePath}/api/awas/grilla`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(grillaHorariaActual),
+    });
 
     const data = await res.json();
 
@@ -542,22 +498,13 @@ async function guardarGrillaHoraria() {
       throw new Error(data.error || "Error al guardar");
     }
 
-        mostrarToast(
-      "Grilla guardada correctamente",
-      "success"
-    );
-
+    mostrarToast("Grilla guardada correctamente", "success");
   } catch (err) {
-
     console.error(err);
 
     mostrarToast("Error al guardar la grilla", "error");
-
   }
-
 }
-
-
 
 // ============================
 // Guardar
@@ -567,16 +514,12 @@ async function guardarAWA() {
   try {
     const idRegistro = document.getElementById("inputIdRegistro").value;
 
-const isNew =
-  idRegistro === null ||
-  idRegistro === undefined ||
-  idRegistro === "";
-    
+    const isNew =
+      idRegistro === null || idRegistro === undefined || idRegistro === "";
 
     const payload = {
-      
-        ID: isNew ? null : Number(idRegistro),
-        ID_AWA: document.getElementById("inputIdAwa").value || null,
+      ID: isNew ? null : Number(idRegistro),
+      ID_AWA: document.getElementById("inputIdAwa").value || null,
 
       // Básico
       ID_WA: document.getElementById("inputIdWa").value,
@@ -601,10 +544,18 @@ const isNew =
       // RPA
       Id_Flujo_RPA: getNumber(document.getElementById("inputFlujo").value),
       Prioridad_RPA: getNumber(document.getElementById("inputPrioridad").value),
-      Max_Encoladas_RPA: getNumber(document.getElementById("inputMaxCola").value),
-      FrecuenciaRPA: getNumber(document.getElementById("inputFrecuencia").value),
-      FrecuenciaRPA2: getNumber(document.getElementById("inputFrecuencia2").value),
-      Limite_Bajada: getNumber(document.getElementById("inputLimiteBajada").value),
+      Max_Encoladas_RPA: getNumber(
+        document.getElementById("inputMaxCola").value,
+      ),
+      FrecuenciaRPA: getNumber(
+        document.getElementById("inputFrecuencia").value,
+      ),
+      FrecuenciaRPA2: getNumber(
+        document.getElementById("inputFrecuencia2").value,
+      ),
+      Limite_Bajada: getNumber(
+        document.getElementById("inputLimiteBajada").value,
+      ),
 
       // Métricas
       Volumen_Diario: getNumber(document.getElementById("inputVolumen").value),
@@ -612,17 +563,20 @@ const isNew =
       HS_Antiguedad_Bajada: getNumber(document.getElementById("inputHS").value),
       RevITSS_x100: getNumber(document.getElementById("inputRev100").value),
       RevITSS_Max: getNumber(document.getElementById("inputRevMax").value),
-      TKT_Resolution_Category: document.getElementById("inputTKTResolutionCategory").value || null,
-      TKT_Resolution_Category_Tier_2: document.getElementById("inputTKTResolutionCategoryTier2").value || null
+      TKT_Resolution_Category:
+        document.getElementById("inputTKTResolutionCategory").value || null,
+      TKT_Resolution_Category_Tier_2:
+        document.getElementById("inputTKTResolutionCategoryTier2").value ||
+        null,
     };
 
     const method = isNew ? "POST" : "PUT";
     const res = await fetch(`${basePath}/api/awas`, {
       method: method,
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     const result = await res.json();
@@ -645,7 +599,6 @@ const isNew =
 
     // recargar tabla
     await cargarAWAS();
-
   } catch (error) {
     console.error("Error guardando AWA:", error);
     alert("Error inesperado");
@@ -676,19 +629,21 @@ async function guardarNuevoAWA() {
       FrecuenciaRPA: 0,
       FrecuenciaRPA2: 0,
       Limite_Bajada: 0,
-      Volumen_Diario: getNumber(document.getElementById("inputVolumenNuevo").value),
+      Volumen_Diario: getNumber(
+        document.getElementById("inputVolumenNuevo").value,
+      ),
       Esfuerzo: document.getElementById("inputEsfuerzoNuevo").value,
       HS_Antiguedad_Bajada: 0,
       RevITSS_x100: 0,
-      RevITSS_Max: 0
+      RevITSS_Max: 0,
     };
 
     const res = await fetch(`${basePath}/api/awas`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     const result = await res.json();
@@ -700,7 +655,9 @@ async function guardarNuevoAWA() {
     }
 
     mostrarToast("El AWA ha sido creado", "success");
-    bootstrap.Modal.getInstance(document.getElementById("modalAwaNuevo")).hide();
+    bootstrap.Modal.getInstance(
+      document.getElementById("modalAwaNuevo"),
+    ).hide();
     await cargarAWAS();
   } catch (error) {
     console.error("Error guardando nuevo AWA:", error);
@@ -713,7 +670,7 @@ async function guardarNuevoAWA() {
 // ============================
 
 function activarAWA(id) {
-  const awa = awasGlobal.find(a => a.ID == id);
+  const awa = awasGlobal.find((a) => a.ID == id);
   if (!awa) return;
   if (["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado)) return;
 
@@ -724,42 +681,47 @@ function activarAWA(id) {
   document.getElementById("textoConfirmacion").innerText =
     `¿Seguro que querés ${accion} el AWA "${awa.Titulo}"?`;
 
-  const modal = new bootstrap.Modal(document.getElementById("modalConfirmacion"));
+  const modal = new bootstrap.Modal(
+    document.getElementById("modalConfirmacion"),
+  );
   modal.show();
 }
 
-document.getElementById("btnConfirmarAccion").addEventListener("click", async () => {
-  if (!awaPendienteAccion) return;
+document
+  .getElementById("btnConfirmarAccion")
+  .addEventListener("click", async () => {
+    if (!awaPendienteAccion) return;
 
-  try {
-    const res = await fetch(
-      `${basePath}/api/awas/toggle/${awaPendienteAccion.ID}`,
-      { method: "PUT" }
-    );
+    try {
+      const res = await fetch(
+        `${basePath}/api/awas/toggle/${awaPendienteAccion.ID}`,
+        { method: "PUT" },
+      );
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      console.error("Error backend:", data);
-      mostrarToast("Error al cambiar estado", "danger");
-      return;
+      if (!res.ok) {
+        console.error("Error backend:", data);
+        mostrarToast("Error al cambiar estado", "danger");
+        return;
+      }
+
+      // cerrar modal
+      bootstrap.Modal.getInstance(
+        document.getElementById("modalConfirmacion"),
+      ).hide();
+
+      // refrescar tabla
+      await cargarAWAS();
+
+      mostrarToast("Estado actualizado correctamente", "success");
+    } catch (err) {
+      console.error(err);
+      mostrarToast("Error de conexión", "danger");
     }
 
-    // cerrar modal
-    bootstrap.Modal.getInstance(document.getElementById("modalConfirmacion")).hide();
-
-    // refrescar tabla
-    await cargarAWAS();
-
-    mostrarToast("Estado actualizado correctamente", "success");
-
-  } catch (err) {
-    console.error(err);
-    mostrarToast("Error de conexión", "danger");
-  }
-
-  awaPendienteAccion = null;
-});
+    awaPendienteAccion = null;
+  });
 
 function mostrarToast(mensaje, tipo = "success") {
   const toastEl = document.getElementById("toastMsg");
@@ -777,14 +739,16 @@ function mostrarToast(mensaje, tipo = "success") {
 // ============================
 
 function aplicarFiltros() {
-  const filtroTitulo = document.getElementById("filtroTitulo").value.toLowerCase();
+  const filtroTitulo = document
+    .getElementById("filtroTitulo")
+    .value.toLowerCase();
   const filtroEstado = document.getElementById("filtroEstado").value;
 
   const filas = document.querySelectorAll("#tablaAwas tbody tr");
 
-  filas.forEach(fila => {
+  filas.forEach((fila) => {
     const titulo = fila.children[2].textContent.toLowerCase();
-    const estado = fila.children[3].textContent;
+    const estado = fila.children[4].textContent;
 
     let mostrar = true;
 
@@ -802,10 +766,12 @@ function aplicarFiltros() {
   });
 }
 function inicializarFiltros() {
-  document.getElementById("filtroTitulo")
+  document
+    .getElementById("filtroTitulo")
     .addEventListener("input", aplicarFiltros);
 
-  document.getElementById("filtroEstado")
+  document
+    .getElementById("filtroEstado")
     .addEventListener("change", aplicarFiltros);
 }
 
@@ -814,7 +780,7 @@ function inicializarFiltros() {
 // ============================
 
 // Agregar validaciones de longitud y fecha
-document.getElementById("inputDesde").addEventListener("change", function() {
+document.getElementById("inputDesde").addEventListener("change", function () {
   const desde = this.value;
   const hastaInput = document.getElementById("inputHasta");
   if (desde) {
@@ -825,11 +791,9 @@ document.getElementById("inputDesde").addEventListener("change", function() {
 });
 
 (async () => {
-
-await cargarPermisosAwas();
+  await cargarPermisosAwas();
 
   await cargarAWAS();
 
   inicializarFiltros();
-
 })();
