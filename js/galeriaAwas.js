@@ -2,6 +2,7 @@
 
 let awasGlobal = [];
 let awaPendienteAccion = null;
+let awaParaEliminar = null;
 let usuarioEsAdmin = false;
 let esAdminAwas = false;
 let idAwaGrillaActual = null;
@@ -196,7 +197,7 @@ async function cargarAWAS() {
   <td>${awa.ID_WA ?? "-"}</td>
   <td>${awa.ID_AWA ?? "-"}</td>
   <td>
-    <span class="titulo-awa" title="${tituloCompleto.replace(/"/g, '&quot;')}">${tituloVisible}</span>
+    <span class="titulo-awa" title="${tituloCompleto.replace(/"/g, "&quot;")}">${tituloVisible}</span>
     <span class="estrellas-awa">${estrellas}</span>
   </td>
   <td>${awa.Origen ?? "-"}</td>
@@ -323,6 +324,20 @@ function configurarAWA(id) {
     awa.TKT_Resolution_Category ?? "";
   document.getElementById("inputTKTResolutionCategoryTier2").value =
     awa.TKT_Resolution_Category_Tier_2 ?? "";
+
+  // Controlar estado del botón de eliminar
+  const estadosPermitidosParaEliminar = ["Backlog", "Desarrollo", "Pendiente"];
+  const btnEliminar = document.getElementById("btnEliminarAwa");
+  if (estadosPermitidosParaEliminar.includes(awa.Estado)) {
+    btnEliminar.disabled = false;
+    btnEliminar.classList.remove("disabled");
+  } else {
+    btnEliminar.disabled = true;
+    btnEliminar.classList.add("disabled");
+  }
+
+  // Guardar AWA actual para posible eliminación
+  awaParaEliminar = awa;
 
   // 🔥 abrir modal
   const modal = new bootstrap.Modal(document.getElementById("modalAwa"));
@@ -747,16 +762,70 @@ document
     awaPendienteAccion = null;
   });
 
-function mostrarToast(mensaje, tipo = "success") {
-  const toastEl = document.getElementById("toastMsg");
+function abrirConfirmacionEliminar() {
+  if (!awaParaEliminar) return;
 
-  toastEl.className = `toast align-items-center text-white bg-${tipo} border-0`;
+  document.getElementById("textoConfirmacion").innerText =
+    `¿Estás seguro de eliminar este AWA "${awaParaEliminar.Titulo}"?`;
 
-  document.getElementById("toastTexto").innerText = mensaje;
+  // Cambiar comportamiento del botón de confirmar
+  const btnConfirmar = document.getElementById("btnConfirmarAccion");
+  btnConfirmar.textContent = "Eliminar";
+  btnConfirmar.className = "btn btn-danger text-white";
 
-  const toast = new bootstrap.Toast(toastEl);
-  toast.show();
+  const modal = new bootstrap.Modal(
+    document.getElementById("modalConfirmacion"),
+  );
+  modal.show();
+
+  // Limpiar listeners anteriores y agregar uno nuevo para eliminar
+  const nuevoBtn = btnConfirmar.cloneNode(true);
+  btnConfirmar.parentNode.replaceChild(nuevoBtn, btnConfirmar);
+
+  nuevoBtn.addEventListener("click", async () => {
+    if (!awaParaEliminar) return;
+
+    try {
+      const res = await fetch(`${basePath}/api/awas/${awaParaEliminar.ID}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Error backend:", data);
+        mostrarToast("Error al eliminar el AWA", "danger");
+        return;
+      }
+
+      mostrarToast("AWA eliminado correctamente", "success");
+
+      // Cerrar modal
+      bootstrap.Modal.getInstance(
+        document.getElementById("modalConfirmacion"),
+      ).hide();
+
+      // Cerrar modal de configuración
+      bootstrap.Modal.getInstance(document.getElementById("modalAwa")).hide();
+
+      // Recargar tabla
+      await cargarAWAS();
+
+      awaParaEliminar = null;
+    } catch (err) {
+      console.error(err);
+      mostrarToast("Error de conexión", "danger");
+    }
+  });
 }
+const toastEl = document.getElementById("toastMsg");
+
+toastEl.className = `toast align-items-center text-white bg-${tipo} border-0`;
+
+document.getElementById("toastTexto").innerText = mensaje;
+
+const toast = new bootstrap.Toast(toastEl);
+toast.show();
 
 // ============================
 // Filtros
