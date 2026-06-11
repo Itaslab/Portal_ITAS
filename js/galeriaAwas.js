@@ -818,14 +818,17 @@ function abrirConfirmacionEliminar() {
     }
   });
 }
-const toastEl = document.getElementById("toastMsg");
 
-toastEl.className = `toast align-items-center text-white bg-${tipo} border-0`;
+function mostrarToast(mensaje, tipo = "success") {
+  const toastEl = document.getElementById("toastMsg");
 
-document.getElementById("toastTexto").innerText = mensaje;
+  toastEl.className = `toast align-items-center text-white bg-${tipo} border-0`;
 
-const toast = new bootstrap.Toast(toastEl);
-toast.show();
+  document.getElementById("toastTexto").innerText = mensaje;
+
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
+}
 
 // ============================
 // Filtros
