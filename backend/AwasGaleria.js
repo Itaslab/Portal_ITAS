@@ -49,14 +49,13 @@ router.get("/", async (req, res) => {
     `);
 
     res.json(result.recordset);
-
   } catch (error) {
-  console.error("💥 ERROR AWAS:", error.message);
-  console.error("💥 STACK:", error);
-  res.status(500).json({
-    error: error.message
-  });
-}
+    console.error("💥 ERROR AWAS:", error.message);
+    console.error("💥 STACK:", error);
+    res.status(500).json({
+      error: error.message,
+    });
+  }
 });
 
 // ============================
@@ -93,11 +92,12 @@ router.post("/", async (req, res) => {
       Sistemas_Analisis,
       Sistemas_Accion,
       TKT_Resolution_Category,
-      TKT_Resolution_Category_Tier_2
+      TKT_Resolution_Category_Tier_2,
     } = req.body;
 
     // Insertar nuevo registro
-    const result = await pool.request()
+    const result = await pool
+      .request()
       .input("ID_WA", sql.VarChar, ID_WA || null)
       .input("Titulo", sql.VarChar, Titulo || null)
       .input("Estado", sql.VarChar, Estado || "Pendiente")
@@ -113,7 +113,7 @@ router.post("/", async (req, res) => {
       .input("Max_Encoladas_RPA", sql.Int, Max_Encoladas_RPA ?? 0)
       .input("FrecuenciaRPA", sql.Int, FrecuenciaRPA ?? 0)
       .input("FrecuenciaRPA2", sql.Int, FrecuenciaRPA2 ?? 0)
-      .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario ?? 0)
+      .input("Volumen_Diario", sql.Decimal(18, 2), Volumen_Diario ?? 0)
       .input("Esfuerzo", sql.VarChar, Esfuerzo || null)
       .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada ?? 0)
       .input("RevITSS_x100", sql.Int, RevITSS_x100 ?? 0)
@@ -123,11 +123,17 @@ router.post("/", async (req, res) => {
       .input("URL", sql.VarChar, URL || null)
       .input("Sistemas_Analisis", sql.VarChar, Sistemas_Analisis || null)
       .input("Sistemas_Accion", sql.VarChar, Sistemas_Accion || null)
-      .input("TKT_Resolution_Category", sql.VarChar, TKT_Resolution_Category || null)
-      .input("TKT_Resolution_Category_Tier_2", sql.VarChar, TKT_Resolution_Category_Tier_2 || null)
-      .input("En_Ejecucion", sql.Int, 0)
-
-      .query(`
+      .input(
+        "TKT_Resolution_Category",
+        sql.VarChar,
+        TKT_Resolution_Category || null,
+      )
+      .input(
+        "TKT_Resolution_Category_Tier_2",
+        sql.VarChar,
+        TKT_Resolution_Category_Tier_2 || null,
+      )
+      .input("En_Ejecucion", sql.Int, 0).query(`
         INSERT INTO ${schema}.AWAs (
           ID_WA, Titulo, Estado, Origen, Sistema, Negocio, 
           ERR_AppORD, Jira_Tarea, Fdesde, Fhasta,
@@ -145,22 +151,21 @@ router.post("/", async (req, res) => {
         SELECT SCOPE_IDENTITY() AS newId;
       `);
 
-    res.json({ 
-      success: true, 
-      newId: result.recordset[0].newId 
+    res.json({
+      success: true,
+      newId: result.recordset[0].newId,
     });
-
   } catch (error) {
     console.error("💥 ERROR CREATE AWA:", error.message);
     console.error(error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
 
-// GUARDAR CONFIGURACION 
+// GUARDAR CONFIGURACION
 
 // ============================
 // UPDATE AWA
@@ -198,10 +203,11 @@ router.put("/", async (req, res) => {
       Sistemas_Analisis,
       Sistemas_Accion,
       TKT_Resolution_Category,
-      TKT_Resolution_Category_Tier_2
+      TKT_Resolution_Category_Tier_2,
     } = req.body;
 
-    await pool.request()
+    await pool
+      .request()
       // IDs
       .input("ID", sql.Int, ID)
       .input("ID_AWA", sql.Int, ID_AWA)
@@ -231,7 +237,7 @@ router.put("/", async (req, res) => {
       .input("Limite_Bajada", sql.Int, Limite_Bajada ?? 0)
 
       // Métricas
-      .input("Volumen_Diario", sql.Decimal(18,2), Volumen_Diario ?? 0)
+      .input("Volumen_Diario", sql.Decimal(18, 2), Volumen_Diario ?? 0)
       .input("Esfuerzo", sql.VarChar, Esfuerzo || null)
       .input("HS_Antiguedad_Bajada", sql.Int, HS_Antiguedad_Bajada ?? 0)
       .input("RevITSS_x100", sql.Int, RevITSS_x100 ?? 0)
@@ -240,10 +246,16 @@ router.put("/", async (req, res) => {
       .input("Url_Wa", sql.VarChar, URL || null)
       .input("Sistemas_Analisis", sql.VarChar, Sistemas_Analisis || null)
       .input("Sistemas_Accion", sql.VarChar, Sistemas_Accion || null)
-      .input("TKT_Resolution_Category", sql.VarChar, TKT_Resolution_Category || null)
-      .input("TKT_Resolution_Category_Tier_2", sql.VarChar, TKT_Resolution_Category_Tier_2 || null)
-
-      .query(`
+      .input(
+        "TKT_Resolution_Category",
+        sql.VarChar,
+        TKT_Resolution_Category || null,
+      )
+      .input(
+        "TKT_Resolution_Category_Tier_2",
+        sql.VarChar,
+        TKT_Resolution_Category_Tier_2 || null,
+      ).query(`
         UPDATE ${schema}.AWAs
         SET
           ID_WA = @ID_WA,
@@ -277,13 +289,12 @@ router.put("/", async (req, res) => {
       `);
 
     res.json({ success: true });
-
   } catch (error) {
     console.error("💥 ERROR UPDATE AWAS:", error.message);
     console.error(error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -297,9 +308,7 @@ router.put("/toggle/:id", async (req, res) => {
     const { id } = req.params;
 
     // 1. Obtener estado actual
-    const result = await pool.request()
-      .input("ID", sql.Int, id)
-      .query(`
+    const result = await pool.request().input("ID", sql.Int, id).query(`
         SELECT Estado
         FROM ${schema}.AWAs
         WHERE ID = @ID
@@ -315,10 +324,10 @@ router.put("/toggle/:id", async (req, res) => {
     const nuevoEstado = estadoActual === "Activo" ? "Inactivo" : "Activo";
 
     // 3. Update
-    await pool.request()
+    await pool
+      .request()
       .input("ID", sql.Int, id)
-      .input("Estado", sql.VarChar, nuevoEstado)
-      .query(`
+      .input("Estado", sql.VarChar, nuevoEstado).query(`
         UPDATE ${schema}.AWAs
         SET Estado = @Estado
         WHERE ID = @ID
@@ -326,9 +335,8 @@ router.put("/toggle/:id", async (req, res) => {
 
     res.json({
       success: true,
-      nuevoEstado
+      nuevoEstado,
     });
-
   } catch (error) {
     console.error("💥 ERROR TOGGLE AWA:", error);
     res.status(500).json({ error: error.message });
@@ -339,18 +347,13 @@ router.put("/toggle/:id", async (req, res) => {
 // GRILLA HORARIA AWA
 // ============================
 
-
 router.get("/grilla/:idAwa", async (req, res) => {
-
   try {
-
     const pool = await poolPromise;
 
     const { idAwa } = req.params;
 
-    const result = await pool.request()
-      .input("ID_AWA", sql.Int, idAwa)
-      .query(`
+    const result = await pool.request().input("ID_AWA", sql.Int, idAwa).query(`
         SELECT
           Id,
           Id_AWA,
@@ -363,68 +366,98 @@ router.get("/grilla/:idAwa", async (req, res) => {
       `);
 
     res.json(result.recordset);
-
   } catch (error) {
-
     console.error(error);
 
     res.status(500).json({
-      error: error.message
+      error: error.message,
     });
-
   }
-
 });
-
 
 // ============================
 // GUARDAR GRILLA HORARIA AWA
 // ============================
 
 router.put("/grilla", async (req, res) => {
-
   try {
-
     const pool = await poolPromise;
 
     const grilla = req.body;
 
     if (!Array.isArray(grilla)) {
       return res.status(400).json({
-        error: "La grilla debe ser un array"
+        error: "La grilla debe ser un array",
       });
     }
 
     for (const registro of grilla) {
-
-      await pool.request()
+      await pool
+        .request()
         .input("Id", sql.Int, registro.Id)
-        .input("Frecuencia", sql.Int, registro.Frecuencia)
-        .query(`
+        .input("Frecuencia", sql.Int, registro.Frecuencia).query(`
           UPDATE ${schema}.AWAs_Grilla_Horaria
           SET Frecuencia = @Frecuencia
           WHERE Id = @Id
         `);
-
     }
 
     res.json({
-      success: true
+      success: true,
     });
-
   } catch (error) {
-
     console.error(error);
 
     res.status(500).json({
-      error: error.message
+      error: error.message,
     });
-
   }
-
 });
 
+// ============================
+// ELIMINAR AWA
+// ============================
 
+router.delete("/:id", async (req, res) => {
+  try {
+    const pool = await poolPromise;
+    const { id } = req.params;
 
+    // 1. Validar que el AWA exista
+    const result = await pool.request().input("ID", sql.Int, id).query(`
+        SELECT ID, Titulo, Estado
+        FROM ${schema}.AWAs
+        WHERE ID = @ID
+      `);
+
+    if (result.recordset.length === 0) {
+      return res.status(404).json({ error: "AWA no encontrada" });
+    }
+
+    const awa = result.recordset[0];
+
+    // 2. Validar que el estado permita eliminación
+    const estadosPermitidos = ["Backlog", "Desarrollo", "Pendiente"];
+    if (!estadosPermitidos.includes(awa.Estado)) {
+      return res.status(400).json({
+        error: `No se puede eliminar un AWA en estado ${awa.Estado}`,
+      });
+    }
+
+    // 3. Eliminar el AWA
+    await pool.request().input("ID", sql.Int, id).query(`
+        DELETE FROM ${schema}.AWAs
+        WHERE ID = @ID
+      `);
+
+    res.json({
+      success: true,
+      mensaje: `AWA "${awa.Titulo}" eliminado correctamente`,
+    });
+  } catch (error) {
+    console.error("💥 ERROR ELIMINAR AWA:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 module.exports = router;
