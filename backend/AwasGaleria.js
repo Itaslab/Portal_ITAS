@@ -13,18 +13,21 @@ async function registrarLog(pool, idAwa, idUsuario, accion, detalles) {
     const ahora = new Date().toISOString();
     const mensajeLog = `[${ahora}] Usuario: ${idUsuario} | Acción: ${accion} | Detalles: ${detalles}`;
 
+    console.log("📝 Registrando log:", { idAwa, accion, idUsuario });
+
     await pool
       .request()
       .input("ID_AWA", sql.Int, idAwa)
-      .input("Log_Modificacion", sql.VarChar(sql.MAX), mensajeLog)
-      .query(`
+      .input("Log_Modificacion", sql.VarChar(sql.MAX), mensajeLog).query(`
         UPDATE ${schema}.AWAs
         SET Log_Modificacion = ISNULL(Log_Modificacion, '') + CHAR(10) + @Log_Modificacion
         WHERE ID = @ID_AWA
       `);
+
+    console.log(`✅ Log registrado exitosamente para AWA ${idAwa}`);
   } catch (error) {
-    console.error("⚠️  Error al registrar log:", error.message);
-    // No lanzamos error, solo registramos en consola
+    console.error("❌ Error al registrar log:", error.message);
+    console.error("Error details:", error);
   }
 }
 
@@ -66,7 +69,8 @@ router.get("/", async (req, res) => {
         RevITSS_Max,
         Url_Wa,
         TKT_Resolution_Category,
-        TKT_Resolution_Category_Tier_2
+        TKT_Resolution_Category_Tier_2,
+        Log_Modificacion
       FROM ${schema}.AWAs
       ORDER BY ID_AWA DESC
     `);
@@ -237,10 +241,7 @@ router.put("/", async (req, res) => {
     } = req.body;
 
     // Obtener valores anteriores para comparación
-    const prevResult = await pool
-      .request()
-      .input("ID", sql.Int, ID)
-      .query(`
+    const prevResult = await pool.request().input("ID", sql.Int, ID).query(`
         SELECT Titulo, Estado, Origen, Sistema, Esfuerzo
         FROM ${schema}.AWAs
         WHERE ID = @ID
@@ -249,11 +250,16 @@ router.put("/", async (req, res) => {
     const prevValues = prevResult.recordset[0] || {};
     const cambios = [];
 
-    if (prevValues.Titulo !== Titulo) cambios.push(`Título: "${prevValues.Titulo}" → "${Titulo}"`);
-    if (prevValues.Estado !== Estado) cambios.push(`Estado: "${prevValues.Estado}" → "${Estado}"`);
-    if (prevValues.Origen !== Origen) cambios.push(`Origen: "${prevValues.Origen}" → "${Origen}"`);
-    if (prevValues.Sistema !== Sistema) cambios.push(`Sistema: "${prevValues.Sistema}" → "${Sistema}"`);
-    if (prevValues.Esfuerzo !== Esfuerzo) cambios.push(`Esfuerzo: "${prevValues.Esfuerzo}" → "${Esfuerzo}"`);
+    if (prevValues.Titulo !== Titulo)
+      cambios.push(`Título: "${prevValues.Titulo}" → "${Titulo}"`);
+    if (prevValues.Estado !== Estado)
+      cambios.push(`Estado: "${prevValues.Estado}" → "${Estado}"`);
+    if (prevValues.Origen !== Origen)
+      cambios.push(`Origen: "${prevValues.Origen}" → "${Origen}"`);
+    if (prevValues.Sistema !== Sistema)
+      cambios.push(`Sistema: "${prevValues.Sistema}" → "${Sistema}"`);
+    if (prevValues.Esfuerzo !== Esfuerzo)
+      cambios.push(`Esfuerzo: "${prevValues.Esfuerzo}" → "${Esfuerzo}"`);
 
     await pool
       .request()
