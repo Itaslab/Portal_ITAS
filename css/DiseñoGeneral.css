@@ -922,11 +922,6 @@ textarea.disabled-field {
   text-overflow: ellipsis;
   white-space: nowrap;
   vertical-align: middle;
-  cursor: help;
-}
-
-.titulo-awa[title] {
-  cursor: help;
 }
 
 .estrellas-awa {
@@ -934,42 +929,8 @@ textarea.disabled-field {
   white-space: nowrap;
 }
 
-#tablaAwas {
-  table-layout: fixed;
-}
-
-#tablaAwas th:nth-child(1),
-#tablaAwas td:nth-child(1) {
-  width: 8%;
-}
-
-#tablaAwas th:nth-child(2),
-#tablaAwas td:nth-child(2) {
-  width: 8%;
-}
-
-#tablaAwas th:nth-child(3),
 #tablaAwas td:nth-child(3) {
-  width: 43%;
-}
-
-#tablaAwas th:nth-child(4),
-#tablaAwas td:nth-child(4) {
-  width: 13%;
-}
-
-#tablaAwas th:nth-child(5),
-#tablaAwas td:nth-child(5) {
-  width: 10%;
-}
-
-#tablaAwas th:nth-child(6),
-#tablaAwas td:nth-child(6) {
-  width: 18%;
-}
-
-#tablaAwas td:nth-child(3) {
-  min-width: 0;
+  width: 50%;
 }
 
 #tablaAwas td:nth-child(6) {
