@@ -242,7 +242,7 @@ router.put("/", async (req, res) => {
 
     // Obtener valores anteriores para comparación
     const prevResult = await pool.request().input("ID", sql.Int, ID).query(`
-        SELECT Titulo, Estado, Origen, Sistema, Esfuerzo
+        SELECT Titulo, Estado, Origen, Sistema, Esfuerzo,Detalle,Jira_Tarea,Url_Wa,Volumen_Diario
         FROM ${schema}.AWAs
         WHERE ID = @ID
       `);
@@ -260,6 +260,14 @@ router.put("/", async (req, res) => {
       cambios.push(`Sistema: "${prevValues.Sistema}" → "${Sistema}"`);
     if (prevValues.Esfuerzo !== Esfuerzo)
       cambios.push(`Esfuerzo: "${prevValues.Esfuerzo}" → "${Esfuerzo}"`);
+    if (prevValues.Detalle !== Detalle) cambios.push(`Detalle modificado`);
+    if (prevValues.Jira_Tarea !== Jira_Tarea)
+      cambios.push(`Jira: "${prevValues.Jira_Tarea}" → "${Jira_Tarea}"`);
+    if (prevValues.Url_Wa !== URL) cambios.push(`URL modificada`);
+    if (prevValues.Volumen_Diario !== Volumen_Diario)
+      cambios.push(
+        `Volumen: "${prevValues.Volumen_Diario}" → "${Volumen_Diario}"`,
+      );
 
     await pool
       .request()
