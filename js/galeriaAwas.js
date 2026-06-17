@@ -115,7 +115,7 @@ function guardarJiraVisual() {
   const jira = input.value.trim();
 
   if (jira) {
-    link.href = `https://tecocloud.atlassian.net/browse/${valor}`;
+    link.href = `https://tecocloud.atlassian.net/browse/${jira}`;
 
     link.textContent = jira;
   } else {
