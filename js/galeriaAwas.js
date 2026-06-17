@@ -422,6 +422,10 @@ async function abrirGrillaHoraria() {
     return;
   }
 
+  const awa = awasGlobal.find(
+    (x) => x.ID == idAwaGrillaActual || x.ID_AWA == idAwaGrillaActual,
+  );
+
   if (!awa) {
     console.error("AWA no encontrado para id:", idAwaGrillaActual);
     return;
