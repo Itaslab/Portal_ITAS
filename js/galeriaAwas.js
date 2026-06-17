@@ -290,7 +290,7 @@ function configurarAWA(id) {
     return;
   }
 
-  idAwaGrillaActual = awa.ID_AWA;
+  idAwaGrillaActual = awa.ID_AWA;"fi"
 
   // Logs temporales para depuración
   console.log("configurarAWA - awa:", awa);
@@ -424,8 +424,13 @@ async function abrirGrillaHoraria() {
 
   const awa = awasGlobal.find((x) => x.ID_AWA == idAwaGrillaActual);
 
+  // Buscar por `ID_AWA` o, si no existe, por `ID` interno (fallback)
+  const awa = awasGlobal.find(
+    (x) => x.ID_AWA == idAwaGrillaActual || x.ID == idAwaGrillaActual,
+  );
+
   if (!awa) {
-    console.error("AWA no encontrado");
+    console.error("AWA no encontrado para id:", idAwaGrillaActual);
     return;
   }
 
