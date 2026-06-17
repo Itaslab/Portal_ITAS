@@ -283,13 +283,14 @@ function nuevoAWA() {
 }
 
 function configurarAWA(id) {
-  idAwaGrillaActual = awa.ID_AWA;
   const awa = awasGlobal.find((a) => a.ID == id);
 
   if (!awa) {
     console.error("AWA no encontrada:", id);
     return;
   }
+
+  idAwaGrillaActual = awa.ID_AWA;
 
   // 🟦 Identificación
   document.getElementById("inputIdRegistro").value = awa.ID;
@@ -399,45 +400,38 @@ async function abrirGrillaHoraria() {
     console.error("No hay AWA seleccionado");
     return;
   }
-  idAwaGrillaActual = awa.ID_AWA;
 
   const awa = awasGlobal.find((x) => x.ID_AWA == idAwaGrillaActual);
 
-  if (awa) {
-    frecuenciaRPAActual = awa.FrecuenciaRPA;
-    frecuenciaRPA2Actual = awa.FrecuenciaRPA2;
+  if (!awa) {
+    console.error("AWA no encontrado");
+    return;
   }
+
+  frecuenciaRPAActual = awa.FrecuenciaRPA;
+  frecuenciaRPA2Actual = awa.FrecuenciaRPA2;
 
   console.log("AWA seleccionado:", idAwaGrillaActual);
   console.log("Frecuencia 1:", frecuenciaRPAActual);
   console.log("Frecuencia 2:", frecuenciaRPA2Actual);
 
   await cargarGrillaHoraria(idAwaGrillaActual);
+
   if (!grillaHorariaActual || grillaHorariaActual.length === 0) {
     alert(
       "No es posible configurar la grilla horaria. Verificar con grupo ITAS.",
     );
-
     return;
   }
+
   renderizarGrillaHoraria();
 
-  const modalConfiguracion = bootstrap.Modal.getInstance(
-    document.getElementById("modalAwa"),
-  );
-
-  if (modalConfiguracion) {
-    modalConfiguracion.hide();
-  }
-
-  const modalGrilla = new bootstrap.Modal(
-    document.getElementById("modalGrillaHoraria"),
-  );
+  bootstrap.Modal.getInstance(document.getElementById("modalAwa"))?.hide();
 
   document.getElementById("tituloGrillaAwa").innerText =
     `Configuración horaria AWA ${idAwaGrillaActual}`;
 
-  modalGrilla.show();
+  new bootstrap.Modal(document.getElementById("modalGrillaHoraria")).show();
 }
 
 async function cargarGrillaHoraria(idAwa) {
