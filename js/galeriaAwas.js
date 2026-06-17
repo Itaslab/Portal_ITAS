@@ -292,6 +292,23 @@ function configurarAWA(id) {
 
   idAwaGrillaActual = awa.ID_AWA;
 
+  // Logs temporales para depuración
+  console.log("configurarAWA - awa:", awa);
+  console.log("configurarAWA - idAwaGrillaActual (raw):", idAwaGrillaActual);
+
+  // Fallback: si no hay ID_AWA en la fila, usar el ID interno
+  if (
+    idAwaGrillaActual === null ||
+    idAwaGrillaActual === undefined ||
+    idAwaGrillaActual === ""
+  ) {
+    console.warn(
+      "configurarAWA - ID_AWA vacío, se usará ID interno como fallback:",
+      awa.ID,
+    );
+    idAwaGrillaActual = awa.ID;
+  }
+
   // 🟦 Identificación
   document.getElementById("inputIdRegistro").value = awa.ID;
   document.getElementById("inputIdAwa").value = awa.ID_AWA;
