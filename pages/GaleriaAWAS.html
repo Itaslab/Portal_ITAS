@@ -96,16 +96,29 @@
 
         <!-- 🟦 SECCIÓN 1: IDENTIFICACIÓN -->
         <div class="d-flex justify-content-between align-items-center">
-          <h6 class="mt-2 mb-0">Identificación</h6>
-          <button 
-            type="button" 
-            class="btn btn-sm btn-outline-danger"
-            id="btnEliminarAwa"
-            onclick="abrirConfirmacionEliminar()"
-            title="Eliminar este AWA">
-            <i class="bi bi-trash3"></i> Eliminar
-          </button>
-        </div>
+  <h6 class="mt-2 mb-0">Identificación</h6>
+
+  <div class="d-flex gap-2">
+
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      onclick="verLogAwa()"
+      title="Ver historial de modificaciones">
+      <i class="bi bi-clock-history"></i> Ver Log
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-danger"
+      id="btnEliminarAwa"
+      onclick="abrirConfirmacionEliminar()"
+      title="Eliminar este AWA">
+      <i class="bi bi-trash3"></i> Eliminar
+    </button>
+
+  </div>
+</div>
         <div class="row g-3 mb-3">
 
           <div class="col-md-3">
@@ -527,6 +540,39 @@
         </button>
 
       </div> 
+
+    </div>
+  </div>
+</div>
+
+<!-- 🔹 MODAL LOG AWA -->
+
+<div class="modal fade" id="modalLogAwa" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          Historial de modificaciones
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+        <textarea
+          id="inputLogAwa"
+          class="form-control"
+          rows="20"
+          readonly>
+        </textarea>
+
+      </div>
 
     </div>
   </div>

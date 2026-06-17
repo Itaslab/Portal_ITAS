@@ -40,6 +40,12 @@ function getNumber(value) {
   return value === "" ? 0 : Number(value);
 }
 
+function verLogAwa() {
+  const modal = new bootstrap.Modal(document.getElementById("modalLogAwa"));
+
+  modal.show();
+}
+
 // ============================
 // Permisos usuario
 // ============================
@@ -269,6 +275,8 @@ function configurarAWA(id) {
   document.getElementById("inputIdAwaVisible").value = awa.ID_AWA;
   document.getElementById("inputIdWa").value = awa.ID_WA ?? "";
   document.getElementById("inputTitulo").value = awa.Titulo ?? "";
+  document.getElementById("inputLogAwa").value =
+    awa.Log_Modificacion || "Sin registros";
 
   // 🟩 Operativo
   document.getElementById("inputSistema").value = awa.Sistema ?? "";
