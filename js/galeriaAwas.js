@@ -50,9 +50,18 @@ function verLogAwa() {
 function verJustificacion(id) {
   const awa = awasGlobal.find((a) => a.ID == id);
 
-  if (!awa) return;
+  console.log("verJustificacion - id:", id);
+  console.log("verJustificacion - awa encontrado:", awa);
+  console.log("verJustificacion - Justificacion_Estado:", awa?.Justificacion_Estado);
+
+  if (!awa) {
+    console.error("AWA no encontrado para id:", id);
+    return;
+  }
 
   const texto = awa.Justificacion_Estado || "Sin justificación registrada";
+
+  console.log("verJustificacion - texto a mostrar:", texto);
 
   document.getElementById("modalJustificacionTexto").innerText = texto;
 
