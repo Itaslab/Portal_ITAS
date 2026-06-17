@@ -146,22 +146,6 @@ async function cargarAWAS() {
     tbody.innerHTML = "";
 
     data.forEach((awa) => {
-      let estrellas = "";
-
-      if (awa.Estado === "Pendiente" || awa.Estado === "Backlog") {
-        if (awa.Esfuerzo === "Alto") {
-          estrellas = estrellas =
-            '<i class="bi bi-star-fill text-warning"></i>' +
-            '<i class="bi bi-star-fill text-warning"></i>' +
-            '<i class="bi bi-star-fill text-warning"></i>';
-        } else if (awa.Esfuerzo === "Medio") {
-          estrellas =
-            '<i class="bi bi-star-fill text-warning"></i>' +
-            '<i class="bi bi-star-fill text-warning"></i>';
-        } else if (awa.Esfuerzo === "Bajo") {
-          estrellas = '<i class="bi bi-star-fill text-warning"></i>';
-        }
-      }
       const estadoColor =
         awa.Estado === "Activo"
           ? "text-success"
@@ -202,10 +186,13 @@ async function cargarAWAS() {
       row.innerHTML = `
   <td>${awa.ID_WA ?? "-"}</td>
   <td>${awa.ID_AWA ?? "-"}</td>
-  <td>
-    <span class="titulo-awa" title="${tituloCompleto.replace(/"/g, "&quot;")}">${tituloVisible}</span>
-    <span class="estrellas-awa">${estrellas}</span>
-  </td>
+<td>
+  <span
+    class="titulo-awa"
+    title="${tituloCompleto.replace(/"/g, "&quot;")}">
+    ${tituloVisible}
+  </span>
+</td>
   <td>${awa.Origen ?? "-"}</td>
   <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
 
