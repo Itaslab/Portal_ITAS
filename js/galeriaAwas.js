@@ -396,7 +396,11 @@ function configurarAWA(id) {
 // ============================
 
 async function abrirGrillaHoraria() {
-  if (!idAwaGrillaActual) {
+  if (
+    idAwaGrillaActual === null ||
+    idAwaGrillaActual === undefined ||
+    idAwaGrillaActual === ""
+  ) {
     console.error("No hay AWA seleccionado");
     return;
   }
@@ -437,7 +441,7 @@ async function abrirGrillaHoraria() {
 async function cargarGrillaHoraria(idAwa) {
   grillaHorariaActual = [];
 
-  if (!idAwaGrillaActual) {
+  if (idAwa === null || idAwa === undefined || idAwa === "") {
     console.error("ID AWA vacío, no se puede cargar grilla");
     return;
   }
@@ -532,7 +536,7 @@ function renderizarGrillaHoraria() {
       html += `
         <td
           style="background-color:${colorFondo};cursor:pointer"
-          onclick="cambiarFrecuencia(${registro.Id})">
+              onclick="cambiarFrecuencia(${registro ? registro.Id : "null"})">
           ${frecuencia}
         </td>
       `;
