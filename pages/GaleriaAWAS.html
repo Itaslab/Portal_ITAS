@@ -259,10 +259,66 @@
             <input type="text" id="inputErr" class="form-control">
           </div>
 
-          <div class="col-md-4">
-            <label>Jira</label>
-            <input type="text" id="inputJira" class="form-control">
-          </div>
+<div class="col-md-4">
+
+  <label class="form-label">Jira</label>
+
+  <!-- Vista normal -->
+  <div id="jiraView" class="d-flex align-items-center gap-2">
+
+    <a
+      id="jiraLink"
+      href="#"
+      target="_blank"
+      class="link-primary text-truncate"
+      style="max-width:300px;"
+    >
+      Sin Jira
+    </a>
+
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-secondary"
+      onclick="editarJira()"
+    >
+      <i class="bi bi-pencil"></i>
+    </button>
+
+  </div>
+
+  <!-- Vista edición -->
+  <div id="jiraEdit" class="d-none">
+
+    <div class="input-group">
+
+      <input
+        type="text"
+        id="inputJira"
+        class="form-control"
+        placeholder="ITAS-1234"
+      >
+
+      <button
+        class="btn btn-success text-white"
+        type="button"
+        onclick="guardarJiraVisual()"
+      >
+        <i class="bi bi-check-lg"></i>
+      </button>
+
+      <button
+        class="btn btn-secondary"
+        type="button"
+        onclick="cancelarEdicionJira()"
+      >
+        <i class="bi bi-x-lg"></i>
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 
         </div>
 

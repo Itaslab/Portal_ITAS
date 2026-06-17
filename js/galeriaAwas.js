@@ -99,6 +99,39 @@ function cancelarEdicionUrl() {
 }
 
 // ============================
+// URL JIRA visual
+// ============================
+
+function editarJira() {
+  document.getElementById("jiraView").classList.add("d-none");
+  document.getElementById("jiraEdit").classList.remove("d-none");
+}
+
+function guardarJiraVisual() {
+  const input = document.getElementById("inputJira");
+  const link = document.getElementById("jiraLink");
+
+  const jira = input.value.trim();
+
+  if (jira) {
+    link.href = `https://tecocloud.atlassian.net/browse/${valor}`;
+
+    link.textContent = jira;
+  } else {
+    link.href = "#";
+    link.textContent = "Sin Jira";
+  }
+
+  document.getElementById("jiraEdit").classList.add("d-none");
+  document.getElementById("jiraView").classList.remove("d-none");
+}
+
+function cancelarEdicionJira() {
+  document.getElementById("jiraEdit").classList.add("d-none");
+  document.getElementById("jiraView").classList.remove("d-none");
+}
+
+// ============================
 // Cargar tabla
 // ============================
 
@@ -288,7 +321,22 @@ function configurarAWA(id) {
   document.getElementById("inputSistemaAccion").value =
     awa.Sistemas_Accion ?? "";
   document.getElementById("inputErr").value = awa.ERR_AppORD ?? "";
-  document.getElementById("inputJira").value = awa.Jira_Tarea ?? "";
+  const jira = awa.Jira_Tarea ?? "";
+
+  document.getElementById("inputJira").value = jira;
+
+  const jiraLink = document.getElementById("jiraLink");
+
+  if (jira) {
+    jiraLink.href = `https://tecocloud.atlassian.net/browse/${jira}`;
+    jiraLink.textContent = jira;
+  } else {
+    jiraLink.href = "#";
+    jiraLink.textContent = "Sin Jira";
+  }
+
+  document.getElementById("jiraView").classList.remove("d-none");
+  document.getElementById("jiraEdit").classList.add("d-none");
 
   // 🟨 Fechas
   document.getElementById("inputDesde").value = formatDate(awa.Fdesde);
