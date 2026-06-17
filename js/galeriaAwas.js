@@ -283,6 +283,7 @@ function nuevoAWA() {
 }
 
 function configurarAWA(id) {
+  idAwaGrillaActual = awa.ID_AWA;
   const awa = awasGlobal.find((a) => a.ID == id);
 
   if (!awa) {
@@ -394,7 +395,11 @@ function configurarAWA(id) {
 // ============================
 
 async function abrirGrillaHoraria() {
-  idAwaGrillaActual = document.getElementById("inputIdAwaVisible").value;
+  if (!idAwaGrillaActual) {
+    console.error("No hay AWA seleccionado");
+    return;
+  }
+  idAwaGrillaActual = awa.ID_AWA;
 
   const awa = awasGlobal.find((x) => x.ID_AWA == idAwaGrillaActual);
 
