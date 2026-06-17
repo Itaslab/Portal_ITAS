@@ -7,6 +7,7 @@ let usuarioEsAdmin = false;
 let esAdminAwas = false;
 let idAwaGrillaActual = null;
 let grillaHorariaActual = [];
+let awaPendienteCambioEstado = null;
 
 let frecuenciaRPAActual = null;
 let frecuenciaRPA2Actual = null;
@@ -234,7 +235,7 @@ async function cargarAWAS() {
 
       <button 
         class="btn ${btnClass} btn-sm text-white"
-        onclick="activarAWA(${awa.ID})"
+        onclick="abrirModalEstado(${awa.ID})"
         ${disabledAttr}>
         ${btnTexto}
       </button>
@@ -769,6 +770,36 @@ function activarAWA(id) {
     document.getElementById("modalConfirmacion"),
   );
   modal.show();
+}
+
+function abrirModalEstado(idAwa) {
+  awaPendienteCambioEstado = idAwa;
+
+  document.getElementById("txtJustificacionEstado").value = "";
+
+  document.getElementById("btnConfirmarCambioEstado").disabled = true;
+
+  const modal = new bootstrap.Modal(
+    document.getElementById("modalJustificacionEstado"),
+  );
+
+  modal.show();
+}
+
+function validarJustificacionEstado() {
+  const texto = document.getElementById("txtJustificacionEstado").value.trim();
+
+  document.getElementById("btnConfirmarCambioEstado").disabled =
+    texto.length < 10;
+}
+
+async function confirmarCambioEstado() {
+  console.log("AWA:", awaPendienteCambioEstado);
+
+  console.log(
+    "Justificación:",
+    document.getElementById("txtJustificacionEstado").value,
+  );
 }
 
 document
