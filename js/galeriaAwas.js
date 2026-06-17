@@ -297,6 +297,7 @@ function configurarAWA(id) {
   document.getElementById("inputTitulo").value = awa.Titulo ?? "";
   document.getElementById("inputLogAwa").value =
     awa.Log_Modificacion || "Sin registros";
+  document.getElementById("inputEstadoJira").value = awa.Estado_Jira ?? "";
 
   // 🟩 Operativo
   document.getElementById("inputSistema").value = awa.Sistema ?? "";
@@ -602,6 +603,7 @@ async function guardarAWA() {
     const payload = {
       ID: isNew ? null : Number(idRegistro),
       ID_AWA: document.getElementById("inputIdAwa").value || null,
+      Estado_Jira: document.getElementById("inputEstadoJira").value || null,
 
       // Básico
       ID_WA: document.getElementById("inputIdWa").value,

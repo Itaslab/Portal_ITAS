@@ -70,7 +70,8 @@ router.get("/", async (req, res) => {
         Url_Wa,
         TKT_Resolution_Category,
         TKT_Resolution_Category_Tier_2,
-        Log_Modificacion
+        Log_Modificacion,
+        Estado_Jira
 FROM ${schema}.AWAs
 WHERE ISNULL(Estado,'') <> 'Eliminado'
 ORDER BY ID_AWA DESC
@@ -121,6 +122,7 @@ router.post("/", async (req, res) => {
       Sistemas_Accion,
       TKT_Resolution_Category,
       TKT_Resolution_Category_Tier_2,
+      Estado_Jira,
     } = req.body;
 
     // Insertar nuevo registro
@@ -161,20 +163,21 @@ router.post("/", async (req, res) => {
         sql.VarChar,
         TKT_Resolution_Category_Tier_2 || null,
       )
+      .input("Estado_Jira", sql.VarChar, Estado_Jira || null)
       .input("En_Ejecucion", sql.Int, 0).query(`
         INSERT INTO ${schema}.AWAs (
           ID_WA, Titulo, Estado, Origen, Sistema, Negocio, 
           ERR_AppORD, Jira_Tarea, Fdesde, Fhasta,
           Id_Flujo_RPA, Prioridad_RPA, Max_Encoladas_RPA, 
           FrecuenciaRPA, FrecuenciaRPA2, Volumen_Diario, Esfuerzo,
-          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, Limite_Bajada, Detalle, Url_Wa, Sistemas_Analisis, Sistemas_Accion, TKT_Resolution_Category, TKT_Resolution_Category_Tier_2, En_Ejecucion
+          HS_Antiguedad_Bajada, RevITSS_x100, RevITSS_Max, Limite_Bajada, Detalle, Url_Wa, Sistemas_Analisis, Sistemas_Accion, TKT_Resolution_Category, TKT_Resolution_Category_Tier_2, En_Ejecucion, Estado_Jira
         )
         VALUES (
           @ID_WA, @Titulo, @Estado, @Origen, @Sistema, @Negocio,
           @ERR_AppORD, @Jira_Tarea, @Fdesde, @Fhasta,
           @Id_Flujo_RPA, @Prioridad_RPA, @Max_Encoladas_RPA,
           @FrecuenciaRPA, @FrecuenciaRPA2, @Volumen_Diario, @Esfuerzo,
-          @HS_Antiguedad_Bajada, @RevITSS_x100, @RevITSS_Max, @Limite_Bajada, @Detalle, @URL, @Sistemas_Analisis, @Sistemas_Accion, @TKT_Resolution_Category, @TKT_Resolution_Category_Tier_2, @En_Ejecucion
+          @HS_Antiguedad_Bajada, @RevITSS_x100, @RevITSS_Max, @Limite_Bajada, @Detalle, @URL, @Sistemas_Analisis, @Sistemas_Accion, @TKT_Resolution_Category, @TKT_Resolution_Category_Tier_2, @En_Ejecucion, @Estado_Jira
         );
         SELECT SCOPE_IDENTITY() AS newId;
       `);
@@ -239,6 +242,7 @@ router.put("/", async (req, res) => {
       Sistemas_Accion,
       TKT_Resolution_Category,
       TKT_Resolution_Category_Tier_2,
+      Estado_Jira,
     } = req.body;
 
     // Obtener valores anteriores para comparación
@@ -269,7 +273,8 @@ router.put("/", async (req, res) => {
         RevITSS_x100,
         RevITSS_Max,
         TKT_Resolution_Category,
-        TKT_Resolution_Category_Tier_2
+        TKT_Resolution_Category_Tier_2,
+        Estado_Jira
         FROM ${schema}.AWAs
         WHERE ID = @ID
       `);
@@ -304,6 +309,7 @@ router.put("/", async (req, res) => {
       RevITSS_Max,
       TKT_Resolution_Category,
       TKT_Resolution_Category_Tier_2,
+      Estado_Jira,
     };
 
     for (const [campo, nuevoValor] of Object.entries(camposAuditados)) {
@@ -341,6 +347,7 @@ router.put("/", async (req, res) => {
       .input("Negocio", sql.VarChar, Negocio || null)
       .input("ERR_AppORD", sql.VarChar, ERR_AppORD || null)
       .input("Jira_Tarea", sql.VarChar, Jira_Tarea || null)
+      .input("Estado_Jira", sql.VarChar, Estado_Jira || null)
 
       // Fechas
       .input("Fdesde", sql.Date, Fdesde || null)
@@ -402,7 +409,8 @@ router.put("/", async (req, res) => {
           Sistemas_Analisis = @Sistemas_Analisis,
           Sistemas_Accion = @Sistemas_Accion,
           TKT_Resolution_Category = @TKT_Resolution_Category,
-          TKT_Resolution_Category_Tier_2 = @TKT_Resolution_Category_Tier_2
+          TKT_Resolution_Category_Tier_2 = @TKT_Resolution_Category_Tier_2,
+          Estado_Jira = @Estado_Jira
         WHERE ID = @ID
       `);
 
