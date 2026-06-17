@@ -78,9 +78,6 @@ WHERE ISNULL(Estado,'') <> 'Eliminado'
 ORDER BY ID_AWA DESC
     `);
 
-    // Log temporal para depuración
-    console.log("GET /api/awas - primeros 2 registros:", result.recordset.slice(0, 2).map(r => ({ ID, Titulo: r.Titulo, Justificacion_Estado: r.Justificacion_Estado })));
-
     res.json(result.recordset);
   } catch (error) {
     console.error("💥 ERROR AWAS:", error.message);
