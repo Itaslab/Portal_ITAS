@@ -394,9 +394,7 @@ function configurarAWA(id) {
 // ============================
 
 async function abrirGrillaHoraria() {
-  idAwaGrillaActual =
-    document.getElementById("inputIdAwa").value ||
-    document.getElementById("inputIdAwaVisible").value;
+  idAwaGrillaActual = document.getElementById("inputIdAwaVisible").value;
 
   const awa = awasGlobal.find((x) => x.ID_AWA == idAwaGrillaActual);
 
