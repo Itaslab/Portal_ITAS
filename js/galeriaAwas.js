@@ -394,7 +394,9 @@ function configurarAWA(id) {
 // ============================
 
 async function abrirGrillaHoraria() {
-  idAwaGrillaActual = document.getElementById("inputIdAwa").value;
+  idAwaGrillaActual =
+    document.getElementById("inputIdAwa").value ||
+    document.getElementById("inputIdAwaVisible").value;
 
   const awa = awasGlobal.find((x) => x.ID_AWA == idAwaGrillaActual);
 
@@ -437,6 +439,11 @@ async function abrirGrillaHoraria() {
 
 async function cargarGrillaHoraria(idAwa) {
   grillaHorariaActual = [];
+
+  if (!idAwaGrillaActual) {
+    console.error("ID AWA vacío, no se puede cargar grilla");
+    return;
+  }
 
   try {
     const res = await fetch(`${basePath}/api/awas/grilla/${idAwa}`);
