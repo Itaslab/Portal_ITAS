@@ -553,37 +553,46 @@ router.delete("/:id", async (req, res) => {
     const pool = await poolPromise;
     const { id } = req.params;
 
-    // 1. Validar que el AWA exista
+    // Buscar AWA
     const result = await pool.request().input("ID", sql.Int, id).query(`
-  UPDATE ${schema}.AWAs
-  SET Estado = 'Eliminado'
-  WHERE ID = @ID
-`);
+        SELECT ID, Titulo, Estado
+        FROM ${schema}.AWAs
+        WHERE ID = @ID
+      `);
 
     if (result.recordset.length === 0) {
-      return res.status(404).json({ error: "AWA no encontrada" });
+      return res.status(404).json({
+        error: "AWA no encontrada",
+      });
     }
 
     const awa = result.recordset[0];
 
-    // 2. Validar que el estado permita eliminación
+    // Validar estados permitidos
     const estadosPermitidos = ["Backlog", "Desarrollo", "Pendiente"];
+
     if (!estadosPermitidos.includes(awa.Estado)) {
       return res.status(400).json({
         error: `No se puede eliminar un AWA en estado ${awa.Estado}`,
       });
     }
 
-    // 3. Registrar en log antes de eliminar
+    // Log
     const idUsuario = req.session?.user?.ID_Usuario || "desconocido";
-    const detalles = `AWA eliminado: Título="${awa.Titulo}", Estado="${awa.Estado}"`;
-    await registrarLog(pool, id, idUsuario, "DELETE", detalles);
 
-    // 4. Eliminar el AWA
+    await registrarLog(
+      pool,
+      id,
+      idUsuario,
+      "DELETE",
+      `Estado: "${awa.Estado}" → "Eliminado"`,
+    );
+
+    // Marcar eliminado
     await pool.request().input("ID", sql.Int, id).query(`
-      UPDATE ${schema}.AWAs
-      SET Estado = 'Eliminado'
-      WHERE ID = @ID
+        UPDATE ${schema}.AWAs
+        SET Estado = 'Eliminado'
+        WHERE ID = @ID
       `);
 
     res.json({
