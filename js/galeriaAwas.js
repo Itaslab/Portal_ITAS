@@ -820,7 +820,8 @@ async function confirmarCambioEstado() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          justificacion,
+          justificacion: justificacion,
+          Justificacion_Estado: justificacion,
         }),
       },
     );
@@ -841,7 +842,6 @@ async function confirmarCambioEstado() {
     mostrarToast("Estado actualizado correctamente", "success");
   } catch (err) {
     console.error(err);
-
     mostrarToast("Error de conexión", "danger");
   }
 

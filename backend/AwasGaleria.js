@@ -439,36 +439,40 @@ router.put("/toggle/:id", async (req, res) => {
   try {
     const pool = await poolPromise;
     const { id } = req.params;
+    const { justificacion } = req.body;
 
-    // 1. Obtener estado actual
     const result = await pool.request().input("ID", sql.Int, id).query(`
-        SELECT Estado
-        FROM ${schema}.AWAs
-        WHERE ID = @ID
-      `);
+      SELECT Estado
+      FROM ${schema}.AWAs
+      WHERE ID = @ID
+    `);
 
     if (result.recordset.length === 0) {
       return res.status(404).json({ error: "AWA no encontrada" });
     }
 
     const estadoActual = result.recordset[0].Estado;
-
-    // 2. Definir nuevo estado
     const nuevoEstado = estadoActual === "Activo" ? "Inactivo" : "Activo";
 
-    // 3. Update
     await pool
       .request()
       .input("ID", sql.Int, id)
-      .input("Estado", sql.VarChar, nuevoEstado).query(`
+      .input("Estado", sql.VarChar, nuevoEstado)
+      .input(
+        "Justificacion_Estado",
+        sql.VarChar(sql.MAX),
+        justificacion || null,
+      ).query(`
         UPDATE ${schema}.AWAs
-        SET Estado = @Estado
+        SET 
+          Estado = @Estado,
+          Justificacion_Estado = @Justificacion_Estado
         WHERE ID = @ID
       `);
 
-    // Registrar en log
     const idUsuario = req.session?.user?.ID_Usuario || "desconocido";
-    const detalles = `Estado: "${estadoActual}" → "${nuevoEstado}"`;
+    const detalles = `Estado: "${estadoActual}" → "${nuevoEstado}" | Justificación: "${justificacion || ""}"`;
+
     await registrarLog(pool, id, idUsuario, "TOGGLE", detalles);
 
     res.json({
