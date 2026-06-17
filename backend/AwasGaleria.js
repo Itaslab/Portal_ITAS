@@ -242,7 +242,33 @@ router.put("/", async (req, res) => {
 
     // Obtener valores anteriores para comparación
     const prevResult = await pool.request().input("ID", sql.Int, ID).query(`
-        SELECT Titulo, Estado, Origen, Sistema, Esfuerzo,Detalle,Jira_Tarea,Url_Wa,Volumen_Diario
+        SELECT 
+        Titulo,
+        Origen,
+        Estado,
+        Sistema,
+        Negocio,
+        ERR_AppORD,
+        Jira_Tarea,
+        Detalle,
+        Url_Wa,
+        Sistemas_Analisis,
+        Sistemas_Accion,
+        Volumen_Diario,
+        Esfuerzo,
+        Fdesde,
+        Fhasta,
+        Id_Flujo_RPA,
+        Prioridad_RPA,
+        Max_Encoladas_RPA,
+        FrecuenciaRPA,
+        FrecuenciaRPA2,
+        Limite_Bajada,
+        HS_Antiguedad_Bajada,
+        RevITSS_x100,
+        RevITSS_Max,
+        TKT_Resolution_Category,
+        TKT_Resolution_Category_Tier_2
         FROM ${schema}.AWAs
         WHERE ID = @ID
       `);
@@ -250,24 +276,52 @@ router.put("/", async (req, res) => {
     const prevValues = prevResult.recordset[0] || {};
     const cambios = [];
 
-    if (prevValues.Titulo !== Titulo)
-      cambios.push(`Título: "${prevValues.Titulo}" → "${Titulo}"`);
-    if (prevValues.Estado !== Estado)
-      cambios.push(`Estado: "${prevValues.Estado}" → "${Estado}"`);
-    if (prevValues.Origen !== Origen)
-      cambios.push(`Origen: "${prevValues.Origen}" → "${Origen}"`);
-    if (prevValues.Sistema !== Sistema)
-      cambios.push(`Sistema: "${prevValues.Sistema}" → "${Sistema}"`);
-    if (prevValues.Esfuerzo !== Esfuerzo)
-      cambios.push(`Esfuerzo: "${prevValues.Esfuerzo}" → "${Esfuerzo}"`);
-    if (prevValues.Detalle !== Detalle) cambios.push(`Detalle modificado`);
-    if (prevValues.Jira_Tarea !== Jira_Tarea)
-      cambios.push(`Jira: "${prevValues.Jira_Tarea}" → "${Jira_Tarea}"`);
-    if (prevValues.Url_Wa !== URL) cambios.push(`URL modificada`);
-    if (prevValues.Volumen_Diario !== Volumen_Diario)
-      cambios.push(
-        `Volumen: "${prevValues.Volumen_Diario}" → "${Volumen_Diario}"`,
-      );
+    const camposAuditados = {
+      Titulo,
+      Estado,
+      Origen,
+      Sistema,
+      Negocio,
+      ERR_AppORD,
+      Jira_Tarea,
+      Detalle,
+      URL,
+      Sistemas_Analisis,
+      Sistemas_Accion,
+      Volumen_Diario,
+      Esfuerzo,
+      Fdesde,
+      Fhasta,
+      Id_Flujo_RPA,
+      Prioridad_RPA,
+      Max_Encoladas_RPA,
+      FrecuenciaRPA,
+      FrecuenciaRPA2,
+      Limite_Bajada,
+      HS_Antiguedad_Bajada,
+      RevITSS_x100,
+      RevITSS_Max,
+      TKT_Resolution_Category,
+      TKT_Resolution_Category_Tier_2,
+    };
+
+    for (const [campo, nuevoValor] of Object.entries(camposAuditados)) {
+      const campoBD = campo === "URL" ? "Url_Wa" : campo;
+
+      const valorAnterior = prevValues[campoBD];
+
+      if (String(valorAnterior ?? "") !== String(nuevoValor ?? "")) {
+        if (campo === "Detalle") {
+          cambios.push("Detalle modificado");
+        } else if (campo === "URL") {
+          cambios.push("URL modificada");
+        } else {
+          cambios.push(
+            `${campo}: "${valorAnterior ?? ""}" → "${nuevoValor ?? ""}"`,
+          );
+        }
+      }
+    }
 
     await pool
       .request()
