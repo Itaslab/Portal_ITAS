@@ -235,7 +235,7 @@ async function cargarAWAS() {
 
       <button 
         class="btn ${btnClass} btn-sm text-white"
-        onclick="abrirModalEstado(${awa.ID})"
+        onclick="activarAWA(${awa.ID})"
         ${disabledAttr}>
         ${btnTexto}
       </button>
@@ -753,37 +753,22 @@ async function guardarNuevoAWA() {
 // ============================
 // Activar / Desactivar (placeholder)
 // ============================
+let awaPendienteAccion = null;
 
 function activarAWA(id) {
   const awa = awasGlobal.find((a) => a.ID == id);
+
   if (!awa) return;
-  if (["Backlog", "Desarrollo", "Pendiente"].includes(awa.Estado)) return;
 
   awaPendienteAccion = awa;
-
-  const accion = awa.Estado === "Activo" ? "desactivar" : "activar";
-
-  document.getElementById("textoConfirmacion").innerText =
-    `¿Seguro que querés ${accion} el AWA "${awa.Titulo}"?`;
-
-  const modal = new bootstrap.Modal(
-    document.getElementById("modalConfirmacion"),
-  );
-  modal.show();
-}
-
-function abrirModalEstado(idAwa) {
-  awaPendienteCambioEstado = idAwa;
 
   document.getElementById("txtJustificacionEstado").value = "";
 
   document.getElementById("btnConfirmarCambioEstado").disabled = true;
 
-  const modal = new bootstrap.Modal(
+  new bootstrap.Modal(
     document.getElementById("modalJustificacionEstado"),
-  );
-
-  modal.show();
+  ).show();
 }
 
 function validarJustificacionEstado() {
@@ -794,49 +779,48 @@ function validarJustificacionEstado() {
 }
 
 async function confirmarCambioEstado() {
-  console.log("AWA:", awaPendienteCambioEstado);
+  const justificacion = document
+    .getElementById("txtJustificacionEstado")
+    .value.trim();
 
-  console.log(
-    "Justificación:",
-    document.getElementById("txtJustificacionEstado").value,
-  );
-}
+  if (!awaPendienteAccion) return;
 
-document
-  .getElementById("btnConfirmarAccion")
-  .addEventListener("click", async () => {
-    if (!awaPendienteAccion) return;
+  try {
+    const res = await fetch(
+      `${basePath}/api/awas/toggle/${awaPendienteAccion.ID}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          justificacion,
+        }),
+      },
+    );
 
-    try {
-      const res = await fetch(
-        `${basePath}/api/awas/toggle/${awaPendienteAccion.ID}`,
-        { method: "PUT" },
-      );
+    const data = await res.json();
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        console.error("Error backend:", data);
-        mostrarToast("Error al cambiar estado", "danger");
-        return;
-      }
-
-      // cerrar modal
-      bootstrap.Modal.getInstance(
-        document.getElementById("modalConfirmacion"),
-      ).hide();
-
-      // refrescar tabla
-      await cargarAWAS();
-
-      mostrarToast("Estado actualizado correctamente", "success");
-    } catch (err) {
-      console.error(err);
-      mostrarToast("Error de conexión", "danger");
+    if (!res.ok) {
+      mostrarToast(data.error || "Error al cambiar estado", "danger");
+      return;
     }
 
-    awaPendienteAccion = null;
-  });
+    bootstrap.Modal.getInstance(
+      document.getElementById("modalJustificacionEstado"),
+    ).hide();
+
+    await cargarAWAS();
+
+    mostrarToast("Estado actualizado correctamente", "success");
+  } catch (err) {
+    console.error(err);
+
+    mostrarToast("Error de conexión", "danger");
+  }
+
+  awaPendienteAccion = null;
+}
 
 function abrirConfirmacionEliminar() {
   if (!awaParaEliminar) return;
@@ -849,9 +833,6 @@ function abrirConfirmacionEliminar() {
   btnConfirmar.textContent = "Eliminar";
   btnConfirmar.className = "btn btn-danger text-white";
 
-  const modal = new bootstrap.Modal(
-    document.getElementById("modalConfirmacion"),
-  );
   modal.show();
 
   // Limpiar listeners anteriores y agregar uno nuevo para eliminar
