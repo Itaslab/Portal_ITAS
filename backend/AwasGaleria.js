@@ -71,7 +71,8 @@ router.get("/", async (req, res) => {
         TKT_Resolution_Category,
         TKT_Resolution_Category_Tier_2,
         Log_Modificacion,
-        Estado_Jira
+        Estado_Jira,
+        Justificacion_Estado
 FROM ${schema}.AWAs
 WHERE ISNULL(Estado,'') <> 'Eliminado'
 ORDER BY ID_AWA DESC

@@ -47,6 +47,18 @@ function verLogAwa() {
   modal.show();
 }
 
+function verJustificacion(id) {
+  const awa = awasGlobal.find((a) => a.ID == id);
+
+  if (!awa) return;
+
+  const texto = awa.Justificacion_Estado || "Sin justificación registrada";
+
+  document.getElementById("modalJustificacionTexto").innerText = texto;
+
+  new bootstrap.Modal(document.getElementById("modalVerJustificacion")).show();
+}
+
 // ============================
 // Permisos usuario
 // ============================
@@ -232,6 +244,12 @@ async function cargarAWAS() {
 
   <td class="text-end">
     <div class="d-flex justify-content-end flex-nowrap gap-2 acciones-awa">
+
+<button 
+  class="btn btn-info btn-sm text-white"
+  onclick="verJustificacion(${awa.ID})">
+  <i class="bi bi-info-circle"></i>
+</button>
 
       <button 
         class="btn ${btnClass} btn-sm text-white"
