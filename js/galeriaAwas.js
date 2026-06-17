@@ -753,7 +753,6 @@ async function guardarNuevoAWA() {
 // ============================
 // Activar / Desactivar (placeholder)
 // ============================
-let awaPendienteAccion = null;
 
 function activarAWA(id) {
   const awa = awasGlobal.find((a) => a.ID == id);
