@@ -71,8 +71,9 @@ router.get("/", async (req, res) => {
         TKT_Resolution_Category,
         TKT_Resolution_Category_Tier_2,
         Log_Modificacion
-      FROM ${schema}.AWAs
-      ORDER BY ID_AWA DESC
+FROM ${schema}.AWAs
+WHERE ISNULL(Estado,'') <> 'Eliminado'
+ORDER BY ID_AWA DESC
     `);
 
     res.json(result.recordset);
@@ -554,10 +555,10 @@ router.delete("/:id", async (req, res) => {
 
     // 1. Validar que el AWA exista
     const result = await pool.request().input("ID", sql.Int, id).query(`
-        SELECT ID, Titulo, Estado
-        FROM ${schema}.AWAs
-        WHERE ID = @ID
-      `);
+  UPDATE ${schema}.AWAs
+  SET Estado = 'Eliminado'
+  WHERE ID = @ID
+`);
 
     if (result.recordset.length === 0) {
       return res.status(404).json({ error: "AWA no encontrada" });
@@ -580,8 +581,9 @@ router.delete("/:id", async (req, res) => {
 
     // 4. Eliminar el AWA
     await pool.request().input("ID", sql.Int, id).query(`
-        DELETE FROM ${schema}.AWAs
-        WHERE ID = @ID
+      UPDATE ${schema}.AWAs
+      SET Estado = 'Eliminado'
+      WHERE ID = @ID
       `);
 
     res.json({
