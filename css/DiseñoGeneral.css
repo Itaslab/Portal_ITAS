@@ -901,22 +901,21 @@ textarea.disabled-field {
 }
 
 #tablaAwas td:last-child .btn {
-  font-size: clamp(11px, 0.75vw, 14px);
-  padding: clamp(2px, 0.3vw, 6px) clamp(6px, 0.6vw, 12px);
+  font-size: clamp(10px, 0.75vw, 12px);
+  padding: clamp(2px, 0.3vw, 4px) clamp(4px, 0.5vw, 7px);
   min-width: 0;
   flex: 0 1 auto;
+  white-space: nowrap;
 }
 
 .acciones-awa {
   flex-wrap: nowrap;
   justify-content: flex-end;
-  overflow-x: auto;
   gap: 0.35rem;
 }
 
-.acciones-awa .btn {
-  font-size: clamp(11px, 0.75vw, 14px);
-  padding: clamp(2px, 0.3vw, 6px) clamp(6px, 0.6vw, 12px);
+.acciones-awa button {
+  min-width: 0;
 }
 
 /** GALERIA AWAS */
@@ -952,22 +951,32 @@ textarea.disabled-field {
 
 #tablaAwas th:nth-child(3),
 #tablaAwas td:nth-child(3) {
-  width: 50%;
+  width: 34%;
   min-width: 0;
 }
 
 #tablaAwas th:nth-child(4),
 #tablaAwas td:nth-child(4) {
-  width: 12%;
+  width: 14%;
 }
 
 #tablaAwas th:nth-child(5),
 #tablaAwas td:nth-child(5) {
-  width: 10%;
+  width: 8%;
 }
 
 #tablaAwas th:nth-child(6),
 #tablaAwas td:nth-child(6) {
-  width: 12%;
+  width: 24%;
   white-space: nowrap;
+}
+
+@media (max-width: 992px) {
+  .acciones-awa .btn-text {
+    display: none;
+  }
+
+  .acciones-awa .btn {
+    padding: 0.3rem 0.45rem;
+  }
 }

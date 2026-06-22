@@ -247,22 +247,28 @@ async function cargarAWAS() {
 
 <button 
   class="btn btn-info btn-sm text-white"
-  onclick="verJustificacion(${awa.ID})">
+  onclick="verJustificacion(${awa.ID})"
+  title="Ver justificación">
   <i class="bi bi-info-circle"></i>
+  <span class="btn-text d-none d-sm-inline ms-1">Info</span>
 </button>
 
       <button 
         class="btn ${btnClass} btn-sm text-white"
         onclick="activarAWA(${awa.ID})"
-        ${disabledAttr}>
-        ${btnTexto}
+        ${disabledAttr}
+        title="${btnTexto}">
+        <i class="bi bi-toggle-${btnTexto === "Activar" ? "on" : "off"}"></i>
+        <span class="btn-text d-none d-sm-inline ms-1">${btnTexto}</span>
       </button>
 
       <button 
         class="btn btn-primary btn-sm text-white"
         onclick="configurarAWA(${awa.ID})"
-        ${!esAdminAwas ? "disabled" : ""}>
-        Configurar
+        ${!esAdminAwas ? "disabled" : ""}
+        title="Configurar">
+        <i class="bi bi-gear"></i>
+        <span class="btn-text d-none d-sm-inline ms-1">Configurar</span>
       </button>
 
     </div>
