@@ -877,7 +877,10 @@ function abrirConfirmacionEliminar() {
   btnConfirmar.textContent = "Eliminar";
   btnConfirmar.className = "btn btn-danger text-white";
 
-  modal.show();
+  const modalConfirmacion = new bootstrap.Modal(
+    document.getElementById("modalConfirmacion"),
+  );
+  modalConfirmacion.show();
 
   // Limpiar listeners anteriores y agregar uno nuevo para eliminar
   const nuevoBtn = btnConfirmar.cloneNode(true);
