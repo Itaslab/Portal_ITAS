@@ -896,18 +896,22 @@ textarea.disabled-field {
 }
 
 #tablaAwas td:last-child {
-  white-space: normal;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 #tablaAwas td:last-child .btn {
   font-size: clamp(11px, 0.75vw, 14px);
   padding: clamp(2px, 0.3vw, 6px) clamp(6px, 0.6vw, 12px);
-  min-width: 2.8rem;
+  min-width: 0;
+  flex: 0 1 auto;
 }
 
 .acciones-awa {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
+  overflow-x: auto;
+  gap: 0.35rem;
 }
 
 .acciones-awa .btn {
@@ -965,9 +969,5 @@ textarea.disabled-field {
 #tablaAwas th:nth-child(6),
 #tablaAwas td:nth-child(6) {
   width: 12%;
-  white-space: nowrap;
-}
-
-.acciones-awa {
   white-space: nowrap;
 }
