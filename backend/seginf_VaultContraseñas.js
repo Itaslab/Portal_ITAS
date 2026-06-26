@@ -5,6 +5,7 @@
 const { sql, poolPromise } = require("./db");
 const crypto = require("crypto");
 const schema = process.env.DB_SCHEMA;
+console.log("ENCRYPTION_KEY:", !!process.env.ENCRYPTION_KEY);
 
 // Clave de cifrado (debe venir de .env en producción)
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
