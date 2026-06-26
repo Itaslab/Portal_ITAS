@@ -940,40 +940,38 @@ textarea.disabled-field {
 
 #tablaAwas th:nth-child(1),
 #tablaAwas td:nth-child(1) {
-  width: 8%;
+  width: 90px;
 }
 
 #tablaAwas th:nth-child(2),
 #tablaAwas td:nth-child(2) {
-  width: 8%;
+  width: 90px;
 }
 
 #tablaAwas th:nth-child(3),
 #tablaAwas td:nth-child(3) {
-  width: 34%;
-  min-width: 0;
+  min-width: 350px; /* Título */
 }
 
 #tablaAwas th:nth-child(4),
 #tablaAwas td:nth-child(4) {
-  width: 12%;
-}
+  width: 120px;
+} /* Jira */
 
 #tablaAwas th:nth-child(5),
 #tablaAwas td:nth-child(5) {
-  width: 10%;
-}
+  width: 130px;
+} /* Origen */
 
 #tablaAwas th:nth-child(6),
 #tablaAwas td:nth-child(6) {
-  width: 8%;
-}
+  width: 110px;
+} /* Estado */
 
 #tablaAwas th:nth-child(7),
 #tablaAwas td:nth-child(7) {
-  width: 24%;
-  white-space: nowrap;
-}
+  width: 210px;
+} /* Acciones */
 
 @media (max-width: 992px) {
   .acciones-awa .btn-text {
