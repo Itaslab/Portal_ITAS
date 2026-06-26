@@ -901,10 +901,9 @@ textarea.disabled-field {
 }
 
 #tablaAwas td:last-child .btn {
-  font-size: clamp(10px, 0.75vw, 12px);
-  padding: clamp(2px, 0.3vw, 4px) clamp(4px, 0.5vw, 7px);
-  min-width: 0;
-  flex: 0 1 auto;
+  font-size: 12px;
+  padding: 4px 8px;
+  flex-shrink: 0;
   white-space: nowrap;
 }
 
@@ -915,10 +914,8 @@ textarea.disabled-field {
 }
 
 .acciones-awa button {
-  min-width: 0;
+  flex-shrink: 0;
 }
-
-/** GALERIA AWAS */
 
 .titulo-awa {
   display: inline-block;
@@ -957,16 +954,21 @@ textarea.disabled-field {
 
 #tablaAwas th:nth-child(4),
 #tablaAwas td:nth-child(4) {
-  width: 14%;
+  width: 12%;
 }
 
 #tablaAwas th:nth-child(5),
 #tablaAwas td:nth-child(5) {
-  width: 8%;
+  width: 10%;
 }
 
 #tablaAwas th:nth-child(6),
 #tablaAwas td:nth-child(6) {
+  width: 8%;
+}
+
+#tablaAwas th:nth-child(7),
+#tablaAwas td:nth-child(7) {
   width: 24%;
   white-space: nowrap;
 }
