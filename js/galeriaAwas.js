@@ -59,6 +59,17 @@ function verJustificacion(id) {
   new bootstrap.Modal(document.getElementById("modalVerJustificacion")).show();
 }
 
+function verDetalle(id) {
+  const awa = awasGlobal.find((a) => a.ID == id);
+
+  if (!awa) return;
+
+  document.getElementById("modalDetalleTexto").innerText =
+    awa.Detalle || "Sin detalle registrado";
+
+  new bootstrap.Modal(document.getElementById("modalDetalleAwa")).show();
+}
+
 // ============================
 // Permisos usuario
 // ============================
@@ -233,11 +244,22 @@ async function cargarAWAS() {
   <td>${awa.ID_WA ?? "-"}</td>
   <td>${awa.ID_AWA ?? "-"}</td>
 <td>
-  <span
-    class="titulo-awa"
-    title="${tituloCompleto.replace(/"/g, "&quot;")}">
-    ${tituloVisible}
-  </span>
+  <div class="d-flex align-items-center gap-1">
+
+    <i
+      class="bi bi-file-earmark-text"
+      style="cursor:pointer; font-size:14px;"
+      title="Ver detalle"
+      onclick="verDetalle(${awa.ID})">
+    </i>
+
+    <span
+      class="titulo-awa"
+      title="${tituloCompleto.replace(/"/g, "&quot;")}">
+      ${tituloVisible}
+    </span>
+
+  </div>
 </td>
   <td>${awa.Origen ?? "-"}</td>
   <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
