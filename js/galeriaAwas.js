@@ -265,7 +265,7 @@ async function cargarAWAS() {
   <td>${awa.Origen ?? "-"}</td>
   <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
 
-  <td class="text-end">
+  <td class="text-end"  style="width: 180px;">
     <div class="d-flex justify-content-end gap-2 acciones-awa">
 
 <button 
