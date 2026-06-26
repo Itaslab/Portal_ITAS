@@ -908,9 +908,11 @@ textarea.disabled-field {
 }
 
 .acciones-awa {
+  display: flex;
   flex-wrap: nowrap;
   justify-content: flex-end;
   gap: 0.35rem;
+  min-width: max-content;
 }
 
 .acciones-awa button {
