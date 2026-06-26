@@ -261,6 +261,7 @@ async function cargarAWAS() {
 
   </div>
 </td>
+  <td>${awa.Jira_Tarea ?? "-"}</td>
   <td>${awa.Origen ?? "-"}</td>
   <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
 
