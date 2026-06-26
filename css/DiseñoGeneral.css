@@ -900,13 +900,6 @@ textarea.disabled-field {
   min-width: 0;
 }
 
-#tablaAwas td:last-child .btn {
-  font-size: 12px;
-  padding: 4px 8px;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
 .acciones-awa {
   display: flex;
   flex-wrap: nowrap;
@@ -989,5 +982,11 @@ textarea.disabled-field {
 
   .acciones-awa .btn {
     padding: 4px 6px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .btn-text {
+    display: none;
   }
 }
