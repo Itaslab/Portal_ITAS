@@ -932,8 +932,8 @@ textarea.disabled-field {
 }
 
 #tablaAwas {
-  table-layout: fixed;
   width: 100%;
+  table-layout: auto;
 }
 
 #tablaAwas th:nth-child(1),

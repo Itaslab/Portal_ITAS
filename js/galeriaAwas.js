@@ -977,7 +977,7 @@ function aplicarFiltros() {
 
   filas.forEach((fila) => {
     const titulo = fila.children[2].textContent.toLowerCase();
-    const estado = fila.children[4].textContent;
+    const estado = fila.children[5].textContent;
 
     let mostrar = true;
 
