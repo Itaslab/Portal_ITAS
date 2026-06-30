@@ -904,12 +904,14 @@ textarea.disabled-field {
   display: flex;
   flex-wrap: nowrap;
   justify-content: flex-end;
+  align-items: center;
   gap: 0.35rem;
-  min-width: max-content;
+  width: 100%;
 }
 
 .acciones-awa button {
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .titulo-awa {
@@ -966,6 +968,8 @@ textarea.disabled-field {
   min-width: 170px;
   width: 1%;
   white-space: nowrap;
+  container-type: inline-size;
+  container-name: acciones-cell;
 }
 
 /* Acciones */
@@ -975,15 +979,10 @@ textarea.disabled-field {
   padding: clamp(2px, 0.25vw, 4px) clamp(5px, 0.45vw, 8px);
 }
 
-@media (max-width: 1200px) {
-  .acciones-awa {
-    gap: 0.2rem;
-  }
-
+@container acciones-cell (max-width: 320px) {
   .acciones-awa .btn-text {
     display: none !important;
   }
-
   .acciones-awa .btn {
     padding: 4px 6px;
   }
