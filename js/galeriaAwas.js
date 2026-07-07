@@ -261,7 +261,17 @@ async function cargarAWAS() {
 
   </div>
 </td>
-  <td>${awa.Jira_Tarea ?? "-"}</td>
+  <td>
+  ${
+    awa.Jira_Tarea
+      ? `<a href="https://tecocloud.atlassian.net/browse/${awa.Jira_Tarea}"
+           target="_blank"
+           rel="noopener noreferrer">
+           ${awa.Jira_Tarea}
+         </a>`
+      : "-"
+  }
+</td>
   <td>${awa.Origen ?? "-"}</td>
   <td class="${estadoColor} fw-bold">${awa.Estado ?? "-"}</td>
 
