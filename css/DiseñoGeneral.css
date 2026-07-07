@@ -874,7 +874,7 @@ textarea.disabled-field {
   flex: 1;
 }
 
-/* Awas */
+/* AWAS */
 
 .table td {
   vertical-align: middle;
@@ -975,6 +975,14 @@ textarea.disabled-field {
   white-space: nowrap;
   container-type: inline-size;
   container-name: acciones-cell;
+}
+
+.toast-container {
+  pointer-events: none;
+}
+
+.toast-container .toast {
+  pointer-events: auto;
 }
 
 /* Acciones */
