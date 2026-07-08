@@ -57,18 +57,20 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${escapeHtml(descripcion)}</td>
           <td>${escapeHtml(esquema)}</td>
 <td class="text-center align-middle">
-  <div class="d-flex justify-content-center align-items-center gap-2">
-    <input
-      class="form-check-input switch-activo m-0"
-      type="checkbox"
-      ${activo ? "checked" : ""}
-      data-id="${b.id}">
-    <span class="estado-activo mb-0">
-      ${activo ? "Activado" : "Desactivado"}
-    </span>
-  </div>
+    <div class="d-flex justify-content-center align-items-center">
+        <div class="form-check form-switch d-flex align-items-center mb-0">
+            <input
+                class="form-check-input switch-activo me-2"
+                type="checkbox"
+                ${activo ? "checked" : ""}
+                data-id="${b.id}">
+            <span class="estado-activo">
+                ${activo ? "Activado" : "Desactivado"}
+            </span>
+        </div>
+    </div>
 </td>
-          <td><button class="btn btn-primary  btn-sm ver-animated">Configurar</button></td>
+          <td><button class="btn btn-primary  btn-sm ver-animated text-white">Configurar</button></td>
         `;
         tablaBody.appendChild(tr);
       }
