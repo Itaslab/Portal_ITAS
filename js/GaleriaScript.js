@@ -56,7 +56,15 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${escapeHtml(negocio)}</td>
           <td>${escapeHtml(descripcion)}</td>
           <td>${escapeHtml(esquema)}</td>
-          <td>${formatoActivo(activo)}</td>
+          <td>
+  <div class="form-check form-switch d-flex justify-content-center">
+    <input
+      class="form-check-input switch-activo"
+      type="checkbox"
+      ${activo ? "checked" : ""}
+      data-id="${b.id}">
+  </div>
+</td>
           <td><button class="btn btn-secondary btn-sm ver-animated">Ver</button></td>
         `;
         tablaBody.appendChild(tr);
@@ -65,6 +73,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // attach listeners
       document.querySelectorAll(".ver-animated").forEach((btn) => {
         btn.addEventListener("click", onVerClick);
+      });
+      document.querySelectorAll(".switch-activo").forEach((sw) => {
+        sw.addEventListener("change", cambiarActivo);
       });
     } catch (err) {
       console.error("Error cargando scripts:", err);
@@ -109,6 +120,32 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error al traer detalle:", err);
       modalMsg.textContent = `Error al traer detalle: ${err.message}`;
       modal.show();
+    }
+  }
+
+  async function cambiarActivo(e) {
+    const id = e.target.dataset.id;
+    const activo = e.target.checked ? 1 : 0;
+
+    try {
+      const resp = await fetch(basePath + `/api/scripts/${id}/activo`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ activo }),
+      });
+
+      const data = await resp.json();
+
+      if (!resp.ok || !data.success) {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      alert("No se pudo actualizar.");
+
+      // vuelve al estado anterior
+      e.target.checked = !e.target.checked;
     }
   }
 

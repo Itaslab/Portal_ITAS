@@ -152,4 +152,45 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+// PUT SWITCH ACTIVO
+
+router.put("/:id/activo", async (req, res) => {
+  try {
+    const { id } = req.params;
+    let { activo } = req.body;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        error: "Falta el ID",
+      });
+    }
+
+    // Normalizar a 0/1
+    activo = activo ? 1 : 0;
+
+    const pool = await poolPromise;
+
+    await pool
+      .request()
+      .input("id", sql.Int, id)
+      .input("activo", sql.Bit, activo).query(`
+        UPDATE ${schema}.APP_ORDENES_BAJADA
+        SET Activo = @activo
+        WHERE ID = @id
+      `);
+
+    res.json({
+      success: true,
+      message: "Estado actualizado correctamente",
+    });
+  } catch (err) {
+    console.error("Error al actualizar Activo:", err);
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+});
+
 module.exports = router;
