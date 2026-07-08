@@ -1005,6 +1005,11 @@ textarea.disabled-field {
 
 .estado-activo {
   display: inline-block;
-  width: 90px;
+  width: 80px;
   text-align: left;
+  margin: 0;
+}
+
+.form-check.form-switch {
+  margin-bottom: 0;
 }

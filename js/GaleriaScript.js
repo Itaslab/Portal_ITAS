@@ -58,17 +58,18 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${escapeHtml(esquema)}</td>
           
 <td class="text-center align-middle">
-    <div class="d-flex justify-content-center align-items-center">
-        <div class="form-check form-switch d-flex align-items-center mb-0">
+    <div class="d-inline-flex align-items-center">
+        <div class="form-check form-switch mb-0">
             <input
-                class="form-check-input switch-activo me-2"
+                class="form-check-input switch-activo"
                 type="checkbox"
                 ${activo ? "checked" : ""}
                 data-id="${b.id}">
-            <span class="estado-activo">
-                ${activo ? "Activado" : "Desactivado"}
-            </span>
         </div>
+
+        <span class="estado-activo ms-2">
+            ${activo ? "Activado" : "Desactivado"}
+        </span>
     </div>
 </td>
           <td><button class="btn btn-primary  btn-sm ver-animated text-white">Configurar</button></td>
