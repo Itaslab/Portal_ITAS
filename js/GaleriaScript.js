@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       modalMsg.textContent = "";
       // Traer detalles
-      const resp = await fetch(`/api/scripts/${id}`);
+      const resp = await fetch(basePath + `/api/scripts/${id}`);
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const data = await resp.json();
       if (!data.success) throw new Error(data.error || "No success");
@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try {
-      const resp = await fetch(`/api/scripts/${id}`, {
+      const resp = await fetch(basePath + `/api/scripts/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
