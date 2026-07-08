@@ -63,6 +63,9 @@ document.addEventListener("DOMContentLoaded", () => {
       type="checkbox"
       ${activo ? "checked" : ""}
       data-id="${b.id}">
+      <span class="estado-activo">
+      ${activo ? "Activado" : "Desactivado"}
+    </span>
   </div>
 </td>
           <td><button class="btn btn-secondary btn-sm ver-animated">Ver</button></td>
@@ -141,6 +144,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!resp.ok || !data.success) {
         throw new Error(data.error);
       }
+
+      // Actualizar el texto
+      const texto = e.target.parentElement.querySelector(".estado-activo");
+      texto.textContent = activo ? "Activado" : "Desactivado";
     } catch (err) {
       alert("No se pudo actualizar.");
 
