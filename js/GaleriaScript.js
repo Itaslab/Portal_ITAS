@@ -58,17 +58,18 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${escapeHtml(esquema)}</td>
           <td>
   <div class="form-check form-switch d-flex justify-content-center">
+      <span class="estado-activo">
+      ${activo ? "Activado" : "Desactivado"}
+    </span>
     <input
       class="form-check-input switch-activo"
       type="checkbox"
       ${activo ? "checked" : ""}
       data-id="${b.id}">
-      <span class="estado-activo">
-      ${activo ? "Activado" : "Desactivado"}
-    </span>
+
   </div>
 </td>
-          <td><button class="btn btn-secondary btn-sm ver-animated">Ver</button></td>
+          <td><button class="btn btn-secondary btn-sm ver-animated">Configurar</button></td>
         `;
         tablaBody.appendChild(tr);
       }
