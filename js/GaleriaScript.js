@@ -150,7 +150,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Actualizar el texto
-      const texto = e.target.parentElement.querySelector(".estado-activo");
+      const contenedor = e.target.closest(".d-flex");
+      const texto = contenedor.querySelector(".estado-activo");
       texto.textContent = activo ? "Activado" : "Desactivado";
     } catch (err) {
       alert("No se pudo actualizar.");
