@@ -88,6 +88,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // PUT /api/scripts/:id -> update
+// PUT /api/scripts/:id -> update
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -105,9 +106,16 @@ router.put("/:id", async (req, res) => {
     if (!id)
       return res.status(400).json({ success: false, error: "Falta el ID" });
 
+    if (!req.session?.user) {
+      return res
+        .status(401)
+        .json({ success: false, error: "Sesión no válida" });
+    }
+
+    const usuario = req.session.user.email || "Desconocido";
+
     // Normalizaciones
     activo = activo ? 1 : 0;
-    // Ajustar nullables
     nombre = nombre || null;
     negocio = negocio || null;
     script = script || null;
@@ -117,17 +125,74 @@ router.put("/:id", async (req, res) => {
     delay = delay == null || delay === "" ? null : Number(delay);
 
     const pool = await poolPromise;
+
+    // 1. Traer valores actuales para comparar
+    const actualResult = await pool.request().input("id", sql.Int, id).query(`
+      SELECT
+        Nombre, Negocio, Script, Esquema_JSON, Delay, Activo,
+        ISNULL(CONVERT(VARCHAR(10), Vigencia_Desde, 120), '') AS Vigencia_Desde,
+        ISNULL(CONVERT(VARCHAR(10), Vigencia_Hasta, 120), '') AS Vigencia_Hasta,
+        LogDeCambios
+      FROM ${schema}.APP_ORDENES_BAJADA
+      WHERE ID = @id;
+    `);
+
+    if (actualResult.recordset.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, error: "No se encontró el registro" });
+    }
+
+    const actual = actualResult.recordset[0];
+    const logExistente = actual.LogDeCambios || "";
+
+    // 2. Comparar campo por campo y armar líneas de log
+    const cambios = [];
+    const fecha = new Date().toLocaleString("es-AR");
+
+    const compararCampo = (label, valorAnterior, valorNuevo) => {
+      const vAnt = valorAnterior ?? "";
+      const vNuevo = valorNuevo ?? "";
+      if (String(vAnt) !== String(vNuevo)) {
+        cambios.push(
+          `[${fecha}] Usuario ${usuario}, cambió ${label} de "${vAnt}" a "${vNuevo}"`,
+        );
+      }
+    };
+
+    // Solo comparamos si el campo vino en el body (no null por "no tocado")
+    if (nombre !== null) compararCampo("Nombre", actual.Nombre, nombre);
+    if (negocio !== null) compararCampo("Negocio", actual.Negocio, negocio);
+    if (script !== null) compararCampo("Script", actual.Script, script);
+    if (esquema_json !== null)
+      compararCampo("Esquema JSON", actual.Esquema_JSON, esquema_json);
+    if (delay !== null) compararCampo("Delay", actual.Delay, delay);
+    compararCampo("Activo", actual.Activo ? "1" : "0", activo ? "1" : "0");
+    if (vigencia_desde !== null)
+      compararCampo("Vigencia Desde", actual.Vigencia_Desde, vigencia_desde);
+    if (vigencia_hasta !== null)
+      compararCampo("Vigencia Hasta", actual.Vigencia_Hasta, vigencia_hasta);
+
+    const logActualizado =
+      cambios.length > 0
+        ? logExistente
+          ? `${logExistente}\n${cambios.join("\n")}`
+          : cambios.join("\n")
+        : logExistente;
+
+    // 3. Update con el log ya armado
     const request = pool
       .request()
       .input("nombre", sql.VarChar, nombre)
       .input("negocio", sql.VarChar, negocio)
-      .input("script", sql.Text, script) // usar Text para scripts largos
+      .input("script", sql.Text, script)
       .input("esquema_json", sql.VarChar, esquema_json)
       .input("activo", sql.Bit, activo)
       .input("vigencia_desde", sql.Date, vigencia_desde)
       .input("vigencia_hasta", sql.Date, vigencia_hasta)
       .input("id", sql.Int, id)
-      .input("delay", sql.Int, delay);
+      .input("delay", sql.Int, delay)
+      .input("log", sql.NVarChar(sql.MAX), logActualizado);
 
     const query = `
       UPDATE ${schema}.APP_ORDENES_BAJADA
@@ -139,7 +204,8 @@ router.put("/:id", async (req, res) => {
         Delay = COALESCE(@delay, Delay),
         Activo = @activo,
         Vigencia_Desde = CASE WHEN @vigencia_desde IS NULL THEN Vigencia_Desde ELSE @vigencia_desde END,
-        Vigencia_Hasta = CASE WHEN @vigencia_hasta IS NULL THEN Vigencia_Hasta ELSE @vigencia_hasta END
+        Vigencia_Hasta = CASE WHEN @vigencia_hasta IS NULL THEN Vigencia_Hasta ELSE @vigencia_hasta END,
+        LogDeCambios = @log
       WHERE ID = @id;
     `;
 
