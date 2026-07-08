@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${escapeHtml(esquema)}</td>
           
 <td class="text-center align-middle">
-    <div class="d-inline-flex align-items-center">
+    <div class="d-flex justify-content-center align-items-center">
         <div class="form-check form-switch mb-0">
             <input
                 class="form-check-input switch-activo"
