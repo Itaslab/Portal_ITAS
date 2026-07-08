@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${escapeHtml(negocio)}</td>
           <td>${escapeHtml(descripcion)}</td>
           <td>${escapeHtml(esquema)}</td>
+          
 <td class="text-center align-middle">
     <div class="d-flex justify-content-center align-items-center">
         <div class="form-check form-switch d-flex align-items-center mb-0">
