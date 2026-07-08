@@ -4,7 +4,6 @@ const router = express.Router();
 const { sql, poolPromise } = require("./db"); // ajustá la ruta según tu estructura
 const schema = process.env.DB_SCHEMA;
 
-
 // GET /api/scripts  -> lista
 router.get("/", async (req, res) => {
   try {
@@ -25,7 +24,7 @@ router.get("/", async (req, res) => {
       ORDER BY Nombre;
     `;
     const result = await pool.request().query(query);
-    const bajadas = result.recordset.map(b => ({
+    const bajadas = result.recordset.map((b) => ({
       id: b.ID,
       nombre: b.Nombre,
       descripcion: b.Descripcion,
@@ -35,7 +34,7 @@ router.get("/", async (req, res) => {
       script: b.Script,
       vigencia_desde: b.Vigencia_Desde,
       vigencia_hasta: b.Vigencia_Hasta,
-      activo: b.Activo
+      activo: b.Activo,
     }));
     res.json({ success: true, bajadas });
   } catch (err) {
@@ -49,9 +48,7 @@ router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const pool = await poolPromise;
-    const result = await pool.request()
-      .input("id", sql.Int, id)
-      .query(`
+    const result = await pool.request().input("id", sql.Int, id).query(`
         SELECT
           ID,
           Nombre,
@@ -81,7 +78,7 @@ router.get("/:id", async (req, res) => {
       script: b.Script,
       vigencia_desde: b.Vigencia_Desde,
       vigencia_hasta: b.Vigencia_Hasta,
-      activo: b.Activo
+      activo: b.Activo,
     };
     res.json({ success: true, bajada });
   } catch (err) {
@@ -94,9 +91,19 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    let { nombre, negocio, script, esquema_json, activo, vigencia_desde, vigencia_hasta } = req.body;
+    let {
+      nombre,
+      negocio,
+      delay,
+      script,
+      esquema_json,
+      activo,
+      vigencia_desde,
+      vigencia_hasta,
+    } = req.body;
 
-    if (!id) return res.status(400).json({ success: false, error: "Falta el ID" });
+    if (!id)
+      return res.status(400).json({ success: false, error: "Falta el ID" });
 
     // Normalizaciones
     activo = activo ? 1 : 0;
@@ -107,9 +114,11 @@ router.put("/:id", async (req, res) => {
     esquema_json = esquema_json || null;
     vigencia_desde = vigencia_desde || null;
     vigencia_hasta = vigencia_hasta || null;
+    delay = delay == null || delay === "" ? null : Number(delay);
 
     const pool = await poolPromise;
-    const request = pool.request()
+    const request = pool
+      .request()
       .input("nombre", sql.VarChar, nombre)
       .input("negocio", sql.VarChar, negocio)
       .input("script", sql.Text, script) // usar Text para scripts largos
@@ -117,7 +126,8 @@ router.put("/:id", async (req, res) => {
       .input("activo", sql.Bit, activo)
       .input("vigencia_desde", sql.Date, vigencia_desde)
       .input("vigencia_hasta", sql.Date, vigencia_hasta)
-      .input("id", sql.Int, id);
+      .input("id", sql.Int, id)
+      .input("delay", sql.Int, delay);
 
     const query = `
       UPDATE ${schema}.APP_ORDENES_BAJADA
@@ -126,6 +136,7 @@ router.put("/:id", async (req, res) => {
         Negocio = COALESCE(@negocio, Negocio),
         Script = COALESCE(@script, Script),
         Esquema_JSON = COALESCE(@esquema_json, Esquema_JSON),
+        Delay = COALESCE(@delay, Delay),
         Activo = @activo,
         Vigencia_Desde = CASE WHEN @vigencia_desde IS NULL THEN Vigencia_Desde ELSE @vigencia_desde END,
         Vigencia_Hasta = CASE WHEN @vigencia_hasta IS NULL THEN Vigencia_Hasta ELSE @vigencia_hasta END

@@ -1,6 +1,5 @@
 // AppOrdenesSF_GaleriaScripts.js
 
-
 document.addEventListener("DOMContentLoaded", () => {
   const tablaBody = document.querySelector("#tablaScripts tbody");
   const modalEl = document.getElementById("usuarioModal");
@@ -17,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectActivar = document.getElementById("selectActivar");
   const vigFrom = document.getElementById("vigFrom");
   const vigTo = document.getElementById("vigTo");
+  const selectDelay = document.getElementById("selectDelay");
 
   // --- Helpers ---
   const formatoActivo = (val) => {
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function cargarTabla() {
     tablaBody.innerHTML = "<tr><td colspan='6'>Cargando...</td></tr>";
     try {
-      const resp = await fetch(basePath + "/api/scripts");
+      const resp = await fetch(basePath + `/api/scripts/${id}`);
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const data = await resp.json();
       if (!data.success) throw new Error(data.error || "No success");
@@ -63,10 +63,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // attach listeners
-      document.querySelectorAll(".ver-animated").forEach(btn => {
+      document.querySelectorAll(".ver-animated").forEach((btn) => {
         btn.addEventListener("click", onVerClick);
       });
-
     } catch (err) {
       console.error("Error cargando scripts:", err);
       tablaBody.innerHTML = `<tr><td colspan='6'>Error al cargar: ${err.message}</td></tr>`;
@@ -97,8 +96,9 @@ document.addEventListener("DOMContentLoaded", () => {
       inputBajada.value = b.nombre ?? "";
       selectNegocio.value = b.negocio ?? "";
       textareaScript.value = b.script ?? "";
-      selectEsquema.value = b.esquema ?? (b.esquema_json ?? "");
+      selectEsquema.value = b.esquema ?? b.esquema_json ?? "";
       selectActivar.value = b.activo ? "1" : "0";
+      selectDelay.value = b.delay ?? 0;
 
       // Si vienen fechas (string 'YYYY-MM-DD'), asignarlas
       vigFrom.value = b.vigencia_desde ?? "";
@@ -129,17 +129,19 @@ document.addEventListener("DOMContentLoaded", () => {
       esquema_json: selectEsquema.value,
       activo: selectActivar.value === "1" ? 1 : 0,
       vigencia_desde: vigFrom.value || null,
-      vigencia_hasta: vigTo.value || null
+      vigencia_hasta: vigTo.value || null,
+      delay: Number(selectDelay.value),
     };
 
     try {
       const resp = await fetch(`/api/scripts/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
       const data = await resp.json();
-      if (!resp.ok || !data.success) throw new Error(data.error || `HTTP ${resp.status}`);
+      if (!resp.ok || !data.success)
+        throw new Error(data.error || `HTTP ${resp.status}`);
 
       modalMsg.textContent = "Guardado correctamente.";
       await cargarTabla();
