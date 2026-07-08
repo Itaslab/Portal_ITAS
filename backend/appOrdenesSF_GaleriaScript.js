@@ -157,39 +157,68 @@ router.put("/:id", async (req, res) => {
 router.put("/:id/activo", async (req, res) => {
   try {
     const { id } = req.params;
-    let { activo } = req.body;
+    let { activo, justificacion } = req.body;
 
     if (!id) {
-      return res.status(400).json({
-        success: false,
-        error: "Falta el ID",
-      });
+      return res.status(400).json({ success: false, error: "Falta el ID" });
     }
 
-    // Normalizar a 0/1
+    if (!justificacion || !justificacion.trim()) {
+      return res
+        .status(400)
+        .json({ success: false, error: "La justificación es obligatoria" });
+    }
+
+    if (!req.session?.user) {
+      return res
+        .status(401)
+        .json({ success: false, error: "Sesión no válida" });
+    }
+
+    const usuario = req.session.user.email || "Desconocido";
     activo = activo ? 1 : 0;
 
     const pool = await poolPromise;
 
+    const actualResult = await pool
+      .request()
+      .input("id", sql.Int, id)
+      .query(
+        `SELECT Activo, LogDeCambios FROM ${schema}.APP_ORDENES_BAJADA WHERE ID = @id`,
+      );
+
+    if (actualResult.recordset.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, error: "No se encontró el registro" });
+    }
+
+    const estadoAnterior = actualResult.recordset[0].Activo;
+    const logExistente = actualResult.recordset[0].LogDeCambios || "";
+
+    const estadoAnteriorTexto = estadoAnterior ? "Activado" : "Desactivado";
+    const estadoNuevoTexto = activo ? "Activado" : "Desactivado";
+    const fecha = new Date().toLocaleString("es-AR");
+
+    const nuevaLinea = `[${fecha}] Usuario ${usuario}, cambió ${estadoAnteriorTexto} a ${estadoNuevoTexto} por ${justificacion.trim()}`;
+    const logActualizado = logExistente
+      ? `${logExistente}\n${nuevaLinea}`
+      : nuevaLinea;
+
     await pool
       .request()
       .input("id", sql.Int, id)
-      .input("activo", sql.Bit, activo).query(`
+      .input("activo", sql.Bit, activo)
+      .input("log", sql.NVarChar(sql.MAX), logActualizado).query(`
         UPDATE ${schema}.APP_ORDENES_BAJADA
-        SET Activo = @activo
+        SET Activo = @activo, LogDeCambios = @log
         WHERE ID = @id
       `);
 
-    res.json({
-      success: true,
-      message: "Estado actualizado correctamente",
-    });
+    res.json({ success: true, message: "Estado actualizado correctamente" });
   } catch (err) {
     console.error("Error al actualizar Activo:", err);
-    res.status(500).json({
-      success: false,
-      error: err.message,
-    });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

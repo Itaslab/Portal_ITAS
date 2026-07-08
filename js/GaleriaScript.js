@@ -90,6 +90,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  let pendingSwitch = null;
+  let pendingIdScript = null;
+  let pendingNuevoEstado = null;
+
   // --- Click en Ver ---
   async function onVerClick(e) {
     const tr = e.target.closest("tr");
@@ -130,36 +134,74 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  async function cambiarActivo(e) {
-    const id = e.target.dataset.id;
-    const activo = e.target.checked ? 1 : 0;
+  function cambiarActivo(e) {
+    const checkbox = e.target;
+    const id = checkbox.dataset.id;
+    const nuevoEstado = checkbox.checked ? 1 : 0;
 
-    try {
-      const resp = await fetch(basePath + `/api/scripts/${id}/activo`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ activo }),
-      });
+    pendingSwitch = checkbox;
+    pendingIdScript = id;
+    pendingNuevoEstado = nuevoEstado;
 
-      const data = await resp.json();
+    // Revertimos visualmente hasta que se confirme
+    checkbox.checked = !checkbox.checked;
 
-      if (!resp.ok || !data.success) {
-        throw new Error(data.error);
+    document.getElementById("textoEstado").textContent =
+      `¿Está seguro que desea ${nuevoEstado ? "ACTIVAR" : "DESACTIVAR"} este script?`;
+    document.getElementById("txtJustificacion").value = "";
+
+    const modal = new bootstrap.Modal(
+      document.getElementById("modalJustificacion"),
+    );
+    modal.show();
+  }
+
+  document
+    .getElementById("btnConfirmarEstado")
+    .addEventListener("click", async () => {
+      const justificacion = document
+        .getElementById("txtJustificacion")
+        .value.trim();
+
+      if (!justificacion) {
+        alert("Debe ingresar una justificación.");
+        return;
       }
 
-      // Actualizar el texto
-      const contenedor = e.target.closest(".d-flex");
-      const texto = contenedor.querySelector(".estado-activo");
-      texto.textContent = activo ? "Activado" : "Desactivado";
-    } catch (err) {
-      alert("No se pudo actualizar.");
+      try {
+        const resp = await fetch(
+          basePath + `/api/scripts/${pendingIdScript}/activo`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              activo: pendingNuevoEstado,
+              justificacion: justificacion,
+            }),
+          },
+        );
 
-      // vuelve al estado anterior
-      e.target.checked = !e.target.checked;
-    }
-  }
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.error || "No success");
+
+        pendingSwitch.checked = pendingNuevoEstado === 1;
+
+        const span = pendingSwitch
+          .closest("td")
+          .querySelector(".estado-activo");
+        if (span) {
+          span.textContent = pendingNuevoEstado ? "Activado" : "Desactivado";
+        }
+
+        bootstrap.Modal.getInstance(
+          document.getElementById("modalJustificacion"),
+        ).hide();
+      } catch (err) {
+        console.error("Error actualizando estado:", err);
+        alert("Error al actualizar estado: " + err.message);
+      }
+    });
 
   // --- Guardar ---
   btnGuardar.addEventListener("click", async () => {
