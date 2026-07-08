@@ -1000,3 +1000,12 @@ textarea.disabled-field {
     padding: 4px 6px;
   }
 }
+
+/**SCRIPTS GALERIA */
+
+.estado-activo {
+  min-width: 85px;
+  display: inline-block;
+  text-align: left;
+  font-size: 0.9rem;
+}
