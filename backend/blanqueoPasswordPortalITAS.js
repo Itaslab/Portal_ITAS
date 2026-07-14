@@ -1,14 +1,14 @@
 // blanqueoPasswordPortalItas.js
 // Endpoint para que administradores blaqueen contraseñas de usuarios
 
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const bcrypt = require('bcrypt');
-const { sql, poolPromise } = require('./db');
+const bcrypt = require("bcrypt");
+const { sql, poolPromise } = require("./db");
 const schema = process.env.DB_SCHEMA;
 
 // GET: Obtener lista de usuarios para el dropdown (desde WEB_PORTAL_ITAS_USR)
-router.get('/usuarios-blanquear', async (req, res) => {
+router.get("/usuarios-blanquear", async (req, res) => {
   try {
     const pool = await poolPromise;
 
@@ -28,17 +28,17 @@ router.get('/usuarios-blanquear', async (req, res) => {
 
     const result = await pool.request().query(query);
 
-    const usuarios = result.recordset.map(u => ({
+    const usuarios = result.recordset.map((u) => ({
       id_usuario: u.ID_Usuario,
       legajo: u.Legajo,
       nombre_completo: u.NombreCompleto,
       email: u.Email,
-      blanquear_pass: u.Blanquear_Pass
+      blanquear_pass: u.Blanquear_Pass,
     }));
 
     res.json({ success: true, usuarios });
   } catch (err) {
-    console.error('Error al obtener usuarios para blanqueo:', err);
+    console.error("Error al obtener usuarios para blanqueo:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -46,61 +46,67 @@ router.get('/usuarios-blanquear', async (req, res) => {
 // POST: Blanquear password de un usuario
 // Body: { id_usuario: number }
 // Requiere sesión activa
-router.post('/blanquear-password', async (req, res) => {
+router.post("/blanquear-password", async (req, res) => {
   try {
     // Verificar que hay sesión (debe estar autenticado)
     if (!req.session || !req.session.user) {
-      return res.status(401).json({ success: false, error: 'No autenticado' });
+      return res.status(401).json({ success: false, error: "No autenticado" });
     }
 
     const { id_usuario } = req.body;
 
     if (!id_usuario) {
-      return res.status(400).json({ success: false, error: 'Se requiere id_usuario' });
+      return res
+        .status(400)
+        .json({ success: false, error: "Se requiere id_usuario" });
     }
 
     // Validar que el id_usuario sea un número
     const idUsuarioNum = parseInt(id_usuario, 10);
     if (isNaN(idUsuarioNum)) {
-      return res.status(400).json({ success: false, error: 'id_usuario debe ser un número' });
+      return res
+        .status(400)
+        .json({ success: false, error: "id_usuario debe ser un número" });
     }
 
     // Contraseña por defecto
-    const passwordPorDefecto = 'Itas2026';
+    const passwordPorDefecto = "Itas2026";
 
     // Hashear la contraseña
     const hashedPassword = await bcrypt.hash(passwordPorDefecto, 10);
 
     const pool = await poolPromise;
 
-    // Actualizar la contraseña en WEB_PORTAL_ITAS_USR
-    // Cambiar PasswordHash a la nueva contraseña hasheada
-    // Cambiar Blanquear_Pass a 1 para indicar que el blanqueo fue realizado
+    // Cambiar Blanquear_Pass a 0 para obligar al usuario
+    // a cambiar su contraseña en el próximo inicio de sesión
     const updateResult = await pool
       .request()
-      .input('id_usuario', sql.Int, idUsuarioNum)
-      .input('newPass', sql.VarChar(255), hashedPassword)
-      .query(`
+      .input("id_usuario", sql.Int, idUsuarioNum)
+      .input("newPass", sql.VarChar(255), hashedPassword).query(`
         UPDATE ${schema}.WEB_PORTAL_ITAS_USR 
         SET 
           PasswordHash = @newPass,
-          Blanquear_Pass = 1
+          Blanquear_Pass = 0
         WHERE 
           ID_Usuario = @id_usuario
       `);
 
     if (updateResult.rowsAffected[0] === 0) {
-      return res.status(404).json({ success: false, error: 'Usuario no encontrado en WEB_PORTAL_ITAS_USR' });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          error: "Usuario no encontrado en WEB_PORTAL_ITAS_USR",
+        });
     }
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       mensaje: `Contraseña blanqueada exitosamente. Nueva contraseña temporal: ${passwordPorDefecto}. El usuario deberá cambiarla en el próximo login.`,
-      id_usuario: idUsuarioNum
+      id_usuario: idUsuarioNum,
     });
-
   } catch (err) {
-    console.error('Error al blanquear password:', err);
+    console.error("Error al blanquear password:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
