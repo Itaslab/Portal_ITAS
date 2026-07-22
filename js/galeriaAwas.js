@@ -660,7 +660,10 @@ function cambiarFrecuencia(idRegistro) {
 }
 
 async function guardarGrillaHoraria() {
-  console.log("CLICK GUARDAR");
+  if (!esAdminAwas) {
+    mostrarToast("No posee permisos para guardar.", "danger");
+    return;
+  }
 
   try {
     const res = await fetch(`${basePath}/api/awas/grilla`, {
@@ -690,6 +693,11 @@ async function guardarGrillaHoraria() {
 // ============================
 
 async function guardarAWA() {
+  if (!esAdminAwas) {
+    mostrarToast("No posee permisos para guardar.", "danger");
+    return;
+  }
+
   try {
     const idRegistro = document.getElementById("inputIdRegistro").value;
 
