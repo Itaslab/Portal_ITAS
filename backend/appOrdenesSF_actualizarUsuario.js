@@ -4,7 +4,7 @@ const schema = process.env.DB_SCHEMA;
 
 module.exports = async (req, res) => {
   try {
-    const usuarioEditorId = req.session?.user?.ID_Usuario || 'desconocido';
+    const usuarioEditorId = req.session?.user?.ID_Usuario || "desconocido";
 
     const {
       id_usuario,
@@ -14,23 +14,26 @@ module.exports = async (req, res) => {
       asc_desc,
       modo,
       script,
-      des_asignar
+      des_asignar,
     } = req.body;
 
     if (!id_usuario) {
-      return res.status(400).json({ success: false, error: "Falta id_usuario" });
+      return res
+        .status(400)
+        .json({ success: false, error: "Falta id_usuario" });
     }
 
     const pool = await poolPromise;
 
     // Helpers
-    const norm = v => (v ?? '').toString().trim();
-    const val = v => (v === null || v === undefined || v === '' ? '(vacío)' : v);
+    const norm = (v) => (v ?? "").toString().trim();
+    const val = (v) =>
+      v === null || v === undefined || v === "" ? "(vacío)" : v;
 
     // 1️⃣ Traer datos actuales + log
-    const resultActual = await pool.request()
-      .input("id_usuario", sql.Int, id_usuario)
-      .query(`
+    const resultActual = await pool
+      .request()
+      .input("id_usuario", sql.Int, id_usuario).query(`
         SELECT 
           Grupo,
           Grupo2,
@@ -49,11 +52,11 @@ module.exports = async (req, res) => {
     if (!actual) {
       return res.status(404).json({
         success: false,
-        error: "Usuario no encontrado"
+        error: "Usuario no encontrado",
       });
     }
 
-    const logActual = actual.LogDeCambios || '';
+    const logActual = actual.LogDeCambios || "";
 
     // 2️⃣ Detectar cambios campo por campo
     const cambios = [];
@@ -67,7 +70,9 @@ module.exports = async (req, res) => {
     }
 
     if (Number(actual.Max_Por_Trabajar) !== Number(max_por_trabajar)) {
-      cambios.push(`- Max: ${val(actual.Max_Por_Trabajar)} → ${val(max_por_trabajar)}`);
+      cambios.push(
+        `- Max: ${val(actual.Max_Por_Trabajar)} → ${val(max_por_trabajar)}`,
+      );
     }
 
     if (norm(actual.Asc_Desc) !== norm(asc_desc)) {
@@ -84,7 +89,7 @@ module.exports = async (req, res) => {
 
     if (Number(actual.Des_Asignar) !== (des_asignar ? 1 : 0)) {
       cambios.push(
-        `- Des_Asignar: ${val(actual.Des_Asignar)} → ${val(des_asignar ? 1 : 0)}`
+        `- Des_Asignar: ${val(actual.Des_Asignar)} → ${val(des_asignar ? 1 : 0)}`,
       );
     }
 
@@ -92,15 +97,12 @@ module.exports = async (req, res) => {
     let logFinal = logActual;
 
     if (cambios.length > 0) {
-      const fecha = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      const fecha = new Date().toISOString().slice(0, 19).replace("T", " ");
 
       const nuevoLog =
-        `[${fecha}] Usuario ${usuarioEditorId} cambió:\n` +
-        cambios.join('\n');
+        `[${fecha}] Usuario ${usuarioEditorId} cambió:\n` + cambios.join("\n");
 
-      logFinal = logActual
-        ? logActual + '\n\n' + nuevoLog
-        : nuevoLog;
+      logFinal = logActual ? logActual + "\n\n" + nuevoLog : nuevoLog;
     }
 
     // 4️⃣ Update
@@ -118,7 +120,8 @@ module.exports = async (req, res) => {
       WHERE ID_Usuario = @id_usuario;
     `;
 
-    await pool.request()
+    await pool
+      .request()
       .input("grupo", sql.VarChar, grupo || null)
       .input("grupo2", sql.VarChar, grupo2 || null)
       .input("max_por_trabajar", sql.Int, max_por_trabajar || 0)
@@ -132,14 +135,77 @@ module.exports = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Usuario actualizado correctamente"
+      message: "Usuario actualizado correctamente",
     });
-
   } catch (err) {
     console.error("Error al actualizar usuario:", err);
     res.status(500).json({
       success: false,
-      error: err.message
+      error: err.message,
     });
   }
 };
+
+// PUT: Finalizar vigencia de un usuario
+router.put("/finalizar-vigencia", async (req, res) => {
+  try {
+    const usuarioEditorId = req.session?.user?.ID_Usuario || "desconocido";
+    const { id_usuario } = req.body;
+
+    if (!id_usuario) {
+      return res.status(400).json({
+        success: false,
+        error: "Falta id_usuario",
+      });
+    }
+
+    const pool = await poolPromise;
+
+    // Traer log actual
+    const result = await pool.request().input("id_usuario", sql.Int, id_usuario)
+      .query(`
+        SELECT LogDeCambios
+        FROM ${schema}.APP_ORDENES_USR
+        WHERE ID_Usuario = @id_usuario
+      `);
+
+    if (result.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Usuario no encontrado",
+      });
+    }
+
+    const logActual = result.recordset[0].LogDeCambios || "";
+
+    const fechaLog = new Date().toISOString().slice(0, 19).replace("T", " ");
+    const fechaVigencia = new Date().toISOString().slice(0, 10);
+
+    const nuevoLog = `[${fechaLog}] Usuario ${usuarioEditorId} finalizó la vigencia. Fecha: ${fechaVigencia}`;
+
+    const logFinal = logActual ? logActual + "\n\n" + nuevoLog : nuevoLog;
+
+    await pool
+      .request()
+      .input("id_usuario", sql.Int, id_usuario)
+      .input("log", sql.VarChar(sql.MAX), logFinal).query(`
+        UPDATE ${schema}.APP_ORDENES_USR
+        SET
+          Vigencia_Hasta = CAST(GETDATE() AS DATE),
+          LogDeCambios = @log
+        WHERE ID_Usuario = @id_usuario
+      `);
+
+    res.json({
+      success: true,
+      message: "Vigencia finalizada correctamente.",
+    });
+  } catch (err) {
+    console.error("Error al finalizar vigencia:", err);
+
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+});
