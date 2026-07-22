@@ -186,6 +186,13 @@
             <div id="modalMsg" class="me-auto text-start"></div>
             <button
               type="button"
+              class="btn btn-info text-white"
+              id="btnVerLog"
+            >
+              Ver Log
+            </button>
+            <button
+              type="button"
               class="btn btn-secondary"
               data-bs-dismiss="modal"
             >
@@ -232,6 +239,34 @@
             <button id="btnConfirmarEstado" class="btn btn-primary">
               Confirmar
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal logs -->
+
+    <div class="modal fade" id="modalLog" tabindex="-1">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Log de cambios</h5>
+
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <textarea
+              id="txtLog"
+              class="form-control"
+              rows="18"
+              readonly
+              style="font-family: Consolas, monospace"
+            ></textarea>
           </div>
         </div>
       </div>

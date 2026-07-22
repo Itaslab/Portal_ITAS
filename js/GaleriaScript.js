@@ -6,8 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modal = new bootstrap.Modal(modalEl);
   const btnGuardar = document.getElementById("btnGuardar");
   const modalMsg = document.getElementById("modalMsg");
-
-  // campos del modal
+  const btnVerLog = document.getElementById("btnVerLog");
   const inputId = document.getElementById("inputId");
   const inputBajada = document.getElementById("inputBajada");
   const selectNegocio = document.getElementById("selectNegocio");
@@ -17,6 +16,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const vigFrom = document.getElementById("vigFrom");
   const vigTo = document.getElementById("vigTo");
   const selectDelay = document.getElementById("selectDelay");
+  const modalMsg = document.getElementById("modalMsg");
+
+  let logActual = "";
 
   // --- Helpers ---
   const formatoActivo = (val) => {
@@ -113,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!data.success) throw new Error(data.error || "No success");
 
       const b = data.bajada;
+      logActual = b.log ?? "";
       // Llenar modal
       inputId.value = b.id ?? "";
       inputBajada.value = b.nombre ?? "";
@@ -244,6 +247,10 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error al guardar:", err);
       modalMsg.textContent = `Error al guardar: ${err.message}`;
     }
+  });
+
+  btnVerLog.addEventListener("click", () => {
+    alert(logActual || "No existen registros de cambios.");
   });
 
   // --- Util ---

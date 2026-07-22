@@ -57,6 +57,7 @@ router.get("/:id", async (req, res) => {
           Delay,
           Esquema_JSON,
           Script,
+          LogDeCambios,
           ISNULL(CONVERT(VARCHAR(10), Vigencia_Desde, 120), '') AS Vigencia_Desde,
           ISNULL(CONVERT(VARCHAR(10), Vigencia_Hasta, 120), '') AS Vigencia_Hasta,
           Activo
@@ -79,6 +80,7 @@ router.get("/:id", async (req, res) => {
       vigencia_desde: b.Vigencia_Desde,
       vigencia_hasta: b.Vigencia_Hasta,
       activo: b.Activo,
+      log: b.LogDeCambios,
     };
     res.json({ success: true, bajada });
   } catch (err) {
