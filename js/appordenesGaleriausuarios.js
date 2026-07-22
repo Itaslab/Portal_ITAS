@@ -359,6 +359,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (btnVerLog) {
     btnVerLog.addEventListener("click", mostrarLog);
   }
+  window.cargarUsuarios = cargarUsuarios;
   document
     .getElementById("modalConfirmarVigencia")
     .addEventListener("hidden.bs.modal", (e) => {
@@ -397,6 +398,27 @@ document
       ).show();
     }
   });
+
+function mostrarToast(mensaje, tipo = "success") {
+  let contenedor = document.getElementById("toastContainer");
+  if (!contenedor) {
+    contenedor = document.createElement("div");
+    contenedor.id = "toastContainer";
+    contenedor.className = "toast-container position-fixed bottom-0 end-0 p-3";
+    document.body.appendChild(contenedor);
+  }
+
+  const toastEl = document.createElement("div");
+  toastEl.className = `toast align-items-center text-bg-${tipo} border-0`;
+  toastEl.setAttribute("role", "alert");
+  toastEl.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">${mensaje}</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>`;
+  contenedor.appendChild(toastEl);
+  new bootstrap.Toast(toastEl).show();
+}
 
 async function finalizarVigencia() {
   try {
