@@ -362,7 +362,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function abrirModalFinalizarVigencia() {
-  new bootstrap.Modal(document.getElementById("modalConfirmarVigencia")).show();
+  bootstrap.Modal.getOrCreateInstance(
+    document.getElementById("modalConfirmarVigencia"),
+  ).show();
 }
 
 async function finalizarVigencia() {
@@ -371,9 +373,7 @@ async function finalizarVigencia() {
 
     const resp = await fetch(basePath + "/finalizar-vigencia", {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id_usuario }),
     });
 
@@ -383,20 +383,27 @@ async function finalizarVigencia() {
       throw new Error(data.error || "Error al finalizar la vigencia.");
     }
 
-    bootstrap.Modal.getInstance(
-      document.getElementById("modalConfirmarVigencia"),
-    )?.hide();
+    const confirmModalEl = document.getElementById("modalConfirmarVigencia");
+    const usuarioModalEl = document.getElementById("usuarioModal");
 
-    bootstrap.Modal.getInstance(
-      document.getElementById("usuarioModal"),
-    )?.hide();
+    // Esperar a que el modal de confirmación termine de cerrarse
+    // antes de cerrar el modal de usuario (evita el conflicto de backdrops)
+    confirmModalEl.addEventListener(
+      "hidden.bs.modal",
+      () => {
+        bootstrap.Modal.getInstance(usuarioModalEl)?.hide();
+      },
+      { once: true },
+    );
+
+    bootstrap.Modal.getInstance(confirmModalEl)?.hide();
 
     mostrarToast(
       "La vigencia del usuario fue finalizada correctamente.",
       "success",
     );
 
-    cargarUsuarios();
+    await cargarUsuarios();
   } catch (err) {
     console.error(err);
     mostrarToast(err.message, "danger");
