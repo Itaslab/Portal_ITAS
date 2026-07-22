@@ -298,7 +298,7 @@ async function cargarAWAS() {
       <button 
         class="btn btn-primary btn-sm text-white"
         onclick="configurarAWA(${awa.ID})"
-        ${!esAdminAwas ? "disabled" : ""}
+        
         title="Configurar">
         <i class="bi bi-gear"></i>
         <span class="btn-text ms-1">Configurar</span>
@@ -460,6 +460,12 @@ function configurarAWA(id) {
   // Guardar AWA actual para posible eliminación
   awaParaEliminar = awa;
 
+  const btnGuardar = document.getElementById("btnGuardarAwa");
+
+  if (btnGuardar) {
+    btnGuardar.disabled = !esAdminAwas;
+  }
+
   // 🔥 abrir modal
   const modal = new bootstrap.Modal(document.getElementById("modalAwa"));
   modal.show();
@@ -511,6 +517,11 @@ async function abrirGrillaHoraria() {
   document.getElementById("tituloGrillaAwa").innerText =
     `Configuración horaria AWA ${idAwaGrillaActual}`;
 
+  const btnGuardarGrilla = document.getElementById("btnGuardarGrilla");
+
+  if (btnGuardarGrilla) {
+    btnGuardarGrilla.disabled = !esAdminAwas;
+  }
   new bootstrap.Modal(document.getElementById("modalGrillaHoraria")).show();
 }
 
