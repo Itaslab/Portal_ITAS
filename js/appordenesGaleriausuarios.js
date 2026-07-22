@@ -359,13 +359,44 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (btnVerLog) {
     btnVerLog.addEventListener("click", mostrarLog);
   }
+  document
+    .getElementById("modalConfirmarVigencia")
+    .addEventListener("hidden.bs.modal", (e) => {
+      // Solo reabrir si NO fue por haber confirmado (es decir, fue cancelado)
+      // Podés usar una bandera para distinguir, ver nota abajo
+    });
 });
 
+let vigenciaFinalizada = false;
+
 function abrirModalFinalizarVigencia() {
-  bootstrap.Modal.getOrCreateInstance(
-    document.getElementById("modalConfirmarVigencia"),
-  ).show();
+  vigenciaFinalizada = false;
+  const usuarioModalEl = document.getElementById("usuarioModal");
+  const confirmModalEl = document.getElementById("modalConfirmarVigencia");
+
+  const usuarioModalInstance = bootstrap.Modal.getInstance(usuarioModalEl);
+
+  usuarioModalEl.addEventListener(
+    "hidden.bs.modal",
+    () => {
+      bootstrap.Modal.getOrCreateInstance(confirmModalEl).show();
+    },
+    { once: true },
+  );
+
+  usuarioModalInstance?.hide();
 }
+
+document
+  .getElementById("modalConfirmarVigencia")
+  .addEventListener("hidden.bs.modal", () => {
+    if (!vigenciaFinalizada) {
+      // El usuario canceló: reabrir el modal de usuario
+      bootstrap.Modal.getOrCreateInstance(
+        document.getElementById("usuarioModal"),
+      ).show();
+    }
+  });
 
 async function finalizarVigencia() {
   try {
@@ -383,20 +414,9 @@ async function finalizarVigencia() {
       throw new Error(data.error || "Error al finalizar la vigencia.");
     }
 
-    const confirmModalEl = document.getElementById("modalConfirmarVigencia");
-    const usuarioModalEl = document.getElementById("usuarioModal");
-
-    // Esperar a que el modal de confirmación termine de cerrarse
-    // antes de cerrar el modal de usuario (evita el conflicto de backdrops)
-    confirmModalEl.addEventListener(
-      "hidden.bs.modal",
-      () => {
-        bootstrap.Modal.getInstance(usuarioModalEl)?.hide();
-      },
-      { once: true },
-    );
-
-    bootstrap.Modal.getInstance(confirmModalEl)?.hide();
+    bootstrap.Modal.getInstance(
+      document.getElementById("modalConfirmarVigencia"),
+    )?.hide();
 
     mostrarToast(
       "La vigencia del usuario fue finalizada correctamente.",
