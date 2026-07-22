@@ -1,6 +1,8 @@
 // appOrdenesSF_actualizarUsuario.js
 const { sql, poolPromise } = require("./db");
 const schema = process.env.DB_SCHEMA;
+const express = require("express");
+const router = express.Router();
 
 module.exports = async (req, res) => {
   try {
