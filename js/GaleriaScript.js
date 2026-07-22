@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const vigFrom = document.getElementById("vigFrom");
   const vigTo = document.getElementById("vigTo");
   const selectDelay = document.getElementById("selectDelay");
-  const modalMsg = document.getElementById("modalMsg");
 
   let logActual = "";
 
