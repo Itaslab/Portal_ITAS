@@ -9,97 +9,110 @@ document.addEventListener("DOMContentLoaded", async () => {
   const noResults = document.querySelector("#noResults");
   const categoryFilter = document.querySelector("#categoryFilter");
   const collectionFilter = document.querySelector("#collectionFilter");
-  const modal = new bootstrap.Modal(document.getElementById("appModal"));
+  const appModalEl = document.getElementById("appModal");
+  const modal = appModalEl ? new bootstrap.Modal(appModalEl) : null;
   const modalMessage = document.querySelector("#modal-message");
 
-  
-  const userGreeting = document.getElementById('userGreeting');
-  const openProfile = document.getElementById('openProfile');
-  const perfilModalEl = document.getElementById('perfilModal');
+  const userGreeting = document.getElementById("userGreeting");
+  const openProfile = document.getElementById("openProfile");
+  const perfilModalEl = document.getElementById("perfilModal");
   const perfilModal = perfilModalEl ? new bootstrap.Modal(perfilModalEl) : null;
-  const perfilNombre = document.getElementById('perfilNombre');
-  const perfilApellido = document.getElementById('perfilApellido');
-  const perfilEmail = document.getElementById('perfilEmail');
-  const perfilCurrentPass = document.getElementById('perfilCurrentPass');
-  const perfilNewPass = document.getElementById('perfilNewPass');
-  const perfilSaveBtn = document.getElementById('perfilSaveBtn');
-  const perfilResult = document.getElementById('perfilResult');
+  const perfilNombre = document.getElementById("perfilNombre");
+  const perfilApellido = document.getElementById("perfilApellido");
+  const perfilEmail = document.getElementById("perfilEmail");
+  const perfilCurrentPass = document.getElementById("perfilCurrentPass");
+  const perfilNewPass = document.getElementById("perfilNewPass");
+  const perfilSaveBtn = document.getElementById("perfilSaveBtn");
+  const perfilResult = document.getElementById("perfilResult");
 
- 
-  const forcePasswordModalEl = document.getElementById('forcePasswordModal');
-  const forcePasswordModal = forcePasswordModalEl ? new bootstrap.Modal(forcePasswordModalEl, { backdrop: 'static', keyboard: false }) : null;
-  const forceNewPass1 = document.getElementById('forceNewPass1');
-  const forceNewPass2 = document.getElementById('forceNewPass2');
-  const forcePassSaveBtn = document.getElementById('forcePassSaveBtn');
-  const forcePassResult = document.getElementById('forcePassResult');
+  const forcePasswordModalEl = document.getElementById("forcePasswordModal");
+  const forcePasswordModal = forcePasswordModalEl
+    ? new bootstrap.Modal(forcePasswordModalEl, {
+        backdrop: "static",
+        keyboard: false,
+      })
+    : null;
+  const forceNewPass1 = document.getElementById("forceNewPass1");
+  const forceNewPass2 = document.getElementById("forceNewPass2");
+  const forcePassSaveBtn = document.getElementById("forcePassSaveBtn");
+  const forcePassResult = document.getElementById("forcePassResult");
 
-  
   const urlParams = new URLSearchParams(window.location.search);
-  const forcePass = urlParams.get('forcePass') === '1';
+  const forcePass = urlParams.get("forcePass") === "1";
   let passwordChangedOnce = false;
 
-  
   if (forcePass && forcePasswordModal) {
     setTimeout(() => {
-      forceNewPass1.value = '';
-      forceNewPass2.value = '';
-      forcePassResult.innerHTML = '';
+      forceNewPass1.value = "";
+      forceNewPass2.value = "";
+      forcePassResult.innerHTML = "";
       forcePasswordModal.show();
     }, 800);
   }
 
-  
   if (forcePassSaveBtn) {
-    forcePassSaveBtn.addEventListener('click', async () => {
-      forcePassResult.innerHTML = '';
+    forcePassSaveBtn.addEventListener("click", async () => {
+      forcePassResult.innerHTML = "";
       const pass1 = forceNewPass1.value.trim();
       const pass2 = forceNewPass2.value.trim();
 
       // Validaciones
       if (!pass1 || !pass2) {
-        forcePassResult.innerHTML = '<div class="alert alert-danger">Complete ambos campos</div>';
+        forcePassResult.innerHTML =
+          '<div class="alert alert-danger">Complete ambos campos</div>';
         return;
       }
 
       if (pass1 !== pass2) {
-        forcePassResult.innerHTML = '<div class="alert alert-danger">Las contraseñas no coinciden</div>';
+        forcePassResult.innerHTML =
+          '<div class="alert alert-danger">Las contraseñas no coinciden</div>';
         return;
       }
 
       if (pass1.length < 8) {
-        forcePassResult.innerHTML = '<div class="alert alert-danger">La contraseña debe tener al menos 8 caracteres</div>';
+        forcePassResult.innerHTML =
+          '<div class="alert alert-danger">La contraseña debe tener al menos 8 caracteres</div>';
         return;
       }
 
       if (pass1.length > 15) {
-        forcePassResult.innerHTML = '<div class="alert alert-danger">La contraseña no debe exceder 15 caracteres</div>';
+        forcePassResult.innerHTML =
+          '<div class="alert alert-danger">La contraseña no debe exceder 15 caracteres</div>';
         return;
       }
 
       try {
-
-        const r = await fetch(basePath + '/me/password', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ currentPassword: '', newPassword: pass1, forcePassword: true })
+        const r = await fetch(basePath + "/me/password", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            currentPassword: "",
+            newPassword: pass1,
+            forcePassword: true,
+          }),
         });
 
-   
-        await verificarSesionValida(r, '/me/password');
+        await verificarSesionValida(r, "/me/password");
 
         const d = await r.json();
         if (r.ok && d.success) {
-          forcePassResult.innerHTML = '<div class="alert alert-success">Contraseña establecida correctamente</div>';
+          forcePassResult.innerHTML =
+            '<div class="alert alert-success">Contraseña establecida correctamente</div>';
           setTimeout(() => {
-            window.history.replaceState({}, document.title, window.location.pathname);
+            window.history.replaceState(
+              {},
+              document.title,
+              window.location.pathname,
+            );
             forcePasswordModal.hide();
           }, 1200);
         } else {
-          forcePassResult.innerHTML = `<div class="alert alert-danger">${d.error || d.mensaje || 'Error'}</div>`;
+          forcePassResult.innerHTML = `<div class="alert alert-danger">${d.error || d.mensaje || "Error"}</div>`;
         }
       } catch (err) {
-        console.error('Error actualizando contraseña:', err);
-        forcePassResult.innerHTML = '<div class="alert alert-danger">Error al conectar con servidor</div>';
+        console.error("Error actualizando contraseña:", err);
+        forcePassResult.innerHTML =
+          '<div class="alert alert-danger">Error al conectar con servidor</div>';
       }
     });
   }
@@ -108,13 +121,62 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 2) ARRAY ORIGINAL DE APPS
   // ------------------------------
   const apps = [
-    { id: 4, name: "Robot Itas", category: "Personal", collection: "Bots", img: "../images/robot.png", url: "../pages/EjecucionesPorRobot.html" },
-    { id: 3, name: "APP Ordenes SF", category: "Personal", collection: "Bots", img: "../images/robot_01.png", url: "../pages/AppOrdenesSf.html" },
-    { id: 12, name: "Licencias", category: "Personal", collection: "Gestión", img: "../images/descarga.jpg",url: "../pages/CalendarioLicencias.html"  },
-    { id: 11, name: "Seguridad Informatica", category: "Privado", collection: "Gestión", img: "../images/SeguridadInformatica.jpg", url: "../pages/SeguridadInformatica.html" },
-    { id: 8, name: "Monitoreo", category: "Personal", collection: "Gestión", img: "../images/Grafana.png", url: "https://portal-itas.telecom.com.ar:3000/grafana/public-dashboards/e5368ad7e39f41d99b6f28c003e9f998" },
-    { id: 13, name: "ABM Usuarios", category: "Privado", collection: "Gestión", img: "../images/ABM.jpg", url: "../pages/ModulosAbmUsuarios.html" },
-    { id: 14, name: "Awas", category: "Privado", collection: "Gestión", img: "../images/awas.png", url: "../pages/GaleriaAWAS.html" }
+    {
+      id: 4,
+      name: "Robot Itas",
+      category: "Personal",
+      collection: "Bots",
+      img: "../images/robot.png",
+      url: "../pages/EjecucionesPorRobot.html",
+    },
+    {
+      id: 3,
+      name: "APP Ordenes SF",
+      category: "Personal",
+      collection: "Bots",
+      img: "../images/robot_01.png",
+      url: "../pages/AppOrdenesSf.html",
+    },
+    {
+      id: 12,
+      name: "Licencias",
+      category: "Personal",
+      collection: "Gestión",
+      img: "../images/descarga.jpg",
+      url: "../pages/CalendarioLicencias.html",
+    },
+    {
+      id: 11,
+      name: "Seguridad Informatica",
+      category: "Privado",
+      collection: "Gestión",
+      img: "../images/SeguridadInformatica.jpg",
+      url: "../pages/SeguridadInformatica.html",
+    },
+    {
+      id: 8,
+      name: "Monitoreo",
+      category: "Personal",
+      collection: "Gestión",
+      img: "../images/Grafana.png",
+      url: "https://portal-itas.telecom.com.ar:3000/grafana/public-dashboards/e5368ad7e39f41d99b6f28c003e9f998",
+    },
+    {
+      id: 13,
+      name: "ABM Usuarios",
+      category: "Privado",
+      collection: "Gestión",
+      img: "../images/ABM.jpg",
+      url: "../pages/ModulosAbmUsuarios.html",
+    },
+    {
+      id: 14,
+      name: "Awas",
+      category: "Privado",
+      collection: "Gestión",
+      img: "../images/awas.png",
+      url: "../pages/GaleriaAWAS.html",
+    },
   ];
 
   // ------------------------------
@@ -126,11 +188,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   try {
     const res = await fetch(`${basePath}/permisos`, {
-      credentials: "include"
+      credentials: "include",
     });
 
     // Verificar si la sesión es válida
-    await verificarSesionValida(res, '/permisos');
+    await verificarSesionValida(res, "/permisos");
 
     const data = await res.json();
 
@@ -147,7 +209,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Error obteniendo permisos:", error);
   }
 
-  console.log("Usuario encontrado:", usuarioEncontrado, "Es Admin:", esAdmin, "Apps permitidas:", appsPermitidas);
+  console.log(
+    "Usuario encontrado:",
+    usuarioEncontrado,
+    "Es Admin:",
+    esAdmin,
+    "Apps permitidas:",
+    appsPermitidas,
+  );
 
   // ------------------------------
   // 4) APLICAR FILTRO DE PERMISOS
@@ -164,7 +233,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   // Si tiene permisos específicos, filtrar
   else if (appsPermitidas.length > 0) {
-    appsFiltradas = apps.filter(app => appsPermitidas.includes(app.id));
+    appsFiltradas = apps.filter((app) => appsPermitidas.includes(app.id));
   }
   // Si está en la tabla pero sin permisos específicos, no mostrar nada
   else {
@@ -185,7 +254,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     noResults.classList.add("d-none");
 
-    data.forEach(app => {
+    data.forEach((app) => {
       const col = document.createElement("div");
       col.className = "col";
 
@@ -194,7 +263,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       card.innerHTML = `
         <div class="position-absolute top-0 end-0 p-2">
-          <span class="favorite fs-4 ${favorites.has(app.id) ? 'text-warning' : 'text-muted'}" style="cursor:pointer;">★</span>
+          <span class="favorite fs-4 ${favorites.has(app.id) ? "text-warning" : "text-muted"}" style="cursor:pointer;">★</span>
         </div>
         <img src="${app.img}" class="card-img-top mx-auto mt-4" style="width: 80px; height: 80px;" alt="${app.name}">
         <div class="card-body">
@@ -206,7 +275,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       const favBtn = card.querySelector(".favorite");
       favBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        favorites.has(app.id) ? favorites.delete(app.id) : favorites.add(app.id);
+        favorites.has(app.id)
+          ? favorites.delete(app.id)
+          : favorites.add(app.id);
         updateCounters();
         renderApps(filterApps());
       });
@@ -235,10 +306,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const category = categoryFilter.value;
     const collection = collectionFilter.value;
 
-    return appsFiltradas.filter(app => {
+    return appsFiltradas.filter((app) => {
       const matchSearch = app.name.toLowerCase().includes(query);
       const matchCategory = category === "all" || app.category === category;
-      const matchCollection = collection === "all" || app.collection === collection;
+      const matchCollection =
+        collection === "all" || app.collection === collection;
       const matchFavorite = filterFavorites.classList.contains("active-filter")
         ? favorites.has(app.id)
         : true;
@@ -248,16 +320,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function initFilters() {
-    const categories = [...new Set(appsFiltradas.map(a => a.category))];
-    categories.forEach(cat => {
+    const categories = [...new Set(appsFiltradas.map((a) => a.category))];
+    categories.forEach((cat) => {
       const opt = document.createElement("option");
       opt.value = cat;
       opt.textContent = cat;
       categoryFilter.appendChild(opt);
     });
 
-    const collections = [...new Set(appsFiltradas.map(a => a.collection))];
-    collections.forEach(col => {
+    const collections = [...new Set(appsFiltradas.map((a) => a.collection))];
+    collections.forEach((col) => {
       const opt = document.createElement("option");
       opt.value = col;
       opt.textContent = col;
@@ -298,74 +370,81 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ------------------------------
   async function loadProfile() {
     try {
-      const resp = await fetch(basePath + '/me', { credentials: "include" });
-      
+      const resp = await fetch(basePath + "/me", { credentials: "include" });
+
       // Verificar si la sesión es válida
-      await verificarSesionValida(resp, '/me');
-      
+      await verificarSesionValida(resp, "/me");
+
       if (!resp.ok) return;
       const data = await resp.json();
       if (!data.success || !data.usuario) return;
       const u = data.usuario;
-      userGreeting.textContent = `Hola! ${u.Nombre || ''}`;
-      if (perfilNombre) perfilNombre.value = u.Nombre || '';
-      if (perfilApellido) perfilApellido.value = u.Apellido || '';
-      if (perfilEmail) perfilEmail.value = u.Email || '';
+      userGreeting.textContent = `Hola! ${u.Nombre || ""}`;
+      if (perfilNombre) perfilNombre.value = u.Nombre || "";
+      if (perfilApellido) perfilApellido.value = u.Apellido || "";
+      if (perfilEmail) perfilEmail.value = u.Email || "";
     } catch (err) {
-      console.error('Error cargando perfil:', err);
+      console.error("Error cargando perfil:", err);
     }
   }
 
   loadProfile();
 
   if (openProfile && perfilModal) {
-    openProfile.addEventListener('click', () => {
-      perfilResult.textContent = '';
-      perfilCurrentPass.value = '';
-      perfilNewPass.value = '';
+    openProfile.addEventListener("click", () => {
+      perfilResult.textContent = "";
+      perfilCurrentPass.value = "";
+      perfilNewPass.value = "";
       perfilModal.show();
     });
   }
 
   if (perfilSaveBtn) {
-    perfilSaveBtn.addEventListener('click', async () => {
-      perfilResult.textContent = '';
+    perfilSaveBtn.addEventListener("click", async () => {
+      perfilResult.textContent = "";
       const current = perfilCurrentPass.value.trim();
       const nw = perfilNewPass.value.trim();
       if (!current || !nw) {
-        perfilResult.innerHTML = '<div class="text-danger">Complete ambos campos</div>';
+        perfilResult.innerHTML =
+          '<div class="text-danger">Complete ambos campos</div>';
         return;
       }
       if (nw.length < 8) {
-        perfilResult.innerHTML = '<div class="text-danger">La contraseña debe tener al menos 8 caracteres</div>';
+        perfilResult.innerHTML =
+          '<div class="text-danger">La contraseña debe tener al menos 8 caracteres</div>';
         return;
       }
       if (nw.length > 15) {
-        perfilResult.innerHTML = '<div class="text-danger">La contraseña no debe exceder 15 caracteres</div>';
+        perfilResult.innerHTML =
+          '<div class="text-danger">La contraseña no debe exceder 15 caracteres</div>';
         return;
       }
       // Ensure any pasted overlong password is clipped clientside (input has maxlength, but defensive)
       if (nw.length > 15) perfilNewPass.value = nw.slice(0, 15);
       try {
-        const r = await fetch(basePath + '/me/password', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ currentPassword: current, newPassword: nw })
+        const r = await fetch(basePath + "/me/password", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ currentPassword: current, newPassword: nw }),
         });
-        
+
         // Verificar si la sesión es válida
-        await verificarSesionValida(r, '/me/password');
-        
+        await verificarSesionValida(r, "/me/password");
+
         const d = await r.json();
         if (r.ok && d.success) {
-          perfilResult.innerHTML = '<div class="text-success">Contraseña actualizada correctamente</div>';
-          setTimeout(() => { perfilModal.hide(); }, 1200);
+          perfilResult.innerHTML =
+            '<div class="text-success">Contraseña actualizada correctamente</div>';
+          setTimeout(() => {
+            perfilModal.hide();
+          }, 1200);
         } else {
-          perfilResult.innerHTML = `<div class="text-danger">${d.error || d.mensaje || 'Error'}</div>`;
+          perfilResult.innerHTML = `<div class="text-danger">${d.error || d.mensaje || "Error"}</div>`;
         }
       } catch (err) {
-        console.error('Error actualizando contraseña:', err);
-        perfilResult.innerHTML = '<div class="text-danger">Error al conectar con servidor</div>';
+        console.error("Error actualizando contraseña:", err);
+        perfilResult.innerHTML =
+          '<div class="text-danger">Error al conectar con servidor</div>';
       }
     });
   }
