@@ -2,7 +2,6 @@
 const { sql, poolPromise } = require("./db");
 const schema = process.env.DB_SCHEMA;
 
-
 module.exports = async (req, res) => {
   try {
     const pool = await poolPromise;
@@ -24,16 +23,15 @@ module.exports = async (req, res) => {
         ${schema}.APP_ORDENES_USR ap
       INNER JOIN 
         ${schema}.USUARIO u ON u.ID_Usuario = ap.ID_Usuario
+      WHERE
+        ap.Vigencia_Hasta IS NULL
       ORDER BY u.Nombre;
     `;
 
-
-    
-
     const result = await pool.request().query(query);
 
-    const usuarios = result.recordset.map(u => ({
-      id_usuario: u.ID_Usuario,           // <= clave para updates
+    const usuarios = result.recordset.map((u) => ({
+      id_usuario: u.ID_Usuario,
       nombre: u.Nombre,
       grupo: u.Grupo,
       grupo2: u.Grupo2,
@@ -43,8 +41,8 @@ module.exports = async (req, res) => {
       hasta: u.Hora_A,
       activo: u.Activo,
       asignar: u.Asignar,
-      lic_estado: u.Lic_Estado
-}));
+      lic_estado: u.Lic_Estado,
+    }));
 
     res.json({ success: true, usuarios });
   } catch (err) {

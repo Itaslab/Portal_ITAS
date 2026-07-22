@@ -374,9 +374,7 @@ async function finalizarVigencia() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        id_usuario,
-      }),
+      body: JSON.stringify({ id_usuario }),
     });
 
     const data = await resp.json();
@@ -387,9 +385,11 @@ async function finalizarVigencia() {
 
     bootstrap.Modal.getInstance(
       document.getElementById("modalConfirmarVigencia"),
-    ).hide();
+    )?.hide();
 
-    bsModal.hide();
+    bootstrap.Modal.getInstance(
+      document.getElementById("usuarioModal"),
+    )?.hide();
 
     mostrarToast(
       "La vigencia del usuario fue finalizada correctamente.",
