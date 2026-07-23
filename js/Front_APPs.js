@@ -337,34 +337,46 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  searchInput.addEventListener("input", () => renderApps(filterApps()));
-  categoryFilter.addEventListener("change", () => renderApps(filterApps()));
-  collectionFilter.addEventListener("change", () => renderApps(filterApps()));
+  if (searchInput)
+    searchInput.addEventListener("input", () => renderApps(filterApps()));
+  if (categoryFilter)
+    categoryFilter.addEventListener("change", () => renderApps(filterApps()));
+  if (collectionFilter)
+    collectionFilter.addEventListener("change", () => renderApps(filterApps()));
 
-  filterAll.addEventListener("click", () => {
-    filterAll.classList.add("active-filter");
-    filterFavorites.classList.remove("active-filter", "text-primary");
-    renderApps(filterApps());
-  });
+  if (filterAll) {
+    filterAll.addEventListener("click", () => {
+      filterAll.classList.add("active-filter");
+      if (filterFavorites)
+        filterFavorites.classList.remove("active-filter", "text-primary");
+      renderApps(filterApps());
+    });
+  }
 
-  filterFavorites.addEventListener("click", () => {
-    filterFavorites.classList.add("active-filter", "text-primary");
-    filterAll.classList.remove("active-filter");
-    renderApps(filterApps());
-  });
+  if (filterFavorites) {
+    filterFavorites.addEventListener("click", () => {
+      filterFavorites.classList.add("active-filter", "text-primary");
+      if (filterAll) filterAll.classList.remove("active-filter");
+      renderApps(filterApps());
+    });
+  }
 
-  document.querySelector("#modal-close-btn").addEventListener("click", () => {
-    modal.hide();
-  });
+  const modalCloseBtn = document.querySelector("#modal-close-btn");
+  if (modalCloseBtn) {
+    modalCloseBtn.addEventListener("click", () => {
+      modal?.hide();
+    });
+  }
 
-  loading.classList.remove("d-none");
-  setTimeout(() => {
-    loading.classList.add("d-none");
-    initFilters();
-    updateCounters();
-    renderApps(appsFiltradas);
-  }, 800);
-
+  if (loading) {
+    loading.classList.remove("d-none");
+    setTimeout(() => {
+      loading.classList.add("d-none");
+      initFilters();
+      updateCounters();
+      renderApps(appsFiltradas);
+    }, 800);
+  }
   // ------------------------------
   // Cargar info del usuario para el greeting y el modal
   // ------------------------------
