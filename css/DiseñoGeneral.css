@@ -1013,3 +1013,24 @@ textarea.disabled-field {
   margin-left: 8px;
   text-align: left;
 }
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+.sortable:hover {
+  background-color: rgba(255,255,255,0.08);
+}
+
+.sortable.asc::after {
+  content: " ▲";
+  color: #4da3ff;
+  font-size: 0.8rem;
+}
+
+.sortable.desc::after {
+  content: " ▼";
+  color: #4da3ff;
+  font-size: 0.8rem;
+}

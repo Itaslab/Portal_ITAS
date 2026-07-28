@@ -62,6 +62,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   populateSelectModal(selectGrupoBKPEditable);
 
   let usuarios = [];
+  let sortColumn = null;
+  let sortDirection = "asc";
   await cargarUsuarios();
 
   function debounce(fn, wait) {
@@ -97,7 +99,24 @@ document.addEventListener("DOMContentLoaded", async () => {
       tabla.innerHTML = `<tr><td colspan="10">Error al cargar datos</td></tr>`;
     }
   }
-
+  function ordenarUsuarios(lista) {
+    if (!sortColumn) return [...lista];
+  
+    return [...lista].sort((a, b) => {
+  
+      let valorA = a[sortColumn] ?? "";
+      let valorB = b[sortColumn] ?? "";
+  
+      valorA = valorA.toString().toLowerCase();
+      valorB = valorB.toString().toLowerCase();
+  
+      if (sortDirection === "asc") {
+        return valorA.localeCompare(valorB);
+      }
+  
+      return valorB.localeCompare(valorA);
+    });
+  }
   function renderTabla(lista) {
     tabla.innerHTML = "";
     lista.forEach((uRaw) => {
@@ -240,8 +259,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         (!activoVal || activoTexto === activoVal)
       );
     });
-    renderTabla(filtrados);
-  }
+    const ordenados = ordenarUsuarios(filtrados);
+    renderTabla(ordenados);
+    }
 
   let logUsuarioActual = "";
   async function abrirModal(id_usuario) {
@@ -360,6 +380,38 @@ document.addEventListener("DOMContentLoaded", async () => {
     btnVerLog.addEventListener("click", mostrarLog);
   }
   window.cargarUsuarios = cargarUsuarios;
+
+/* ===== ORDENAMIENTO DE COLUMNAS ===== */
+
+document.querySelectorAll(".sortable").forEach((th) => {
+
+  th.addEventListener("click", () => {
+
+    const columna = th.dataset.column;
+
+    if (sortColumn === columna) {
+      sortDirection = sortDirection === "asc"
+        ? "desc"
+        : "asc";
+    } else {
+      sortColumn = columna;
+      sortDirection = "asc";
+    }
+
+    document.querySelectorAll(".sortable")
+      .forEach((x) => {
+        x.classList.remove("asc", "desc");
+      });
+
+    th.classList.add(sortDirection);
+
+    aplicarFiltros();
+  });
+
+});
+
+/* ===== FIN ORDENAMIENTO ===== */
+  
   document
     .getElementById("modalConfirmarVigencia")
     .addEventListener("hidden.bs.modal", (e) => {
