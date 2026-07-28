@@ -1019,14 +1019,22 @@ textarea.disabled-field {
   position: relative;
 }
 
-.sortable.asc::after {
-  content: " ▲";
-  color: #4da3ff;
+/* Flecha por defecto */
+.sortable::after {
+  content: " ↕";
+  color: #a0a0a0;
   font-size: 0.8rem;
 }
 
+/* Ascendente */
+.sortable.asc::after {
+  content: " ▲";
+  color: #4da3ff;
+}
+
+/* Descendente */
 .sortable.desc::after {
   content: " ▼";
   color: #4da3ff;
-  font-size: 0.8rem;
 }
+
