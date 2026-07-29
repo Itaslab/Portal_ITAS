@@ -461,9 +461,12 @@ function configurarAWA(id) {
   awaParaEliminar = awa;
 
   const btnGuardar = document.getElementById("btnGuardarAwa");
-
+  const btnEliminar = document.getElementById("btnEliminarAwa");
   if (btnGuardar) {
     btnGuardar.disabled = !esAdminAwas;
+  }
+  if (btnEliminar) {
+    btnEliminar.disabled = !esAdminAwas;
   }
 
   // 🔥 abrir modal

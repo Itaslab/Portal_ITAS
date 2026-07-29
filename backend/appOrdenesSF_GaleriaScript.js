@@ -100,7 +100,7 @@ router.put("/:id", async (req, res) => {
       delay,
       script,
       esquema_json,
-      activo,
+
       vigencia_desde,
       vigencia_hasta,
     } = req.body;
@@ -117,7 +117,6 @@ router.put("/:id", async (req, res) => {
     const usuario = req.session.user.email || "Desconocido";
 
     // Normalizaciones
-    activo = activo ? 1 : 0;
     nombre = nombre || null;
     negocio = negocio || null;
     script = script || null;
@@ -169,7 +168,7 @@ router.put("/:id", async (req, res) => {
     if (esquema_json !== null)
       compararCampo("Esquema JSON", actual.Esquema_JSON, esquema_json);
     if (delay !== null) compararCampo("Delay", actual.Delay, delay);
-    compararCampo("Activo", actual.Activo ? "1" : "0", activo ? "1" : "0");
+
     if (vigencia_desde !== null)
       compararCampo("Vigencia Desde", actual.Vigencia_Desde, vigencia_desde);
     if (vigencia_hasta !== null)
@@ -189,7 +188,7 @@ router.put("/:id", async (req, res) => {
       .input("negocio", sql.VarChar, negocio)
       .input("script", sql.Text, script)
       .input("esquema_json", sql.VarChar, esquema_json)
-      .input("activo", sql.Bit, activo)
+
       .input("vigencia_desde", sql.Date, vigencia_desde)
       .input("vigencia_hasta", sql.Date, vigencia_hasta)
       .input("id", sql.Int, id)
@@ -204,7 +203,6 @@ router.put("/:id", async (req, res) => {
         Script = COALESCE(@script, Script),
         Esquema_JSON = COALESCE(@esquema_json, Esquema_JSON),
         Delay = COALESCE(@delay, Delay),
-        Activo = @activo,
         Vigencia_Desde = CASE WHEN @vigencia_desde IS NULL THEN Vigencia_Desde ELSE @vigencia_desde END,
         Vigencia_Hasta = CASE WHEN @vigencia_hasta IS NULL THEN Vigencia_Hasta ELSE @vigencia_hasta END,
         LogDeCambios = @log
