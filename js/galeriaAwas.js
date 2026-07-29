@@ -661,7 +661,7 @@ function cambiarFrecuencia(idRegistro) {
 
 async function guardarGrillaHoraria() {
   if (!esAdminAwas) {
-    mostrarToast("No posee permisos para guardar.", "danger");
+    mostrarSinPermisos();
     return;
   }
 
@@ -990,6 +990,10 @@ function mostrarToast(mensaje, tipo = "success") {
 
   const toast = new bootstrap.Toast(toastEl);
   toast.show();
+}
+
+function mostrarSinPermisos() {
+  new bootstrap.Modal(document.getElementById("modalSinPermisos")).show();
 }
 
 // ============================
