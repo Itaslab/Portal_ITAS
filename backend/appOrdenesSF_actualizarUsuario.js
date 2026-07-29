@@ -135,7 +135,10 @@ router.put("/finalizar-vigencia", async (req, res) => {
       .input("id_usuario", sql.Int, id_usuario)
       .input("log", sql.VarChar(sql.MAX), logFinal).query(`
         UPDATE ${schema}.APP_ORDENES_USR
-        SET Vigencia_Hasta = CAST(GETDATE() AS DATE), LogDeCambios = @log
+        SET Vigencia_Hasta = CAST(GETDATE() AS DATE),
+        LogDeCambios = @log,
+        Activo = 'Inactivo',
+        Asignar = 'No Asignar'
         WHERE ID_Usuario = @id_usuario
       `);
 

@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectNegocio = document.getElementById("selectNegocio");
   const textareaScript = document.getElementById("textareaScript");
   const selectEsquema = document.getElementById("selectEsquema");
-  const selectActivar = document.getElementById("selectActivar");
   const vigFrom = document.getElementById("vigFrom");
   const vigTo = document.getElementById("vigTo");
   const selectDelay = document.getElementById("selectDelay");
@@ -121,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
       selectNegocio.value = b.negocio ?? "";
       textareaScript.value = b.script ?? "";
       selectEsquema.value = b.esquema ?? b.esquema_json ?? "";
-      selectActivar.value = b.activo ? "1" : "0";
+
       selectDelay.value = b.delay ?? 0;
 
       // Si vienen fechas (string 'YYYY-MM-DD'), asignarlas
@@ -220,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
       negocio: selectNegocio.value,
       script: textareaScript.value,
       esquema_json: selectEsquema.value,
-      activo: selectActivar.value === "1" ? 1 : 0,
+
       vigencia_desde: vigFrom.value || null,
       vigencia_hasta: vigTo.value || null,
       delay: Number(selectDelay.value),

@@ -1,6 +1,7 @@
+// backend/appOrdenesSF_ScriptDetalle.js
+
 const { sql, poolPromise } = require("./db");
 const schema = process.env.DB_SCHEMA;
-
 
 module.exports = async (req, res) => {
   try {
@@ -19,12 +20,12 @@ module.exports = async (req, res) => {
 
     const result = await pool.request().query(query);
 
-    const bajadas = result.recordset.map(b => ({
+    const bajadas = result.recordset.map((b) => ({
       nombre: b.Nombre,
       negocio: b.Negocio,
       script: b.Script,
       esquema: b.Esquema_JSON,
-      activo: b.Activo
+      activo: b.Activo,
     }));
 
     res.json({ success: true, bajadas });
