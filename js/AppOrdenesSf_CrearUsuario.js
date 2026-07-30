@@ -165,10 +165,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
 
       if (response.ok) {
-        resultado.innerHTML = `<div class="alert alert-success">${data.mensaje || "Entidad creada correctamente."}</div>`;
         form.reset();
         nombreInput.value = "";
         apellidoInput.value = "";
+
+        // Volver a dejar deshabilitado el Script si corresponde
+        updateScriptState();
+
+        // Mostrar ventana de éxito
+        const modal = new bootstrap.Modal(
+          document.getElementById("usuarioCreadoModal"),
+        );
+
+        modal.show();
       } else {
         resultado.innerHTML = `<div class="alert alert-danger">Error: ${data.mensaje || "No se pudo guardar."}</div>`;
       }

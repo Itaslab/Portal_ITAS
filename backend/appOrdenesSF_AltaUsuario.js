@@ -11,9 +11,10 @@ router.get("/usuarios_base", async (req, res) => {
     const pool = await poolPromise;
 
     const result = await pool.request().query(`
-      SELECT Legajo, Nombre, Apellido, Email
-      FROM ${schema}.USUARIO
-      ORDER BY Apellido, Nombre
+SELECT Legajo, Nombre, Apellido, Email
+FROM ${schema}.USUARIO
+WHERE Vigencia_Hasta IS NULL
+ORDER BY Apellido, Nombre
     `);
 
     res.json({
