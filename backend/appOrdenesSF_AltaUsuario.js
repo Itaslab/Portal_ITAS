@@ -126,12 +126,16 @@ router.post("/usuariosordenes", async (req, res) => {
       }
 
       // Buscar ID_Usuario en tabla schema.USUARIO por Legajo
+      console.log("UsuarioBase recibido:", usuarioBase);
+
       const r = await pool
         .request()
         .input("Legajo", sql.VarChar, usuarioBase)
         .query(
           `SELECT TOP 1 ID_Usuario FROM ${schema}.USUARIO WHERE Legajo = @Legajo`,
         );
+
+      console.log(r.recordset);
 
       const idUsuario =
         r && r.recordset && r.recordset[0] ? r.recordset[0].ID_Usuario : null;
