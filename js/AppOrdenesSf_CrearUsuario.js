@@ -9,10 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Llenar el select de usuarios base
   fetch(basePath + "/usuarios_base")
-    .then(res => res.json())
-    .then(data => {
+    .then((res) => res.json())
+    .then((data) => {
       if (data.success && Array.isArray(data.usuarios)) {
-        data.usuarios.forEach(u => {
+        data.usuarios.forEach((u) => {
           const opt = document.createElement("option");
           opt.value = u.Legajo;
           opt.textContent = `${u.Legajo} - ${u.Apellido}, ${u.Nombre}`;
@@ -24,63 +24,72 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   // Al seleccionar usuario base, autocompletar nombre y apellido
-  usuarioBaseSelect.addEventListener("change", function() {
+  usuarioBaseSelect.addEventListener("change", function () {
     const selected = usuarioBaseSelect.options[usuarioBaseSelect.selectedIndex];
     nombreInput.value = selected.dataset.nombre || "";
     apellidoInput.value = selected.dataset.apellido || "";
   });
 
   // Salto rápido por letra en el select: al presionar una letra va al siguiente apellido que empieza con esa letra
-  usuarioBaseSelect.addEventListener('keydown', function(e) {
+  usuarioBaseSelect.addEventListener("keydown", function (e) {
     const key = e.key;
     if (!key || key.length !== 1) return; // no es una letra simple
     const ch = key.toUpperCase();
-    if (ch < 'A' || ch > 'Z') return;
+    if (ch < "A" || ch > "Z") return;
     e.preventDefault();
     const options = Array.from(usuarioBaseSelect.options);
-    const start = usuarioBaseSelect.selectedIndex >= 0 ? usuarioBaseSelect.selectedIndex + 1 : 0;
+    const start =
+      usuarioBaseSelect.selectedIndex >= 0
+        ? usuarioBaseSelect.selectedIndex + 1
+        : 0;
     // buscar desde start hasta final, luego desde 0 hasta start-1
     let foundIndex = -1;
     for (let i = start; i < options.length; i++) {
       const opt = options[i];
-      const apellido = (opt.dataset.apellido || '').toUpperCase();
-      if (apellido.startsWith(ch)) { foundIndex = i; break; }
+      const apellido = (opt.dataset.apellido || "").toUpperCase();
+      if (apellido.startsWith(ch)) {
+        foundIndex = i;
+        break;
+      }
     }
     if (foundIndex === -1) {
       for (let i = 0; i < start; i++) {
         const opt = options[i];
-        const apellido = (opt.dataset.apellido || '').toUpperCase();
-        if (apellido.startsWith(ch)) { foundIndex = i; break; }
+        const apellido = (opt.dataset.apellido || "").toUpperCase();
+        if (apellido.startsWith(ch)) {
+          foundIndex = i;
+          break;
+        }
       }
     }
     if (foundIndex !== -1) {
       usuarioBaseSelect.selectedIndex = foundIndex;
-      usuarioBaseSelect.dispatchEvent(new Event('change'));
+      usuarioBaseSelect.dispatchEvent(new Event("change"));
     }
   });
 
   // Referencias a nuevos campos
-  const sfUserIdInput = document.getElementById('sfUserId');
-  const formaSelect = document.getElementById('forma');
-  const modoSelect = document.getElementById('modo');
-  const scriptTextarea = document.getElementById('scriptText');
+  const sfUserIdInput = document.getElementById("sfUserId");
+  const formaSelect = document.getElementById("forma");
+  const modoSelect = document.getElementById("modo");
+  const scriptTextarea = document.getElementById("scriptText");
 
   // Habilitar/deshabilitar textarea según Modo
   function updateScriptState() {
     const modoVal = modoSelect.value;
-    if (modoVal === 'SCRIPT') {
+    if (modoVal === "SCRIPT") {
       scriptTextarea.disabled = false;
-      scriptTextarea.classList.remove('bg-light');
+      scriptTextarea.classList.remove("bg-light");
       scriptTextarea.required = true;
     } else {
       scriptTextarea.disabled = true;
-      scriptTextarea.value = '';
-      scriptTextarea.classList.add('bg-light');
+      scriptTextarea.value = "";
+      scriptTextarea.classList.add("bg-light");
       scriptTextarea.required = false;
     }
   }
 
-  modoSelect.addEventListener('change', updateScriptState);
+  modoSelect.addEventListener("change", updateScriptState);
   // Inicializar estado
   updateScriptState();
 
@@ -112,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Si modo = SCRIPT, script es obligatorio
     const scriptVal = scriptTextarea.value.trim();
-    if (modo === 'SCRIPT' && !scriptVal) {
+    if (modo === "SCRIPT" && !scriptVal) {
       resultado.innerHTML = `<div class="alert alert-warning">Modo SCRIPT requiere que ingrese el script.</div>`;
       return;
     }
@@ -140,16 +149,18 @@ document.addEventListener("DOMContentLoaded", () => {
       HoraA: horaA,
       SF_UserID: sfUserIdInput?.value?.trim() || null,
       Asc_desc: formaSelect?.value || null,
-      Script: scriptVal || null
+      Script: scriptVal || null,
     };
 
     try {
       // Petición al backend
-      const response = await fetch(basePath + "/usuariosordenes", { 
+      const response = await fetch(basePath + "/usuariosordenes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nuevaEntidad)
+        body: JSON.stringify(nuevaEntidad),
       });
+
+      console.log("Status:", response.status);
 
       const data = await response.json();
 
