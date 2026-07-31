@@ -147,7 +147,7 @@ router.post("/usuariosordenes", async (req, res) => {
       .input("HoraA", sql.VarChar(32), horaANorm)
       .input("SF_UserID", sql.VarChar, SF_UserID || null)
       .input("Asc_desc", sql.VarChar, Asc_desc || null)
-      .input("Activo", sql.Bit, 1)
+      .input("Activo", sql.Bit, 0)
       .input("Script", sql.NVarChar(sql.MAX), Script || null).query(`
         INSERT INTO ${schema}.APP_ORDENES_USR
         (
