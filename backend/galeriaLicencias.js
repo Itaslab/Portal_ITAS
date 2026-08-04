@@ -7,38 +7,36 @@ const schema = process.env.DB_SCHEMA;
 // OBTENER LICENCIAS POR MES
 // =============================
 router.get("/mes", async (req, res) => {
-
   const { year, month, grupo, subgrupo } = req.query;
 
   if (!year || !month) {
     return res.status(400).json({
       success: false,
-      error: "Debe enviar year y month"
+      error: "Debe enviar year y month",
     });
   }
 
   const idUsuarioSesion = req.session?.user?.ID_Usuario;
-  const adminIds = [79,81,89,88];
+  const adminIds = [79, 81, 89, 88];
   const esAdmin = adminIds.includes(idUsuarioSesion);
 
   if (!idUsuarioSesion) {
     return res.status(401).json({
       success: false,
-      error: "No autorizado"
+      error: "No autorizado",
     });
   }
-  
-  try {
 
+  try {
     const inicioMes = new Date(year, month - 1, 1);
     const finMes = new Date(year, month, 0);
 
     const pool = await poolPromise;
 
     // 🔎 Obtener usuario logueado
-    const usuarioResult = await pool.request()
-      .input("idUsuario", sql.Int, idUsuarioSesion)
-      .query(`
+    const usuarioResult = await pool
+      .request()
+      .input("idUsuario", sql.Int, idUsuarioSesion).query(`
         SELECT 
             u.ID_Usuario,
             u.Nombre,
@@ -59,21 +57,27 @@ router.get("/mes", async (req, res) => {
     if (usuarioResult.recordset.length === 0) {
       return res.status(403).json({
         success: false,
-        error: "Usuario sin rol asignado"
+        error: "Usuario sin rol asignado",
       });
     }
 
     const usuario = usuarioResult.recordset[0];
     const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
 
-    const rol = usuario.Coordinador === nombreCompleto ? "COORDINADOR" :
-                usuario.Gerente === nombreCompleto ? "GERENTE" :
-                usuario.Referente === nombreCompleto ? "REFERENTE" : "USER";
+    const rol =
+      usuario.Coordinador === nombreCompleto
+        ? "COORDINADOR"
+        : usuario.Gerente === nombreCompleto
+          ? "GERENTE"
+          : usuario.Referente === nombreCompleto
+            ? "REFERENTE"
+            : "USER";
 
     console.log("Rol asignado:", rol);
 
     // 🔥 QUERY DINÁMICA (ACA ESTÁ LA CLAVE)
-    const request = pool.request()
+    const request = pool
+      .request()
       .input("inicioMes", sql.Date, inicioMes)
       .input("finMes", sql.Date, finMes);
 
@@ -93,6 +97,7 @@ router.get("/mes", async (req, res) => {
           ON u.ID_Usuario = l.ID_Usuario
       INNER JOIN ${schema}.USUARIO_GRUPO ug
           ON ug.ID_Usuario = u.ID_Usuario
+          AND ug.Vigencia_Hasta IS NULL
       INNER JOIN ${schema}.GRUPO g
           ON g.ID_Grupo = ug.ID_Grupo
       WHERE l.Fecha_Desde <= @finMes
@@ -116,39 +121,34 @@ router.get("/mes", async (req, res) => {
 
     return res.json({
       success: true,
-      data: licencias.recordset
+      data: licencias.recordset,
     });
-
   } catch (err) {
     console.error("Error obteniendo licencias:", err);
     res.status(500).json({
       success: false,
-      error: err.message
+      error: err.message,
     });
   }
-
 });
 
 // =============================
 // OBTENER SUBGRUPOS POR GRUPO
 // =============================
 router.get("/subgrupos", async (req, res) => {
-
   const { grupo } = req.query;
 
   if (!grupo) {
     return res.status(400).json({
       success: false,
-      error: "Debe enviar grupo"
+      error: "Debe enviar grupo",
     });
   }
 
   try {
-
     const pool = await poolPromise;
 
-    const result = await pool.request()
-      .input("grupo", sql.VarChar, grupo)
+    const result = await pool.request().input("grupo", sql.VarChar, grupo)
       .query(`
         SELECT DISTINCT Subgrupo
         FROM ${schema}.GRUPO
@@ -158,25 +158,21 @@ router.get("/subgrupos", async (req, res) => {
 
     res.json({
       success: true,
-      data: result.recordset
+      data: result.recordset,
     });
-
   } catch (err) {
     console.error("Error obteniendo subgrupos:", err);
     res.status(500).json({
       success: false,
-      error: err.message
+      error: err.message,
     });
   }
-
 });
-
 
 // =============================
 // OBTENER USUARIOS (CON GRUPO)
 // =============================
 router.get("/usuarios", async (req, res) => {
-
   const { grupo, subgrupo } = req.query;
 
   const idUsuarioSesion = req.session?.user?.ID_Usuario;
@@ -186,18 +182,17 @@ router.get("/usuarios", async (req, res) => {
   if (!idUsuarioSesion) {
     return res.status(401).json({
       success: false,
-      error: "No autorizado"
+      error: "No autorizado",
     });
   }
 
   try {
-
     const pool = await poolPromise;
 
     // 🔎 Obtener datos del usuario logueado
-    const usuarioResult = await pool.request()
-      .input("idUsuario", sql.Int, idUsuarioSesion)
-      .query(`
+    const usuarioResult = await pool
+      .request()
+      .input("idUsuario", sql.Int, idUsuarioSesion).query(`
         SELECT 
             u.ID_Usuario,
             u.Nombre,
@@ -218,7 +213,7 @@ router.get("/usuarios", async (req, res) => {
     if (usuarioResult.recordset.length === 0) {
       return res.status(403).json({
         success: false,
-        error: "Usuario sin rol asignado"
+        error: "Usuario sin rol asignado",
       });
     }
 
@@ -252,6 +247,7 @@ router.get("/usuarios", async (req, res) => {
       FROM ${schema}.USUARIO u
       INNER JOIN ${schema}.USUARIO_GRUPO ug
           ON ug.ID_Usuario = u.ID_Usuario
+          AND ug.Vigencia_Hasta IS NULL
       INNER JOIN ${schema}.GRUPO g
           ON g.ID_Grupo = ug.ID_Grupo
       WHERE 1=1
@@ -260,12 +256,10 @@ router.get("/usuarios", async (req, res) => {
     // 🎯 FILTRO POR ROL
     if (esAdmin || rol === "GERENTE" || rol === "COORDINADOR") {
       // ve todo
-    } 
-    else if (rol === "REFERENTE") {
+    } else if (rol === "REFERENTE") {
       request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
       query += ` AND g.Subgrupo = @subgrupoUsuario `;
-    } 
-    else {
+    } else {
       request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
       query += ` AND u.ID_Usuario = @idUsuarioSesion `;
     }
@@ -276,8 +270,7 @@ router.get("/usuarios", async (req, res) => {
       request.input("grupo", sql.VarChar, grupo);
       request.input("subgrupo", sql.VarChar, subgrupo);
       query += ` AND g.Grupo = @grupo AND g.Subgrupo = @subgrupo `;
-    } 
-    else if (grupo) {
+    } else if (grupo) {
       // Si solo se especifica grupo, filtrar SOLO por ese grupo
       request.input("grupo", sql.VarChar, grupo);
       query += ` AND g.Grupo = @grupo `;
@@ -290,42 +283,38 @@ router.get("/usuarios", async (req, res) => {
     res.json({
       success: true,
       rol,
-      data: result.recordset
+      data: result.recordset,
     });
-
   } catch (err) {
     console.error("Error obteniendo usuarios:", err);
     res.status(500).json({
       success: false,
-      error: err.message
+      error: err.message,
     });
   }
-
 });
 
 // =============================
 // OBTENER FERIADOS POR MES
 // =============================
 router.get("/feriados", async (req, res) => {
-
   const { year, month } = req.query;
 
   if (!year || !month) {
     return res.status(400).json({
       success: false,
-      error: "Debe enviar year y month"
+      error: "Debe enviar year y month",
     });
   }
 
   try {
-
     const pool = await poolPromise;
 
     const yearMonth = `${year}${String(month).padStart(2, "0")}`;
 
-    const result = await pool.request()
-      .input("yearMonth", sql.VarChar, yearMonth)
-      .query(`
+    const result = await pool
+      .request()
+      .input("yearMonth", sql.VarChar, yearMonth).query(`
         SELECT 
           CONVERT(varchar(10), Fecha, 23) AS Fecha,
           Descripcion
@@ -335,27 +324,21 @@ router.get("/feriados", async (req, res) => {
 
     res.json({
       success: true,
-      data: result.recordset
+      data: result.recordset,
     });
-
   } catch (err) {
     console.error("Error obteniendo feriados:", err);
     res.status(500).json({
       success: false,
-      error: err.message
+      error: err.message,
     });
   }
-
 });
-
-
-
 
 /// =============================
 // OBTENER LICENCIAS PENDIENTES
 // =============================
 router.get("/pendientes", async (req, res) => {
-
   const { grupo, subgrupo } = req.query;
 
   const idUsuarioSesion = req.session?.user?.ID_Usuario;
@@ -365,18 +348,17 @@ router.get("/pendientes", async (req, res) => {
   if (!idUsuarioSesion) {
     return res.status(401).json({
       success: false,
-      error: "No autorizado"
+      error: "No autorizado",
     });
   }
 
   try {
-
     const pool = await poolPromise;
 
     // 🔎 Obtener usuario logueado
-    const usuarioResult = await pool.request()
-      .input("idUsuario", sql.Int, idUsuarioSesion)
-      .query(`
+    const usuarioResult = await pool
+      .request()
+      .input("idUsuario", sql.Int, idUsuarioSesion).query(`
         SELECT 
             u.ID_Usuario,
             u.Nombre,
@@ -397,7 +379,7 @@ router.get("/pendientes", async (req, res) => {
     if (usuarioResult.recordset.length === 0) {
       return res.status(403).json({
         success: false,
-        error: "Usuario sin rol asignado"
+        error: "Usuario sin rol asignado",
       });
     }
 
@@ -411,12 +393,10 @@ router.get("/pendientes", async (req, res) => {
 
     if (usuario.Gerente === nombreCompleto) {
       rol = "GERENTE";
-    } 
-    else if (usuario.Coordinador === nombreCompleto) {
+    } else if (usuario.Coordinador === nombreCompleto) {
       rol = "COORDINADOR";
       grupoUsuario = usuario.Grupo;
-    } 
-    else if (usuario.Referente === nombreCompleto) {
+    } else if (usuario.Referente === nombreCompleto) {
       rol = "REFERENTE";
       subgrupoUsuario = usuario.Subgrupo;
       grupoUsuario = usuario.Grupo;
@@ -443,6 +423,7 @@ router.get("/pendientes", async (req, res) => {
       INNER JOIN (
           SELECT DISTINCT ID_Usuario, ID_Grupo 
           FROM ${schema}.USUARIO_GRUPO
+          WHERE Vigencia_Hasta IS NULL
       ) ug ON ug.ID_Usuario = u.ID_Usuario
       INNER JOIN ${schema}.GRUPO g
           ON g.ID_Grupo = ug.ID_Grupo
@@ -450,28 +431,20 @@ router.get("/pendientes", async (req, res) => {
     `;
 
     // 🎯 FILTRO POR ROL
-if (!esAdmin) {
-
-  if (rol === "GERENTE") {
-    // si querés que vea todo, lo dejás así
-  }
-
-  else if (rol === "COORDINADOR") {
-    request.input("grupoUsuario", sql.VarChar, grupoUsuario);
-    query += ` AND g.Grupo = @grupoUsuario `;
-  }
-
-  else if (rol === "REFERENTE") {
-    request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
-    query += ` AND g.Subgrupo = @subgrupoUsuario `;
-  } 
-
-  else if (rol === "USER") {
-    request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
-    query += ` AND l.ID_Usuario = @idUsuarioSesion `;
-  }
-
-}
+    if (!esAdmin) {
+      if (rol === "GERENTE") {
+        // si querés que vea todo, lo dejás así
+      } else if (rol === "COORDINADOR") {
+        request.input("grupoUsuario", sql.VarChar, grupoUsuario);
+        query += ` AND g.Grupo = @grupoUsuario `;
+      } else if (rol === "REFERENTE") {
+        request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
+        query += ` AND g.Subgrupo = @subgrupoUsuario `;
+      } else if (rol === "USER") {
+        request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
+        query += ` AND l.ID_Usuario = @idUsuarioSesion `;
+      }
+    }
 
     // 🎯 FILTROS OPCIONALES
     if (grupo) {
@@ -492,25 +465,21 @@ if (!esAdmin) {
     res.json({
       success: true,
       rol,
-      data: result.recordset
+      data: result.recordset,
     });
-
   } catch (err) {
     console.error("Error obteniendo licencias pendientes:", err);
     res.status(500).json({
       success: false,
-      error: err.message
+      error: err.message,
     });
   }
-
 });
-
 
 // =============================
 // APROBAR / RECHAZAR LICENCIA
 // =============================
 router.post("/cambiar-estado", async (req, res) => {
-
   const { id, estado } = req.body;
 
   const idUsuarioSesion = req.session?.user?.ID_Usuario;
@@ -518,67 +487,61 @@ router.post("/cambiar-estado", async (req, res) => {
   if (!idUsuarioSesion) {
     return res.status(401).json({
       success: false,
-      error: "No autorizado"
+      error: "No autorizado",
     });
   }
 
   if (!id || !estado) {
     return res.status(400).json({
       success: false,
-      error: "Faltan datos"
+      error: "Faltan datos",
     });
   }
 
   try {
-
     const pool = await poolPromise;
 
-    await pool.request()
+    await pool
+      .request()
       .input("id", sql.Int, id)
-      .input("estado", sql.VarChar, estado)
-      .query(`
+      .input("estado", sql.VarChar, estado).query(`
         UPDATE ${schema}.LICENCIAS_SMART
         SET Estado = @estado
         WHERE Id = @id
       `);
 
     res.json({
-      success: true
+      success: true,
     });
-
   } catch (err) {
     console.error("Error actualizando licencia:", err);
     res.status(500).json({
       success: false,
-      error: err.message
+      error: err.message,
     });
   }
-
 });
-
 
 // =============================
 // OBTENER USUARIOS DEL MISMO GRUPO
 // =============================
 router.get("/usuarios-grupo", async (req, res) => {
-
   const idUsuarioSesion = req.session?.user?.ID_Usuario;
 
   if (!idUsuarioSesion) {
     return res.status(401).json({
       success: false,
-      error: "No autorizado"
+      error: "No autorizado",
     });
   }
 
   try {
-
     const pool = await poolPromise;
 
     // 🔎 Obtener grupo del usuario logueado
-    const usuarioResult = await pool.request()
-      .input("idUsuario", sql.Int, idUsuarioSesion)
-      .query(`
+    const usuarioResult = await pool
+      .request()
+      .input("idUsuario", sql.Int, idUsuarioSesion).query(`
         SELECT g.ID_Grupo, g.Grupo
         FROM ${schema}.USUARIO_GRUPO ug
         INNER JOIN ${schema}.GRUPO g
@@ -589,7 +552,7 @@ router.get("/usuarios-grupo", async (req, res) => {
     if (!usuarioResult.recordset.length) {
       return res.status(404).json({
         success: false,
-        error: "Usuario sin grupo asignado"
+        error: "Usuario sin grupo asignado",
       });
     }
 
@@ -598,9 +561,9 @@ router.get("/usuarios-grupo", async (req, res) => {
     console.log("Grupo usuario:", grupoUsuario);
 
     // 🔎 Traer usuarios del mismo grupo
-    const result = await pool.request()
-      .input("idGrupo", sql.Int, grupoUsuario.ID_Grupo)
-      .query(`
+    const result = await pool
+      .request()
+      .input("idGrupo", sql.Int, grupoUsuario.ID_Grupo).query(`
         SELECT DISTINCT
             u.ID_Usuario,
             u.Nombre,
@@ -614,20 +577,15 @@ router.get("/usuarios-grupo", async (req, res) => {
 
     res.json({
       success: true,
-      data: result.recordset
+      data: result.recordset,
     });
-
   } catch (err) {
     console.error("Error obteniendo usuarios del grupo:", err);
     res.status(500).json({
       success: false,
-      error: err.message
+      error: err.message,
     });
   }
-
 });
-
-
-
 
 module.exports = router;
