@@ -147,7 +147,8 @@ router.post("/usuariosordenes", async (req, res) => {
       .input("HoraA", sql.VarChar(32), horaANorm)
       .input("SF_UserID", sql.VarChar, SF_UserID || null)
       .input("Asc_desc", sql.VarChar, Asc_desc || null)
-      .input("Activo", sql.Bit, 0)
+      .input("Activo", sql.VarChar(20), "Inactivo")
+      .input("Asignar", sql.VarChar(20), "No Asignar")
       .input("Script", sql.NVarChar(sql.MAX), Script || null).query(`
         INSERT INTO ${schema}.APP_ORDENES_USR
         (
@@ -161,6 +162,7 @@ router.post("/usuariosordenes", async (req, res) => {
           SF_UserID,
           Asc_desc,
           Activo,
+          Asignar,
           Script
         )
         VALUES
@@ -175,6 +177,7 @@ router.post("/usuariosordenes", async (req, res) => {
           @SF_UserID,
           @Asc_desc,
           @Activo,
+          @Asignar,
           @Script
         )
       `);
