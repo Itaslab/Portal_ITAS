@@ -18,6 +18,29 @@ const DIAS_VALIDOS = [
 
 const MODALIDADES_VALIDAS = ["Oficina", "Home"];
 
+// La columna Dia_Semana en APP_HORARIOS_USR es tinyint, no texto.
+// Mapeamos Lunes=1 ... Domingo=7. Si en la base ya usaban otra convención
+// (por ejemplo Domingo=1 al estilo DATEPART), avisar para ajustar esto.
+const DIA_A_NUMERO = {
+  Lunes: 1,
+  Martes: 2,
+  Miércoles: 3,
+  Jueves: 4,
+  Viernes: 5,
+  Sábado: 6,
+  Domingo: 7,
+};
+
+const NUMERO_A_DIA = {
+  1: "Lunes",
+  2: "Martes",
+  3: "Miércoles",
+  4: "Jueves",
+  5: "Viernes",
+  6: "Sábado",
+  7: "Domingo",
+};
+
 // =========================================================
 // HELPERS
 // =========================================================
@@ -97,7 +120,10 @@ router.get("/horarios", checkAuth, async (req, res) => {
 
     res.json({
       success: true,
-      horarios: result.recordset,
+      horarios: result.recordset.map((fila) => ({
+        ...fila,
+        Dia_Semana: fila.Dia_Semana ? NUMERO_A_DIA[fila.Dia_Semana] : null,
+      })),
     });
   } catch (error) {
     console.error(error);
@@ -144,22 +170,15 @@ router.get("/horarios/:id_usuario", checkAuth, async (req, res) => {
             ID_Usuario = @id_usuario
             AND Vigencia_Hasta IS NULL
         ORDER BY
-            CASE Dia_Semana
-                WHEN 'Lunes' THEN 1
-                WHEN 'Martes' THEN 2
-                WHEN 'Miércoles' THEN 3
-                WHEN 'Miercoles' THEN 3
-                WHEN 'Jueves' THEN 4
-                WHEN 'Viernes' THEN 5
-                WHEN 'Sábado' THEN 6
-                WHEN 'Sabado' THEN 6
-                WHEN 'Domingo' THEN 7
-            END
+            Dia_Semana
       `);
 
     res.json({
       success: true,
-      horarios: result.recordset,
+      horarios: result.recordset.map((fila) => ({
+        ...fila,
+        Dia_Semana: fila.Dia_Semana ? NUMERO_A_DIA[fila.Dia_Semana] : null,
+      })),
     });
   } catch (error) {
     console.error(error);
@@ -236,7 +255,7 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
         await transaction
           .request()
           .input("id_usuario", sql.Int, id_usuario)
-          .input("dia", sql.VarChar, d.dia)
+          .input("dia", sql.TinyInt, DIA_A_NUMERO[d.dia])
           .input("in1", sql.VarChar, d.in1 || null)
           .input("out1", sql.VarChar, d.out1 || null)
           .input("in2", sql.VarChar, d.in2 || null)
