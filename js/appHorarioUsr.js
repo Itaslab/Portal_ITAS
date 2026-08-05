@@ -323,7 +323,12 @@ function renderDetalle(dias) {
   );
 
   diasOrdenados.forEach((d) => {
-    const sinDatos = !d.in1 && !d.out1 && !d.in2 && !d.out2 && !d.modalidad;
+    const sinDatos =
+      !d.in1 &&
+      !d.out1 &&
+      !d.in2 &&
+      !d.out2 &&
+      (!d.modalidad || d.modalidad === "No Aplica");
 
     const tr = document.createElement("tr");
 
@@ -393,7 +398,7 @@ function renderFormularioEdicion(dias) {
       </td>
       <td>
         <select class="form-select form-select-sm" data-dia="${nombreDia}" data-campo="modalidad">
-          <option value="" ${!existente.modalidad ? "selected" : ""}>No aplica / No trabaja</option>
+          <option value="No Aplica" ${!existente.modalidad || existente.modalidad === "No Aplica" ? "selected" : ""}>No aplica / No trabaja</option>
           <option value="Oficina" ${existente.modalidad === "Oficina" ? "selected" : ""}>Oficina</option>
           <option value="Home" ${existente.modalidad === "Home" ? "selected" : ""}>Home</option>
         </select>

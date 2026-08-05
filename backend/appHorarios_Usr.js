@@ -16,7 +16,7 @@ const DIAS_VALIDOS = [
   "Domingo",
 ];
 
-const MODALIDADES_VALIDAS = ["Oficina", "Home"];
+const MODALIDADES_VALIDAS = ["Oficina", "Home", "No Aplica"];
 
 // La columna Dia_Semana en APP_HORARIOS_USR es tinyint, no texto.
 // Mapeamos Lunes=1 ... Domingo=7. Si en la base ya usaban otra convención
@@ -260,7 +260,7 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
           .input("out1", sql.VarChar, d.out1 || null)
           .input("in2", sql.VarChar, d.in2 || null)
           .input("out2", sql.VarChar, d.out2 || null)
-          .input("modalidad", sql.VarChar, d.modalidad || null)
+          .input("modalidad", sql.VarChar, d.modalidad || "No Aplica")
           .input("edificio", sql.VarChar, d.edificio || null).query(`
             INSERT INTO ${schema}.APP_HORARIOS_USR
               (ID_Usuario, Dia_Semana, Hora_In1, Hora_Out1, Hora_In2, Hora_Out2,
