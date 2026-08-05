@@ -87,10 +87,10 @@ router.get("/horarios", checkAuth, async (req, res) => {
           g.Subgrupo,
 
           h.Dia_Semana,
-          h.Hora_In1,
-          h.Hora_Out1,
-          h.Hora_In2,
-          h.Hora_Out2,
+          CONVERT(VARCHAR(5), h.Hora_In1, 108) AS Hora_In1,
+          CONVERT(VARCHAR(5), h.Hora_Out1, 108) AS Hora_Out1,
+          CONVERT(VARCHAR(5), h.Hora_In2, 108) AS Hora_In2,
+          CONVERT(VARCHAR(5), h.Hora_Out2, 108) AS Hora_Out2,
           h.Modalidad,
           h.Edificio
 
@@ -159,10 +159,10 @@ router.get("/horarios/:id_usuario", checkAuth, async (req, res) => {
       .query(`
         SELECT
             Dia_Semana,
-            Hora_In1,
-            Hora_Out1,
-            Hora_In2,
-            Hora_Out2,
+            CONVERT(VARCHAR(5), Hora_In1, 108) AS Hora_In1,
+            CONVERT(VARCHAR(5), Hora_Out1, 108) AS Hora_Out1,
+            CONVERT(VARCHAR(5), Hora_In2, 108) AS Hora_In2,
+            CONVERT(VARCHAR(5), Hora_Out2, 108) AS Hora_Out2,
             Modalidad,
             Edificio
         FROM ${schema}.APP_HORARIOS_USR
