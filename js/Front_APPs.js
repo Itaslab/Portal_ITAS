@@ -177,6 +177,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       img: "../images/awas.png",
       url: "../pages/GaleriaAWAS.html",
     },
+    {
+      id: 15,
+      name: "Horario Semanal",
+      category: "Privado",
+      collection: "Gestión",
+      img: "../images/awas.png",
+      url: "../pages/AppHorariosUsr.html",
+    },
   ];
 
   // ------------------------------

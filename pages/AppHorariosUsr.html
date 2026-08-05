@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="../css/DiseñoGeneral.css" />
+    <link rel="icon" type="image/png" href="../images/Favicon.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Orbitron:wght@400..900&display=swap"
+      rel="stylesheet"
+    />
+    <title>HORARIOS</title>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar position-relative">
+      <div
+        class="container-fluid d-flex justify-content-between align-items-center navbar-container"
+      >
+        <a
+          class="navbar-brand nvbar d-flex align-items-center"
+          href="../pages/Front_APPs.html"
+        >
+          <img
+            src="../images/teco.png"
+            alt="Logo"
+            width="70"
+            height="22"
+            class="d-inline-block"
+          />
+          <span class="ms-2">PORTAL ITAS</span>
+        </a>
+        <span class="navbar-text nvbar navbar-center">Horarios</span>
+        <div class="d-flex align-items-center gap-2">
+          <button
+            class="nvbar"
+            onclick="history.back()"
+            style="
+              background: none;
+              border: 1px solid white;
+              color: white;
+              padding: 4px 10px;
+              border-radius: 4px;
+            "
+          >
+            Volver
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <!-- Filtros -->
+      <div class="row g-2 align-items-end mb-3">
+        <div class="col-md-3">
+          <label class="form-label">Grupo</label>
+          <select id="selGrupo" class="form-select">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Subgrupo</label>
+          <select id="selSubgrupo" class="form-select">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Buscar usuario</label>
+          <input
+            id="txtBuscar"
+            type="text"
+            class="form-control"
+            placeholder="Nombre o apellido..."
+          />
+        </div>
+      </div>
+
+      <!-- Tabla principal -->
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Grupo</th>
+            <th>Subgrupo</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tblHorariosBody">
+          <!-- filas generadas por JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Modal detalle -->
+    <div class="modal fade" id="modalHorario" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalHorarioTitulo">Horario</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Día</th>
+                  <th>Entrada</th>
+                  <th>Sale comida</th>
+                  <th>Vuelve</th>
+                  <th>Salida</th>
+                  <th>Modalidad</th>
+                  <th>Edificio</th>
+                </tr>
+              </thead>
+              <tbody id="tblDetalleBody"></tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" id="btnModificarHorario">
+              Modificar horario
+            </button>
+            <button class="btn btn-secondary" data-bs-dismiss="modal">
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/Front_APPs.js"></script>
+    <script src="../js/appHorariosUsr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
