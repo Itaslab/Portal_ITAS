@@ -259,7 +259,14 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
         mensaje: "Horario actualizado correctamente.",
       });
     } catch (errorInterno) {
-      await transaction.rollback();
+      try {
+        await transaction.rollback();
+      } catch (errorRollback) {
+        console.error(
+          "Error haciendo rollback (la transacción ya se había abortado):",
+          errorRollback,
+        );
+      }
       throw errorInterno;
     }
   } catch (error) {
