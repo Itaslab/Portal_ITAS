@@ -2,7 +2,8 @@
 // Lógica de la pantalla de Horarios: trae la grilla, agrupa por usuario,
 // arma los filtros de Grupo/Subgrupo y abre el modal de detalle.
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await cargarPermisos();
   cargarHorarios();
 
   document
@@ -15,6 +16,27 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("txtBuscar")
     .addEventListener("input", aplicarFiltros);
 });
+
+// Guardamos rol y usuario actual para decidir qué botones "Ver" habilitar.
+let esAdmin = false;
+let idUsuarioActual = null;
+
+async function cargarPermisos() {
+  try {
+    const [resPermisos, resMe] = await Promise.all([
+      fetch(`${basePath}/permisos`),
+      fetch(`${basePath}/me`),
+    ]);
+
+    const dataPermisos = await resPermisos.json();
+    const dataMe = await resMe.json();
+
+    esAdmin = dataPermisos.esAdmin === true;
+    idUsuarioActual = dataMe.usuario ? dataMe.usuario.ID_Usuario : null;
+  } catch (error) {
+    console.error("Error obteniendo permisos:", error);
+  }
+}
 
 // Guardamos los datos ya agrupados en memoria para no volver a pedirlos
 // cada vez que el usuario filtra o busca.
@@ -155,6 +177,7 @@ function renderTabla(usuarios) {
 
   usuarios.forEach((u) => {
     const configurado = u.dias.length > 0;
+    const puedeVer = esAdmin || u.id_usuario === idUsuarioActual;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -169,7 +192,11 @@ function renderTabla(usuarios) {
         }
       </td>
       <td>
-        <button class="btn btn-sm btn-outline-primary" onclick="verDetalle(${u.id_usuario})">
+        <button
+          class="btn btn-sm btn-outline-primary"
+          onclick="verDetalle(${u.id_usuario})"
+          ${puedeVer ? "" : 'disabled title="Solo podés ver tu propio horario"'}
+        >
           Ver
         </button>
       </td>
@@ -183,6 +210,12 @@ function renderTabla(usuarios) {
 // MODAL DE DETALLE
 // =========================================================
 
+// Estado del modal actualmente abierto, para poder editarlo.
+let diasActuales = [];
+let idUsuarioModalActual = null;
+
+const DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+
 async function verDetalle(idUsuario) {
   // Traemos el nombre/apellido de lo que ya tenemos en memoria (para el
   // título del modal), pero los DÍAS los pedimos siempre al servidor
@@ -193,10 +226,8 @@ async function verDetalle(idUsuario) {
   document.getElementById("modalHorarioTitulo").textContent =
     `${usuario.apellido}, ${usuario.nombre}`;
 
-  document.getElementById("btnModificarHorario").onclick = () => {
-    // Acá enganchamos más adelante la pantalla/modal de modificación
-    modificarHorario(idUsuario);
-  };
+  idUsuarioModalActual = idUsuario;
+  resetFooterModal();
 
   // Mostramos el modal con un estado de carga mientras llega la respuesta.
   document.getElementById("tblDetalleBody").innerHTML = `
@@ -237,6 +268,9 @@ async function verDetalle(idUsuario) {
       modalidad: fila.Modalidad,
       edificio: fila.Edificio,
     }));
+
+    diasActuales = dias;
+    idUsuarioModalActual = idUsuario;
 
     renderDetalle(dias);
   } catch (error) {
@@ -297,10 +331,125 @@ function renderDetalle(dias) {
 }
 
 // =========================================================
-// MODIFICAR HORARIO (placeholder — próximo paso)
+// MODIFICAR HORARIO
 // =========================================================
 
 function modificarHorario(idUsuario) {
-  console.log("Modificar horario de usuario:", idUsuario);
-  // Acá va la lógica del próximo endpoint (POST/PUT) y su formulario.
+  renderFormularioEdicion(diasActuales);
+
+  document.getElementById("modalHorarioFooter").innerHTML = `
+    <button class="btn btn-success" onclick="guardarHorario()">Guardar</button>
+    <button class="btn btn-secondary" onclick="cancelarEdicion()">Cancelar</button>
+  `;
+}
+
+function renderFormularioEdicion(dias) {
+  const tbody = document.getElementById("tblDetalleBody");
+  tbody.innerHTML = "";
+
+  DIAS_SEMANA.forEach((nombreDia) => {
+    const existente = dias.find((d) => d.dia === nombreDia) || {};
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${nombreDia}</td>
+      <td>
+        <input type="time" class="form-control form-control-sm"
+               data-dia="${nombreDia}" data-campo="in1"
+               value="${existente.in1 ?? ""}">
+      </td>
+      <td>
+        <input type="time" class="form-control form-control-sm"
+               data-dia="${nombreDia}" data-campo="out1"
+               value="${existente.out1 ?? ""}">
+      </td>
+      <td>
+        <input type="time" class="form-control form-control-sm"
+               data-dia="${nombreDia}" data-campo="in2"
+               value="${existente.in2 ?? ""}">
+      </td>
+      <td>
+        <input type="time" class="form-control form-control-sm"
+               data-dia="${nombreDia}" data-campo="out2"
+               value="${existente.out2 ?? ""}">
+      </td>
+      <td>
+        <select class="form-select form-select-sm" data-dia="${nombreDia}" data-campo="modalidad">
+          <option value="Oficina" ${existente.modalidad === "Oficina" ? "selected" : ""}>Oficina</option>
+          <option value="Home" ${existente.modalidad === "Home" ? "selected" : ""}>Home</option>
+        </select>
+      </td>
+      <td>
+        <input type="text" class="form-control form-control-sm"
+               data-dia="${nombreDia}" data-campo="edificio"
+               value="${existente.edificio ?? ""}" placeholder="Edificio">
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+async function guardarHorario() {
+  const filas = document.querySelectorAll("#tblDetalleBody tr");
+  const dias = [];
+
+  filas.forEach((tr) => {
+    const campos = tr.querySelectorAll("[data-dia]");
+    const diaObj = { dia: campos[0].dataset.dia };
+
+    campos.forEach((campo) => {
+      diaObj[campo.dataset.campo] = campo.value || null;
+    });
+
+    dias.push(diaObj);
+  });
+
+  try {
+    const res = await fetch(`${basePath}/horarios/${idUsuarioModalActual}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dias }),
+    });
+
+    const sesionOk = await verificarSesionValida(
+      res,
+      `horarios/${idUsuarioModalActual} (PUT)`,
+    );
+    if (!sesionOk) return;
+
+    const data = await res.json();
+
+    if (!data.success) {
+      alert(data.mensaje || "No se pudo guardar el horario.");
+      return;
+    }
+
+    diasActuales = dias;
+    renderDetalle(dias);
+    resetFooterModal();
+
+    // Refrescamos la grilla principal para que el estado
+    // (Configurado / Sin horario) quede actualizado.
+    cargarHorarios();
+  } catch (error) {
+    console.error("Error guardando el horario:", error);
+    alert("Error al guardar el horario.");
+  }
+}
+
+function cancelarEdicion() {
+  renderDetalle(diasActuales);
+  resetFooterModal();
+}
+
+function resetFooterModal() {
+  document.getElementById("modalHorarioFooter").innerHTML = `
+    <button class="btn btn-primary" id="btnModificarHorario">Modificar horario</button>
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+  `;
+
+  document.getElementById("btnModificarHorario").onclick = () => {
+    modificarHorario(idUsuarioModalActual);
+  };
 }

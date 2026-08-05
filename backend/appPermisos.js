@@ -1,3 +1,5 @@
+// appPermisos.js
+
 const { sql, poolPromise } = require("./db");
 const schema = process.env.DB_SCHEMA;
 
@@ -6,7 +8,7 @@ async function obtenerPermisosUsuarioActual(req, res) {
     if (!req.session || !req.session.user) {
       return res.status(401).json({
         ok: false,
-        error: "No autenticado"
+        error: "No autenticado",
       });
     }
 
@@ -20,7 +22,8 @@ async function obtenerPermisosUsuarioActual(req, res) {
 
     const pool = await poolPromise;
 
-    const result = await pool.request()
+    const result = await pool
+      .request()
       .input("id", sql.Int, id_usuario)
       .query(query);
 
@@ -31,14 +34,13 @@ async function obtenerPermisosUsuarioActual(req, res) {
         usuarioEncontrado: false,
         esAdmin: false,
         aplicacionesPermitidas: [],
-        permisos: []
+        permisos: [],
       });
     }
 
     // SUPER ADMIN
-    const esAdmin = result.recordset.some(r =>
-      r.ID_Perfil === 1 &&
-      r.ID_Aplicacion === 1
+    const esAdmin = result.recordset.some(
+      (r) => r.ID_Perfil === 1 && r.ID_Aplicacion === 1,
     );
 
     // Si es super admin
@@ -48,27 +50,26 @@ async function obtenerPermisosUsuarioActual(req, res) {
         usuarioEncontrado: true,
         esAdmin: true,
         aplicacionesPermitidas: [],
-        permisos: result.recordset
+        permisos: result.recordset,
       });
     }
 
     // Apps permitidas
-    const aplicacionesPermitidas = result.recordset.map(r => r.ID_Aplicacion);
+    const aplicacionesPermitidas = result.recordset.map((r) => r.ID_Aplicacion);
 
     return res.json({
       ok: true,
       usuarioEncontrado: true,
       esAdmin: false,
       aplicacionesPermitidas: aplicacionesPermitidas,
-      permisos: result.recordset
+      permisos: result.recordset,
     });
-
   } catch (error) {
     console.error("Error obteniendo permisos:", error);
 
     return res.status(500).json({
       ok: false,
-      error: "Error al obtener permisos"
+      error: "Error al obtener permisos",
     });
   }
 }
@@ -78,7 +79,7 @@ async function obtenerPermisosUsuario(req, res) {
     if (!req.session || !req.session.user) {
       return res.status(401).json({
         ok: false,
-        error: "No autenticado"
+        error: "No autenticado",
       });
     }
 
@@ -92,7 +93,8 @@ async function obtenerPermisosUsuario(req, res) {
 
     const pool = await poolPromise;
 
-    const result = await pool.request()
+    const result = await pool
+      .request()
       .input("id", sql.Int, id_usuario)
       .query(query);
 
@@ -103,14 +105,13 @@ async function obtenerPermisosUsuario(req, res) {
         usuarioEncontrado: false,
         esAdmin: false,
         aplicacionesPermitidas: [],
-        permisos: []
+        permisos: [],
       });
     }
 
     // SUPER ADMIN
-    const esAdmin = result.recordset.some(r =>
-      r.ID_Perfil === 1 &&
-      r.ID_Aplicacion === 1
+    const esAdmin = result.recordset.some(
+      (r) => r.ID_Perfil === 1 && r.ID_Aplicacion === 1,
     );
 
     // Si es super admin
@@ -120,32 +121,31 @@ async function obtenerPermisosUsuario(req, res) {
         usuarioEncontrado: true,
         esAdmin: true,
         aplicacionesPermitidas: [],
-        permisos: result.recordset
+        permisos: result.recordset,
       });
     }
 
     // Apps permitidas
-    const aplicacionesPermitidas = result.recordset.map(r => r.ID_Aplicacion);
+    const aplicacionesPermitidas = result.recordset.map((r) => r.ID_Aplicacion);
 
     return res.json({
       ok: true,
       usuarioEncontrado: true,
       esAdmin: false,
       aplicacionesPermitidas: aplicacionesPermitidas,
-      permisos: result.recordset
+      permisos: result.recordset,
     });
-
   } catch (error) {
     console.error("Error obteniendo permisos:", error);
 
     return res.status(500).json({
       ok: false,
-      error: "Error al obtener permisos"
+      error: "Error al obtener permisos",
     });
   }
 }
 
 module.exports = {
   obtenerPermisosUsuarioActual,
-  obtenerPermisosUsuario
+  obtenerPermisosUsuario,
 };
