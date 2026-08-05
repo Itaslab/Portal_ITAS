@@ -26,7 +26,11 @@ let usuariosData = [];
 
 async function cargarHorarios() {
   try {
-    const res = await fetch(`${API_URL}/horarios`);
+    const res = await fetch(`${basePath}/horarios`);
+
+    const sesionOk = await verificarSesionValida(res, "horarios");
+    if (!sesionOk) return;
+
     const data = await res.json();
 
     if (!data.success) {
@@ -205,7 +209,11 @@ async function verDetalle(idUsuario) {
   modal.show();
 
   try {
-    const res = await fetch(`${API_URL}/horarios/${idUsuario}`);
+    const res = await fetch(`${basePath}/horarios/${idUsuario}`);
+
+    const sesionOk = await verificarSesionValida(res, `horarios/${idUsuario}`);
+    if (!sesionOk) return;
+
     const data = await res.json();
 
     if (!data.success) {
