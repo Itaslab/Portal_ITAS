@@ -95,6 +95,7 @@ router.get("/mes", async (req, res) => {
       FROM ${schema}.LICENCIAS_SMART l
       INNER JOIN ${schema}.USUARIO u 
           ON u.ID_Usuario = l.ID_Usuario
+          AND u.Vigencia_Hasta IS NULL
       INNER JOIN ${schema}.USUARIO_GRUPO ug
           ON ug.ID_Usuario = u.ID_Usuario
           AND ug.Vigencia_Hasta IS NULL
@@ -420,6 +421,7 @@ router.get("/pendientes", async (req, res) => {
       FROM ${schema}.LICENCIAS_SMART l
       INNER JOIN ${schema}.USUARIO u 
           ON u.ID_Usuario = l.ID_Usuario
+          AND u.Vigencia_Hasta IS NULL
       INNER JOIN (
           SELECT DISTINCT ID_Usuario, ID_Grupo 
           FROM ${schema}.USUARIO_GRUPO
