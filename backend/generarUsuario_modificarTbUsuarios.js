@@ -336,4 +336,43 @@ router.put("/abm_usuarios/:id_usuario/cambiar-grupo", async (req, res) => {
   }
 });
 
+// =========================================================
+//  FINALIZAR VIGENCIA DEL USUARIO
+// =========================================================
+
+router.put("/abm_usuarios/:id_usuario/finalizar-vigencia", async (req, res) => {
+  const { id_usuario } = req.params;
+
+  try {
+    const pool = await poolPromise;
+
+    const result = await pool.request().input("id_usuario", sql.Int, id_usuario)
+      .query(`
+        UPDATE ${schema}.USUARIO
+        SET Vigencia_Hasta = CAST(GETDATE() AS DATE)
+        WHERE ID_Usuario = @id_usuario
+          AND Vigencia_Hasta IS NULL;
+      `);
+
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).json({
+        success: false,
+        mensaje: "Usuario no encontrado o ya sin vigencia.",
+      });
+    }
+
+    res.json({
+      success: true,
+      mensaje: "Vigencia finalizada correctamente.",
+    });
+  } catch (error) {
+    console.error("Error finalizando vigencia:", error);
+
+    res.status(500).json({
+      success: false,
+      mensaje: "Error interno del servidor.",
+    });
+  }
+});
+
 module.exports = router;

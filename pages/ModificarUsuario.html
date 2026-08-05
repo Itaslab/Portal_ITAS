@@ -252,6 +252,14 @@
             >
               Modificar Grupos
             </button>
+            <button
+              type="button"
+              class="btn btn-outline-danger me-2"
+              id="btnFinalizarVigencia"
+              disabled
+            >
+              Finalizar Vigencia
+            </button>
             <button type="reset" class="btn btn-secondary me-2">
               Cancelar
             </button>
@@ -264,6 +272,8 @@
         </form>
       </div>
     </div>
+
+    <!-- MODAL MODIFICAR GRUPOS Y SUB GRUPOSS-->
 
     <div class="modal fade" id="grupoModal" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
@@ -310,6 +320,62 @@
             </button>
             <button type="button" class="btn btn-primary" id="btnGuardarGrupo">
               Guardar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL FINALIZAR VIGENCIA DE USUARIO -->
+
+    <!-- Modal Finalizar Vigencia -->
+    <div
+      class="modal fade"
+      id="modalFinalizarVigencia"
+      tabindex="-1"
+      aria-labelledby="modalFinalizarVigenciaLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalFinalizarVigenciaLabel">
+              Confirmar Finalización de Vigencia
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <p class="mb-2">
+              ¿Está seguro que desea finalizar la vigencia del usuario?
+            </p>
+
+            <div class="alert alert-warning mb-0">
+              <strong>Atención:</strong> Al confirmar, no será posible revertir
+              los cambios.
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-danger"
+              id="btnConfirmarFinalizarVigencia"
+            >
+              Confirmar
             </button>
           </div>
         </div>

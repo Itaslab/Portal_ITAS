@@ -113,6 +113,76 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // =========================================================
+  // MODAL FINALIZAR VIGENCIA
+  // =========================================================
+
+  const btnFinalizarVigencia = document.getElementById("btnFinalizarVigencia");
+
+  const modalFinalizarVigenciaEl = document.getElementById(
+    "modalFinalizarVigencia",
+  );
+
+  const modalFinalizarVigencia = modalFinalizarVigenciaEl
+    ? new bootstrap.Modal(modalFinalizarVigenciaEl)
+    : null;
+
+  if (btnFinalizarVigencia) {
+    btnFinalizarVigencia.addEventListener("click", () => {
+      modalFinalizarVigencia.show();
+    });
+  }
+
+  const btnConfirmarFinalizarVigencia = document.getElementById(
+    "btnConfirmarFinalizarVigencia",
+  );
+
+  if (btnConfirmarFinalizarVigencia) {
+    btnConfirmarFinalizarVigencia.addEventListener("click", async () => {
+      const idUsuario = document.getElementById("idUsuario").value;
+
+      if (!idUsuario) {
+        alert("No hay un usuario seleccionado.");
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          basePath + `/abm_usuarios/${idUsuario}/finalizar-vigencia`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        const data = await res.json();
+
+        if (data.success) {
+          modalFinalizarVigencia.hide();
+
+          if (successModal) {
+            document.getElementById("successModalBody").textContent =
+              "La vigencia del usuario se finalizó correctamente.";
+            successModal.show();
+          } else {
+            alert("La vigencia del usuario se finalizó correctamente.");
+          }
+
+          form.reset();
+          document.getElementById("btnModificarGrupo").disabled = true;
+          document.getElementById("btnFinalizarVigencia").disabled = true;
+        } else {
+          alert(data.mensaje || "No fue posible finalizar la vigencia.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error de conexión.");
+      }
+    });
+  }
+
+  // =========================================================
   // CARGAR DATOS USUARIO
   // =========================================================
 
@@ -154,6 +224,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("ciudad").value = data.Ciudad || "";
       document.getElementById("idUsuario").value = data.ID_Usuario || "";
       document.getElementById("btnModificarGrupo").disabled = !data.ID_Usuario;
+      document.getElementById("btnFinalizarVigencia").disabled =
+        !data.ID_Usuario;
 
       resultado.textContent = "Usuario cargado correctamente";
       resultado.style.color = "green";
