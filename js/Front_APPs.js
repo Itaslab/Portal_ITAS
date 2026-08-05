@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       name: "Horario Semanal",
       category: "Privado",
       collection: "Gestión",
-      img: "../images/awas.png",
+      img: "../images/Horario.jpg",
       url: "../pages/AppHorariosUsr.html",
     },
   ];
