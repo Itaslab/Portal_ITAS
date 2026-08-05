@@ -214,7 +214,15 @@ function renderTabla(usuarios) {
 let diasActuales = [];
 let idUsuarioModalActual = null;
 
-const DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+const DIAS_SEMANA = [
+  "Lunes",
+  "Martes",
+  "Miércoles",
+  "Jueves",
+  "Viernes",
+  "Sábado",
+  "Domingo",
+];
 
 async function verDetalle(idUsuario) {
   // Traemos el nombre/apellido de lo que ya tenemos en memoria (para el
@@ -315,16 +323,26 @@ function renderDetalle(dias) {
   );
 
   diasOrdenados.forEach((d) => {
+    const sinDatos = !d.in1 && !d.out1 && !d.in2 && !d.out2 && !d.modalidad;
+
     const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${d.dia}</td>
-      <td>${d.in1 ?? "-"}</td>
-      <td>${d.out1 ?? "-"}</td>
-      <td>${d.in2 ?? "-"}</td>
-      <td>${d.out2 ?? "-"}</td>
-      <td>${d.modalidad ?? "-"}</td>
-      <td>${d.edificio ?? "-"}</td>
-    `;
+
+    if (sinDatos) {
+      tr.innerHTML = `
+        <td>${d.dia}</td>
+        <td colspan="6" class="text-center text-muted">No aplica / No trabaja</td>
+      `;
+    } else {
+      tr.innerHTML = `
+        <td>${d.dia}</td>
+        <td>${d.in1 ?? "-"}</td>
+        <td>${d.out1 ?? "-"}</td>
+        <td>${d.in2 ?? "-"}</td>
+        <td>${d.out2 ?? "-"}</td>
+        <td>${d.modalidad ?? "-"}</td>
+        <td>${d.edificio ?? "-"}</td>
+      `;
+    }
 
     tbody.appendChild(tr);
   });
@@ -375,6 +393,7 @@ function renderFormularioEdicion(dias) {
       </td>
       <td>
         <select class="form-select form-select-sm" data-dia="${nombreDia}" data-campo="modalidad">
+          <option value="" ${!existente.modalidad ? "selected" : ""}>No aplica / No trabaja</option>
           <option value="Oficina" ${existente.modalidad === "Oficina" ? "selected" : ""}>Oficina</option>
           <option value="Home" ${existente.modalidad === "Home" ? "selected" : ""}>Home</option>
         </select>
