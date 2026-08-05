@@ -29,7 +29,7 @@ router.get("/abm_usuarios", async (req, res) => {
         Apellido
 
       FROM ${schema}.USUARIO
-
+      WHERE Vigencia_Hasta IS NULL
       ORDER BY Apellido, Nombre
 
     `);
