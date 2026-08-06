@@ -53,7 +53,7 @@ const misLicencias = require("./misLicencias");
 const awasGaleria = require("./AwasGaleria");
 const generarUsuarioAltaUserPortalITAS = require("./generarUsuario_AltaUserPortalITAS");
 const appHorariosUsr = require("./appHorarios_Usr");
-const appIntegraciones = require("./appIntegraciones");
+const appIntegraciones = require("./app_Servicios_ITAS");
 
 
 // 🔥 Tu nueva ruta unificada scripts
