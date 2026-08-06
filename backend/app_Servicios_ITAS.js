@@ -48,7 +48,7 @@ router.get("/", async (req, res) => {
 
 //EndPoint Ejecutar Pedido
 
-router.post("/", async (req, res) => {
+router.post("/integraciones", async (req, res) => {
     try {
       const pool = await poolPromise;
   
