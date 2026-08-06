@@ -53,6 +53,8 @@ const misLicencias = require("./misLicencias");
 const awasGaleria = require("./AwasGaleria");
 const generarUsuarioAltaUserPortalITAS = require("./generarUsuario_AltaUserPortalITAS");
 const appHorariosUsr = require("./appHorarios_Usr");
+const appIntegraciones = require("./appIntegraciones");
+
 
 // 🔥 Tu nueva ruta unificada scripts
 const rutasScripts = require("./appOrdenesSF_GaleriaScript");
@@ -203,6 +205,8 @@ app.use("/", modificarUsuario);
 app.use("/", generarUsuarioOrdenes);
 app.use("/", usuarioMe);
 app.use("/", appHorariosUsr);
+app.use("/", appIntegraciones);
+
 
 // 🔥 NUEVA API DE SCRIPTS (funciona con tu JS)
 app.use("/api/scripts", rutasScripts);
