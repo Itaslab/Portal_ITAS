@@ -185,6 +185,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       img: "../images/Horario.jpg",
       url: "../pages/AppHorariosUsr.html",
     },
+    {
+      id: 16,
+      name: "Servicios ITAS",
+      category: "Privado",
+      collection: "Gestión",
+      img: "../images/Horario.jpg",
+      url: "../pages/AppIntegraciones.html",
+    },
   ];
 
   // ------------------------------
