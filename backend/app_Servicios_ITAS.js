@@ -6,7 +6,7 @@ const schema = process.env.DB_SCHEMA;
 
 //EndPoint Galeria
 
-router.get("/", async (req, res) => {
+router.get("/integraciones_grilla", async (req, res) => {
     try {
       const pool = await poolPromise;
   

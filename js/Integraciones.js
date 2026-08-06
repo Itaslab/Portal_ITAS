@@ -9,7 +9,7 @@ async function cargarPedidos() {
     const soloMios = chkMisPedidos.checked;
 
     const response = await fetch(
-      `${basePath}/integraciones${soloMios ? "?mios=true" : ""}`,
+      `${basePath}/integraciones_grilla${soloMios ? "?mios=true" : ""}`,
       {
         credentials: "include",
       },
@@ -131,7 +131,7 @@ document
       alert("Error al crear pedido");
     }
   });
-  
+
     renderPedidos();
 
     bootstrap.Modal
