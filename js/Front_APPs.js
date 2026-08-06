@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       name: "Servicios ITAS",
       category: "Privado",
       collection: "Gestión",
-      img: "../images/Horario.jpg",
+      img: "../images/Servicios.jpg",
       url: "../pages/AppIntegraciones.html",
     },
   ];
