@@ -45,7 +45,7 @@ router.get("/", async (req, res) => {
       });
     }
   });
-  
+
 //EndPoint Ejecutar Pedido
 
 router.post("/", async (req, res) => {
@@ -119,3 +119,6 @@ router.post("/", async (req, res) => {
       });
     }
   });
+
+
+  module.exports = router;
