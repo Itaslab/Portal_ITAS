@@ -49,7 +49,6 @@ router.get("/integraciones_grilla", async (req, res) => {
 
 router.post("/integraciones", async (req, res) => {
   try {
-    console.log("=== POST /integraciones ===");
     console.log(req.body);
 
     const pool = await poolPromise;
@@ -58,16 +57,6 @@ router.post("/integraciones", async (req, res) => {
       req.body;
 
     const Id_Usuario = req.session?.user?.ID_Usuario;
-
-    console.log({
-      Servicio,
-      Linea,
-      Subscriber,
-      Cuenta,
-      Customer,
-      Justificacion,
-      Id_Usuario,
-    });
 
     const result = await pool
       .request()
