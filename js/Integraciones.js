@@ -1,4 +1,3 @@
-
 const tablaPedidos = document.getElementById("tablaPedidos");
 const chkMisPedidos = document.getElementById("chkMisPedidos");
 
@@ -6,14 +5,9 @@ let pedidos = [];
 
 async function cargarPedidos() {
   try {
-    const soloMios = chkMisPedidos.checked;
-
-    const response = await fetch(
-      `${basePath}/integraciones_grilla${soloMios ? "?mios=true" : ""}`,
-      {
-        credentials: "include",
-      },
-    );
+    const response = await fetch(`${basePath}/integraciones_grilla`, {
+      credentials: "include",
+    });
 
     const data = await response.json();
 
@@ -56,89 +50,72 @@ function renderPedidos() {
   });
 }
 
-document
-  .getElementById("btnCrearPedido")
-  .addEventListener("click", () => {
+document.getElementById("btnCrearPedido").addEventListener("click", () => {
+  const justificacion = document.getElementById("justificacion").value.trim();
 
-    const justificacion =
-      document.getElementById("justificacion").value.trim();
+  if (!justificacion) {
+    alert("La justificación es obligatoria");
+    return;
+  }
 
-    if (!justificacion) {
-      alert("La justificación es obligatoria");
-      return;
-    }
+  document
+    .getElementById("btnCrearPedido")
+    .addEventListener("click", async () => {
+      try {
+        const justificacion = document
+          .getElementById("justificacion")
+          .value.trim();
 
-    document
-  .getElementById("btnCrearPedido")
-  .addEventListener("click", async () => {
-    try {
+        if (!justificacion) {
+          alert("La justificación es obligatoria");
+          return;
+        }
 
-      const justificacion =
-        document.getElementById("justificacion").value.trim();
+        const body = {
+          Servicio: document.getElementById("integracion").value,
 
-      if (!justificacion) {
-        alert("La justificación es obligatoria");
-        return;
-      }
+          Linea: document.getElementById("linea")?.value || null,
 
-      const body = {
-        Servicio:
-          document.getElementById("integracion").value,
+          Subscriber: document.getElementById("subscriber")?.value || null,
 
-        Linea:
-          document.getElementById("linea")?.value || null,
+          Cuenta: document.getElementById("cuenta")?.value || null,
 
-        Subscriber:
-          document.getElementById("subscriber")?.value || null,
+          Customer: document.getElementById("customer").value,
 
-        Cuenta:
-          document.getElementById("cuenta")?.value || null,
+          Justificacion: justificacion,
+        };
 
-        Customer:
-          document.getElementById("customer").value,
-
-        Justificacion: justificacion,
-      };
-
-      const response = await fetch(
-        `${basePath}/integraciones`,
-        {
+        const response = await fetch(`${basePath}/integraciones`, {
           method: "POST",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(body),
-        },
-      );
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!data.success) {
-        throw new Error(data.error);
+        if (!data.success) {
+          throw new Error(data.error);
+        }
+
+        bootstrap.Modal.getInstance(
+          document.getElementById("nuevoPedidoModal"),
+        ).hide();
+
+        cargarPedidos();
+      } catch (error) {
+        console.error(error);
+        alert("Error al crear pedido");
       }
+    });
 
-      bootstrap.Modal
-        .getInstance(
-          document.getElementById("nuevoPedidoModal")
-        )
-        .hide();
+  renderPedidos();
 
-      cargarPedidos();
+  bootstrap.Modal.getInstance(
+    document.getElementById("nuevoPedidoModal"),
+  ).hide();
+});
 
-    } catch (error) {
-      console.error(error);
-      alert("Error al crear pedido");
-    }
-  });
-
-    renderPedidos();
-
-    bootstrap.Modal
-      .getInstance(document.getElementById("nuevoPedidoModal"))
-      .hide();
-  });
-
-chkMisPedidos.addEventListener("change", renderPedidos);
-
-renderPedidos();
+cargarPedidos();
