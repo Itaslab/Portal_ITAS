@@ -50,72 +50,54 @@ function renderPedidos() {
   });
 }
 
-document.getElementById("btnCrearPedido").addEventListener("click", () => {
-  const justificacion = document.getElementById("justificacion").value.trim();
+document
+  .getElementById("btnCrearPedido")
+  .addEventListener("click", async () => {
+    try {
+      const justificacion = document
+        .getElementById("justificacion")
+        .value.trim();
 
-  if (!justificacion) {
-    alert("La justificación es obligatoria");
-    return;
-  }
-
-  document
-    .getElementById("btnCrearPedido")
-    .addEventListener("click", async () => {
-      try {
-        const justificacion = document
-          .getElementById("justificacion")
-          .value.trim();
-
-        if (!justificacion) {
-          alert("La justificación es obligatoria");
-          return;
-        }
-
-        const body = {
-          Servicio: document.getElementById("integracion").value,
-
-          Linea: document.getElementById("linea")?.value || null,
-
-          Subscriber: document.getElementById("subscriber")?.value || null,
-
-          Cuenta: document.getElementById("cuenta")?.value || null,
-
-          Customer: document.getElementById("customer").value,
-
-          Justificacion: justificacion,
-        };
-
-        const response = await fetch(`${basePath}/integraciones`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        });
-
-        const data = await response.json();
-
-        if (!data.success) {
-          throw new Error(data.error);
-        }
-
-        bootstrap.Modal.getInstance(
-          document.getElementById("nuevoPedidoModal"),
-        ).hide();
-
-        cargarPedidos();
-      } catch (error) {
-        console.error(error);
-        alert("Error al crear pedido");
+      if (!justificacion) {
+        alert("La justificación es obligatoria");
+        return;
       }
-    });
 
-  renderPedidos();
+      const body = {
+        Servicio: document.getElementById("integracion").value,
+        Linea: document.getElementById("linea")?.value || null,
+        Subscriber: document.getElementById("subscriber")?.value || null,
+        Cuenta: document.getElementById("cuenta")?.value || null,
+        Customer: document.getElementById("customer").value,
+        Justificacion: justificacion,
+      };
 
-  bootstrap.Modal.getInstance(
-    document.getElementById("nuevoPedidoModal"),
-  ).hide();
-});
+      const response = await fetch(`${basePath}/integraciones`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      console.log(data);
+
+      if (!data.success) {
+        throw new Error(data.error);
+      }
+
+      bootstrap.Modal.getInstance(
+        document.getElementById("nuevoPedidoModal"),
+      ).hide();
+
+      cargarPedidos();
+    } catch (error) {
+      console.error(error);
+      alert("Error al crear pedido");
+    }
+  });
 
 cargarPedidos();
