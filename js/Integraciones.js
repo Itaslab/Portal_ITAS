@@ -66,10 +66,12 @@ document
         .getElementById("justificacion")
         .value.trim();
 
-      if (!justificacion) {
-        alert("La justificación es obligatoria");
-        return;
-      }
+        if (justificacion.length < 10) {
+          alert(
+            "La justificación debe contener al menos 10 caracteres"
+          );
+          return;
+        }
 
       if (!tipoBusqueda.value) {
         alert("Debe seleccionar un tipo de búsqueda");
@@ -127,6 +129,12 @@ document
       bootstrap.Modal.getInstance(
         document.getElementById("nuevoPedidoModal"),
       ).hide();
+      document.getElementById("integracion").selectedIndex = 0;
+      tipoBusqueda.selectedIndex = 0;
+      valorBusqueda.value = "";
+      valorBusqueda.disabled = true;
+      document.getElementById("justificacion").value = "";
+      lblValorBusqueda.textContent = "Valor";
 
       cargarPedidos();
     } catch (error) {
@@ -134,6 +142,7 @@ document
       alert("Error al crear pedido");
     }
   });
+  valorBusqueda.disabled = true;
 
 cargarPedidos();
 
@@ -154,24 +163,24 @@ tipoBusqueda.addEventListener("change", () => {
   switch (tipoBusqueda.value) {
 
     case "Linea":
-      lblValorBusqueda.textContent =
-        "Número de Línea";
-      break;
+  lblValorBusqueda.textContent = "Número de Línea";
+  valorBusqueda.placeholder = "Ej: 1134567890";
+  break;
 
-    case "Subscriber":
-      lblValorBusqueda.textContent =
-        "Subscriber";
-      break;
+case "Subscriber":
+  lblValorBusqueda.textContent = "Subscriber";
+  valorBusqueda.placeholder = "Ej: 12345678";
+  break;
 
-    case "Cuenta":
-      lblValorBusqueda.textContent =
-        "Cuenta";
-      break;
+case "Cuenta":
+  lblValorBusqueda.textContent = "Cuenta";
+  valorBusqueda.placeholder = "Ej: 1003241268410001";
+  break;
 
-    case "Customer":
-      lblValorBusqueda.textContent =
-        "Customer";
-      break;
+case "Customer":
+  lblValorBusqueda.textContent = "Customer";
+  valorBusqueda.placeholder = "Ej: 81001971268";
+  break;
   }
 });
 valorBusqueda.addEventListener("input", () => {
