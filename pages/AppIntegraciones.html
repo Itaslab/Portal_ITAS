@@ -132,29 +132,28 @@ aria-hidden="true"
             <option value="S623">S623</option>
           </select>
         </div>
-
-        <div class="col-md-3">
-          <label class="form-label">Línea</label>
-          <input type="text" class="form-control" id="linea">
+        <div class="col-md-4">
+          <label class="form-label">Tipo de búsqueda</label>
+        
+          <select class="form-select" id="tipoBusqueda">
+            <option value="">Seleccione...</option>
+            <option value="Linea">Línea</option>
+            <option value="Subscriber">Subscriber</option>
+            <option value="Cuenta">Cuenta</option>
+            <option value="Customer">Customer</option>
+          </select>
         </div>
-
-        <div class="col-md-3">
-          <label class="form-label">Subscriber</label>
-          <input type="text" class="form-control" id="subscriber">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">Cuenta</label>
-          <input type="text" class="form-control" id="cuenta">
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label">Customer</label>
+        
+        <div class="col-md-4">
+          <label class="form-label" id="lblValorBusqueda">
+            Valor
+          </label>
+        
           <input
             type="text"
             class="form-control"
-            id="customer"
-            value="81001971268"
+            id="valorBusqueda"
+            disabled
           >
         </div>
 

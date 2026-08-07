@@ -2,6 +2,14 @@ const tablaPedidos = document.getElementById("tablaPedidos");
 const chkMisPedidos = document.getElementById("chkMisPedidos");
 
 let pedidos = [];
+const tipoBusqueda =
+  document.getElementById("tipoBusqueda");
+
+const valorBusqueda =
+  document.getElementById("valorBusqueda");
+
+const lblValorBusqueda =
+  document.getElementById("lblValorBusqueda");
 
 async function cargarPedidos() {
   try {
@@ -63,12 +71,39 @@ document
         return;
       }
 
+      if (!tipoBusqueda.value) {
+        alert("Debe seleccionar un tipo de búsqueda");
+        return;
+      }
+      
+      if (!valorBusqueda.value.trim()) {
+        alert("Debe ingresar un valor");
+        return;
+      }
+      
       const body = {
         Servicio: document.getElementById("integracion").value,
-        Linea: document.getElementById("linea")?.value || null,
-        Subscriber: document.getElementById("subscriber")?.value || null,
-        Cuenta: document.getElementById("cuenta")?.value || null,
-        Customer: document.getElementById("customer").value,
+      
+        Linea:
+          tipoBusqueda.value === "Linea"
+            ? valorBusqueda.value
+            : null,
+      
+        Subscriber:
+          tipoBusqueda.value === "Subscriber"
+            ? valorBusqueda.value
+            : null,
+      
+        Cuenta:
+          tipoBusqueda.value === "Cuenta"
+            ? valorBusqueda.value
+            : null,
+      
+        Customer:
+          tipoBusqueda.value === "Customer"
+            ? valorBusqueda.value
+            : null,
+      
         Justificacion: justificacion,
       };
 
@@ -101,3 +136,47 @@ document
   });
 
 cargarPedidos();
+
+tipoBusqueda.addEventListener("change", () => {
+
+  valorBusqueda.value = "";
+
+  if (!tipoBusqueda.value) {
+
+    valorBusqueda.disabled = true;
+    lblValorBusqueda.textContent = "Valor";
+
+    return;
+  }
+
+  valorBusqueda.disabled = false;
+
+  switch (tipoBusqueda.value) {
+
+    case "Linea":
+      lblValorBusqueda.textContent =
+        "Número de Línea";
+      break;
+
+    case "Subscriber":
+      lblValorBusqueda.textContent =
+        "Subscriber";
+      break;
+
+    case "Cuenta":
+      lblValorBusqueda.textContent =
+        "Cuenta";
+      break;
+
+    case "Customer":
+      lblValorBusqueda.textContent =
+        "Customer";
+      break;
+  }
+});
+valorBusqueda.addEventListener("input", () => {
+
+  valorBusqueda.value =
+    valorBusqueda.value.replace(/\D/g, "");
+
+});
