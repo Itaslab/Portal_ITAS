@@ -35,15 +35,14 @@ function renderPedidos() {
   tablaPedidos.innerHTML = "";
 
   pedidos.forEach((pedido) => {
-    const resultado =
-      pedido.Estado === "Finalizado"
-        ? `<button
-             class="btn btn-success btn-sm"
-             onclick="verResultado(${pedido.IdPedido})"
-           >
-             Ver Resultado
-           </button>`
-        : "-";
+    const resultado = `
+  <button
+    class="btn btn-primary btn-sm"
+    onclick="verResultado(${pedido.IdPedido})"
+  >
+    Ver Resultado
+  </button>
+`;
 
     tablaPedidos.innerHTML += `
       <tr>
@@ -189,3 +188,43 @@ valorBusqueda.addEventListener("input", () => {
     valorBusqueda.value.replace(/\D/g, "");
 
 });
+function verResultado(idPedido) {
+
+  const pedido = pedidos.find(
+    p => p.IdPedido === idPedido
+  );
+
+  if (!pedido) {
+    return;
+  }
+
+  document.getElementById("resultadoEstado").textContent =
+    pedido.Estado || "";
+
+  document.getElementById("resultadoFechaInicio").textContent =
+    pedido.FechaInicio
+      ? new Date(pedido.FechaInicio).toLocaleString()
+      : "";
+
+  document.getElementById("resultadoFechaFin").textContent =
+    pedido.FechaFin
+      ? new Date(pedido.FechaFin).toLocaleString()
+      : "";
+
+  document.getElementById("resultadoJson").textContent =
+    pedido.ResultadoJson || "";
+
+  document.getElementById("resultadoTexto").value =
+    pedido.Resultado || "";
+
+  document.getElementById("resultadoError").value =
+    pedido.ErrorDetalle || "";
+
+  const modal = new bootstrap.Modal(
+    document.getElementById("resultadoModal")
+  );
+
+  modal.show();
+}
+
+window.verResultado = verResultado;
