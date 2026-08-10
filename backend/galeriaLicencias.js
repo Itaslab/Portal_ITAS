@@ -253,7 +253,7 @@ router.get("/usuarios", async (req, res) => {
       INNER JOIN ${schema}.GRUPO g
           ON g.ID_Grupo = ug.ID_Grupo
         WHERE u.Vigencia_Hasta IS NULL
-          AND g.Vigencia_Hasta IS NULL
+          
     `;
 
     // 🎯 FILTRO POR ROL
@@ -282,6 +282,7 @@ router.get("/usuarios", async (req, res) => {
     query += ` ORDER BY g.Grupo, g.Subgrupo, u.Apellido, u.Nombre `;
 
     const result = await request.query(query);
+    console.log("USUARIOS CALENDARIO:", result.recordset);
 
     res.json({
       success: true,
@@ -465,6 +466,7 @@ router.get("/pendientes", async (req, res) => {
     query += ` ORDER BY g.Grupo, u.Apellido, u.Nombre `;
 
     const result = await request.query(query);
+    console.log("USUARIOS CALENDARIO:", result.recordset);
 
     res.json({
       success: true,
