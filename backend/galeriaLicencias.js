@@ -209,6 +209,7 @@ router.get("/usuarios", async (req, res) => {
                 OR u.Nombre + ' ' + u.Apellido = g.Coordinador
                 OR u.Nombre + ' ' + u.Apellido = g.Referente)
         WHERE u.ID_Usuario = @idUsuario
+        AND u.Vigencia_Hasta IS NULL
       `);
 
     if (usuarioResult.recordset.length === 0) {
