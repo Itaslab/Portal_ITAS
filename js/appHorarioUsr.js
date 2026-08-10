@@ -6,9 +6,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   await cargarPermisos();
   cargarHorarios();
 
-  document
-    .getElementById("selGrupo")
-    .addEventListener("change", aplicarFiltros);
+  document.getElementById("selGrupo").addEventListener("change", () => {
+    armarSubgrupos(usuariosData);
+    aplicarFiltros();
+  });
   document
     .getElementById("selSubgrupo")
     .addEventListener("change", aplicarFiltros);
@@ -114,19 +115,19 @@ function agruparPorUsuario(filas) {
 function armarFiltros(usuarios) {
   const selGrupo = document.getElementById("selGrupo");
 
-  // Limpiar antes de volver a cargar
+  // Limpiar el select
   selGrupo.innerHTML = "";
 
-  // Opción Todos
+  // Opción "Todos"
   const optTodos = document.createElement("option");
   optTodos.value = "";
   optTodos.textContent = "Todos";
-  optTodos.selected = true;
   selGrupo.appendChild(optTodos);
 
-  const grupos = [...new Set(usuarios.map((u) => u.grupo))]
-    .filter(Boolean)
-    .sort();
+  // Grupos disponibles
+  const grupos = [
+    ...new Set(usuarios.map((u) => u.grupo).filter(Boolean)),
+  ].sort();
 
   grupos.forEach((grupo) => {
     const opt = document.createElement("option");
@@ -135,40 +136,43 @@ function armarFiltros(usuarios) {
     selGrupo.appendChild(opt);
   });
 
-  // Cargar los subgrupos iniciales
+  // Inicializar subgrupos respetando el grupo actual
   armarSubgrupos(usuarios);
 }
-
 function armarSubgrupos(usuarios) {
   const grupoSeleccionado = document.getElementById("selGrupo").value;
   const selSubgrupo = document.getElementById("selSubgrupo");
 
-  // Limpiamos completamente el select
+  // Limpiamos el select
   selSubgrupo.innerHTML = "";
 
-  // Opción Todos
+  // Opción "Todos"
   const optTodos = document.createElement("option");
   optTodos.value = "";
   optTodos.textContent = "Todos";
-  optTodos.selected = true;
   selSubgrupo.appendChild(optTodos);
 
-  // Obtenemos los subgrupos correspondientes al grupo seleccionado
+  // Filtramos los usuarios según el grupo seleccionado
+  const usuariosFiltrados = grupoSeleccionado
+    ? usuarios.filter((u) => u.grupo === grupoSeleccionado)
+    : usuarios;
+
+  // Sacamos únicamente los subgrupos correspondientes
+  // a los usuarios del grupo seleccionado
   const subgrupos = [
-    ...new Set(
-      usuarios
-        .filter((u) => !grupoSeleccionado || u.grupo === grupoSeleccionado)
-        .map((u) => u.subgrupo)
-        .filter(Boolean),
-    ),
+    ...new Set(usuariosFiltrados.map((u) => u.subgrupo).filter(Boolean)),
   ].sort();
 
+  // Agregamos los subgrupos
   subgrupos.forEach((subgrupo) => {
     const opt = document.createElement("option");
     opt.value = subgrupo;
     opt.textContent = subgrupo;
     selSubgrupo.appendChild(opt);
   });
+
+  // Siempre arrancamos en "Todos"
+  selSubgrupo.value = "";
 }
 
 function aplicarFiltros() {
