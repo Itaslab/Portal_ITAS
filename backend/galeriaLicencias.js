@@ -566,15 +566,17 @@ router.get("/usuarios-grupo", async (req, res) => {
     const result = await pool
       .request()
       .input("idGrupo", sql.Int, grupoUsuario.ID_Grupo).query(`
-        SELECT DISTINCT
-            u.ID_Usuario,
-            u.Nombre,
-            u.Apellido
-        FROM ${schema}.USUARIO u
-        INNER JOIN ${schema}.USUARIO_GRUPO ug 
-            ON ug.ID_Usuario = u.ID_Usuario
-        WHERE ug.ID_Grupo = @idGrupo
-        ORDER BY u.Apellido, u.Nombre
+SELECT DISTINCT
+    u.ID_Usuario,
+    u.Nombre,
+    u.Apellido
+FROM ${schema}.USUARIO u
+INNER JOIN ${schema}.USUARIO_GRUPO ug 
+    ON ug.ID_Usuario = u.ID_Usuario
+WHERE ug.ID_Grupo = @idGrupo
+  AND ug.Vigencia_Hasta IS NULL
+  AND u.Vigencia_Hasta IS NULL
+ORDER BY u.Apellido, u.Nombre
       `);
 
     res.json({
