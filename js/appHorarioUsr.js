@@ -414,6 +414,40 @@ function renderFormularioEdicion(dias) {
   });
 }
 
+function validarHorario(dia) {
+  const campos = [
+    { nombre: "Ingreso", valor: dia.in1 },
+    { nombre: "Salida a comer", valor: dia.out1 },
+    { nombre: "Ingreso después de comer", valor: dia.in2 },
+    { nombre: "Salida", valor: dia.out2 },
+  ];
+
+  let ultimoHorario = null;
+  let ultimoNombre = null;
+
+  for (const campo of campos) {
+    // Si está vacío, simplemente lo salteamos
+    if (!campo.valor) continue;
+
+    const [hora, minutos] = campo.valor.split(":").map(Number);
+    const minutosActuales = hora * 60 + minutos;
+
+    if (ultimoHorario !== null && minutosActuales <= ultimoHorario) {
+      return {
+        valido: false,
+        mensaje: `${dia.dia}: "${campo.nombre}" debe ser posterior a "${ultimoNombre}".`,
+      };
+    }
+
+    ultimoHorario = minutosActuales;
+    ultimoNombre = campo.nombre;
+  }
+
+  return {
+    valido: true,
+  };
+}
+
 async function guardarHorario() {
   const filas = document.querySelectorAll("#tblDetalleBody tr");
   const dias = [];
@@ -429,6 +463,23 @@ async function guardarHorario() {
     dias.push(diaObj);
   });
 
+  // =========================================================
+  // VALIDAR HORARIOS
+  // =========================================================
+
+  for (const dia of dias) {
+    const validacion = validarHorario(dia);
+
+    if (!validacion.valido) {
+      alert(validacion.mensaje);
+      return;
+    }
+  }
+
+  // =========================================================
+  // GUARDAR
+  // =========================================================
+
   try {
     const res = await fetch(`${basePath}/horarios/${idUsuarioModalActual}`, {
       method: "PUT",
@@ -440,6 +491,7 @@ async function guardarHorario() {
       res,
       `horarios/${idUsuarioModalActual} (PUT)`,
     );
+
     if (!sesionOk) return;
 
     const data = await res.json();
@@ -453,8 +505,6 @@ async function guardarHorario() {
     renderDetalle(dias);
     resetFooterModal();
 
-    // Refrescamos la grilla principal para que el estado
-    // (Configurado / Sin horario) quede actualizado.
     cargarHorarios();
   } catch (error) {
     console.error("Error guardando el horario:", error);
