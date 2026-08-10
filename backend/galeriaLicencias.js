@@ -252,7 +252,8 @@ router.get("/usuarios", async (req, res) => {
           AND ug.Vigencia_Hasta IS NULL
       INNER JOIN ${schema}.GRUPO g
           ON g.ID_Grupo = ug.ID_Grupo
-      WHERE 1=1
+        WHERE u.Vigencia_Hasta IS NULL
+          AND g.Vigencia_Hasta IS NULL
     `;
 
     // 🎯 FILTRO POR ROL
