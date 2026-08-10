@@ -113,7 +113,20 @@ function agruparPorUsuario(filas) {
 
 function armarFiltros(usuarios) {
   const selGrupo = document.getElementById("selGrupo");
-  const grupos = [...new Set(usuarios.map((u) => u.grupo))].sort();
+
+  // Limpiar antes de volver a cargar
+  selGrupo.innerHTML = "";
+
+  // Opción Todos
+  const optTodos = document.createElement("option");
+  optTodos.value = "";
+  optTodos.textContent = "Todos";
+  optTodos.selected = true;
+  selGrupo.appendChild(optTodos);
+
+  const grupos = [...new Set(usuarios.map((u) => u.grupo))]
+    .filter(Boolean)
+    .sort();
 
   grupos.forEach((grupo) => {
     const opt = document.createElement("option");
@@ -122,20 +135,31 @@ function armarFiltros(usuarios) {
     selGrupo.appendChild(opt);
   });
 
-  selGrupo.addEventListener("change", () => armarSubgrupos(usuarios));
+  // Cargar los subgrupos iniciales
+  armarSubgrupos(usuarios);
 }
 
 function armarSubgrupos(usuarios) {
   const grupoSeleccionado = document.getElementById("selGrupo").value;
   const selSubgrupo = document.getElementById("selSubgrupo");
 
-  selSubgrupo.innerHTML = '<option value="">Todos</option>';
+  // Limpiamos completamente el select
+  selSubgrupo.innerHTML = "";
 
+  // Opción Todos
+  const optTodos = document.createElement("option");
+  optTodos.value = "";
+  optTodos.textContent = "Todos";
+  optTodos.selected = true;
+  selSubgrupo.appendChild(optTodos);
+
+  // Obtenemos los subgrupos correspondientes al grupo seleccionado
   const subgrupos = [
     ...new Set(
       usuarios
         .filter((u) => !grupoSeleccionado || u.grupo === grupoSeleccionado)
-        .map((u) => u.subgrupo),
+        .map((u) => u.subgrupo)
+        .filter(Boolean),
     ),
   ].sort();
 
