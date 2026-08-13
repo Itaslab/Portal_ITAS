@@ -32,15 +32,22 @@ const configuracionServicios = {
   }
 
 };
-
 function renderFormularioDinamico() {
 
   const servicio = integracion.value;
 
+  contenedorBusqueda.innerHTML = "";
+
+  if (!servicio) {
+    return;
+  }
+
   const config =
     configuracionServicios[servicio];
 
-  contenedorBusqueda.innerHTML = "";
+  if (!config) {
+    return;
+  }
 
   if (config.tipo === "simple") {
     renderBusquedaSimple(config);
@@ -49,8 +56,10 @@ function renderFormularioDinamico() {
   if (config.tipo === "direccion") {
     renderBusquedaDireccion();
   }
+   
+  
+  }
 
-}
 function renderBusquedaSimple(config) {
 
   const opciones = config.opciones
@@ -496,11 +505,20 @@ if (servicio === "S623") {
         throw new Error(data.error);
       }
       document.activeElement.blur();
-      bootstrap.Modal.getInstance(
-        document.getElementById("nuevoPedidoModal"),
-      ).hide();
-      document.getElementById("integracion").selectedIndex = 0;
-      document.getElementById("justificacion").value = "";
+      const modalElement =
+  document.getElementById("nuevoPedidoModal");
+
+const modal =
+  bootstrap.Modal.getInstance(modalElement);
+
+document.activeElement.blur();
+
+modal.hide();
+
+limpiarFormulario();
+
+cargarPedidos();
+      
 
       cargarPedidos();
     } catch (error) {
@@ -556,5 +574,13 @@ function verResultado(idPedido) {
 
   modal.show();
 }
+function limpiarFormulario() {
 
+  document.getElementById("integracion").value = "";
+
+  document.getElementById("justificacion").value = "";
+
+  contenedorBusqueda.innerHTML = "";
+
+}
 window.verResultado = verResultado;
