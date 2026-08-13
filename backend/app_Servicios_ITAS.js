@@ -53,9 +53,32 @@ router.post("/integraciones", async (req, res) => {
 
     const pool = await poolPromise;
 
-    const { Servicio, Linea, Subscriber, Cuenta, Customer, Justificacion } =
-      req.body;
-
+    const {
+      Servicio,
+      Linea,
+      Subscriber,
+      Cuenta,
+      Customer,
+      Justificacion,
+      TipoUbicacion,
+      City,
+      Locality,
+      StateOrProvince,
+      StreetName,
+      StreetNr,
+      Departamento,
+      Piso
+    } = req.body;
+    const ParametrosJson = JSON.stringify({
+      TipoUbicacion,
+      City,
+      Locality,
+      StateOrProvince,
+      StreetName,
+      StreetNr,
+      Departamento,
+      Piso
+    });
     const Id_Usuario = req.session?.user?.ID_Usuario;
 
     const result = await pool
@@ -73,32 +96,32 @@ router.post("/integraciones", async (req, res) => {
         ParametrosJson || null
       )
       .query(`
-          INSERT INTO ${schema}.Servicios_ITAS (
-            Servicio,
-            Linea,
-            Subscriber,
-            Cuenta,
-            Customer,
-            Justificacion,
-            Id_Usuario,
-            ParametrosJson,
-            FechaSolicitud,
-            Estado,
-            FechaInicio
-          )
-          VALUES (
-            @Servicio,
-            @Linea,
-            @Subscriber,
-            @Cuenta,
-            @Customer,
-            @Justificacion,
-            @ParametrosJson,
-            @Id_Usuario,
-            GETDATE(),
-            @Estado,
-            @FechaInicio
-          );
+      INSERT INTO ${schema}.Servicios_ITAS (
+        Servicio,
+        Linea,
+        Subscriber,
+        Cuenta,
+        Customer,
+        Justificacion,
+        Id_Usuario,
+        ParametrosJson,
+        FechaSolicitud,
+        Estado,
+        FechaInicio
+    )
+    VALUES (
+        @Servicio,
+        @Linea,
+        @Subscriber,
+        @Cuenta,
+        @Customer,
+        @Justificacion,
+        @Id_Usuario,
+        @ParametrosJson,
+        GETDATE(),
+        @Estado,
+        @FechaInicio
+    );
   
           SELECT SCOPE_IDENTITY() AS newId;
         `);
