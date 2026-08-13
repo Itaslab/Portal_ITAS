@@ -170,68 +170,121 @@ function renderCamposDireccion() {
       "camposDireccion"
     );
 
-  let html = `<div class="card border-0 shadow-sm">
+    let html = `
 
-  <div class="card-body">
+    <div class="card border-0 shadow-sm mt-3">
+    
+      <div class="card-body">
+    
+        <div class="row g-3">
+    
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">
+              City *
+            </label>
+    
+            <input
+              type="text"
+              class="form-control"
+              id="city"
+              placeholder="Ej: Buenos Aires"
+            >
+          </div>
+    
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">
+              Locality *
+            </label>
+    
+            <input
+              type="text"
+              class="form-control"
+              id="locality"
+              placeholder="Ej: Palermo"
+            >
+          </div>
+    
+          <div class="col-md-12">
+            <label class="form-label fw-semibold">
+              State Or Province *
+            </label>
+    
+            <input
+              type="text"
+              class="form-control"
+              id="stateOrProvince"
+              placeholder="Ej: CABA"
+            >
+          </div>
+    
+          <div class="col-md-8">
+            <label class="form-label fw-semibold">
+              Street Name *
+            </label>
+    
+            <input
+              type="text"
+              class="form-control"
+              id="streetName"
+              placeholder="Ej: Cabildo"
+            >
+          </div>
+    
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">
+              Street Nr *
+            </label>
+    
+            <input
+              type="text"
+              class="form-control"
+              id="streetNr"
+              placeholder="Ej: 1234"
+            >
+          </div>
+    `;
 
-   
+    if (tipo === "EDIFICIO") {
 
-    <div class="col-md-12">
-      <label>City *</label>
-      <input type="text" class="form-control" id="city" placeholder="Ej: Buenos Aires">
-    </div>
-
-    <div class="col-md-12">
-      <label>Locality *</label>
-      <input type="text" class="form-control" id="locality"placeholder="Ej: Palermo">
-    </div>
-
-    <div class="col-md-12">
-  <label class="form-label">
-    State Or Province *
-  </label>
-
-  <input
-    type="text"
-    class="form-control"
-    id="stateOrProvince"
-    placeholder="Ej: Santa Fe"
-  >
-</div>
-
-    <div class="col-md-12">
-      <label>Street Name *</label>
-      <input type="text" class="form-control" id="streetName"placeholder="Ej: Cabildo">
-    </div>
-
-    <div class="col-md-6">
-      <label>Street Nr *</label>
-      <input type="text" class="form-control" id="streetNr"placeholder="Ej: 1234">
-    </div>
-
-  `;
-
-  if (tipo === "EDIFICIO") {
-
+      html += `
+    
+        <div class="col-md-8">
+          <label class="form-label fw-semibold">
+            Departamento *
+          </label>
+    
+          <input
+            type="text"
+            class="form-control"
+            id="departamento"
+            placeholder="Ej: A"
+          >
+        </div>
+    
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">
+            Piso *
+          </label>
+    
+          <input
+            type="text"
+            class="form-control"
+            id="piso"
+            placeholder="Ej: 5"
+          >
+        </div>
+    
+      `;
+    }
     html += `
 
-      <div class="col-md-12">
-        <label>Departamento *</label>
-        <input type="text" class="form-control" id="departamento"placeholder="Ej: 5">
-      </div>
+    </div>
 
-      <div class="col-md-12">
-        <label>Piso *</label>
-        <input type="text" class="form-control" id="piso"placeholder="Ej: 7">
-      </div>
+  </div>
 
-      <!-- campos dinámicos -->
+</div>
 
-      </div>
-    
-    </div>`;
-  }
-
+`;
   contenedor.innerHTML = html;
 
 }
