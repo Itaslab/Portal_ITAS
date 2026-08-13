@@ -63,7 +63,7 @@ function renderBusquedaSimple(config) {
 
   contenedorBusqueda.innerHTML = `
 
-    <div class="col-md-6">
+    <div class="col-md-12">
 
       <label class="form-label">
         Tipo de búsqueda
@@ -117,7 +117,7 @@ function renderBusquedaDireccion() {
 
   contenedorBusqueda.innerHTML = `
 
-    <div class="col-md-4">
+    <div class="col-md-12">
 
       <label class="form-label">
         Tipo de ubicación
