@@ -1,15 +1,226 @@
 const tablaPedidos = document.getElementById("tablaPedidos");
 const chkMisPedidos = document.getElementById("chkMisPedidos");
+const integracion =  document.getElementById("integracion");
+const contenedorBusqueda =  document.getElementById("contenedorBusqueda");
 
 let pedidos = [];
-const tipoBusqueda =
-  document.getElementById("tipoBusqueda");
 
-const valorBusqueda =
-  document.getElementById("valorBusqueda");
+const configuracionServicios = {
 
-const lblValorBusqueda =
-  document.getElementById("lblValorBusqueda");
+  S020: {
+    tipo: "simple",
+    opciones: [
+      "Linea",
+      "Subscriber",
+      "Cuenta",
+      "Customer"
+    ]
+  },
+
+  S039: {
+    tipo: "simple",
+    opciones: [
+      "Linea",
+      "Subscriber",
+      "Cuenta",
+      "Customer"
+    ]
+  },
+
+  S623: {
+    tipo: "direccion"
+  }
+
+};
+
+function renderFormularioDinamico() {
+
+  const servicio = integracion.value;
+
+  const config =
+    configuracionServicios[servicio];
+
+  contenedorBusqueda.innerHTML = "";
+
+  if (config.tipo === "simple") {
+    renderBusquedaSimple(config);
+  }
+
+  if (config.tipo === "direccion") {
+    renderBusquedaDireccion();
+  }
+
+}
+function renderBusquedaSimple(config) {
+
+  const opciones = config.opciones
+    .map(op =>
+      `<option value="${op}">
+        ${op}
+      </option>`
+    )
+    .join("");
+
+  contenedorBusqueda.innerHTML = `
+
+    <div class="col-md-4">
+
+      <label class="form-label">
+        Tipo de búsqueda
+      </label>
+
+      <select
+        class="form-select"
+        id="tipoBusqueda"
+      >
+        <option value="">
+          Seleccione...
+        </option>
+
+        ${opciones}
+
+      </select>
+
+    </div>
+
+    <div class="col-md-4">
+
+      <label
+        class="form-label"
+        id="lblValorBusqueda"
+      >
+        Valor
+      </label>
+
+      <input
+        type="text"
+        class="form-control"
+        id="valorBusqueda"
+      >
+
+    </div>
+
+  `;
+
+  const valorBusqueda =
+    document.getElementById("valorBusqueda");
+
+  valorBusqueda.addEventListener("input", () => {
+
+    valorBusqueda.value =
+      valorBusqueda.value.replace(/\D/g, "");
+
+  });
+
+}
+function renderBusquedaDireccion() {
+
+  contenedorBusqueda.innerHTML = `
+
+    <div class="col-md-4">
+
+      <label class="form-label">
+        Tipo de ubicación
+      </label>
+
+      <select
+        class="form-select"
+        id="tipoUbicacion"
+      >
+        <option value="">
+          Seleccione...
+        </option>
+
+        <option value="CASA">
+          CASA
+        </option>
+
+        <option value="EDIFICIO">
+          EDIFICIO
+        </option>
+
+      </select>
+
+    </div>
+
+    <div
+      id="camposDireccion"
+      class="row g-3 mt-2"
+    ></div>
+
+  `;
+
+  document
+    .getElementById("tipoUbicacion")
+    .addEventListener(
+      "change",
+      renderCamposDireccion
+    );
+
+}
+function renderCamposDireccion() {
+
+  const tipo =
+    document.getElementById(
+      "tipoUbicacion"
+    ).value;
+
+  const contenedor =
+    document.getElementById(
+      "camposDireccion"
+    );
+
+  let html = `
+
+    <div class="col-md-4">
+      <label>City *</label>
+      <input type="text" class="form-control" id="city">
+    </div>
+
+    <div class="col-md-4">
+      <label>Locality *</label>
+      <input type="text" class="form-control" id="locality">
+    </div>
+
+    <div class="col-md-4">
+      <label>State Or Province *</label>
+      <input type="text" class="form-control" id="stateOrProvince">
+    </div>
+
+    <div class="col-md-4">
+      <label>Street Name *</label>
+      <input type="text" class="form-control" id="streetName">
+    </div>
+
+    <div class="col-md-4">
+      <label>Street Nr *</label>
+      <input type="text" class="form-control" id="streetNr">
+    </div>
+
+  `;
+
+  if (tipo === "EDIFICIO") {
+
+    html += `
+
+      <div class="col-md-4">
+        <label>Departamento *</label>
+        <input type="text" class="form-control" id="departamento">
+      </div>
+
+      <div class="col-md-4">
+        <label>Piso *</label>
+        <input type="text" class="form-control" id="piso">
+      </div>
+
+    `;
+  }
+
+  contenedor.innerHTML = html;
+
+}
+
+
 
 async function cargarPedidos() {
   try {
@@ -64,7 +275,13 @@ document
       const justificacion = document
         .getElementById("justificacion")
         .value.trim();
+        
 
+        if (!justificacion) {
+          alert("La justificación es obligatoria");
+          return;
+        }
+        
         if (justificacion.length < 10) {
           alert(
             "La justificación debe contener al menos 10 caracteres"
@@ -72,41 +289,125 @@ document
           return;
         }
 
-      if (!tipoBusqueda.value) {
-        alert("Debe seleccionar un tipo de búsqueda");
-        return;
-      }
       
-      if (!valorBusqueda.value.trim()) {
-        alert("Debe ingresar un valor");
-        return;
-      }
       
-      const body = {
-        Servicio: document.getElementById("integracion").value,
-      
-        Linea:
-          tipoBusqueda.value === "Linea"
-            ? valorBusqueda.value
-            : null,
-      
-        Subscriber:
-          tipoBusqueda.value === "Subscriber"
-            ? valorBusqueda.value
-            : null,
-      
-        Cuenta:
-          tipoBusqueda.value === "Cuenta"
-            ? valorBusqueda.value
-            : null,
-      
-        Customer:
-          tipoBusqueda.value === "Customer"
-            ? valorBusqueda.value
-            : null,
-      
-        Justificacion: justificacion,
-      };
+      const servicio =
+  document.getElementById("integracion").value;
+
+let body = {
+  Servicio: servicio,
+  Justificacion: justificacion,
+};
+if (servicio === "S020" || servicio === "S039") {
+
+  const tipoBusqueda =
+    document.getElementById("tipoBusqueda");
+
+  const valorBusqueda =
+    document.getElementById("valorBusqueda");
+
+  if (!tipoBusqueda.value) {
+    alert("Debe seleccionar un tipo de búsqueda");
+    return;
+  }
+
+  if (!valorBusqueda.value.trim()) {
+    alert("Debe ingresar un valor");
+    return;
+  }
+
+  body.Linea =
+    tipoBusqueda.value === "Linea"
+      ? valorBusqueda.value
+      : null;
+
+  body.Subscriber =
+    tipoBusqueda.value === "Subscriber"
+      ? valorBusqueda.value
+      : null;
+
+  body.Cuenta =
+    tipoBusqueda.value === "Cuenta"
+      ? valorBusqueda.value
+      : null;
+
+  body.Customer =
+    tipoBusqueda.value === "Customer"
+      ? valorBusqueda.value
+      : null;
+}
+if (servicio === "S623") {
+
+  const tipoUbicacion =
+    document.getElementById("tipoUbicacion");
+
+  if (!tipoUbicacion.value) {
+    alert("Debe seleccionar CASA o EDIFICIO");
+    return;
+  }
+
+  const city =
+    document.getElementById("city")?.value.trim();
+
+  const locality =
+    document.getElementById("locality")?.value.trim();
+
+  const stateOrProvince =
+    document.getElementById("stateOrProvince")?.value.trim();
+
+  const streetName =
+    document.getElementById("streetName")?.value.trim();
+
+  const streetNr =
+    document.getElementById("streetNr")?.value.trim();
+
+  if (
+    !city ||
+    !locality ||
+    !stateOrProvince ||
+    !streetName ||
+    !streetNr
+  ) {
+    alert(
+      "Complete todos los campos obligatorios."
+    );
+    return;
+  }
+
+  body.TipoUbicacion =
+    tipoUbicacion.value;
+
+  body.City = city;
+  body.Locality = locality;
+  body.StateOrProvince =
+    stateOrProvince;
+  body.StreetName =
+    streetName;
+  body.StreetNr = streetNr;
+
+  if (tipoUbicacion.value === "EDIFICIO") {
+
+    const departamento =
+      document.getElementById("departamento")
+        ?.value.trim();
+
+    const piso =
+      document.getElementById("piso")
+        ?.value.trim();
+
+    if (!departamento || !piso) {
+      alert(
+        "Departamento y Piso son obligatorios."
+      );
+      return;
+    }
+
+    body.Departamento =
+      departamento;
+
+    body.Piso = piso;
+  }
+}
 
       const response = await fetch(`${basePath}/integraciones`, {
         method: "POST",
@@ -144,50 +445,14 @@ document
   valorBusqueda.disabled = true;
 
 cargarPedidos();
+integracion.addEventListener(
+  "change",
+  renderFormularioDinamico
+);
 
-tipoBusqueda.addEventListener("change", () => {
+renderFormularioDinamico();
 
-  valorBusqueda.value = "";
 
-  if (!tipoBusqueda.value) {
-
-    valorBusqueda.disabled = true;
-    lblValorBusqueda.textContent = "Valor";
-
-    return;
-  }
-
-  valorBusqueda.disabled = false;
-
-  switch (tipoBusqueda.value) {
-
-    case "Linea":
-  lblValorBusqueda.textContent = "Número de Línea";
-  valorBusqueda.placeholder = "Ej: 1134567890";
-  break;
-
-case "Subscriber":
-  lblValorBusqueda.textContent = "Subscriber";
-  valorBusqueda.placeholder = "Ej: 12345678";
-  break;
-
-case "Cuenta":
-  lblValorBusqueda.textContent = "Cuenta";
-  valorBusqueda.placeholder = "Ej: 1003241268410001";
-  break;
-
-case "Customer":
-  lblValorBusqueda.textContent = "Customer";
-  valorBusqueda.placeholder = "Ej: 81001971268";
-  break;
-  }
-});
-valorBusqueda.addEventListener("input", () => {
-
-  valorBusqueda.value =
-    valorBusqueda.value.replace(/\D/g, "");
-
-});
 function verResultado(idPedido) {
 
   const pedido = pedidos.find(

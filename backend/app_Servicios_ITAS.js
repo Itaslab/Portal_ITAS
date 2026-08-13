@@ -68,7 +68,11 @@ router.post("/integraciones", async (req, res) => {
       .input("Justificacion", sql.VarChar(500), Justificacion)
       .input("Id_Usuario", sql.Int, Id_Usuario)
       .input("Estado", sql.VarChar(20), "Pendiente")
-      .input("FechaInicio", sql.DateTime, new Date()).query(`
+      .input("FechaInicio", sql.DateTime, new Date())
+      .input("ParametrosJson",sql.NVarChar(sql.MAX),
+        ParametrosJson || null
+      )
+      .query(`
           INSERT INTO ${schema}.Servicios_ITAS (
             Servicio,
             Linea,
@@ -77,6 +81,7 @@ router.post("/integraciones", async (req, res) => {
             Customer,
             Justificacion,
             Id_Usuario,
+            ParametrosJson,
             FechaSolicitud,
             Estado,
             FechaInicio
@@ -88,6 +93,7 @@ router.post("/integraciones", async (req, res) => {
             @Cuenta,
             @Customer,
             @Justificacion,
+            @ParametrosJson,
             @Id_Usuario,
             GETDATE(),
             @Estado,
