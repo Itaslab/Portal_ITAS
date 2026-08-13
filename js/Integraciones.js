@@ -170,7 +170,11 @@ function renderCamposDireccion() {
       "camposDireccion"
     );
 
-  let html = `
+  let html = `<div class="card border-0 shadow-sm">
+
+  <div class="card-body">
+
+   
 
     <div class="col-md-12">
       <label>City *</label>
@@ -221,7 +225,11 @@ function renderCamposDireccion() {
         <input type="text" class="form-control" id="piso"placeholder="Ej: 7">
       </div>
 
-    `;
+      <!-- campos dinámicos -->
+
+      </div>
+    
+    </div>`;
   }
 
   contenedor.innerHTML = html;
