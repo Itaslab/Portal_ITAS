@@ -307,8 +307,13 @@ async function cargarPedidos() {
     const soloMios =
   chkMisPedidos.checked;
 
+const endpoint =
+  soloMios
+    ? "/integraciones_grilla_mis_pedidos"
+    : "/integraciones_grilla";
+
 const response = await fetch(
-  `${basePath}/integraciones_grilla${soloMios ? "?mios=true" : ""}`,
+  `${basePath}${endpoint}`,
   {
     credentials: "include",
   }
