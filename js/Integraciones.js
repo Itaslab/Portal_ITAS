@@ -178,7 +178,7 @@ function renderCamposDireccion() {
     
         <div class="row g-3">
     
-          <div class="col-md-6">
+          <div class="col-md-12">
             <label class="form-label fw-semibold">
               City *
             </label>
@@ -191,7 +191,7 @@ function renderCamposDireccion() {
             >
           </div>
     
-          <div class="col-md-6">
+          <div class="col-md-12">
             <label class="form-label fw-semibold">
               Locality *
             </label>
@@ -217,7 +217,7 @@ function renderCamposDireccion() {
             >
           </div>
     
-          <div class="col-md-8">
+          <div class="col-md-12">
             <label class="form-label fw-semibold">
               Street Name *
             </label>
@@ -230,7 +230,7 @@ function renderCamposDireccion() {
             >
           </div>
     
-          <div class="col-md-4">
+          <div class="col-md-8">
             <label class="form-label fw-semibold">
               Street Nr *
             </label>
@@ -248,7 +248,7 @@ function renderCamposDireccion() {
 
       html += `
     
-        <div class="col-md-8">
+        <div class="col-md-12">
           <label class="form-label fw-semibold">
             Departamento *
           </label>
@@ -261,7 +261,7 @@ function renderCamposDireccion() {
           >
         </div>
     
-        <div class="col-md-4">
+        <div class="col-md-8">
           <label class="form-label fw-semibold">
             Piso *
           </label>
