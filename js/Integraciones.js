@@ -63,7 +63,7 @@ function renderBusquedaSimple(config) {
 
   contenedorBusqueda.innerHTML = `
 
-    <div class="col-md-4">
+    <div class="col-md-6">
 
       <label class="form-label">
         Tipo de búsqueda
@@ -83,7 +83,7 @@ function renderBusquedaSimple(config) {
 
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-6">
 
       <label
         class="form-label"
@@ -172,12 +172,12 @@ function renderCamposDireccion() {
 
   let html = `
 
-    <div class="col-md-6">
+    <div class="col-md-12">
       <label>City *</label>
       <input type="text" class="form-control" id="city" placeholder="Ej: Buenos Aires">
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-12">
       <label>Locality *</label>
       <input type="text" class="form-control" id="locality"placeholder="Ej: Palermo">
     </div>
@@ -195,14 +195,14 @@ function renderCamposDireccion() {
   >
 </div>
 
-    <div class="col-md-6">
+    <div class="col-md-12">
       <label>Street Name *</label>
-      <input type="text" class="form-control" id="streetName"placeholder="1234">
+      <input type="text" class="form-control" id="streetName"placeholder="Ej: Cabildo">
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-6">
       <label>Street Nr *</label>
-      <input type="text" class="form-control" id="streetNr">
+      <input type="text" class="form-control" id="streetNr"placeholder="Ej: 1234">
     </div>
 
   `;
@@ -211,14 +211,14 @@ function renderCamposDireccion() {
 
     html += `
 
-      <div class="col-md-4">
+      <div class="col-md-12">
         <label>Departamento *</label>
-        <input type="text" class="form-control" id="departamento">
+        <input type="text" class="form-control" id="departamento"placeholder="Ej: 5">
       </div>
 
-      <div class="col-md-3">
+      <div class="col-md-12">
         <label>Piso *</label>
-        <input type="text" class="form-control" id="piso">
+        <input type="text" class="form-control" id="piso"placeholder="Ej: 7">
       </div>
 
     `;
