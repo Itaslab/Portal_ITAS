@@ -495,7 +495,7 @@ if (servicio === "S623") {
       if (!data.success) {
         throw new Error(data.error);
       }
-
+      document.activeElement.blur();
       bootstrap.Modal.getInstance(
         document.getElementById("nuevoPedidoModal"),
       ).hide();
