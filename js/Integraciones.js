@@ -430,11 +430,7 @@ if (servicio === "S623") {
         document.getElementById("nuevoPedidoModal"),
       ).hide();
       document.getElementById("integracion").selectedIndex = 0;
-      tipoBusqueda.selectedIndex = 0;
-      valorBusqueda.value = "";
-      valorBusqueda.disabled = true;
       document.getElementById("justificacion").value = "";
-      lblValorBusqueda.textContent = "Valor";
 
       cargarPedidos();
     } catch (error) {
@@ -442,7 +438,6 @@ if (servicio === "S623") {
       alert("Error al crear pedido");
     }
   });
-  valorBusqueda.disabled = true;
 
 cargarPedidos();
 integracion.addEventListener(
