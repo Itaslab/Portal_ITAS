@@ -478,8 +478,7 @@ if (servicio === "S623") {
     body.Piso = piso;
   }
 }
-console.log("BODY A ENVIAR:");
-console.log(body);
+
       const response = await fetch(`${basePath}/integraciones`, {
         method: "POST",
         credentials: "include",

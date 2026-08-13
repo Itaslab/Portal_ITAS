@@ -69,16 +69,57 @@ router.post("/integraciones", async (req, res) => {
       Departamento,
       Piso
     } = req.body;
-    const ParametrosJson = JSON.stringify({
-      TipoUbicacion,
-      City,
-      Locality,
-      StateOrProvince,
-      StreetName,
-      StreetNr,
-      Departamento,
-      Piso
-    });
+    let ParametrosJson = {};
+    if (
+      Servicio === "S020" ||
+      Servicio === "S039"
+    ) {
+    
+      let TipoBusqueda = null;
+      let Valor = null;
+    
+      if (Linea) {
+        TipoBusqueda = "Linea";
+        Valor = Linea;
+      }
+    
+      if (Subscriber) {
+        TipoBusqueda = "Subscriber";
+        Valor = Subscriber;
+      }
+    
+      if (Cuenta) {
+        TipoBusqueda = "Cuenta";
+        Valor = Cuenta;
+      }
+    
+      if (Customer) {
+        TipoBusqueda = "Customer";
+        Valor = Customer;
+      }
+    
+      ParametrosJson = {
+        TipoBusqueda,
+        Valor
+      };
+    
+    }
+    if (Servicio === "S623") {
+
+      ParametrosJson = {
+        TipoUbicacion,
+        City,
+        Locality,
+        StateOrProvince,
+        StreetName,
+        StreetNr,
+        Departamento,
+        Piso
+      };
+    
+    }
+    ParametrosJson =
+    JSON.stringify(ParametrosJson);
     const Id_Usuario = req.session?.user?.ID_Usuario;
 
     const result = await pool
@@ -93,7 +134,7 @@ router.post("/integraciones", async (req, res) => {
       .input("Estado", sql.VarChar(20), "Pendiente")
       .input("FechaInicio", sql.DateTime, new Date())
       .input("ParametrosJson",sql.NVarChar(sql.MAX),
-        ParametrosJson || null
+        ParametrosJson 
       )
       .query(`
       INSERT INTO ${schema}.Servicios_ITAS (
