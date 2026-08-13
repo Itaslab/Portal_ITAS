@@ -172,27 +172,35 @@ function renderCamposDireccion() {
 
   let html = `
 
-    <div class="col-md-4">
+    <div class="col-md-6">
       <label>City *</label>
-      <input type="text" class="form-control" id="city">
+      <input type="text" class="form-control" id="city" placeholder="Ej: Buenos Aires">
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-6">
       <label>Locality *</label>
-      <input type="text" class="form-control" id="locality">
+      <input type="text" class="form-control" id="locality"placeholder="Ej: Palermo">
     </div>
 
-    <div class="col-md-4">
-      <label>State Or Province *</label>
-      <input type="text" class="form-control" id="stateOrProvince">
-    </div>
+    <div class="col-md-12">
+  <label class="form-label">
+    State Or Province *
+  </label>
 
-    <div class="col-md-4">
+  <input
+    type="text"
+    class="form-control"
+    id="stateOrProvince"
+    placeholder="Ej: Santa Fe"
+  >
+</div>
+
+    <div class="col-md-6">
       <label>Street Name *</label>
-      <input type="text" class="form-control" id="streetName">
+      <input type="text" class="form-control" id="streetName"placeholder="1234">
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-3">
       <label>Street Nr *</label>
       <input type="text" class="form-control" id="streetNr">
     </div>
@@ -208,7 +216,7 @@ function renderCamposDireccion() {
         <input type="text" class="form-control" id="departamento">
       </div>
 
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label>Piso *</label>
         <input type="text" class="form-control" id="piso">
       </div>
