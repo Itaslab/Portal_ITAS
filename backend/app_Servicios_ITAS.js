@@ -45,6 +45,67 @@ router.get("/integraciones_grilla", async (req, res) => {
   }
 });
 
+// EndPoint Mis Pedidos
+
+router.get("/integraciones_grilla_mis_pedidos", async (req, res) => {
+
+  try {
+
+    const pool = await poolPromise;
+
+    const Id_Usuario =
+      req.session?.user?.ID_Usuario;
+
+    const result = await pool
+      .request()
+      .input(
+        "Id_Usuario",
+        sql.Int,
+        Id_Usuario
+      )
+      .query(`
+        SELECT
+          IdPedido,
+          Servicio,
+          Linea,
+          Subscriber,
+          Cuenta,
+          Customer,
+          Justificacion,
+          Id_Usuario,
+          ParametrosJson,
+          FechaSolicitud,
+          Estado,
+          FechaInicio,
+          FechaFin,
+          ResultadoJson,
+          Resultado,
+          ErrorDetalle
+        FROM ${schema}.Servicios_ITAS
+        WHERE Id_Usuario = @Id_Usuario
+        ORDER BY IdPedido DESC
+      `);
+
+    res.json({
+      success: true,
+      data: result.recordset,
+    });
+
+  } catch (error) {
+
+    console.error(
+      "💥 ERROR OBTENIENDO MIS PEDIDOS:",
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+
+  }
+
+});
 //EndPoint Ejecutar Pedido
 
 router.post("/integraciones", async (req, res) => {

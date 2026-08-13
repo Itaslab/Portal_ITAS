@@ -303,10 +303,16 @@ function renderCamposDireccion() {
 
 async function cargarPedidos() {
   try {
-    const response = await fetch(`${basePath}/integraciones_grilla`, {
-      credentials: "include",
-    });
+    
+    const soloMios =
+  chkMisPedidos.checked;
 
+const response = await fetch(
+  `${basePath}/integraciones_grilla${soloMios ? "?mios=true" : ""}`,
+  {
+    credentials: "include",
+  }
+);
     const data = await response.json();
 
     if (!data.success) {
@@ -528,6 +534,10 @@ cargarPedidos();
   });
 
 cargarPedidos();
+chkMisPedidos.addEventListener(
+  "change",
+  cargarPedidos
+);
 integracion.addEventListener(
   "change",
   renderFormularioDinamico
