@@ -192,6 +192,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       collection: "Gestión",
       img: "../images/Servicios.jpg",
       url: "../pages/AppIntegraciones.html",
+      bloquearEnProduccion: true,
     },
   ];
 
@@ -275,18 +276,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       col.className = "col";
 
       const card = document.createElement("div");
-      card.className = "card h-100 text-center shadow-sm card-hover";
+      const bloqueada = !basePath && app.bloquearEnProduccion;
+
+      card.className = `card h-100 text-center shadow-sm ${
+        bloqueada ? "opacity-50" : "card-hover"
+      }`;
 
       card.innerHTML = `
-        <div class="position-absolute top-0 end-0 p-2">
-          <span class="favorite fs-4 ${favorites.has(app.id) ? "text-warning" : "text-muted"}" style="cursor:pointer;">★</span>
-        </div>
-        <img src="${app.img}" class="card-img-top mx-auto mt-4" style="width: 80px; height: 80px;" alt="${app.name}">
-        <div class="card-body">
-          <h5 class="card-title">${app.name}</h5>
-          <p class="card-text text-muted">${app.category}</p>
-        </div>
-      `;
+  <div class="position-absolute top-0 end-0 p-2">
+    <span class="favorite fs-4 ${favorites.has(app.id) ? "text-warning" : "text-muted"}" style="cursor:pointer;">★</span>
+  </div>
+  <img src="${app.img}" class="card-img-top mx-auto mt-4" style="width: 80px; height: 80px;" alt="${app.name}">
+  <div class="card-body">
+    <h5 class="card-title">${app.name}</h5>
+    <p class="card-text text-muted">${app.category}</p>
+    ${
+      bloqueada
+        ? '<p class="text-warning fw-bold">Aplicación en proceso de alta</p>'
+        : ""
+    }
+  </div>
+`;
 
       const favBtn = card.querySelector(".favorite");
       favBtn.addEventListener("click", (e) => {
@@ -299,6 +309,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       card.addEventListener("click", () => {
+        if (bloqueada) {
+          return;
+        }
+
         if (app.url) {
           window.location.href = app.url;
         } else {
