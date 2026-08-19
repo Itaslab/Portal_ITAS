@@ -26,6 +26,7 @@ router.post("/actualizar", async (req, res) => {
     }
 
     const pool = await poolPromise;
+
     const norm = (v) => (v ?? "").toString().trim();
     const val = (v) =>
       v === null || v === undefined || v === "" ? "(vacío)" : v;

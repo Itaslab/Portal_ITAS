@@ -175,7 +175,36 @@
                 <h6 class="mb-3">Usuario</h6>
                 <p><strong>Nombre:</strong> <span id="modalNombre"></span></p>
                 <p><strong>Email:</strong> <span id="modalEmail"></span></p>
-                <p><strong>Sf User ID:</strong> <span id="modalSfID"></span></p>
+                <p>
+                  <strong>Sf User ID:</strong>
+
+                  <span id="modalSfID"></span>
+
+                  <input
+                    type="text"
+                    id="modalSfIDInput"
+                    class="form-control form-control-sm d-none"
+                    style="display: inline-block; width: 180px"
+                  />
+
+                  <button
+                    type="button"
+                    id="btnEditarSfID"
+                    class="btn btn-sm btn-outline-secondary ms-1 d-none"
+                    title="Editar Sf User ID"
+                  >
+                    ✏️
+                  </button>
+
+                  <button
+                    type="button"
+                    id="btnGuardarSfID"
+                    class="btn btn-sm btn-success ms-1 d-none"
+                    title="Guardar Sf User ID"
+                  >
+                    ✓
+                  </button>
+                </p>
                 <p>
                   <strong>Referente:</strong> <span id="modalReferente"></span>
                 </p>

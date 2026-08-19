@@ -2,13 +2,36 @@
 const { sql, poolPromise } = require("./db");
 const schema = process.env.DB_SCHEMA;
 
-
 module.exports = async (req, res) => {
   try {
     const id = parseInt(req.params.id_usuario, 10);
-    if (!id) return res.status(400).json({ success: false, error: "Falta id_usuario" });
+    if (!id)
+      return res
+        .status(400)
+        .json({ success: false, error: "Falta id_usuario" });
 
     const pool = await poolPromise;
+
+    const usuarioEditorId = req.session?.user?.ID_Usuario;
+
+    let esAdmin = false;
+
+    if (usuarioEditorId) {
+      const adminResult = await pool
+        .request()
+        .input("id_usuario", sql.Int, usuarioEditorId).query(`
+          SELECT 1
+          FROM ${schema}.USUARIO_PERFIL_APP
+          WHERE ID_Usuario = @id_usuario
+            AND (
+              (ID_Aplicacion = 1 AND ID_Perfil = 1)
+              OR
+              (ID_Aplicacion = 3 AND ID_Perfil = 27)
+            )
+        `);
+
+      esAdmin = adminResult.recordset.length > 0;
+    }
 
     const query = `
       SELECT 
@@ -33,12 +56,12 @@ module.exports = async (req, res) => {
       WHERE ap.ID_Usuario = @id;
     `;
 
-    const result = await pool.request()
-      .input("id", sql.Int, id)
-      .query(query);
+    const result = await pool.request().input("id", sql.Int, id).query(query);
 
     if (!result.recordset.length) {
-      return res.status(404).json({ success: false, error: "Usuario no encontrado" });
+      return res
+        .status(404)
+        .json({ success: false, error: "Usuario no encontrado" });
     }
 
     const u = result.recordset[0];
@@ -56,10 +79,14 @@ module.exports = async (req, res) => {
       modo: u.Modo,
       des_asignar: !!u.Des_Asignar,
       script: u.Script,
-      log: u.LogDeCambios
+      log: u.LogDeCambios,
     };
 
-    res.json({ success: true, usuario });
+    res.json({
+      success: true,
+      usuario,
+      esAdmin,
+    });
   } catch (err) {
     console.error("Error al obtener detalle de usuario:", err);
     res.status(500).json({ success: false, error: err.message });

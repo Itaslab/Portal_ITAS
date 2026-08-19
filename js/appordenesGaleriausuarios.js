@@ -11,6 +11,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const spanNombre = document.getElementById("modalNombre");
   const spanEmail = document.getElementById("modalEmail");
   const spanSfID = document.getElementById("modalSfID");
+  const inputSfID = document.getElementById("modalSfIDInput");
+  const btnEditarSfID = document.getElementById("btnEditarSfID");
+  const btnGuardarSfID = document.getElementById("btnGuardarSfID");
   const spanDesde = document.getElementById("modalDesde");
   const spanHasta = document.getElementById("modalHasta");
   const spanReferente = document.getElementById("modalReferente");
@@ -101,19 +104,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   function ordenarUsuarios(lista) {
     if (!sortColumn) return [...lista];
-  
+
     return [...lista].sort((a, b) => {
-  
       let valorA = a[sortColumn] ?? "";
       let valorB = b[sortColumn] ?? "";
-  
+
       valorA = valorA.toString().toLowerCase();
       valorB = valorB.toString().toLowerCase();
-  
+
       if (sortDirection === "asc") {
         return valorA.localeCompare(valorB);
       }
-  
+
       return valorB.localeCompare(valorA);
     });
   }
@@ -261,7 +263,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     const ordenados = ordenarUsuarios(filtrados);
     renderTabla(ordenados);
-    }
+  }
 
   let logUsuarioActual = "";
   async function abrirModal(id_usuario) {
@@ -381,37 +383,31 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   window.cargarUsuarios = cargarUsuarios;
 
-/* ===== ORDENAMIENTO DE COLUMNAS ===== */
+  /* ===== ORDENAMIENTO DE COLUMNAS ===== */
 
-document.querySelectorAll(".sortable").forEach((th) => {
+  document.querySelectorAll(".sortable").forEach((th) => {
+    th.addEventListener("click", () => {
+      const columna = th.dataset.column;
 
-  th.addEventListener("click", () => {
+      if (sortColumn === columna) {
+        sortDirection = sortDirection === "asc" ? "desc" : "asc";
+      } else {
+        sortColumn = columna;
+        sortDirection = "asc";
+      }
 
-    const columna = th.dataset.column;
-
-    if (sortColumn === columna) {
-      sortDirection = sortDirection === "asc"
-        ? "desc"
-        : "asc";
-    } else {
-      sortColumn = columna;
-      sortDirection = "asc";
-    }
-
-    document.querySelectorAll(".sortable")
-      .forEach((x) => {
+      document.querySelectorAll(".sortable").forEach((x) => {
         x.classList.remove("asc", "desc");
       });
 
-    th.classList.add(sortDirection);
+      th.classList.add(sortDirection);
 
-    aplicarFiltros();
+      aplicarFiltros();
+    });
   });
 
-});
+  /* ===== FIN ORDENAMIENTO ===== */
 
-/* ===== FIN ORDENAMIENTO ===== */
-  
   document
     .getElementById("modalConfirmarVigencia")
     .addEventListener("hidden.bs.modal", (e) => {
