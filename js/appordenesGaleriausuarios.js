@@ -27,6 +27,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   const selectModo = document.getElementById("modalModoEditable");
   const checkboxDesasignador = document.getElementById("modalDesasignador");
   const textareaScript = document.getElementById("modalScript");
+  btnEditarSfID.addEventListener("click", () => {
+    inputSfID.value = spanSfID.textContent === "-" ? "" : spanSfID.textContent;
+
+    spanSfID.classList.add("d-none");
+    inputSfID.classList.remove("d-none");
+
+    btnEditarSfID.classList.add("d-none");
+    btnGuardarSfID.classList.remove("d-none");
+
+    inputSfID.focus();
+  });
 
   const grupos = [
     "ORDEN-POSVENTA_A",
@@ -273,11 +284,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!data.success)
         throw new Error(data.error || "Error al obtener detalle del usuario");
       const u = data.usuario || {};
+      const esAdmin = data.esAdmin === true;
       logUsuarioActual = u.log || "";
       document.getElementById("modalIdUsuario").value = id_usuario;
       spanNombre.textContent = u.nombre ?? "-";
       spanEmail.textContent = u.email ?? "-";
       spanSfID.textContent = u.sf_user_id ?? "-";
+      if (esAdmin) {
+        btnEditarSfID.classList.remove("d-none");
+      } else {
+        btnEditarSfID.classList.add("d-none");
+      }
       spanReferente.textContent = u.referente ?? "-";
       spanActivo.textContent = u.activo ?? "-";
       if (selectGrupoEditable) selectGrupoEditable.value = u.grupo ?? "";
