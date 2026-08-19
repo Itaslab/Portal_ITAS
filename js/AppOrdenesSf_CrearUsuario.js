@@ -114,7 +114,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const horaA = document.getElementById("horaA").value;
 
     // Validación básica
-    if (!nombre || !apellido || !grupo || !modo || !horaDe || !horaA) {
+    if (
+      !nombre ||
+      !apellido ||
+      !grupo ||
+      !modo ||
+      !horaDe ||
+      !horaA ||
+      !sfUserId
+    ) {
       resultado.innerHTML = `<div class="alert alert-warning">Por favor complete todos los campos obligatorios (Grupo BKP es opcional).</div>`;
       return;
     }
@@ -147,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
       MaxPorTrabajar: maxInt,
       HoraDe: horaDe,
       HoraA: horaA,
-      SF_UserID: sfUserIdInput?.value?.trim() || null,
+      SF_UserID: sfUserId,
       Asc_desc: formaSelect?.value || null,
       Script: scriptVal || null,
     };
