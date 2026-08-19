@@ -1,7 +1,5 @@
 //generarUsuario_AltaUserPortalITAS.js
 
-
-
 const bcrypt = require("bcrypt");
 const express = require("express");
 const router = express.Router();
@@ -12,12 +10,10 @@ const schema = process.env.DB_SCHEMA;
 // OBTENER USUARIOS
 // ==========================================
 router.get("/usuariosPortalAlta", async (req, res) => {
+  try {
+    const pool = await poolPromise;
 
-    try {
-
-        const pool = await poolPromise;
-
-        const result = await pool.request().query(`
+    const result = await pool.request().query(`
             SELECT
                 ID_Usuario,
                 Nombre,
@@ -27,84 +23,74 @@ router.get("/usuariosPortalAlta", async (req, res) => {
             ORDER BY Nombre, Apellido
         `);
 
-        res.json(result.recordset);
+    res.json(result.recordset);
+  } catch (error) {
+    console.error("Error obteniendo usuarios:", error);
 
-    } catch (error) {
-
-        console.error("Error obteniendo usuarios:", error);
-
-        res.status(500).json({
-            error: "Error obteniendo usuarios"
-        });
-
-    }
-
+    res.status(500).json({
+      error: "Error obteniendo usuarios",
+    });
+  }
 });
-
 
 // ==========================================
 // ALTA USUARIO PORTAL
 // ==========================================
 router.post("/altaUsuarioPortal", async (req, res) => {
+  try {
+    const { idUsuario, password } = req.body;
 
-    try {
+    if (!idUsuario || !password) {
+      return res.status(400).json({
+        error: "Faltan datos",
+      });
+    }
 
-        const { idUsuario, password } = req.body;
+    if (password.length < 8 || password.length > 15) {
+      return res.status(400).json({
+        error: "La contraseña debe tener entre 8 y 15 caracteres",
+      });
+    }
 
-        if (!idUsuario || !password) {
-            return res.status(400).json({
-                error: "Faltan datos"
-            });
-        }
+    const pool = await poolPromise;
 
-        if (password.length < 8 || password.length > 15) {
-            return res.status(400).json({
-                error: "La contraseña debe tener entre 8 y 15 caracteres"
-            });
-        }
-
-        const pool = await poolPromise;
-
-        // RESOLVER ID DE APLICACIÓN PORTAL EN PRODUCCIÓN O TEST
-        const appResult = await pool.request().query(`
+    // RESOLVER ID DE APLICACIÓN PORTAL EN PRODUCCIÓN O TEST
+    const appResult = await pool.request().query(`
             SELECT TOP 1 ID_Aplicacion
             FROM ${schema}.APLICACION
             WHERE Nombre LIKE '%Portal%' OR Nombre LIKE '%ITAS%'
         `);
 
-        const idAplicacionPortal = appResult.recordset[0]?.ID_Aplicacion || 1;
+    const idAplicacionPortal = appResult.recordset[0]?.ID_Aplicacion || 1;
 
-        // VALIDAR EXISTENCIA
-        const existe = await pool.request()
-            .input("idUsuario", sql.Int, idUsuario)
-            .query(`
+    // VALIDAR EXISTENCIA
+    const existe = await pool.request().input("idUsuario", sql.Int, idUsuario)
+      .query(`
                 SELECT 1
                 FROM ${schema}.WEB_PORTAL_ITAS_USR
                 WHERE ID_Usuario = @idUsuario
             `);
 
-        if (existe.recordset.length > 0) {
+    if (existe.recordset.length > 0) {
+      return res.status(400).json({
+        error: "El usuario ya posee acceso al portal",
+      });
+    }
 
-            return res.status(400).json({
-                error: "El usuario ya posee acceso al portal"
-            });
+    // HASH PASSWORD
+    const passwordHash = await bcrypt.hash(password, 10);
 
-        }
-
-        // HASH PASSWORD
-        const passwordHash = await bcrypt.hash(password, 10);
-
-        // INSERT
-        await pool.request()
-            .input("idUsuario", sql.Int, idUsuario)
-            .input("idAplicacion", sql.Int, idAplicacionPortal)
-            .input("passwordHash", sql.NVarChar(255), passwordHash)
-            .query(`
+    // INSERT
+    await pool
+      .request()
+      .input("idUsuario", sql.Int, idUsuario)
+      .input("idAplicacion", sql.Int, idAplicacionPortal)
+      .input("passwordHash", sql.NVarChar(255), passwordHash).query(`
                 INSERT INTO ${schema}.WEB_PORTAL_ITAS_USR
                 (
                     ID_Usuario,
                     ID_Aplicacion,
-                    Password,
+                    
                     Blanquear_Pass,
                     PasswordHash
                 )
@@ -112,26 +98,22 @@ router.post("/altaUsuarioPortal", async (req, res) => {
                 (
                     @idUsuario,
                     @idAplicacion,
-                    1234,
+                    
                     0,
                     @passwordHash
                 )
             `);
 
-        res.json({
-            success: true
-        });
+    res.json({
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error alta usuario portal:", error);
 
-    } catch (error) {
-
-        console.error("Error alta usuario portal:", error);
-
-        res.status(500).json({
-            error: error.message || "Error al crear usuario portal"
-        });
-
-    }
-
+    res.status(500).json({
+      error: error.message || "Error al crear usuario portal",
+    });
+  }
 });
 
 // =====================================================
@@ -139,9 +121,7 @@ router.post("/altaUsuarioPortal", async (req, res) => {
 // =====================================================
 
 router.get("/aplicaciones", async (req, res) => {
-
   try {
-
     const pool = await poolPromise;
 
     const result = await pool.request().query(`
@@ -154,20 +134,16 @@ router.get("/aplicaciones", async (req, res) => {
 
     res.json({
       success: true,
-      aplicaciones: result.recordset
+      aplicaciones: result.recordset,
     });
-
   } catch (error) {
-
     console.error("Error obteniendo aplicaciones:", error);
 
     res.status(500).json({
       success: false,
-      mensaje: "Error obteniendo aplicaciones"
+      mensaje: "Error obteniendo aplicaciones",
     });
-
   }
-
 });
 
 // =====================================================
@@ -175,16 +151,14 @@ router.get("/aplicaciones", async (req, res) => {
 // =====================================================
 
 router.get("/perfiles/:idAplicacion", async (req, res) => {
-
   const { idAplicacion } = req.params;
 
   try {
-
     const pool = await poolPromise;
 
-    const result = await pool.request()
-      .input("ID_Aplicacion", sql.Int, idAplicacion)
-      .query(`
+    const result = await pool
+      .request()
+      .input("ID_Aplicacion", sql.Int, idAplicacion).query(`
         SELECT
           ID_Perfil,
           Nombre
@@ -195,20 +169,16 @@ router.get("/perfiles/:idAplicacion", async (req, res) => {
 
     res.json({
       success: true,
-      perfiles: result.recordset
+      perfiles: result.recordset,
     });
-
   } catch (error) {
-
     console.error("Error obteniendo perfiles:", error);
 
     res.status(500).json({
       success: false,
-      mensaje: "Error obteniendo perfiles"
+      mensaje: "Error obteniendo perfiles",
     });
-
   }
-
 });
 
 // =====================================================
@@ -216,27 +186,20 @@ router.get("/perfiles/:idAplicacion", async (req, res) => {
 // =====================================================
 
 router.post("/usuario_perfil_app", async (req, res) => {
-
-  const {
-     ID_Usuario,
-    ID_Aplicacion,
-    ID_Perfil
-  } = req.body;
+  const { ID_Usuario, ID_Aplicacion, ID_Perfil } = req.body;
 
   try {
-
     const pool = await poolPromise;
-
 
     // =================================================
     // 2️⃣ VALIDAR SI YA EXISTE
     // =================================================
 
-    const existeResult = await pool.request()
+    const existeResult = await pool
+      .request()
       .input("ID_Usuario", sql.Int, ID_Usuario)
       .input("ID_Aplicacion", sql.Int, ID_Aplicacion)
-      .input("ID_Perfil", sql.Int, ID_Perfil)
-      .query(`
+      .input("ID_Perfil", sql.Int, ID_Perfil).query(`
         SELECT 1
         FROM ${schema}.USUARIO_PERFIL_APP
         WHERE ID_Usuario = @ID_Usuario
@@ -245,23 +208,21 @@ router.post("/usuario_perfil_app", async (req, res) => {
       `);
 
     if (existeResult.recordset.length > 0) {
-
       return res.status(400).json({
         success: false,
-        mensaje: "Ese permiso ya existe para el usuario"
+        mensaje: "Ese permiso ya existe para el usuario",
       });
-
     }
 
     // =================================================
     // 3️⃣ INSERT
     // =================================================
 
-    await pool.request()
+    await pool
+      .request()
       .input("ID_Usuario", sql.Int, ID_Usuario)
       .input("ID_Aplicacion", sql.Int, ID_Aplicacion)
-      .input("ID_Perfil", sql.Int, ID_Perfil)
-      .query(`
+      .input("ID_Perfil", sql.Int, ID_Perfil).query(`
         INSERT INTO ${schema}.USUARIO_PERFIL_APP
         (
           ID_Usuario,
@@ -282,23 +243,16 @@ router.post("/usuario_perfil_app", async (req, res) => {
 
     res.json({
       success: true,
-      mensaje: "Permiso agregado correctamente"
+      mensaje: "Permiso agregado correctamente",
     });
-
   } catch (error) {
-
-    console.error(
-      "Error agregando permiso:",
-      error
-    );
+    console.error("Error agregando permiso:", error);
 
     res.status(500).json({
       success: false,
-      mensaje: "Error interno del servidor"
+      mensaje: "Error interno del servidor",
     });
-
   }
-
 });
 
 // =====================================================
@@ -306,20 +260,16 @@ router.post("/usuario_perfil_app", async (req, res) => {
 // =====================================================
 
 router.get("/usuario_perfil_app/:idUsuario", async (req, res) => {
-
   const { idUsuario } = req.params;
 
   try {
-
     const pool = await poolPromise;
-
 
     // ============================================
     // 2️⃣ OBTENER PERMISOS
     // ============================================
 
-    const result = await pool.request()
-      .input("ID_Usuario", sql.Int, idUsuario)
+    const result = await pool.request().input("ID_Usuario", sql.Int, idUsuario)
       .query(`
 
         SELECT
@@ -345,46 +295,29 @@ router.get("/usuario_perfil_app/:idUsuario", async (req, res) => {
 
     res.json({
       success: true,
-      permisos: result.recordset
+      permisos: result.recordset,
     });
-
   } catch (error) {
-
-    console.error(
-      "Error obteniendo permisos:",
-      error
-    );
+    console.error("Error obteniendo permisos:", error);
 
     res.status(500).json({
       success: false,
-      mensaje: "Error obteniendo permisos"
+      mensaje: "Error obteniendo permisos",
     });
-
   }
-
 });
 
 // =====================================================
 // ELIMINAR PERMISO
 // =====================================================
 
-router.delete(
-  "/usuario_perfil_app/:id",
-  async (req, res) => {
+router.delete("/usuario_perfil_app/:id", async (req, res) => {
+  const { id } = req.params;
 
-    const { id } = req.params;
+  try {
+    const pool = await poolPromise;
 
-    try {
-
-      const pool = await poolPromise;
-
-      await pool.request()
-        .input(
-          "ID",
-          sql.Int,
-          id
-        )
-        .query(`
+    await pool.request().input("ID", sql.Int, id).query(`
 
           DELETE FROM
             ${schema}.USUARIO_PERFIL_APP
@@ -394,26 +327,18 @@ router.delete(
 
         `);
 
-      res.json({
-        success: true,
-        mensaje: "Permiso eliminado"
-      });
+    res.json({
+      success: true,
+      mensaje: "Permiso eliminado",
+    });
+  } catch (error) {
+    console.error("Error eliminando permiso:", error);
 
-    } catch (error) {
-
-      console.error(
-        "Error eliminando permiso:",
-        error
-      );
-
-      res.status(500).json({
-        success: false,
-        mensaje: "Error eliminando permiso"
-      });
-
-    }
-
+    res.status(500).json({
+      success: false,
+      mensaje: "Error eliminando permiso",
+    });
+  }
 });
-
 
 module.exports = router;

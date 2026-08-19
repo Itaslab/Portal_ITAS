@@ -1,34 +1,53 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   // Llenar el select de referentes al cargar la página
-  const referenteSelect = document.getElementById('referente');
-  fetch(basePath + '/referentes')
-    .then(res => res.json())
-    .then(data => {
+  const referenteSelect = document.getElementById("referente");
+  fetch(basePath + "/referentes")
+    .then((res) => res.json())
+    .then((data) => {
       if (data.success && Array.isArray(data.referentes)) {
-        data.referentes.forEach(ref => {
-          const opt = document.createElement('option');
+        data.referentes.forEach((ref) => {
+          const opt = document.createElement("option");
           opt.value = ref.Referente;
-          opt.textContent = ref.NombreCompleto ? `${ref.Referente} - ${ref.NombreCompleto}` : ref.Referente;
+          opt.textContent = ref.NombreCompleto
+            ? `${ref.Referente} - ${ref.NombreCompleto}`
+            : ref.Referente;
           referenteSelect.appendChild(opt);
         });
       }
     })
-    .catch(err => {
-      console.error('Error al cargar referentes:', err);
+    .catch((err) => {
+      console.error("Error al cargar referentes:", err);
     });
   // ...sin código de llenado de legajos...
   // Asegurar que la fecha de nacimiento no permita fechas posteriores a hoy y que el usuario tenga al menos 18 años
-  const fechaInput = document.getElementById('fecha_nacimiento');
+  const fechaInput = document.getElementById("fecha_nacimiento");
+  const fechaInput = document.getElementById("fecha_nacimiento");
+
   if (fechaInput) {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    const minEdad = new Date(hoy);
-    minEdad.setFullYear(minEdad.getFullYear() - 18);
-    // El valor máximo permitido para el input date será la fecha límite para tener 18 años
-    const yyyy = minEdad.getFullYear();
-    const mm = String(minEdad.getMonth() + 1).padStart(2, '0');
-    const dd = String(minEdad.getDate()).padStart(2, '0');
-    fechaInput.max = `${yyyy}-${mm}-${dd}`;
+
+    // Edad mínima: 18 años
+    const fechaMinimaEdad = new Date(hoy);
+    fechaMinimaEdad.setFullYear(fechaMinimaEdad.getFullYear() - 18);
+
+    // Edad máxima: 70 años
+    const fechaMaximaEdad = new Date(hoy);
+    fechaMaximaEdad.setFullYear(fechaMaximaEdad.getFullYear() - 70);
+
+    const formatearFecha = (fecha) => {
+      const yyyy = fecha.getFullYear();
+      const mm = String(fecha.getMonth() + 1).padStart(2, "0");
+      const dd = String(fecha.getDate()).padStart(2, "0");
+
+      return `${yyyy}-${mm}-${dd}`;
+    };
+
+    // No puede ser menor de 70 años
+    fechaInput.min = formatearFecha(fechaMaximaEdad);
+
+    // No puede ser menor de 18 años
+    fechaInput.max = formatearFecha(fechaMinimaEdad);
   }
 
   // Helper: validaciones de caracteres "no raros"
@@ -39,58 +58,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function validarCamposNoRaros(vals) {
     const errores = [];
-    if (!regexLegajo.test(vals.legajo)) errores.push('legajo');
-    if (!regexName.test(vals.apellido)) errores.push('apellido');
-    if (!regexName.test(vals.nombre)) errores.push('nombre');
-    if (!regexEmail.test(vals.email)) errores.push('email');
-    if (vals.alias && !regexAlias.test(vals.alias)) errores.push('alias');
+    if (!regexLegajo.test(vals.legajo)) errores.push("legajo");
+    if (!regexName.test(vals.apellido)) errores.push("apellido");
+    if (!regexName.test(vals.nombre)) errores.push("nombre");
+    if (!regexEmail.test(vals.email)) errores.push("email");
+    if (vals.alias && !regexAlias.test(vals.alias)) errores.push("alias");
     return errores;
   }
-  const form = document.getElementById('userForm');
-  const resultado = document.createElement('div');
-  resultado.id = 'resultado';
-  resultado.className = 'mt-3';
+  const form = document.getElementById("userForm");
+  const resultado = document.createElement("div");
+  resultado.id = "resultado";
+  resultado.className = "mt-3";
   form.appendChild(resultado);
 
   // Inicializar modal de éxito si existe (Bootstrap debe estar cargado antes)
   let successModal = null;
-  const successModalEl = document.getElementById('successModal');
-  if (successModalEl && typeof bootstrap !== 'undefined') {
+  const successModalEl = document.getElementById("successModal");
+  if (successModalEl && typeof bootstrap !== "undefined") {
     successModal = new bootstrap.Modal(successModalEl);
   }
 
   const btnCancelar = form.querySelector('button[type="reset"]');
 
-  form.addEventListener('submit', async (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     // Lista de campos requeridos
     const campos = [
-      'legajo', 'apellido', 'nombre', 'email', 'referente',
-      'fecha_nacimiento', 'empresa', 'alias', 'convenio', 'ciudad'
+      "legajo",
+      "apellido",
+      "nombre",
+      "email",
+      "referente",
+      "fecha_nacimiento",
+      "empresa",
+      "alias",
+      "convenio",
+      "ciudad",
     ];
 
     const valores = {};
     let camposVacios = [];
 
     // Obtener y validar campos
-    campos.forEach(id => {
+    campos.forEach((id) => {
       const valor = document.getElementById(id)?.value.trim();
       valores[id] = valor;
       if (!valor) camposVacios.push(id);
     });
 
     if (camposVacios.length > 0) {
-      resultado.textContent = `Por favor complete todos los campos: ${camposVacios.join(', ')}`;
-      resultado.style.color = 'red';
+      resultado.textContent = `Por favor complete todos los campos: ${camposVacios.join(", ")}`;
+      resultado.style.color = "red";
       return;
     }
 
     // Validar caracteres no permitidos
     const invalidos = validarCamposNoRaros(valores);
     if (invalidos.length > 0) {
-      resultado.textContent = `Campos con caracteres no permitidos: ${invalidos.join(', ')}`;
-      resultado.style.color = 'red';
+      resultado.textContent = `Campos con caracteres no permitidos: ${invalidos.join(", ")}`;
+      resultado.style.color = "red";
       return;
     }
 
@@ -100,33 +127,44 @@ document.addEventListener('DOMContentLoaded', () => {
     hoy.setHours(0, 0, 0, 0);
 
     if (isNaN(fechaIngresada.getTime())) {
-      resultado.textContent = 'Fecha de nacimiento inválida.';
-      resultado.style.color = 'red';
+      resultado.textContent = "Fecha de nacimiento inválida.";
+      resultado.style.color = "red";
       return;
     }
 
     if (fechaIngresada > hoy) {
-      resultado.textContent = 'La fecha de nacimiento no puede ser futura.';
-      resultado.style.color = 'red';
+      resultado.textContent = "La fecha de nacimiento no puede ser futura.";
+      resultado.style.color = "red";
       return;
     }
 
+    // Validar rango de edad: entre 18 y 70 años
     const limite18 = new Date(hoy);
     limite18.setFullYear(limite18.getFullYear() - 18);
+
+    const limite70 = new Date(hoy);
+    limite70.setFullYear(limite70.getFullYear() - 70);
+
+    // Menor de 18 años
     if (fechaIngresada > limite18) {
-      const yyyy = limite18.getFullYear();
-      const mm = String(limite18.getMonth() + 1).padStart(2, '0');
-      const dd = String(limite18.getDate()).padStart(2, '0');
-      resultado.textContent = `El usuario debe tener al menos 18 años. Fecha máxima permitida: ${yyyy}-${mm}-${dd}`;
-      resultado.style.color = 'red';
+      resultado.textContent = "El usuario debe tener al menos 18 años.";
+      resultado.style.color = "red";
+      return;
+    }
+
+    // Mayor de 70 años
+    if (fechaIngresada < limite70) {
+      resultado.textContent =
+        "La fecha de nacimiento no puede corresponder a una persona mayor de 70 años.";
+      resultado.style.color = "red";
       return;
     }
 
     // -------------------- ENVIAR AL BACKEND --------------------
     try {
-      const res = await fetch(basePath + '/registrar_usuario', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(basePath + "/registrar_usuario", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           Apellido: valores.apellido,
           Nombre: valores.nombre,
@@ -138,8 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
           Empresa: valores.empresa,
           Convenio: valores.convenio,
           Ciudad: valores.ciudad,
-
-        })
+        }),
       });
 
       const data = await res.json();
@@ -147,35 +184,35 @@ document.addEventListener('DOMContentLoaded', () => {
       if (res.status === 201) {
         // Usuario registrado correctamente
         if (successModal) {
-          const body = document.getElementById('successModalBody');
-          if (body) body.textContent = `Se creó usuario: ${valores.nombre} ${valores.apellido}`;
+          const body = document.getElementById("successModalBody");
+          if (body)
+            body.textContent = `Se creó usuario: ${valores.nombre} ${valores.apellido}`;
           successModal.show();
         } else {
-          alert('Se creó usuario');
+          alert("Se creó usuario");
         }
-        resultado.textContent = '';
+        resultado.textContent = "";
         form.reset();
       } else if (res.status === 409) {
         // Usuario ya existe
-        resultado.textContent = data.mensaje || 'El usuario ya existe';
-        resultado.style.color = 'orange';
+        resultado.textContent = data.mensaje || "El usuario ya existe";
+        resultado.style.color = "orange";
       } else {
         // Otro error
-        resultado.textContent = data.mensaje || 'Error al registrar usuario';
-        resultado.style.color = 'red';
+        resultado.textContent = data.mensaje || "Error al registrar usuario";
+        resultado.style.color = "red";
       }
-
     } catch (error) {
-      console.error('Error en la conexión con el servidor:', error);
-      resultado.textContent = 'Error de conexión con el servidor';
-      resultado.style.color = 'red';
+      console.error("Error en la conexión con el servidor:", error);
+      resultado.textContent = "Error de conexión con el servidor";
+      resultado.style.color = "red";
     }
     // -------------------------------------------------------------
   });
 
-  btnCancelar.addEventListener('click', () => {
+  btnCancelar.addEventListener("click", () => {
     form.reset();
-    resultado.textContent = 'Formulario limpiado.';
-    resultado.style.color = 'blue';
+    resultado.textContent = "Formulario limpiado.";
+    resultado.style.color = "blue";
   });
 });
