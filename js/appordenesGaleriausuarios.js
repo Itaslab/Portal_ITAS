@@ -290,6 +290,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       spanNombre.textContent = u.nombre ?? "-";
       spanEmail.textContent = u.email ?? "-";
       spanSfID.textContent = u.sf_user_id ?? "-";
+
+      if (inputSfID) {
+        inputSfID.value = u.sf_user_id ?? "";
+      }
+
       if (esAdmin) {
         btnEditarSfID.classList.remove("d-none");
       } else {
@@ -393,6 +398,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnGuardar = document.getElementById("modalBtnGuardar");
   if (btnGuardar) {
     btnGuardar.addEventListener("click", guardarCambiosUsuario);
+  }
+  if (btnEditarSfID) {
+    btnEditarSfID.addEventListener("click", () => {
+      inputSfID.classList.remove("d-none");
+      spanSfID.classList.add("d-none");
+
+      btnEditarSfID.classList.add("d-none");
+      btnGuardarSfID.classList.remove("d-none");
+
+      inputSfID.focus();
+    });
+  }
+
+  if (btnGuardarSfID) {
+    btnGuardarSfID.addEventListener("click", () => {
+      console.log("Botón guardar Sf User ID presionado");
+    });
   }
   const btnVerLog = document.getElementById("modalBtnVerLog");
   if (btnVerLog) {

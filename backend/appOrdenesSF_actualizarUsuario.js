@@ -150,4 +150,87 @@ router.put("/finalizar-vigencia", async (req, res) => {
   }
 });
 
+// PUT /usuarios/:id_usuario/sf-user-id
+router.put("/:id_usuario/sf-user-id", async (req, res) => {
+  try {
+    const usuarioEditorId = req.session?.user?.ID_Usuario || "desconocido";
+
+    const id_usuario = parseInt(req.params.id_usuario, 10);
+    const { sf_user_id } = req.body;
+
+    if (!id_usuario) {
+      return res.status(400).json({
+        success: false,
+        error: "Falta id_usuario",
+      });
+    }
+
+    const pool = await poolPromise;
+
+    // Obtener el valor actual
+    const resultActual = await pool
+      .request()
+      .input("id_usuario", sql.Int, id_usuario).query(`
+        SELECT SF_UserID, LogDeCambios
+        FROM ${schema}.APP_ORDENES_USR
+        WHERE ID_Usuario = @id_usuario
+      `);
+
+    if (resultActual.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Usuario no encontrado",
+      });
+    }
+
+    const actual = resultActual.recordset[0];
+
+    const sfActual = actual.SF_UserID ?? "";
+    const sfNuevo = (sf_user_id ?? "").toString().trim();
+
+    // Si no cambió, no hacemos nada
+    if (sfActual.toString().trim() === sfNuevo) {
+      return res.json({
+        success: true,
+        message: "El SF User ID no tuvo cambios.",
+      });
+    }
+
+    // Log
+    const fecha = new Date().toISOString().slice(0, 19).replace("T", " ");
+
+    const nuevoLog =
+      `[${fecha}] Usuario ${usuarioEditorId} cambió:\n` +
+      `- SF User ID: ${sfActual || "(vacío)"} → ${sfNuevo || "(vacío)"}`;
+
+    const logActual = actual.LogDeCambios || "";
+    const logFinal = logActual ? logActual + "\n\n" + nuevoLog : nuevoLog;
+
+    // Actualizar
+    await pool
+      .request()
+      .input("id_usuario", sql.Int, id_usuario)
+      .input("sf_user_id", sql.VarChar, sfNuevo || null)
+      .input("log", sql.VarChar(sql.MAX), logFinal).query(`
+        UPDATE ${schema}.APP_ORDENES_USR
+        SET 
+          SF_UserID = @sf_user_id,
+          LogDeCambios = @log
+        WHERE ID_Usuario = @id_usuario
+      `);
+
+    res.json({
+      success: true,
+      message: "SF User ID actualizado correctamente.",
+    });
+  } catch (err) {
+    console.error("Error al actualizar SF User ID:", err);
+
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+});
+
 module.exports = router;
