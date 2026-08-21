@@ -412,8 +412,59 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (btnGuardarSfID) {
-    btnGuardarSfID.addEventListener("click", () => {
-      console.log("Botón guardar Sf User ID presionado");
+    btnGuardarSfID.addEventListener("click", async () => {
+      try {
+        const id_usuario = document.getElementById("modalIdUsuario").value;
+        const nuevoSfID = inputSfID.value.trim();
+
+        if (!id_usuario) {
+          alert("ID de usuario faltante.");
+          return;
+        }
+
+        const resp = await fetch(
+          basePath + `/usuarios/${id_usuario}/sf-user-id`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              sf_user_id: nuevoSfID,
+            }),
+          },
+        );
+
+        const data = await resp.json();
+
+        if (!data.success) {
+          throw new Error(data.error || "No se pudo actualizar el SF User ID.");
+        }
+
+        // Actualizar lo que vemos en pantalla
+        spanSfID.textContent = nuevoSfID || "-";
+
+        // Volver a mostrar el texto
+        spanSfID.classList.remove("d-none");
+
+        // Ocultar el input
+        inputSfID.classList.add("d-none");
+
+        // Ocultar guardar
+        btnGuardarSfID.classList.add("d-none");
+
+        // Volver a mostrar editar
+        btnEditarSfID.classList.remove("d-none");
+
+        mostrarToast("SF User ID actualizado correctamente.", "success");
+      } catch (err) {
+        console.error("Error al actualizar SF User ID:", err);
+
+        mostrarToast(
+          err.message || "No se pudo actualizar el SF User ID.",
+          "danger",
+        );
+      }
     });
   }
   const btnVerLog = document.getElementById("modalBtnVerLog");
