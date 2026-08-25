@@ -426,7 +426,7 @@ function renderFormularioEdicion(dias) {
       </td>
       <td>
         <select class="form-select form-select-sm" data-dia="${nombreDia}" data-campo="modalidad">
-          <option value="No Aplica" ${!existente.modalidad || existente.modalidad === "No Aplica" ? "selected" : ""}>No aplica / No trabaja</option>
+          <option value="No Laborable" ${!existente.modalidad || existente.modalidad === "No Laborable" ? "selected" : ""}>No aplica / No trabaja</option>
           <option value="Oficina" ${existente.modalidad === "Oficina" ? "selected" : ""}>Oficina</option>
           <option value="Home" ${existente.modalidad === "Home" ? "selected" : ""}>Home</option>
         </select>
