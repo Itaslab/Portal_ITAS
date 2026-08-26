@@ -21,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ...sin código de llenado de legajos...
   // Asegurar que la fecha de nacimiento no permita fechas posteriores a hoy y que el usuario tenga al menos 18 años
   const fechaInput = document.getElementById("fecha_nacimiento");
-  const fechaInput = document.getElementById("fecha_nacimiento");
 
   if (fechaInput) {
     const hoy = new Date();
