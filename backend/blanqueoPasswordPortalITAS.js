@@ -13,18 +13,20 @@ router.get("/usuarios-blanquear", async (req, res) => {
     const pool = await poolPromise;
 
     const query = `
-      SELECT 
-        u.ID_Usuario,
-        u.Legajo,
-        ISNULL(u.Nombre, '') + ' ' + ISNULL(u.Apellido, '') AS NombreCompleto,
-        u.Email,
-        w.Blanquear_Pass
-      FROM 
-        ${schema}.USUARIO u
-      INNER JOIN 
-        ${schema}.WEB_PORTAL_ITAS_USR w ON u.ID_Usuario = w.ID_Usuario
-      ORDER BY u.Nombre, u.Apellido
-    `;
+  SELECT 
+    u.ID_Usuario,
+    u.Legajo,
+    ISNULL(u.Nombre, '') + ' ' + ISNULL(u.Apellido, '') AS NombreCompleto,
+    u.Email,
+    w.Blanquear_Pass
+  FROM 
+    ${schema}.USUARIO u
+  INNER JOIN 
+    ${schema}.WEB_PORTAL_ITAS_USR w ON u.ID_Usuario = w.ID_Usuario
+  WHERE 
+    u.Vigencia_Hasta IS NULL
+  ORDER BY u.Nombre, u.Apellido
+`;
 
     const result = await pool.request().query(query);
 
@@ -92,12 +94,10 @@ router.post("/blanquear-password", async (req, res) => {
       `);
 
     if (updateResult.rowsAffected[0] === 0) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          error: "Usuario no encontrado en WEB_PORTAL_ITAS_USR",
-        });
+      return res.status(404).json({
+        success: false,
+        error: "Usuario no encontrado en WEB_PORTAL_ITAS_USR",
+      });
     }
 
     res.json({
