@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Referencias a nuevos campos
-  const sfUserId = sfUserIdInput.value.trim();
+  const sfUserIdInput = document.getElementById("sfUserId");
   const formaSelect = document.getElementById("forma");
   const modoSelect = document.getElementById("modo");
   const scriptTextarea = document.getElementById("scriptText");
@@ -112,6 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const Max_Por_Trabajar = document.getElementById("maxPorTrabajar").value;
     const horaDe = document.getElementById("horaDe").value;
     const horaA = document.getElementById("horaA").value;
+    const sfUserId = sfUserIdInput.value.trim();
 
     // Validación básica
     if (
