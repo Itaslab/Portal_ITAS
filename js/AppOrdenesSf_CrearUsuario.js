@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Referencias a nuevos campos
-  const sfUserIdInput = document.getElementById("sfUserId");
+  const sfUserId = sfUserIdInput.value.trim();
   const formaSelect = document.getElementById("forma");
   const modoSelect = document.getElementById("modo");
   const scriptTextarea = document.getElementById("scriptText");
