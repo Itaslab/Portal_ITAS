@@ -7,26 +7,27 @@ module.exports = async (req, res) => {
     const pool = await poolPromise;
 
     const query = `
-    SELECT 
-        ap.ID_Usuario,
-        ISNULL(u.Nombre, '') + ' ' + ISNULL(u.Apellido, '') AS Nombre,
-        ap.Grupo,
-        ap.Grupo2,
-        ap.Modo,
-        ap.Max_Por_Trabajar,
-        ISNULL(CONVERT(VARCHAR(8), ap.Hora_De, 108), '') AS Hora_De,
-        ISNULL(CONVERT(VARCHAR(8), ap.Hora_A, 108), '') AS Hora_A,
-        ap.Activo,
-        ap.Asignar,
-        ap.Lic_Estado
-      FROM 
-        ${schema}.APP_ORDENES_USR ap
-      INNER JOIN 
-        ${schema}.USUARIO u ON u.ID_Usuario = ap.ID_Usuario
-      WHERE
-        ap.Vigencia_Hasta IS NULL
-      ORDER BY u.Nombre;
-    `;
+  SELECT 
+      ap.ID_Usuario,
+      ISNULL(u.Nombre, '') + ' ' + ISNULL(u.Apellido, '') AS Nombre,
+      ap.Grupo,
+      ap.Grupo2,
+      ap.Modo,
+      ap.Max_Por_Trabajar,
+      ISNULL(CONVERT(VARCHAR(8), ap.Hora_De, 108), '') AS Hora_De,
+      ISNULL(CONVERT(VARCHAR(8), ap.Hora_A, 108), '') AS Hora_A,
+      ap.Activo,
+      ap.Asignar,
+      ap.Lic_Estado
+    FROM 
+      ${schema}.APP_ORDENES_USR ap
+    INNER JOIN 
+      ${schema}.USUARIO u ON u.ID_Usuario = ap.ID_Usuario
+    WHERE
+      ap.Vigencia_Hasta IS NULL
+      AND u.Vigencia_Hasta IS NULL
+    ORDER BY u.Nombre;
+`;
 
     const result = await pool.request().query(query);
 
