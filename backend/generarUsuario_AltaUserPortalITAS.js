@@ -14,13 +14,14 @@ router.get("/usuariosPortalAlta", async (req, res) => {
     const pool = await poolPromise;
 
     const result = await pool.request().query(`
-            SELECT
-                ID_Usuario,
-                Nombre,
-                Apellido,
-                Email
-            FROM ${schema}.USUARIO
-            ORDER BY Nombre, Apellido
+      SELECT
+          ID_Usuario,
+          Nombre,
+          Apellido,
+          Email
+      FROM ${schema}.USUARIO
+      WHERE Vigencia_Hasta IS NULL
+      ORDER BY Nombre, Apellido
         `);
 
     res.json(result.recordset);
