@@ -10,9 +10,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     armarSubgrupos(usuariosData);
     aplicarFiltros();
   });
+
   document
     .getElementById("selSubgrupo")
     .addEventListener("change", aplicarFiltros);
+
   document
     .getElementById("txtBuscar")
     .addEventListener("input", aplicarFiltros);
@@ -139,6 +141,7 @@ function armarFiltros(usuarios) {
   // Inicializar subgrupos respetando el grupo actual
   armarSubgrupos(usuarios);
 }
+
 function armarSubgrupos(usuarios) {
   const grupoSeleccionado = document.getElementById("selGrupo").value;
   const selSubgrupo = document.getElementById("selSubgrupo");
@@ -208,6 +211,7 @@ function renderTabla(usuarios) {
     const puedeVer = esAdmin || u.id_usuario === idUsuarioActual;
 
     const tr = document.createElement("tr");
+
     tr.innerHTML = `
       <td>${u.apellido}, ${u.nombre}</td>
       <td>${u.grupo}</td>
@@ -252,10 +256,19 @@ const DIAS_SEMANA = [
   "Domingo",
 ];
 
+// Edificios disponibles.
+// Para agregar nuevos edificios, simplemente sumarlos a esta lista.
+const EDIFICIOS_DISPONIBLES = [
+  "BsAs - Optima",
+  "BsAs - Golf",
+  "BsAs - Hornos",
+  "BsAs - Paseo Colon",
+];
+
 async function verDetalle(idUsuario) {
-  // Traemos el nombre/apellido de lo que ya tenemos en memoria (para el
-  // título del modal), pero los DÍAS los pedimos siempre al servidor
-  // para asegurarnos de mostrar datos frescos.
+  // Traemos el nombre/apellido de lo que ya tenemos en memoria
+  // para el título del modal, pero los DÍAS los pedimos siempre
+  // al servidor para asegurarnos de mostrar datos frescos.
   const usuario = usuariosData.find((u) => u.id_usuario === idUsuario);
   if (!usuario) return;
 
@@ -273,18 +286,21 @@ async function verDetalle(idUsuario) {
   `;
 
   const modal = new bootstrap.Modal(document.getElementById("modalHorario"));
+
   modal.show();
 
   try {
     const res = await fetch(`${basePath}/horarios/${idUsuario}`);
 
     const sesionOk = await verificarSesionValida(res, `horarios/${idUsuario}`);
+
     if (!sesionOk) return;
 
     const data = await res.json();
 
     if (!data.success) {
       console.error(data.mensaje);
+
       document.getElementById("tblDetalleBody").innerHTML = `
         <tr>
           <td colspan="7" class="text-center text-danger">
@@ -292,6 +308,7 @@ async function verDetalle(idUsuario) {
           </td>
         </tr>
       `;
+
       return;
     }
 
@@ -311,6 +328,7 @@ async function verDetalle(idUsuario) {
     renderDetalle(dias);
   } catch (error) {
     console.error("Error obteniendo el detalle del horario:", error);
+
     document.getElementById("tblDetalleBody").innerHTML = `
       <tr>
         <td colspan="7" class="text-center text-danger">
@@ -343,6 +361,7 @@ function renderDetalle(dias) {
         </td>
       </tr>
     `;
+
     return;
   }
 
@@ -363,7 +382,9 @@ function renderDetalle(dias) {
     if (sinDatos) {
       tr.innerHTML = `
         <td>${d.dia}</td>
-        <td colspan="6" class="text-center text-muted">No aplica / No trabaja</td>
+        <td colspan="6" class="text-center text-muted">
+          No aplica / No trabaja
+        </td>
       `;
     } else {
       tr.innerHTML = `
@@ -389,8 +410,13 @@ function modificarHorario(idUsuario) {
   renderFormularioEdicion(diasActuales);
 
   document.getElementById("modalHorarioFooter").innerHTML = `
-    <button class="btn btn-success" onclick="guardarHorario()">Guardar</button>
-    <button class="btn btn-secondary" onclick="cancelarEdicion()">Cancelar</button>
+    <button class="btn btn-success" onclick="guardarHorario()">
+      Guardar
+    </button>
+
+    <button class="btn btn-secondary" onclick="cancelarEdicion()">
+      Cancelar
+    </button>
   `;
 }
 
@@ -402,52 +428,145 @@ function renderFormularioEdicion(dias) {
     const existente = dias.find((d) => d.dia === nombreDia) || {};
 
     const tr = document.createElement("tr");
+
     tr.innerHTML = `
       <td>${nombreDia}</td>
+
       <td>
-        <input type="time" class="form-control form-control-sm"
-               data-dia="${nombreDia}" data-campo="in1"
-               value="${existente.in1 ?? ""}">
+        <input
+          type="time"
+          class="form-control form-control-sm"
+          data-dia="${nombreDia}"
+          data-campo="in1"
+          value="${existente.in1 ?? ""}"
+        >
       </td>
+
       <td>
-        <input type="time" class="form-control form-control-sm"
-               data-dia="${nombreDia}" data-campo="out1"
-               value="${existente.out1 ?? ""}">
+        <input
+          type="time"
+          class="form-control form-control-sm"
+          data-dia="${nombreDia}"
+          data-campo="out1"
+          value="${existente.out1 ?? ""}"
+        >
       </td>
+
       <td>
-        <input type="time" class="form-control form-control-sm"
-               data-dia="${nombreDia}" data-campo="in2"
-               value="${existente.in2 ?? ""}">
+        <input
+          type="time"
+          class="form-control form-control-sm"
+          data-dia="${nombreDia}"
+          data-campo="in2"
+          value="${existente.in2 ?? ""}"
+        >
       </td>
+
       <td>
-        <input type="time" class="form-control form-control-sm"
-               data-dia="${nombreDia}" data-campo="out2"
-               value="${existente.out2 ?? ""}">
+        <input
+          type="time"
+          class="form-control form-control-sm"
+          data-dia="${nombreDia}"
+          data-campo="out2"
+          value="${existente.out2 ?? ""}"
+        >
       </td>
+
       <td>
-        <select class="form-select form-select-sm" data-dia="${nombreDia}" data-campo="modalidad">
-          <option value="No Laborable" ${!existente.modalidad || existente.modalidad === "No Laborable" ? "selected" : ""}>No aplica / No trabaja</option>
-          <option value="Oficina" ${existente.modalidad === "Oficina" ? "selected" : ""}>Oficina</option>
-          <option value="Home" ${existente.modalidad === "Home" ? "selected" : ""}>Home</option>
+        <select
+          class="form-select form-select-sm"
+          data-dia="${nombreDia}"
+          data-campo="modalidad"
+        >
+          <option
+            value="No Laborable"
+            ${
+              !existente.modalidad || existente.modalidad === "No Laborable"
+                ? "selected"
+                : ""
+            }
+          >
+            No aplica / No trabaja
+          </option>
+
+          <option
+            value="Oficina"
+            ${existente.modalidad === "Oficina" ? "selected" : ""}
+          >
+            Oficina
+          </option>
+
+          <option
+            value="Home"
+            ${existente.modalidad === "Home" ? "selected" : ""}
+          >
+            Home
+          </option>
         </select>
       </td>
+
       <td>
-        <input type="text" class="form-control form-control-sm"
-               data-dia="${nombreDia}" data-campo="edificio"
-               value="${existente.edificio ?? ""}" placeholder="Edificio">
+        <select
+          class="form-select form-select-sm"
+          data-dia="${nombreDia}"
+          data-campo="edificio"
+          ${existente.modalidad === "Home" ? "disabled" : ""}
+        >
+          <option value="">Seleccionar edificio</option>
+
+          ${EDIFICIOS_DISPONIBLES.map(
+            (edificio) =>
+              `<option
+                value="${edificio}"
+                ${existente.edificio === edificio ? "selected" : ""}
+              >
+                ${edificio}
+              </option>`,
+          ).join("")}
+        </select>
       </td>
     `;
 
     tbody.appendChild(tr);
+
+    // ============================================
+    // HOME -> DESHABILITAR EDIFICIO
+    // ============================================
+
+    const selectModalidad = tr.querySelector('[data-campo="modalidad"]');
+
+    const selectEdificio = tr.querySelector('[data-campo="edificio"]');
+
+    selectModalidad.addEventListener("change", () => {
+      const esHome = selectModalidad.value === "Home";
+
+      selectEdificio.disabled = esHome;
+
+      if (esHome) {
+        selectEdificio.value = "";
+      }
+    });
   });
 }
 
 function validarHorario(dia) {
   const campos = [
-    { nombre: "Ingreso", valor: dia.in1 },
-    { nombre: "Salida a comer", valor: dia.out1 },
-    { nombre: "Ingreso después de comer", valor: dia.in2 },
-    { nombre: "Salida", valor: dia.out2 },
+    {
+      nombre: "Ingreso",
+      valor: dia.in1,
+    },
+    {
+      nombre: "Salida a comer",
+      valor: dia.out1,
+    },
+    {
+      nombre: "Ingreso después de comer",
+      valor: dia.in2,
+    },
+    {
+      nombre: "Salida",
+      valor: dia.out2,
+    },
   ];
 
   let ultimoHorario = null;
@@ -482,7 +601,9 @@ async function guardarHorario() {
 
   filas.forEach((tr) => {
     const campos = tr.querySelectorAll("[data-dia]");
-    const diaObj = { dia: campos[0].dataset.dia };
+    const diaObj = {
+      dia: campos[0].dataset.dia,
+    };
 
     campos.forEach((campo) => {
       diaObj[campo.dataset.campo] = campo.value || null;
@@ -511,7 +632,9 @@ async function guardarHorario() {
   try {
     const res = await fetch(`${basePath}/horarios/${idUsuarioModalActual}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ dias }),
     });
 
@@ -530,6 +653,7 @@ async function guardarHorario() {
     }
 
     diasActuales = dias;
+
     renderDetalle(dias);
     resetFooterModal();
 
@@ -545,13 +669,57 @@ function cancelarEdicion() {
   resetFooterModal();
 }
 
+// =========================================================
+// VER LOG
+// =========================================================
+//
+// Por ahora solamente dejamos preparado el botón.
+// La implementación del log se hará después cuando definamos
+// qué información queremos registrar y cómo va a responder
+// el backend.
+//
+
+function verLogHorario(idUsuario) {
+  console.log("Ver log del usuario:", idUsuario);
+
+  // TODO:
+  // Acá posteriormente vamos a consultar el backend
+  // y mostrar los cambios realizados en los horarios.
+}
+
+// =========================================================
+// FOOTER DEL MODAL
+// =========================================================
+
 function resetFooterModal() {
   document.getElementById("modalHorarioFooter").innerHTML = `
-    <button class="btn btn-primary" id="btnModificarHorario">Modificar horario</button>
-    <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+    <button
+      class="btn btn-primary"
+      id="btnModificarHorario"
+    >
+      Modificar horario
+    </button>
+
+    <button
+      class="btn btn-info"
+      id="btnVerLogHorario"
+    >
+      Ver log
+    </button>
+
+    <button
+      class="btn btn-secondary"
+      data-bs-dismiss="modal"
+    >
+      Cerrar
+    </button>
   `;
 
   document.getElementById("btnModificarHorario").onclick = () => {
     modificarHorario(idUsuarioModalActual);
+  };
+
+  document.getElementById("btnVerLogHorario").onclick = () => {
+    verLogHorario(idUsuarioModalActual);
   };
 }
