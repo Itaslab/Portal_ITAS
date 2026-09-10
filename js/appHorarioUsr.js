@@ -674,22 +674,43 @@ function cancelarEdicion() {
   resetFooterModal();
 }
 
-// =========================================================
-// VER LOG
-// =========================================================
-//
-// Por ahora solamente dejamos preparado el botón.
-// La implementación del log se hará después cuando definamos
-// qué información queremos registrar y cómo va a responder
-// el backend.
-//
+async function verLogHorario(idUsuario) {
+  try {
+    const res = await fetch(`${basePath}/horarios/${idUsuario}/log`);
 
-function verLogHorario(idUsuario) {
-  console.log("Ver log del usuario:", idUsuario);
+    const sesionOk = await verificarSesionValida(
+      res,
+      `horarios/${idUsuario}/log`,
+    );
 
-  // TODO:
-  // Acá posteriormente vamos a consultar el backend
-  // y mostrar los cambios realizados en los horarios.
+    if (!sesionOk) return;
+
+    const data = await res.json();
+
+    if (!data.success) {
+      alert(data.mensaje || "No se pudo obtener el log.");
+      return;
+    }
+
+    const log = data.log || "";
+
+    if (!log.trim()) {
+      alert("No hay cambios registrados para este horario.");
+      return;
+    }
+
+    // Mostramos el log en el cuerpo del modal
+    document.getElementById("tblDetalleBody").innerHTML = `
+      <tr>
+        <td colspan="7">
+          <pre class="mb-0" style="white-space: pre-wrap;">${log}</pre>
+        </td>
+      </tr>
+    `;
+  } catch (error) {
+    console.error("Error obteniendo el log:", error);
+    alert("Error obteniendo el log de cambios.");
+  }
 }
 
 // =========================================================

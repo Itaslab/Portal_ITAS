@@ -498,4 +498,50 @@ ${fecha} - Modificación realizada por ID Usuario ${idSesion}
   }
 });
 
+// =========================================================
+// OBTENER LOG DE CAMBIOS DEL HORARIO
+// =========================================================
+
+router.get("/horarios/:id_usuario/log", checkAuth, async (req, res) => {
+  const { id_usuario } = req.params;
+
+  try {
+    const pool = await poolPromise;
+    const idSesion = req.session.user.ID_Usuario;
+
+    const admin = await esAdmin(pool, idSesion);
+
+    if (!admin && Number(id_usuario) !== Number(idSesion)) {
+      return res.status(403).json({
+        success: false,
+        mensaje: "No tenés permiso para ver este log.",
+      });
+    }
+
+    const result = await pool.request().input("id_usuario", sql.Int, id_usuario)
+      .query(`
+        SELECT TOP 1
+          Log_De_Cambios
+        FROM ${schema}.APP_HORARIOS_USR
+        WHERE ID_Usuario = @id_usuario
+          AND Dia_Semana = ${DIA_A_NUMERO["Lunes"]}
+          AND Vigencia_Hasta IS NULL
+      `);
+
+    const log = result.recordset[0]?.Log_De_Cambios || "";
+
+    res.json({
+      success: true,
+      log,
+    });
+  } catch (error) {
+    console.error("Error obteniendo log de horarios:", error);
+
+    res.status(500).json({
+      success: false,
+      mensaje: "Error obteniendo el log de cambios.",
+    });
+  }
+});
+
 module.exports = router;
