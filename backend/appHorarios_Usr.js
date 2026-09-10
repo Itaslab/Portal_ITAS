@@ -266,9 +266,6 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
       // =========================================================
       // 2. ARMAR LOG SOLO CON LOS CAMBIOS REALIZADOS
       // =========================================================
-      // =========================================================
-      // 2. ARMAR LOG SOLO CON LOS CAMBIOS REALIZADOS
-      // =========================================================
 
       function formatearHora(hora) {
         if (!hora) return "";
@@ -405,7 +402,24 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
       const logAnterior = horarioLunes?.Log_De_Cambios || "";
 
       // =========================================================
-      // 4. GENERAR NUEVO LOG
+      // 4. OBTENER NOMBRE Y APELLIDO DEL USUARIO QUE REALIZÓ EL CAMBIO
+      // =========================================================
+      const usuarioSesionResult = await transaction
+        .request()
+        .input("idSesion", sql.Int, idSesion).query(`
+          SELECT Nombre, Apellido
+          FROM ${schema}.USUARIO
+          WHERE ID_Usuario = @idSesion
+        `);
+
+      const usuarioSesion = usuarioSesionResult.recordset[0];
+
+      const nombreUsuario = usuarioSesion
+        ? `${usuarioSesion.Nombre} ${usuarioSesion.Apellido}`
+        : `ID Usuario ${idSesion}`;
+
+      // =========================================================
+      // 5. GENERAR NUEVO LOG
       // =========================================================
       let nuevoLog = "";
 
@@ -434,7 +448,7 @@ ${fecha} - Modificación realizada por ID Usuario ${idSesion}
       const logFinal = nuevoLog + logAnterior;
 
       // =========================================================
-      // 5. CERRAMOS LA VIGENCIA DE TODO LO ACTIVO
+      // 6. CERRAMOS LA VIGENCIA DE TODO LO ACTIVO
       // =========================================================
       await transaction.request().input("id_usuario", sql.Int, id_usuario)
         .query(`
@@ -445,7 +459,7 @@ ${fecha} - Modificación realizada por ID Usuario ${idSesion}
         `);
 
       // =========================================================
-      // 6. INSERTAMOS EL NUEVO HORARIO
+      // 7. INSERTAMOS EL NUEVO HORARIO
       // =========================================================
       for (const d of dias) {
         const numeroDia = DIA_A_NUMERO[d.dia];
@@ -497,7 +511,7 @@ ${fecha} - Modificación realizada por ID Usuario ${idSesion}
       }
 
       // =========================================================
-      // 7. CONFIRMAMOS LA TRANSACCIÓN
+      // 8. CONFIRMAMOS LA TRANSACCIÓN
       // =========================================================
       await transaction.commit();
 
