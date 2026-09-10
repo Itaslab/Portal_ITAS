@@ -336,25 +336,25 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
 
         if (anteriorIn1 !== nuevoIn1) {
           cambiosDia.push(
-            `Hora Entrada 1: ${anteriorIn1 || "-"} → ${nuevoIn1 || "-"}`,
+            `Hora Entrada 1: ${anteriorIn1 || "-"} a ${nuevoIn1 || "-"}`,
           );
         }
 
         if (anteriorOut1 !== nuevoOut1) {
           cambiosDia.push(
-            `Hora Salida 1: ${anteriorOut1 || "-"} → ${nuevoOut1 || "-"}`,
+            `Hora Salida 1: ${anteriorOut1 || "-"} a ${nuevoOut1 || "-"}`,
           );
         }
 
         if (anteriorIn2 !== nuevoIn2) {
           cambiosDia.push(
-            `Hora Entrada 2: ${anteriorIn2 || "-"} → ${nuevoIn2 || "-"}`,
+            `Hora Entrada 2: ${anteriorIn2 || "-"} a ${nuevoIn2 || "-"}`,
           );
         }
 
         if (anteriorOut2 !== nuevoOut2) {
           cambiosDia.push(
-            `Hora Salida 2: ${anteriorOut2 || "-"} → ${nuevoOut2 || "-"}`,
+            `Hora Salida 2: ${anteriorOut2 || "-"} a ${nuevoOut2 || "-"}`,
           );
         }
 
@@ -364,7 +364,7 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
 
         if (anteriorModalidad !== nuevaModalidad) {
           cambiosDia.push(
-            `Modalidad: ${anteriorModalidad || "-"} → ${nuevaModalidad || "-"}`,
+            `Modalidad: ${anteriorModalidad || "-"} a ${nuevaModalidad || "-"}`,
           );
         }
 
@@ -374,7 +374,7 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
 
         if (anteriorEdificio !== nuevoEdificio) {
           cambiosDia.push(
-            `Edificio: ${anteriorEdificio || "-"} → ${nuevoEdificio || "-"}`,
+            `Edificio: ${anteriorEdificio || "-"} a ${nuevoEdificio || "-"}`,
           );
         }
 
@@ -427,7 +427,7 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
         const fecha = new Date().toLocaleString("es-AR");
 
         nuevoLog += `\
-${fecha} - Modificación realizada por ID Usuario ${idSesion}
+${fecha} - Modificación realizada por ID Usuario ${nombreUsuario}
 
 `;
 
