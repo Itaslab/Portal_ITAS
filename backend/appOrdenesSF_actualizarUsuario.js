@@ -3,6 +3,25 @@ const schema = process.env.DB_SCHEMA;
 const express = require("express");
 const router = express.Router();
 
+async function obtenerNombreUsuario(pool, idUsuario) {
+  if (!idUsuario || idUsuario === "desconocido") {
+    return "Usuario desconocido";
+  }
+
+  const result = await pool.request().input("ID_Usuario", sql.Int, idUsuario)
+    .query(`
+      SELECT Nombre, Apellido
+      FROM ${schema}.USUARIO
+      WHERE ID_Usuario = @ID_Usuario
+    `);
+
+  const usuario = result.recordset[0];
+
+  return usuario
+    ? `${usuario.Nombre} ${usuario.Apellido}`
+    : `ID Usuario ${idUsuario}`;
+}
+
 // POST /usuarios/actualizar
 router.post("/actualizar", async (req, res) => {
   try {
@@ -26,6 +45,11 @@ router.post("/actualizar", async (req, res) => {
     }
 
     const pool = await poolPromise;
+
+    const nombreUsuarioEditor = await obtenerNombreUsuario(
+      pool,
+      usuarioEditorId,
+    );
 
     const norm = (v) => (v ?? "").toString().trim();
     const val = (v) =>
@@ -72,7 +96,8 @@ router.post("/actualizar", async (req, res) => {
     if (cambios.length > 0) {
       const fecha = new Date().toISOString().slice(0, 19).replace("T", " ");
       const nuevoLog =
-        `[${fecha}] Usuario ${usuarioEditorId} cambió:\n` + cambios.join("\n");
+        `[${fecha}] Usuario ${nombreUsuarioEditor} cambió:\n` +
+        cambios.join("\n");
       logFinal = logActual ? logActual + "\n\n" + nuevoLog : nuevoLog;
     }
 
@@ -114,6 +139,11 @@ router.put("/finalizar-vigencia", async (req, res) => {
     }
 
     const pool = await poolPromise;
+
+    const nombreUsuarioEditor = await obtenerNombreUsuario(
+      pool,
+      usuarioEditorId,
+    );
     const result = await pool.request().input("id_usuario", sql.Int, id_usuario)
       .query(`
         SELECT LogDeCambios FROM ${schema}.APP_ORDENES_USR WHERE ID_Usuario = @id_usuario
@@ -128,7 +158,7 @@ router.put("/finalizar-vigencia", async (req, res) => {
     const logActual = result.recordset[0].LogDeCambios || "";
     const fechaLog = new Date().toISOString().slice(0, 19).replace("T", " ");
     const fechaVigencia = new Date().toISOString().slice(0, 10);
-    const nuevoLog = `[${fechaLog}] Usuario ${usuarioEditorId} finalizó la vigencia. Fecha: ${fechaVigencia}`;
+    const nuevoLog = `[${fechaLog}] Usuario ${nombreUsuarioEditor} finalizó la vigencia. Fecha: ${fechaVigencia}`;
     const logFinal = logActual ? logActual + "\n\n" + nuevoLog : nuevoLog;
 
     await pool
@@ -167,6 +197,11 @@ router.put("/:id_usuario/sf-user-id", async (req, res) => {
 
     const pool = await poolPromise;
 
+    const nombreUsuarioEditor = await obtenerNombreUsuario(
+      pool,
+      usuarioEditorId,
+    );
+
     // Obtener el valor actual
     const resultActual = await pool
       .request()
@@ -200,7 +235,7 @@ router.put("/:id_usuario/sf-user-id", async (req, res) => {
     const fecha = new Date().toISOString().slice(0, 19).replace("T", " ");
 
     const nuevoLog =
-      `[${fecha}] Usuario ${usuarioEditorId} cambió:\n` +
+      `[${fecha}] Usuario ${nombreUsuarioEditor} cambió:\n` +
       `- SF User ID: ${sfActual || "(vacío)"} → ${sfNuevo || "(vacío)"}`;
 
     const logActual = actual.LogDeCambios || "";
