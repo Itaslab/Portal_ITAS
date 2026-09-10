@@ -266,6 +266,25 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
       // =========================================================
       // 2. ARMAR LOG SOLO CON LOS CAMBIOS REALIZADOS
       // =========================================================
+      // =========================================================
+      // 2. ARMAR LOG SOLO CON LOS CAMBIOS REALIZADOS
+      // =========================================================
+
+      function formatearHora(hora) {
+        if (!hora) return "";
+
+        // Si SQL Server devuelve un Date
+        if (hora instanceof Date) {
+          const horas = String(hora.getHours()).padStart(2, "0");
+          const minutos = String(hora.getMinutes()).padStart(2, "0");
+
+          return `${horas}:${minutos}`;
+        }
+
+        // Si ya viene como texto
+        return String(hora).substring(0, 5);
+      }
+
       const cambios = [];
 
       for (const nuevo of dias) {
@@ -279,19 +298,14 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
 
         const cambiosDia = [];
 
-        // Convertimos a string para comparar correctamente
-        // valores NULL, horarios y textos.
-        const anteriorIn1 = anterior.Hora_In1 ? String(anterior.Hora_In1) : "";
+        // =========================================================
+        // VALORES ANTERIORES
+        // =========================================================
 
-        const anteriorOut1 = anterior.Hora_Out1
-          ? String(anterior.Hora_Out1)
-          : "";
-
-        const anteriorIn2 = anterior.Hora_In2 ? String(anterior.Hora_In2) : "";
-
-        const anteriorOut2 = anterior.Hora_Out2
-          ? String(anterior.Hora_Out2)
-          : "";
+        const anteriorIn1 = formatearHora(anterior.Hora_In1);
+        const anteriorOut1 = formatearHora(anterior.Hora_Out1);
+        const anteriorIn2 = formatearHora(anterior.Hora_In2);
+        const anteriorOut2 = formatearHora(anterior.Hora_Out2);
 
         const anteriorModalidad = anterior.Modalidad
           ? String(anterior.Modalidad)
@@ -301,18 +315,28 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
           ? String(anterior.Edificio)
           : "";
 
-        const nuevoIn1 = nuevo.in1 ? String(nuevo.in1) : "";
-        const nuevoOut1 = nuevo.out1 ? String(nuevo.out1) : "";
-        const nuevoIn2 = nuevo.in2 ? String(nuevo.in2) : "";
-        const nuevoOut2 = nuevo.out2 ? String(nuevo.out2) : "";
+        // =========================================================
+        // VALORES NUEVOS
+        // =========================================================
+
+        const nuevoIn1 = nuevo.in1 ? String(nuevo.in1).substring(0, 5) : "";
+
+        const nuevoOut1 = nuevo.out1 ? String(nuevo.out1).substring(0, 5) : "";
+
+        const nuevoIn2 = nuevo.in2 ? String(nuevo.in2).substring(0, 5) : "";
+
+        const nuevoOut2 = nuevo.out2 ? String(nuevo.out2).substring(0, 5) : "";
+
         const nuevaModalidad = nuevo.modalidad
           ? String(nuevo.modalidad)
           : "No Laborable";
+
         const nuevoEdificio = nuevo.edificio ? String(nuevo.edificio) : "";
 
-        // -------------------------
-        // HORARIOS
-        // -------------------------
+        // =========================================================
+        // COMPARAR HORARIOS
+        // =========================================================
+
         if (anteriorIn1 !== nuevoIn1) {
           cambiosDia.push(
             `Hora Entrada 1: ${anteriorIn1 || "-"} → ${nuevoIn1 || "-"}`,
@@ -337,25 +361,30 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
           );
         }
 
-        // -------------------------
-        // MODALIDAD
-        // -------------------------
+        // =========================================================
+        // COMPARAR MODALIDAD
+        // =========================================================
+
         if (anteriorModalidad !== nuevaModalidad) {
           cambiosDia.push(
             `Modalidad: ${anteriorModalidad || "-"} → ${nuevaModalidad || "-"}`,
           );
         }
 
-        // -------------------------
-        // EDIFICIO
-        // -------------------------
+        // =========================================================
+        // COMPARAR EDIFICIO
+        // =========================================================
+
         if (anteriorEdificio !== nuevoEdificio) {
           cambiosDia.push(
             `Edificio: ${anteriorEdificio || "-"} → ${nuevoEdificio || "-"}`,
           );
         }
 
-        // SOLO GUARDAMOS EL DÍA SI HUBO CAMBIOS
+        // =========================================================
+        // SOLO GUARDAR EL DÍA SI REALMENTE CAMBIÓ ALGO
+        // =========================================================
+
         if (cambiosDia.length > 0) {
           cambios.push({
             dia: nuevo.dia,
