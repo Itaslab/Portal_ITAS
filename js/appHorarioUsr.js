@@ -263,6 +263,11 @@ const EDIFICIOS_DISPONIBLES = [
   "BsAs - Golf",
   "BsAs - Hornos",
   "BsAs - Paseo Colon",
+  "BsAs - Madero",
+  "CBA - Colón",
+  "Rosario - Fisherton",
+  "Rosario - Iriondo",
+  "Rosario - Rosario Centro",
 ];
 
 async function verDetalle(idUsuario) {

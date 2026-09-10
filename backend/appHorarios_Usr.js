@@ -241,7 +241,172 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
     await transaction.begin();
 
     try {
-      // Cerramos la vigencia de todo lo que esté activo hoy.
+      // =========================================================
+      // 1. OBTENER HORARIOS ACTIVOS ACTUALES
+      // =========================================================
+      const horariosActualesResult = await transaction
+        .request()
+        .input("id_usuario", sql.Int, id_usuario).query(`
+          SELECT
+              Dia_Semana,
+              Hora_In1,
+              Hora_Out1,
+              Hora_In2,
+              Hora_Out2,
+              Modalidad,
+              Edificio,
+              Log_De_Cambios
+          FROM ${schema}.APP_HORARIOS_USR
+          WHERE ID_Usuario = @id_usuario
+            AND Vigencia_Hasta IS NULL
+        `);
+
+      const horariosActuales = horariosActualesResult.recordset;
+
+      // =========================================================
+      // 2. ARMAR LOG SOLO CON LOS CAMBIOS REALIZADOS
+      // =========================================================
+      const cambios = [];
+
+      for (const nuevo of dias) {
+        const numeroDia = DIA_A_NUMERO[nuevo.dia];
+
+        const anterior = horariosActuales.find(
+          (h) => Number(h.Dia_Semana) === Number(numeroDia),
+        );
+
+        if (!anterior) continue;
+
+        const cambiosDia = [];
+
+        // Convertimos a string para comparar correctamente
+        // valores NULL, horarios y textos.
+        const anteriorIn1 = anterior.Hora_In1 ? String(anterior.Hora_In1) : "";
+
+        const anteriorOut1 = anterior.Hora_Out1
+          ? String(anterior.Hora_Out1)
+          : "";
+
+        const anteriorIn2 = anterior.Hora_In2 ? String(anterior.Hora_In2) : "";
+
+        const anteriorOut2 = anterior.Hora_Out2
+          ? String(anterior.Hora_Out2)
+          : "";
+
+        const anteriorModalidad = anterior.Modalidad
+          ? String(anterior.Modalidad)
+          : "";
+
+        const anteriorEdificio = anterior.Edificio
+          ? String(anterior.Edificio)
+          : "";
+
+        const nuevoIn1 = nuevo.in1 ? String(nuevo.in1) : "";
+        const nuevoOut1 = nuevo.out1 ? String(nuevo.out1) : "";
+        const nuevoIn2 = nuevo.in2 ? String(nuevo.in2) : "";
+        const nuevoOut2 = nuevo.out2 ? String(nuevo.out2) : "";
+        const nuevaModalidad = nuevo.modalidad
+          ? String(nuevo.modalidad)
+          : "No Laborable";
+        const nuevoEdificio = nuevo.edificio ? String(nuevo.edificio) : "";
+
+        // -------------------------
+        // HORARIOS
+        // -------------------------
+        if (anteriorIn1 !== nuevoIn1) {
+          cambiosDia.push(
+            `Hora Entrada 1: ${anteriorIn1 || "-"} → ${nuevoIn1 || "-"}`,
+          );
+        }
+
+        if (anteriorOut1 !== nuevoOut1) {
+          cambiosDia.push(
+            `Hora Salida 1: ${anteriorOut1 || "-"} → ${nuevoOut1 || "-"}`,
+          );
+        }
+
+        if (anteriorIn2 !== nuevoIn2) {
+          cambiosDia.push(
+            `Hora Entrada 2: ${anteriorIn2 || "-"} → ${nuevoIn2 || "-"}`,
+          );
+        }
+
+        if (anteriorOut2 !== nuevoOut2) {
+          cambiosDia.push(
+            `Hora Salida 2: ${anteriorOut2 || "-"} → ${nuevoOut2 || "-"}`,
+          );
+        }
+
+        // -------------------------
+        // MODALIDAD
+        // -------------------------
+        if (anteriorModalidad !== nuevaModalidad) {
+          cambiosDia.push(
+            `Modalidad: ${anteriorModalidad || "-"} → ${nuevaModalidad || "-"}`,
+          );
+        }
+
+        // -------------------------
+        // EDIFICIO
+        // -------------------------
+        if (anteriorEdificio !== nuevoEdificio) {
+          cambiosDia.push(
+            `Edificio: ${anteriorEdificio || "-"} → ${nuevoEdificio || "-"}`,
+          );
+        }
+
+        // SOLO GUARDAMOS EL DÍA SI HUBO CAMBIOS
+        if (cambiosDia.length > 0) {
+          cambios.push({
+            dia: nuevo.dia,
+            cambios: cambiosDia,
+          });
+        }
+      }
+
+      // =========================================================
+      // 3. OBTENER LOG ANTERIOR DEL LUNES
+      // =========================================================
+      const numeroLunes = DIA_A_NUMERO["Lunes"];
+
+      const horarioLunes = horariosActuales.find(
+        (h) => Number(h.Dia_Semana) === Number(numeroLunes),
+      );
+
+      const logAnterior = horarioLunes?.Log_De_Cambios || "";
+
+      // =========================================================
+      // 4. GENERAR NUEVO LOG
+      // =========================================================
+      let nuevoLog = "";
+
+      if (cambios.length > 0) {
+        const fecha = new Date().toLocaleString("es-AR");
+
+        nuevoLog += `\
+${fecha} - Modificación realizada por ID Usuario ${idSesion}
+
+`;
+
+        for (const cambio of cambios) {
+          nuevoLog += `${cambio.dia}:\n`;
+
+          for (const detalle of cambio.cambios) {
+            nuevoLog += `${detalle}\n`;
+          }
+
+          nuevoLog += "\n";
+        }
+
+        nuevoLog += "--------------------------------------------------\n\n";
+      }
+
+      // El log nuevo queda arriba del historial anterior.
+      const logFinal = nuevoLog + logAnterior;
+
+      // =========================================================
+      // 5. CERRAMOS LA VIGENCIA DE TODO LO ACTIVO
+      // =========================================================
       await transaction.request().input("id_usuario", sql.Int, id_usuario)
         .query(`
           UPDATE ${schema}.APP_HORARIOS_USR
@@ -250,27 +415,61 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
             AND Vigencia_Hasta IS NULL
         `);
 
-      // Insertamos el nuevo horario, un registro por día.
+      // =========================================================
+      // 6. INSERTAMOS EL NUEVO HORARIO
+      // =========================================================
       for (const d of dias) {
+        const numeroDia = DIA_A_NUMERO[d.dia];
+
+        // El log se guarda SOLAMENTE en el lunes.
+        const logParaEsteDia =
+          Number(numeroDia) === Number(numeroLunes) ? logFinal : null;
+
         await transaction
           .request()
           .input("id_usuario", sql.Int, id_usuario)
-          .input("dia", sql.TinyInt, DIA_A_NUMERO[d.dia])
+          .input("dia", sql.TinyInt, numeroDia)
           .input("in1", sql.VarChar, d.in1 || null)
           .input("out1", sql.VarChar, d.out1 || null)
           .input("in2", sql.VarChar, d.in2 || null)
           .input("out2", sql.VarChar, d.out2 || null)
           .input("modalidad", sql.VarChar, d.modalidad || "No Laborable")
-          .input("edificio", sql.VarChar, d.edificio || null).query(`
+          .input("edificio", sql.VarChar, d.edificio || null)
+          .input("logDeCambios", sql.VarChar(sql.MAX), logParaEsteDia).query(`
             INSERT INTO ${schema}.APP_HORARIOS_USR
-              (ID_Usuario, Dia_Semana, Hora_In1, Hora_Out1, Hora_In2, Hora_Out2,
-               Modalidad, Edificio, Vigencia_Desde, Vigencia_Hasta)
+              (
+                ID_Usuario,
+                Dia_Semana,
+                Hora_In1,
+                Hora_Out1,
+                Hora_In2,
+                Hora_Out2,
+                Modalidad,
+                Edificio,
+                Vigencia_Desde,
+                Vigencia_Hasta,
+                Log_De_Cambios
+              )
             VALUES
-              (@id_usuario, @dia, @in1, @out1, @in2, @out2,
-               @modalidad, @edificio, GETDATE(), NULL)
+              (
+                @id_usuario,
+                @dia,
+                @in1,
+                @out1,
+                @in2,
+                @out2,
+                @modalidad,
+                @edificio,
+                GETDATE(),
+                NULL,
+                @logDeCambios
+              )
           `);
       }
 
+      // =========================================================
+      // 7. CONFIRMAMOS LA TRANSACCIÓN
+      // =========================================================
       await transaction.commit();
 
       res.json({
@@ -286,6 +485,7 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
           errorRollback,
         );
       }
+
       throw errorInterno;
     }
   } catch (error) {
