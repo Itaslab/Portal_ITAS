@@ -75,18 +75,22 @@ async function obtenerRolUsuario(pool, idUsuario) {
         u.ID_Usuario,
         u.Nombre,
         u.Apellido,
-        u.Grupo,
+
         g.Grupo AS Grupo_GRUPO,
         g.Subgrupo,
         g.Gerente,
         g.Coordinador,
         g.Referente
+
       FROM ${schema}.USUARIO u
+
+      LEFT JOIN ${schema}.USUARIO_GRUPO ug
+        ON ug.ID_Usuario = u.ID_Usuario
+        AND ug.Vigencia_Hasta IS NULL
+
       LEFT JOIN ${schema}.GRUPO g
-        ON
-          g.Gerente = CONCAT(u.Nombre, ' ', u.Apellido)
-          OR g.Coordinador = CONCAT(u.Nombre, ' ', u.Apellido)
-          OR g.Referente = CONCAT(u.Nombre, ' ', u.Apellido)
+        ON g.ID_Grupo = ug.ID_Grupo
+
       WHERE u.ID_Usuario = @idUsuario
     `);
 
@@ -110,10 +114,10 @@ async function obtenerRolUsuario(pool, idUsuario) {
     rol = "GERENTE";
   } else if (usuario.Coordinador === nombreCompleto) {
     rol = "COORDINADOR";
-    grupoUsuario = usuario.Grupo_GRUPO || usuario.Grupo;
+    grupoUsuario = usuario.Grupo_GRUPO;
   } else if (usuario.Referente === nombreCompleto) {
     rol = "REFERENTE";
-    grupoUsuario = usuario.Grupo_GRUPO || usuario.Grupo;
+    grupoUsuario = usuario.Grupo_GRUPO;
     subgrupoUsuario = usuario.Subgrupo;
   }
 
