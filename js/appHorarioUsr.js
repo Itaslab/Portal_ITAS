@@ -1,6 +1,6 @@
 // appHorariosUsr.js
 // Lógica de la pantalla de Horarios: trae la grilla, agrupa por usuario,
-// arma los filtros de Grupo/Subgrupo y abre el modal de detalle.
+// arma los filtros de Grupo/Subgrupo, ordena la tabla y abre el modal de detalle.
 
 document.addEventListener("DOMContentLoaded", async () => {
   await cargarPermisos();
@@ -15,14 +15,75 @@ document.addEventListener("DOMContentLoaded", async () => {
     .getElementById("selSubgrupo")
     .addEventListener("change", aplicarFiltros);
 
+  // Buscador con debounce, igual que en appordenesGaleriausuarios.js
+  const buscarDebounced = debounce(aplicarFiltros, 250);
+
   document
     .getElementById("txtBuscar")
-    .addEventListener("input", aplicarFiltros);
+    .addEventListener("input", buscarDebounced);
+
+  // =========================================================
+  // ORDENAMIENTO DE COLUMNAS
+  // =========================================================
+
+  document.querySelectorAll(".sortable").forEach((th) => {
+    th.addEventListener("click", () => {
+      const columna = th.dataset.column;
+
+      if (sortColumn === columna) {
+        sortDirection = sortDirection === "asc" ? "desc" : "asc";
+      } else {
+        sortColumn = columna;
+        sortDirection = "asc";
+      }
+
+      // Sacamos el indicador de todas las columnas
+      document.querySelectorAll(".sortable").forEach((x) => {
+        x.classList.remove("asc", "desc");
+      });
+
+      // Marcamos la columna actualmente ordenada
+      th.classList.add(sortDirection);
+
+      aplicarFiltros();
+    });
+  });
 });
+
+// =========================================================
+// PERMISOS
+// =========================================================
 
 // Guardamos rol y usuario actual para decidir qué botones "Ver" habilitar.
 let esAdmin = false;
 let idUsuarioActual = null;
+
+// =========================================================
+// ORDENAMIENTO
+// =========================================================
+
+let sortColumn = null;
+let sortDirection = "asc";
+
+// =========================================================
+// DEBOUNCE
+// =========================================================
+
+function debounce(fn, wait) {
+  let timeout;
+
+  return function (...args) {
+    clearTimeout(timeout);
+
+    timeout = setTimeout(() => {
+      fn.apply(this, args);
+    }, wait);
+  };
+}
+
+// =========================================================
+// CARGAR PERMISOS
+// =========================================================
 
 async function cargarPermisos() {
   try {
@@ -73,7 +134,8 @@ async function cargarHorarios() {
 }
 
 // =========================================================
-// AGRUPAR FILAS CRUDAS (una por día) EN UN OBJETO POR USUARIO
+// AGRUPAR FILAS CRUDAS (una por día)
+// EN UN OBJETO POR USUARIO
 // =========================================================
 
 function agruparPorUsuario(filas) {
@@ -144,6 +206,7 @@ function armarFiltros(usuarios) {
 
 function armarSubgrupos(usuarios) {
   const grupoSeleccionado = document.getElementById("selGrupo").value;
+
   const selSubgrupo = document.getElementById("selSubgrupo");
 
   // Limpiamos el select
@@ -178,9 +241,51 @@ function armarSubgrupos(usuarios) {
   selSubgrupo.value = "";
 }
 
+// =========================================================
+// ORDENAR USUARIOS
+// =========================================================
+
+function ordenarUsuarios(lista) {
+  if (!sortColumn) {
+    return [...lista];
+  }
+
+  return [...lista].sort((a, b) => {
+    let valorA;
+    let valorB;
+
+    if (sortColumn === "usuario") {
+      valorA = `${a.apellido ?? ""} ${a.nombre ?? ""}`;
+      valorB = `${b.apellido ?? ""} ${b.nombre ?? ""}`;
+    } else if (sortColumn === "estado") {
+      valorA = a.dias.length > 0 ? "Configurado" : "Sin horario";
+
+      valorB = b.dias.length > 0 ? "Configurado" : "Sin horario";
+    } else {
+      valorA = a[sortColumn] ?? "";
+      valorB = b[sortColumn] ?? "";
+    }
+
+    valorA = valorA.toString().toLowerCase();
+    valorB = valorB.toString().toLowerCase();
+
+    if (sortDirection === "asc") {
+      return valorA.localeCompare(valorB);
+    }
+
+    return valorB.localeCompare(valorA);
+  });
+}
+
+// =========================================================
+// APLICAR FILTROS
+// =========================================================
+
 function aplicarFiltros() {
   const grupo = document.getElementById("selGrupo").value;
+
   const subgrupo = document.getElementById("selSubgrupo").value;
+
   const busqueda = document
     .getElementById("txtBuscar")
     .value.trim()
@@ -188,14 +293,19 @@ function aplicarFiltros() {
 
   const filtrados = usuariosData.filter((u) => {
     const matchGrupo = !grupo || u.grupo === grupo;
+
     const matchSubgrupo = !subgrupo || u.subgrupo === subgrupo;
+
     const matchBusqueda =
       !busqueda || `${u.nombre} ${u.apellido}`.toLowerCase().includes(busqueda);
 
     return matchGrupo && matchSubgrupo && matchBusqueda;
   });
 
-  renderTabla(filtrados);
+  // Primero filtramos y después ordenamos
+  const ordenados = ordenarUsuarios(filtrados);
+
+  renderTabla(ordenados);
 }
 
 // =========================================================
@@ -204,18 +314,29 @@ function aplicarFiltros() {
 
 function renderTabla(usuarios) {
   const tbody = document.getElementById("tblHorariosBody");
+
   tbody.innerHTML = "";
 
   usuarios.forEach((u) => {
     const configurado = u.dias.length > 0;
+
     const puedeVer = esAdmin || u.id_usuario === idUsuarioActual;
 
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
-      <td>${u.apellido}, ${u.nombre}</td>
-      <td>${u.grupo}</td>
-      <td>${u.subgrupo}</td>
+      <td>
+        ${escapeHtml(`${u.apellido}, ${u.nombre}`)}
+      </td>
+
+      <td>
+        ${escapeHtml(u.grupo ?? "-")}
+      </td>
+
+      <td>
+        ${escapeHtml(u.subgrupo ?? "-")}
+      </td>
+
       <td>
         ${
           configurado
@@ -223,6 +344,7 @@ function renderTabla(usuarios) {
             : '<span class="badge bg-warning text-dark">Sin horario</span>'
         }
       </td>
+
       <td>
         <button
           class="btn btn-sm btn-outline-primary"
@@ -236,6 +358,23 @@ function renderTabla(usuarios) {
 
     tbody.appendChild(tr);
   });
+}
+
+// =========================================================
+// ESCAPE HTML
+// =========================================================
+
+function escapeHtml(str) {
+  if (str === null || str === undefined) {
+    return "";
+  }
+
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 // =========================================================
@@ -257,7 +396,6 @@ const DIAS_SEMANA = [
 ];
 
 // Edificios disponibles.
-// Para agregar nuevos edificios, simplemente sumarlos a esta lista.
 const EDIFICIOS_DISPONIBLES = [
   "BsAs - Optima",
   "BsAs - Golf",
@@ -275,18 +413,22 @@ async function verDetalle(idUsuario) {
   // para el título del modal, pero los DÍAS los pedimos siempre
   // al servidor para asegurarnos de mostrar datos frescos.
   const usuario = usuariosData.find((u) => u.id_usuario === idUsuario);
+
   if (!usuario) return;
 
   document.getElementById("modalHorarioTitulo").textContent =
     `${usuario.apellido}, ${usuario.nombre}`;
 
   idUsuarioModalActual = idUsuario;
+
   resetFooterModal();
 
-  // Mostramos el modal con un estado de carga mientras llega la respuesta.
+  // Mostramos el modal con un estado de carga
   document.getElementById("tblDetalleBody").innerHTML = `
     <tr>
-      <td colspan="7" class="text-center text-muted">Cargando...</td>
+      <td colspan="7" class="text-center text-muted">
+        Cargando...
+      </td>
     </tr>
   `;
 
@@ -346,6 +488,7 @@ async function verDetalle(idUsuario) {
 
 function renderDetalle(dias) {
   const tbody = document.getElementById("tblDetalleBody");
+
   tbody.innerHTML = "";
 
   const ordenDias = [
@@ -386,20 +529,21 @@ function renderDetalle(dias) {
 
     if (sinDatos) {
       tr.innerHTML = `
-        <td>${d.dia}</td>
+        <td>${escapeHtml(d.dia)}</td>
+
         <td colspan="6" class="text-center text-muted">
           No aplica / No trabaja
         </td>
       `;
     } else {
       tr.innerHTML = `
-        <td>${d.dia}</td>
-        <td>${d.in1 ?? "-"}</td>
-        <td>${d.out1 ?? "-"}</td>
-        <td>${d.in2 ?? "-"}</td>
-        <td>${d.out2 ?? "-"}</td>
-        <td>${d.modalidad ?? "-"}</td>
-        <td>${d.edificio ?? "-"}</td>
+        <td>${escapeHtml(d.dia)}</td>
+        <td>${escapeHtml(d.in1 ?? "-")}</td>
+        <td>${escapeHtml(d.out1 ?? "-")}</td>
+        <td>${escapeHtml(d.in2 ?? "-")}</td>
+        <td>${escapeHtml(d.out2 ?? "-")}</td>
+        <td>${escapeHtml(d.modalidad ?? "-")}</td>
+        <td>${escapeHtml(d.edificio ?? "-")}</td>
       `;
     }
 
@@ -415,11 +559,17 @@ function modificarHorario(idUsuario) {
   renderFormularioEdicion(diasActuales);
 
   document.getElementById("modalHorarioFooter").innerHTML = `
-    <button class="btn btn-success" onclick="guardarHorario()">
+    <button
+      class="btn btn-success"
+      onclick="guardarHorario()"
+    >
       Guardar
     </button>
 
-    <button class="btn btn-secondary" onclick="cancelarEdicion()">
+    <button
+      class="btn btn-secondary"
+      onclick="cancelarEdicion()"
+    >
       Cancelar
     </button>
   `;
@@ -427,6 +577,7 @@ function modificarHorario(idUsuario) {
 
 function renderFormularioEdicion(dias) {
   const tbody = document.getElementById("tblDetalleBody");
+
   tbody.innerHTML = "";
 
   DIAS_SEMANA.forEach((nombreDia) => {
@@ -517,7 +668,9 @@ function renderFormularioEdicion(dias) {
           data-campo="edificio"
           ${existente.modalidad === "Home" ? "disabled" : ""}
         >
-          <option value="">Seleccionar edificio</option>
+          <option value="">
+            Seleccionar edificio
+          </option>
 
           ${EDIFICIOS_DISPONIBLES.map(
             (edificio) =>
@@ -534,9 +687,7 @@ function renderFormularioEdicion(dias) {
 
     tbody.appendChild(tr);
 
-    // ============================================
     // HOME -> DESHABILITAR EDIFICIO
-    // ============================================
 
     const selectModalidad = tr.querySelector('[data-campo="modalidad"]');
 
@@ -582,6 +733,7 @@ function validarHorario(dia) {
     if (!campo.valor) continue;
 
     const [hora, minutos] = campo.valor.split(":").map(Number);
+
     const minutosActuales = hora * 60 + minutos;
 
     if (ultimoHorario !== null && minutosActuales <= ultimoHorario) {
@@ -602,10 +754,12 @@ function validarHorario(dia) {
 
 async function guardarHorario() {
   const filas = document.querySelectorAll("#tblDetalleBody tr");
+
   const dias = [];
 
   filas.forEach((tr) => {
     const campos = tr.querySelectorAll("[data-dia]");
+
     const diaObj = {
       dia: campos[0].dataset.dia,
     };
@@ -660,11 +814,13 @@ async function guardarHorario() {
     diasActuales = dias;
 
     renderDetalle(dias);
+
     resetFooterModal();
 
     cargarHorarios();
   } catch (error) {
     console.error("Error guardando el horario:", error);
+
     alert("Error al guardar el horario.");
   }
 }
@@ -673,6 +829,10 @@ function cancelarEdicion() {
   renderDetalle(diasActuales);
   resetFooterModal();
 }
+
+// =========================================================
+// LOG
+// =========================================================
 
 async function verLogHorario(idUsuario) {
   try {
@@ -703,12 +863,16 @@ async function verLogHorario(idUsuario) {
     document.getElementById("tblDetalleBody").innerHTML = `
       <tr>
         <td colspan="7">
-          <pre class="mb-0" style="white-space: pre-wrap;">${log}</pre>
+          <pre
+            class="mb-0"
+            style="white-space: pre-wrap;"
+          >${escapeHtml(log)}</pre>
         </td>
       </tr>
     `;
   } catch (error) {
     console.error("Error obteniendo el log:", error);
+
     alert("Error obteniendo el log de cambios.");
   }
 }

@@ -1017,10 +1017,19 @@ textarea.disabled-field {
   margin-left: 8px;
   text-align: left;
 }
+/* =========================================================
+   ORDENAMIENTO MANUAL DE TABLAS
+   ========================================================= */
+
 .sortable {
   cursor: pointer;
   user-select: none;
   position: relative;
+  transition: background-color 0.15s ease;
+}
+
+.sortable:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Flecha por defecto */
@@ -1040,6 +1049,15 @@ textarea.disabled-field {
 .sortable.desc::after {
   content: " ▼";
   color: #4da3ff;
+}
+
+/* =========================================================
+   TABLA DETALLE DE HORARIOS
+   ========================================================= */
+
+#tablaDetalleHorario th,
+#tablaDetalleHorario td {
+  font-size: 14px;
 }
 
 /* =========================================================
