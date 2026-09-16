@@ -68,15 +68,98 @@ async function esAdmin(pool, idUsuario) {
   );
 }
 
+async function obtenerRolUsuario(pool, idUsuario) {
+  const result = await pool.request().input("idUsuario", sql.Int, idUsuario)
+    .query(`
+      SELECT TOP 1
+        u.ID_Usuario,
+        u.Nombre,
+        u.Apellido,
+        u.Grupo,
+        g.Grupo AS Grupo_GRUPO,
+        g.Subgrupo,
+        g.Gerente,
+        g.Coordinador,
+        g.Referente
+      FROM ${schema}.USUARIO u
+      LEFT JOIN ${schema}.GRUPO g
+        ON
+          g.Gerente = CONCAT(u.Nombre, ' ', u.Apellido)
+          OR g.Coordinador = CONCAT(u.Nombre, ' ', u.Apellido)
+          OR g.Referente = CONCAT(u.Nombre, ' ', u.Apellido)
+      WHERE u.ID_Usuario = @idUsuario
+    `);
+
+  const usuario = result.recordset[0];
+
+  if (!usuario) {
+    return {
+      rol: "USER",
+      grupoUsuario: null,
+      subgrupoUsuario: null,
+    };
+  }
+
+  const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
+
+  let rol = "USER";
+  let grupoUsuario = null;
+  let subgrupoUsuario = null;
+
+  if (usuario.Gerente === nombreCompleto) {
+    rol = "GERENTE";
+  } else if (usuario.Coordinador === nombreCompleto) {
+    rol = "COORDINADOR";
+    grupoUsuario = usuario.Grupo_GRUPO || usuario.Grupo;
+  } else if (usuario.Referente === nombreCompleto) {
+    rol = "REFERENTE";
+    grupoUsuario = usuario.Grupo_GRUPO || usuario.Grupo;
+    subgrupoUsuario = usuario.Subgrupo;
+  }
+
+  return {
+    rol,
+    grupoUsuario,
+    subgrupoUsuario,
+  };
+}
+
 // =========================================================
 // OBTENER HORARIOS (grilla principal)
 // =========================================================
-
 router.get("/horarios", checkAuth, async (req, res) => {
   try {
     const pool = await poolPromise;
 
-    const result = await pool.request().query(`
+    const idSesion = req.session.user.ID_Usuario;
+    const admin = await esAdmin(pool, idSesion);
+
+    const { rol, grupoUsuario, subgrupoUsuario } = await obtenerRolUsuario(
+      pool,
+      idSesion,
+    );
+
+    let filtroRol = "";
+
+    if (!admin && rol === "COORDINADOR") {
+      filtroRol = `AND g.Grupo = @grupoUsuario`;
+    } else if (!admin && rol === "REFERENTE") {
+      filtroRol = `AND g.Subgrupo = @subgrupoUsuario`;
+    } else if (!admin && rol === "USER") {
+      filtroRol = `AND u.ID_Usuario = @idSesion`;
+    }
+
+    const request = pool.request().input("idSesion", sql.Int, idSesion);
+
+    if (rol === "COORDINADOR") {
+      request.input("grupoUsuario", sql.VarChar, grupoUsuario);
+    }
+
+    if (rol === "REFERENTE") {
+      request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
+    }
+
+    const result = await request.query(`
       SELECT
           u.ID_Usuario,
           u.Legajo,
@@ -109,6 +192,7 @@ router.get("/horarios", checkAuth, async (req, res) => {
 
       WHERE
           u.Vigencia_Hasta IS NULL
+          ${filtroRol}
 
       ORDER BY
           g.Grupo,
@@ -148,11 +232,60 @@ router.get("/horarios/:id_usuario", checkAuth, async (req, res) => {
 
     const admin = await esAdmin(pool, idSesion);
 
-    if (!admin && Number(id_usuario) !== Number(idSesion)) {
+    const { rol, grupoUsuario, subgrupoUsuario } = await obtenerRolUsuario(
+      pool,
+      idSesion,
+    );
+
+    if (!admin && rol === "USER" && Number(id_usuario) !== Number(idSesion)) {
       return res.status(403).json({
         success: false,
         mensaje: "No tenés permiso para ver este horario.",
       });
+    }
+
+    if (!admin && rol === "COORDINADOR") {
+      const permiso = await pool
+        .request()
+        .input("id_usuario", sql.Int, id_usuario)
+        .input("grupoUsuario", sql.VarChar, grupoUsuario).query(`
+      SELECT 1
+      FROM ${schema}.USUARIO_GRUPO ug
+      INNER JOIN ${schema}.GRUPO g
+        ON g.ID_Grupo = ug.ID_Grupo
+      WHERE ug.ID_Usuario = @id_usuario
+        AND ug.Vigencia_Hasta IS NULL
+        AND g.Grupo = @grupoUsuario
+    `);
+
+      if (permiso.recordset.length === 0) {
+        return res.status(403).json({
+          success: false,
+          mensaje: "No tenés permiso para ver este horario.",
+        });
+      }
+    }
+
+    if (!admin && rol === "REFERENTE") {
+      const permiso = await pool
+        .request()
+        .input("id_usuario", sql.Int, id_usuario)
+        .input("subgrupoUsuario", sql.VarChar, subgrupoUsuario).query(`
+      SELECT 1
+      FROM ${schema}.USUARIO_GRUPO ug
+      INNER JOIN ${schema}.GRUPO g
+        ON g.ID_Grupo = ug.ID_Grupo
+      WHERE ug.ID_Usuario = @id_usuario
+        AND ug.Vigencia_Hasta IS NULL
+        AND g.Subgrupo = @subgrupoUsuario
+    `);
+
+      if (permiso.recordset.length === 0) {
+        return res.status(403).json({
+          success: false,
+          mensaje: "No tenés permiso para ver este horario.",
+        });
+      }
     }
 
     const result = await pool.request().input("id_usuario", sql.Int, id_usuario)
@@ -230,11 +363,60 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
 
     const admin = await esAdmin(pool, idSesion);
 
-    if (!admin && Number(id_usuario) !== Number(idSesion)) {
+    const { rol, grupoUsuario, subgrupoUsuario } = await obtenerRolUsuario(
+      pool,
+      idSesion,
+    );
+
+    if (!admin && rol === "USER" && Number(id_usuario) !== Number(idSesion)) {
       return res.status(403).json({
         success: false,
         mensaje: "No tenés permiso para modificar este horario.",
       });
+    }
+
+    if (!admin && rol === "COORDINADOR") {
+      const permiso = await pool
+        .request()
+        .input("id_usuario", sql.Int, id_usuario)
+        .input("grupoUsuario", sql.VarChar, grupoUsuario).query(`
+      SELECT 1
+      FROM ${schema}.USUARIO_GRUPO ug
+      INNER JOIN ${schema}.GRUPO g
+        ON g.ID_Grupo = ug.ID_Grupo
+      WHERE ug.ID_Usuario = @id_usuario
+        AND ug.Vigencia_Hasta IS NULL
+        AND g.Grupo = @grupoUsuario
+    `);
+
+      if (permiso.recordset.length === 0) {
+        return res.status(403).json({
+          success: false,
+          mensaje: "No tenés permiso para modificar este horario.",
+        });
+      }
+    }
+
+    if (!admin && rol === "REFERENTE") {
+      const permiso = await pool
+        .request()
+        .input("id_usuario", sql.Int, id_usuario)
+        .input("subgrupoUsuario", sql.VarChar, subgrupoUsuario).query(`
+      SELECT 1
+      FROM ${schema}.USUARIO_GRUPO ug
+      INNER JOIN ${schema}.GRUPO g
+        ON g.ID_Grupo = ug.ID_Grupo
+      WHERE ug.ID_Usuario = @id_usuario
+        AND ug.Vigencia_Hasta IS NULL
+        AND g.Subgrupo = @subgrupoUsuario
+    `);
+
+      if (permiso.recordset.length === 0) {
+        return res.status(403).json({
+          success: false,
+          mensaje: "No tenés permiso para modificar este horario.",
+        });
+      }
     }
 
     const transaction = new sql.Transaction(pool);
