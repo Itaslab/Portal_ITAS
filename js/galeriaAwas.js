@@ -12,6 +12,9 @@ let awaPendienteCambioEstado = null;
 let frecuenciaRPAActual = null;
 let frecuenciaRPA2Actual = null;
 
+let sortColumnAwas = null;
+let sortDirectionAwas = "asc";
+
 // ============================
 // Helpers
 // ============================
@@ -187,6 +190,45 @@ async function cargarPermisosAwas() {
   }
 }
 
+function ordenarAWAS(lista) {
+  if (!sortColumnAwas) {
+    return [...lista];
+  }
+
+  return [...lista].sort((a, b) => {
+    let valorA = a[sortColumnAwas];
+    let valorB = b[sortColumnAwas];
+
+    if (valorA == null) valorA = "";
+    if (valorB == null) valorB = "";
+
+    valorA = valorA.toString().toLowerCase();
+    valorB = valorB.toString().toLowerCase();
+
+    if (sortDirectionAwas === "asc") {
+      return valorA.localeCompare(valorB, undefined, {
+        numeric: true,
+        sensitivity: "base",
+      });
+    }
+
+    return valorB.localeCompare(valorA, undefined, {
+      numeric: true,
+      sensitivity: "base",
+    });
+  });
+}
+
+function actualizarFlechasOrdenAwas() {
+  document.querySelectorAll("#tablaAwas thead .sortable").forEach((th) => {
+    th.classList.remove("asc", "desc");
+
+    if (th.dataset.column === sortColumnAwas) {
+      th.classList.add(sortDirectionAwas);
+    }
+  });
+}
+
 async function cargarAWAS() {
   try {
     const res = await fetch(`${basePath}/api/awas`);
@@ -202,7 +244,9 @@ async function cargarAWAS() {
     const tbody = document.querySelector("#tablaAwas tbody");
     tbody.innerHTML = "";
 
-    data.forEach((awa) => {
+    const datosOrdenados = ordenarAWAS(data);
+
+    datosOrdenados.forEach((awa) => {
       const estadoColor =
         awa.Estado === "Activo"
           ? "text-success"
@@ -1007,13 +1051,12 @@ function aplicarFiltros() {
   const filtroTitulo = document
     .getElementById("filtroTitulo")
     .value.toLowerCase();
+
   const filtroEstado = document.getElementById("filtroEstado").value;
 
-  const filas = document.querySelectorAll("#tablaAwas tbody tr");
-
-  filas.forEach((fila) => {
-    const titulo = fila.children[2].textContent.toLowerCase();
-    const estado = fila.children[5].textContent;
+  const datosFiltrados = awasGlobal.filter((awa) => {
+    const titulo = (awa.Titulo ?? "").toLowerCase();
+    const estado = awa.Estado ?? "";
 
     let mostrar = true;
 
@@ -1027,9 +1070,150 @@ function aplicarFiltros() {
       mostrar = false;
     }
 
-    fila.style.display = mostrar ? "" : "none";
+    return mostrar;
+  });
+
+  const datosOrdenados = ordenarAWAS(datosFiltrados);
+
+  const tbody = document.querySelector("#tablaAwas tbody");
+  tbody.innerHTML = "";
+
+  datosOrdenados.forEach((awa) => {
+    const estadoColor =
+      awa.Estado === "Activo"
+        ? "text-success"
+        : awa.Estado === "Backlog" ||
+            awa.Estado === "Desarrollo" ||
+            awa.Estado === "Pendiente"
+          ? "text-warning"
+          : "text-secondary";
+
+    const row = document.createElement("tr");
+
+    const deshabilitadoPorEstado = [
+      "Backlog",
+      "Desarrollo",
+      "Pendiente",
+    ].includes(awa.Estado);
+
+    const deshabilitadoPorPermiso = !esAdminAwas;
+
+    const botonDeshabilitado =
+      deshabilitadoPorEstado || deshabilitadoPorPermiso;
+
+    const disabledAttr = botonDeshabilitado ? "disabled" : "";
+
+    const btnClass = botonDeshabilitado
+      ? "btn-secondary"
+      : awa.Estado === "Activo"
+        ? "btn-danger"
+        : "btn-success";
+
+    const btnTexto = awa.Estado === "Activo" ? "Desactivar" : "Activar";
+
+    const tituloCompleto = awa.Titulo ?? "";
+
+    const tituloVisible =
+      tituloCompleto.length > 65
+        ? `${tituloCompleto.slice(0, 65)}...`
+        : tituloCompleto;
+
+    row.innerHTML = `
+      <td>${awa.ID_WA ?? "-"}</td>
+      <td>${awa.ID_AWA ?? "-"}</td>
+
+      <td>
+        <div class="d-flex align-items-center gap-1">
+
+          <i
+            class="bi bi-file-earmark-text"
+            style="cursor:pointer; font-size:14px;"
+            title="Ver detalle"
+            onclick="verDetalle(${awa.ID})">
+          </i>
+
+          <span
+            class="titulo-awa"
+            title="${tituloCompleto.replace(/"/g, "&quot;")}">
+            ${tituloVisible}
+          </span>
+
+        </div>
+      </td>
+
+      <td>
+        ${
+          awa.Jira_Tarea
+            ? `<a href="https://tecocloud.atlassian.net/browse/${awa.Jira_Tarea}"
+                 target="_blank"
+                 rel="noopener noreferrer">
+                 ${awa.Jira_Tarea}
+               </a>`
+            : "-"
+        }
+      </td>
+
+      <td>${awa.Origen ?? "-"}</td>
+
+      <td class="${estadoColor} fw-bold">
+        ${awa.Estado ?? "-"}
+      </td>
+
+      <td class="text-end">
+        <div class="d-flex justify-content-end gap-2 acciones-awa">
+
+          <button
+            class="btn btn-info btn-sm text-white"
+            onclick="verJustificacion(${awa.ID})"
+            title="Ver justificación">
+            <i class="bi bi-info-circle"></i>
+            <span class="btn-text ms-1">Info</span>
+          </button>
+
+          <button
+            class="btn ${btnClass} btn-sm text-white"
+            onclick="activarAWA(${awa.ID})"
+            ${disabledAttr}
+            title="${btnTexto}">
+            <i class="bi bi-toggle-${btnTexto === "Activar" ? "on" : "off"}"></i>
+            <span class="btn-text ms-1">${btnTexto}</span>
+          </button>
+
+          <button
+            class="btn btn-primary btn-sm text-white"
+            onclick="configurarAWA(${awa.ID})"
+            title="Configurar">
+            <i class="bi bi-gear"></i>
+            <span class="btn-text ms-1">Configurar</span>
+          </button>
+
+        </div>
+      </td>
+    `;
+
+    tbody.appendChild(row);
+  });
+
+  actualizarFlechasOrdenAwas();
+}
+
+function inicializarOrdenamientoAwas() {
+  document.querySelectorAll("#tablaAwas thead .sortable").forEach((th) => {
+    th.addEventListener("click", () => {
+      const columna = th.dataset.column;
+
+      if (sortColumnAwas === columna) {
+        sortDirectionAwas = sortDirectionAwas === "asc" ? "desc" : "asc";
+      } else {
+        sortColumnAwas = columna;
+        sortDirectionAwas = "asc";
+      }
+
+      aplicarFiltros();
+    });
   });
 }
+
 function inicializarFiltros() {
   document
     .getElementById("filtroTitulo")
@@ -1061,4 +1245,5 @@ document.getElementById("inputDesde").addEventListener("change", function () {
   await cargarAWAS();
 
   inicializarFiltros();
+  inicializarOrdenamientoAwas();
 })();
