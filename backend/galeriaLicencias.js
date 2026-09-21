@@ -279,14 +279,8 @@ router.get("/usuarios", async (req, res) => {
       }
     }
 
-    console.log("=================================");
-    console.log("USUARIO SESION:", idUsuarioSesion);
-    console.log("NOMBRE:", nombreCompleto);
     console.log("ROL:", rol);
-    console.log("GRUPOS COORDINADOR:", gruposUsuario);
-    console.log("SUBGRUPOS REFERENTE:", subgruposUsuario);
-    console.log("=================================");
-
+    console.log("GRUPOS:", gruposUsuario.join(" | "));
     // =========================================================
     // QUERY DE USUARIOS
     // =========================================================
