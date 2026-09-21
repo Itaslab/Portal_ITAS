@@ -138,7 +138,12 @@ router.get("/mes", async (req, res) => {
     console.log("USUARIO:", idUsuarioSesion);
     console.log("NOMBRE:", nombreCompleto);
     console.log("ROL:", rol);
-    console.log("GRUPOS:", gruposUsuario.join(" | "));
+    console.log(
+      "GRUPOS:",
+      gruposUsuario
+        .map((item) => `${item.grupo} / ${item.subgrupo}`)
+        .join(" | "),
+    );
     console.log("SUBGRUPOS:", subgruposUsuario.join(" | "));
     console.log("=================================");
 
@@ -425,7 +430,12 @@ router.get("/usuarios", async (req, res) => {
     }
 
     console.log("ROL:", rol);
-    console.log("GRUPOS:", gruposUsuario.join(" | "));
+    console.log(
+      "GRUPOS:",
+      gruposUsuario
+        .map((item) => `${item.grupo} / ${item.subgrupo}`)
+        .join(" | "),
+    );
     // =========================================================
     // QUERY DE USUARIOS
     // =========================================================
