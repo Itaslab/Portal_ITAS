@@ -9,13 +9,6 @@ const schema = process.env.DB_SCHEMA;
 router.get("/mes", async (req, res) => {
   const { year, month, grupo, subgrupo } = req.query;
 
-  if (!year || !month) {
-    return res.status(400).json({
-      success: false,
-      error: "Debe enviar year y month",
-    });
-  }
-
   const idUsuarioSesion = req.session?.user?.ID_Usuario;
   const adminIds = [79, 81, 89, 88];
   const esAdmin = adminIds.includes(idUsuarioSesion);
@@ -27,13 +20,22 @@ router.get("/mes", async (req, res) => {
     });
   }
 
+  if (!year || !month) {
+    return res.status(400).json({
+      success: false,
+      error: "Debe enviar year y month",
+    });
+  }
+
   try {
     const inicioMes = new Date(year, month - 1, 1);
     const finMes = new Date(year, month, 0);
 
     const pool = await poolPromise;
 
-    // 🔎 Obtener usuario logueado
+    // =========================================================
+    // OBTENER TODOS LOS GRUPOS / SUBGRUPOS DEL USUARIO
+    // =========================================================
     const usuarioResult = await pool
       .request()
       .input("idUsuario", sql.Int, idUsuarioSesion).query(`
@@ -48,25 +50,15 @@ router.get("/mes", async (req, res) => {
             g.Referente
         FROM ${schema}.USUARIO u
         LEFT JOIN ${schema}.GRUPO g
-            ON (u.Nombre + ' ' + u.Apellido = g.Gerente
+            ON (
+                u.Nombre + ' ' + u.Apellido = g.Gerente
                 OR u.Nombre + ' ' + u.Apellido = g.Coordinador
-                OR u.Nombre + ' ' + u.Apellido = g.Referente)
+                OR u.Nombre + ' ' + u.Apellido = g.Referente
+            )
         WHERE u.ID_Usuario = @idUsuario
+          AND u.Vigencia_Hasta IS NULL
+        ORDER BY g.Grupo, g.Subgrupo
       `);
-
-    // 🎯 FILTRO POR ROL
-    if (esAdmin || rol === "GERENTE") {
-      // ve todo
-    } else if (rol === "COORDINADOR") {
-      request.input("grupoUsuario", sql.VarChar, usuario.Grupo);
-      query += ` AND g.Grupo = @grupoUsuario `;
-    } else if (rol === "REFERENTE") {
-      request.input("subgrupoUsuario", sql.VarChar, usuario.Subgrupo);
-      query += ` AND g.Subgrupo = @subgrupoUsuario `;
-    } else {
-      request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
-      query += ` AND l.ID_Usuario = @idUsuarioSesion `;
-    }
 
     if (usuarioResult.recordset.length === 0) {
       return res.status(403).json({
@@ -75,28 +67,81 @@ router.get("/mes", async (req, res) => {
       });
     }
 
-    const usuario = usuarioResult.recordset[0];
+    const registrosUsuario = usuarioResult.recordset;
+
+    const usuario = registrosUsuario[0];
     const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
 
-    const rol =
-      usuario.Coordinador === nombreCompleto
-        ? "COORDINADOR"
-        : usuario.Gerente === nombreCompleto
-          ? "GERENTE"
-          : usuario.Referente === nombreCompleto
-            ? "REFERENTE"
-            : "USER";
+    // =========================================================
+    // DETECTAR ROL Y RECOPILAR TODOS LOS GRUPOS / SUBGRUPOS
+    // =========================================================
 
-    console.log("Rol asignado:", rol);
+    let esGerente = false;
+    let esCoordinador = false;
+    let esReferente = false;
 
-    // 🔥 QUERY DINÁMICA (ACA ESTÁ LA CLAVE)
+    const gruposUsuario = [];
+    const subgruposUsuario = [];
+
+    for (const fila of registrosUsuario) {
+      // GERENTE
+      if (fila.Gerente === nombreCompleto) {
+        esGerente = true;
+      }
+
+      // COORDINADOR
+      if (fila.Coordinador === nombreCompleto) {
+        esCoordinador = true;
+
+        if (fila.Grupo && !gruposUsuario.includes(fila.Grupo)) {
+          gruposUsuario.push(fila.Grupo);
+        }
+      }
+
+      // REFERENTE
+      if (fila.Referente === nombreCompleto) {
+        esReferente = true;
+
+        if (fila.Subgrupo && !subgruposUsuario.includes(fila.Subgrupo)) {
+          subgruposUsuario.push(fila.Subgrupo);
+        }
+      }
+    }
+
+    // =========================================================
+    // DETERMINAR ROL FINAL
+    // =========================================================
+
+    let rol = "USER";
+
+    if (esGerente) {
+      rol = "GERENTE";
+    } else if (esCoordinador) {
+      rol = "COORDINADOR";
+    } else if (esReferente) {
+      rol = "REFERENTE";
+    }
+
+    console.log("=================================");
+    console.log("LICENCIAS /mes");
+    console.log("USUARIO:", idUsuarioSesion);
+    console.log("NOMBRE:", nombreCompleto);
+    console.log("ROL:", rol);
+    console.log("GRUPOS:", gruposUsuario.join(" | "));
+    console.log("SUBGRUPOS:", subgruposUsuario.join(" | "));
+    console.log("=================================");
+
+    // =========================================================
+    // QUERY BASE
+    // =========================================================
+
     const request = pool
       .request()
       .input("inicioMes", sql.Date, inicioMes)
       .input("finMes", sql.Date, finMes);
 
     let query = `
-      SELECT 
+      SELECT DISTINCT
           l.ID_Usuario,
           u.Nombre,
           u.Apellido,
@@ -116,30 +161,109 @@ router.get("/mes", async (req, res) => {
       INNER JOIN ${schema}.GRUPO g
           ON g.ID_Grupo = ug.ID_Grupo
       WHERE l.Fecha_Desde <= @finMes
-      AND l.Fecha_Hasta >= @inicioMes
+        AND l.Fecha_Hasta >= @inicioMes
     `;
 
-    // 🎯 FILTROS
-    if (grupo) {
-      request.input("grupo", sql.VarChar, grupo);
-      query += ` AND g.Grupo = @grupo `;
+    // =========================================================
+    // FILTRO POR ROL
+    // =========================================================
+
+    if (esAdmin || rol === "GERENTE") {
+      // Admin y Gerente ven todo.
+    } else if (rol === "COORDINADOR") {
+      // Coordinador ve TODOS sus grupos.
+
+      if (gruposUsuario.length > 0) {
+        const parametrosGrupo = [];
+
+        gruposUsuario.forEach((grupoNombre, index) => {
+          const parametro = `grupoUsuario${index}`;
+
+          request.input(parametro, sql.VarChar, grupoNombre);
+
+          parametrosGrupo.push(`@${parametro}`);
+        });
+
+        query += `
+          AND g.Grupo IN (${parametrosGrupo.join(", ")})
+        `;
+      } else {
+        // No tiene grupos asignados como coordinador.
+        query += ` AND 1 = 0 `;
+      }
+    } else if (rol === "REFERENTE") {
+      // Referente ve todos sus subgrupos.
+
+      if (subgruposUsuario.length > 0) {
+        const parametrosSubgrupo = [];
+
+        subgruposUsuario.forEach((subgrupoNombre, index) => {
+          const parametro = `subgrupoUsuario${index}`;
+
+          request.input(parametro, sql.VarChar, subgrupoNombre);
+
+          parametrosSubgrupo.push(`@${parametro}`);
+        });
+
+        query += `
+          AND g.Subgrupo IN (${parametrosSubgrupo.join(", ")})
+        `;
+      } else {
+        query += ` AND 1 = 0 `;
+      }
+    } else {
+      // USER → solamente sus propias licencias.
+
+      request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
+
+      query += `
+        AND l.ID_Usuario = @idUsuarioSesion
+      `;
     }
+
+    // =========================================================
+    // FILTROS MANUALES DE LA INTERFAZ
+    // =========================================================
 
     if (grupo && subgrupo) {
+      request.input("grupo", sql.VarChar, grupo);
+
       request.input("subgrupo", sql.VarChar, subgrupo);
-      query += ` AND g.Subgrupo = @subgrupo `;
+
+      query += `
+        AND g.Grupo = @grupo
+        AND g.Subgrupo = @subgrupo
+      `;
+    } else if (grupo) {
+      request.input("grupo", sql.VarChar, grupo);
+
+      query += `
+        AND g.Grupo = @grupo
+      `;
     }
 
-    query += ` ORDER BY g.Grupo, g.Subgrupo, u.Apellido, u.Nombre`;
+    // =========================================================
+    // ORDEN
+    // =========================================================
+
+    query += `
+      ORDER BY
+        g.Grupo,
+        g.Subgrupo,
+        u.Apellido,
+        u.Nombre
+    `;
 
     const licencias = await request.query(query);
 
     return res.json({
       success: true,
+      rol,
       data: licencias.recordset,
     });
   } catch (err) {
     console.error("Error obteniendo licencias:", err);
+
     res.status(500).json({
       success: false,
       error: err.message,
