@@ -93,8 +93,19 @@ router.get("/mes", async (req, res) => {
       if (fila.Coordinador === nombreCompleto) {
         esCoordinador = true;
 
-        if (fila.Grupo && !gruposUsuario.includes(fila.Grupo)) {
-          gruposUsuario.push(fila.Grupo);
+        // Guardamos GRUPO + SUBGRUPO
+        if (fila.Grupo && fila.Subgrupo) {
+          const existe = gruposUsuario.some(
+            (item) =>
+              item.grupo === fila.Grupo && item.subgrupo === fila.Subgrupo,
+          );
+
+          if (!existe) {
+            gruposUsuario.push({
+              grupo: fila.Grupo,
+              subgrupo: fila.Subgrupo,
+            });
+          }
         }
       }
 
@@ -171,24 +182,34 @@ router.get("/mes", async (req, res) => {
     if (esAdmin || rol === "GERENTE") {
       // Admin y Gerente ven todo.
     } else if (rol === "COORDINADOR") {
-      // Coordinador ve TODOS sus grupos.
+      // Coordinador ve solamente los GRUPOS + SUBGRUPOS
+      // donde figura como coordinador.
 
       if (gruposUsuario.length > 0) {
-        const parametrosGrupo = [];
+        const condicionesGrupo = [];
 
-        gruposUsuario.forEach((grupoNombre, index) => {
-          const parametro = `grupoUsuario${index}`;
+        gruposUsuario.forEach((item, index) => {
+          const parametroGrupo = `grupoUsuario${index}`;
+          const parametroSubgrupo = `subgrupoUsuario${index}`;
 
-          request.input(parametro, sql.VarChar, grupoNombre);
+          request.input(parametroGrupo, sql.VarChar, item.grupo);
+          request.input(parametroSubgrupo, sql.VarChar, item.subgrupo);
 
-          parametrosGrupo.push(`@${parametro}`);
+          condicionesGrupo.push(`
+        (
+          g.Grupo = @${parametroGrupo}
+          AND g.Subgrupo = @${parametroSubgrupo}
+        )
+      `);
         });
 
         query += `
-          AND g.Grupo IN (${parametrosGrupo.join(", ")})
-        `;
+      AND (
+        ${condicionesGrupo.join(" OR ")}
+      )
+    `;
       } else {
-        // No tiene grupos asignados como coordinador.
+        // No tiene grupos/subgrupos asignados como coordinador.
         query += ` AND 1 = 0 `;
       }
     } else if (rol === "REFERENTE") {
