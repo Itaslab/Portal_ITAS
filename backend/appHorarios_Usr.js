@@ -75,28 +75,23 @@ async function obtenerRolUsuario(pool, idUsuario) {
         u.ID_Usuario,
         u.Nombre,
         u.Apellido,
-
         g.Grupo AS Grupo_GRUPO,
         g.Subgrupo,
         g.Gerente,
         g.Coordinador,
         g.Referente
-
       FROM ${schema}.USUARIO u
-
-      LEFT JOIN ${schema}.USUARIO_GRUPO ug
-        ON ug.ID_Usuario = u.ID_Usuario
-        AND ug.Vigencia_Hasta IS NULL
-
       LEFT JOIN ${schema}.GRUPO g
-        ON g.ID_Grupo = ug.ID_Grupo
-
+        ON (
+          u.Nombre + ' ' + u.Apellido = g.Gerente
+          OR u.Nombre + ' ' + u.Apellido = g.Coordinador
+          OR u.Nombre + ' ' + u.Apellido = g.Referente
+        )
       WHERE u.ID_Usuario = @idUsuario
+        AND u.Vigencia_Hasta IS NULL
     `);
 
-  const usuario = result.recordset[0];
-
-  if (!usuario) {
+  if (!result.recordset.length) {
     return {
       rol: "USER",
       grupoUsuario: null,
@@ -104,6 +99,7 @@ async function obtenerRolUsuario(pool, idUsuario) {
     };
   }
 
+  const usuario = result.recordset[0];
   const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
 
   let rol = "USER";
