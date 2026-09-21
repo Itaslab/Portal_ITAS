@@ -54,6 +54,20 @@ router.get("/mes", async (req, res) => {
         WHERE u.ID_Usuario = @idUsuario
       `);
 
+    // 🎯 FILTRO POR ROL
+    if (esAdmin || rol === "GERENTE") {
+      // ve todo
+    } else if (rol === "COORDINADOR") {
+      request.input("grupoUsuario", sql.VarChar, usuario.Grupo);
+      query += ` AND g.Grupo = @grupoUsuario `;
+    } else if (rol === "REFERENTE") {
+      request.input("subgrupoUsuario", sql.VarChar, usuario.Subgrupo);
+      query += ` AND g.Subgrupo = @subgrupoUsuario `;
+    } else {
+      request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
+      query += ` AND l.ID_Usuario = @idUsuarioSesion `;
+    }
+
     if (usuarioResult.recordset.length === 0) {
       return res.status(403).json({
         success: false,
@@ -257,8 +271,11 @@ router.get("/usuarios", async (req, res) => {
     `;
 
     // 🎯 FILTRO POR ROL
-    if (esAdmin || rol === "GERENTE" || rol === "COORDINADOR") {
+    if (esAdmin || rol === "GERENTE") {
       // ve todo
+    } else if (rol === "COORDINADOR") {
+      request.input("grupoUsuario", sql.VarChar, grupoUsuario);
+      query += ` AND g.Grupo = @grupoUsuario `;
     } else if (rol === "REFERENTE") {
       request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
       query += ` AND g.Subgrupo = @subgrupoUsuario `;
