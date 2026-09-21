@@ -68,14 +68,22 @@ async function esAdmin(pool, idUsuario) {
   );
 }
 
+// =========================================================
+// ROL DEL USUARIO (misma lógica que licencias /mes y /usuarios)
+// Recorre TODAS las filas donde el usuario figura como
+// Gerente / Coordinador / Referente y junta:
+//   - gruposUsuario: pares { grupo, subgrupo } donde es coordinador
+//   - subgruposUsuario: subgrupos donde es referente
+// Prioridad de rol: GERENTE > COORDINADOR > REFERENTE > USER
+// =========================================================
 async function obtenerRolUsuario(pool, idUsuario) {
   const result = await pool.request().input("idUsuario", sql.Int, idUsuario)
     .query(`
-      SELECT TOP 1
+      SELECT
         u.ID_Usuario,
         u.Nombre,
         u.Apellido,
-        g.Grupo AS Grupo_GRUPO,
+        g.Grupo,
         g.Subgrupo,
         g.Gerente,
         g.Coordinador,
@@ -89,39 +97,163 @@ async function obtenerRolUsuario(pool, idUsuario) {
         )
       WHERE u.ID_Usuario = @idUsuario
         AND u.Vigencia_Hasta IS NULL
+      ORDER BY g.Grupo, g.Subgrupo
     `);
 
   if (!result.recordset.length) {
     return {
       rol: "USER",
-      grupoUsuario: null,
-      subgrupoUsuario: null,
+      gruposUsuario: [],
+      subgruposUsuario: [],
     };
   }
 
-  const usuario = result.recordset[0];
+  const registrosUsuario = result.recordset;
+  const usuario = registrosUsuario[0];
   const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
 
-  let rol = "USER";
-  let grupoUsuario = null;
-  let subgrupoUsuario = null;
+  let esGerente = false;
+  let esCoordinador = false;
+  let esReferente = false;
 
-  if (usuario.Gerente === nombreCompleto) {
+  const gruposUsuario = [];
+  const subgruposUsuario = [];
+
+  for (const fila of registrosUsuario) {
+    // GERENTE
+    if (fila.Gerente === nombreCompleto) {
+      esGerente = true;
+    }
+
+    // COORDINADOR
+    if (fila.Coordinador === nombreCompleto) {
+      esCoordinador = true;
+
+      if (fila.Grupo && fila.Subgrupo) {
+        const existe = gruposUsuario.some(
+          (item) =>
+            item.grupo === fila.Grupo && item.subgrupo === fila.Subgrupo,
+        );
+
+        if (!existe) {
+          gruposUsuario.push({
+            grupo: fila.Grupo,
+            subgrupo: fila.Subgrupo,
+          });
+        }
+      }
+    }
+
+    // REFERENTE
+    if (fila.Referente === nombreCompleto) {
+      esReferente = true;
+
+      if (fila.Subgrupo && !subgruposUsuario.includes(fila.Subgrupo)) {
+        subgruposUsuario.push(fila.Subgrupo);
+      }
+    }
+  }
+
+  let rol = "USER";
+
+  if (esGerente) {
     rol = "GERENTE";
-  } else if (usuario.Coordinador === nombreCompleto) {
+  } else if (esCoordinador) {
     rol = "COORDINADOR";
-    grupoUsuario = usuario.Grupo_GRUPO;
-  } else if (usuario.Referente === nombreCompleto) {
+  } else if (esReferente) {
     rol = "REFERENTE";
-    grupoUsuario = usuario.Grupo_GRUPO;
-    subgrupoUsuario = usuario.Subgrupo;
   }
 
   return {
     rol,
-    grupoUsuario,
-    subgrupoUsuario,
+    gruposUsuario,
+    subgruposUsuario,
   };
+}
+
+// =========================================================
+// FILTRO POR ROL (COORDINADOR / REFERENTE)
+// Agrega los parámetros al request y devuelve el SQL a
+// concatenar en el WHERE. Usa el alias "g" (tabla GRUPO).
+// GERENTE y USER se resuelven fuera de esta función.
+// =========================================================
+function construirFiltroRol(request, { rol, gruposUsuario, subgruposUsuario }) {
+  if (rol === "COORDINADOR") {
+    // Coordinador ve solamente los pares GRUPO + SUBGRUPO
+    // donde figura como coordinador.
+    if (gruposUsuario.length === 0) {
+      return ` AND 1 = 0 `;
+    }
+
+    const condiciones = gruposUsuario.map((item, index) => {
+      const parametroGrupo = `grupoUsuario${index}`;
+      const parametroSubgrupo = `subgrupoUsuario${index}`;
+
+      request.input(parametroGrupo, sql.VarChar, item.grupo);
+      request.input(parametroSubgrupo, sql.VarChar, item.subgrupo);
+
+      return `(g.Grupo = @${parametroGrupo} AND g.Subgrupo = @${parametroSubgrupo})`;
+    });
+
+    return ` AND (${condiciones.join(" OR ")}) `;
+  }
+
+  if (rol === "REFERENTE") {
+    // Referente ve todos sus subgrupos.
+    if (subgruposUsuario.length === 0) {
+      return ` AND 1 = 0 `;
+    }
+
+    const parametros = subgruposUsuario.map((subgrupoNombre, index) => {
+      const parametro = `subgrupoUsuario${index}`;
+
+      request.input(parametro, sql.VarChar, subgrupoNombre);
+
+      return `@${parametro}`;
+    });
+
+    return ` AND g.Subgrupo IN (${parametros.join(", ")}) `;
+  }
+
+  return "";
+}
+
+// =========================================================
+// PERMISO SOBRE UN USUARIO (para ver / modificar su horario)
+// =========================================================
+async function tienePermisoSobreUsuario(
+  pool,
+  idUsuarioObjetivo,
+  idSesion,
+  ctx,
+) {
+  // Un USER solo puede sobre sí mismo
+  if (ctx.rol === "USER") {
+    return Number(idUsuarioObjetivo) === Number(idSesion);
+  }
+
+  // Gerente sin restricción
+  if (ctx.rol === "GERENTE") {
+    return true;
+  }
+
+  const request = pool
+    .request()
+    .input("id_usuario", sql.Int, idUsuarioObjetivo);
+
+  const filtroRol = construirFiltroRol(request, ctx);
+
+  const permiso = await request.query(`
+    SELECT 1
+    FROM ${schema}.USUARIO_GRUPO ug
+    INNER JOIN ${schema}.GRUPO g
+      ON g.ID_Grupo = ug.ID_Grupo
+    WHERE ug.ID_Usuario = @id_usuario
+      AND ug.Vigencia_Hasta IS NULL
+      ${filtroRol}
+  `);
+
+  return permiso.recordset.length > 0;
 }
 
 // =========================================================
@@ -134,33 +266,39 @@ router.get("/horarios", checkAuth, async (req, res) => {
     const idSesion = req.session.user.ID_Usuario;
     const admin = await esAdmin(pool, idSesion);
 
-    const { rol, grupoUsuario, subgrupoUsuario } = await obtenerRolUsuario(
-      pool,
-      idSesion,
+    const ctx = await obtenerRolUsuario(pool, idSesion);
+    const { rol, gruposUsuario, subgruposUsuario } = ctx;
+
+    console.log("=================================");
+    console.log("HORARIOS /horarios");
+    console.log("USUARIO:", idSesion);
+    console.log("ADMIN:", admin);
+    console.log("ROL:", rol);
+    console.log(
+      "GRUPOS:",
+      gruposUsuario
+        .map((item) => `${item.grupo} / ${item.subgrupo}`)
+        .join(" | "),
     );
+    console.log("SUBGRUPOS:", subgruposUsuario.join(" | "));
+    console.log("=================================");
+
+    const request = pool.request();
 
     let filtroRol = "";
 
-    if (!admin && rol === "COORDINADOR") {
-      filtroRol = `AND g.Grupo = @grupoUsuario`;
-    } else if (!admin && rol === "REFERENTE") {
-      filtroRol = `AND g.Subgrupo = @subgrupoUsuario`;
-    } else if (!admin && rol === "USER") {
-      filtroRol = `AND u.ID_Usuario = @idSesion`;
-    }
-
-    const request = pool.request().input("idSesion", sql.Int, idSesion);
-
-    if (rol === "COORDINADOR") {
-      request.input("grupoUsuario", sql.VarChar, grupoUsuario);
-    }
-
-    if (rol === "REFERENTE") {
-      request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
+    if (admin || rol === "GERENTE") {
+      // Admin y Gerente ven todo.
+    } else if (rol === "COORDINADOR" || rol === "REFERENTE") {
+      filtroRol = construirFiltroRol(request, ctx);
+    } else {
+      // USER → solamente él mismo
+      request.input("idSesion", sql.Int, idSesion);
+      filtroRol = ` AND u.ID_Usuario = @idSesion `;
     }
 
     const result = await request.query(`
-      SELECT
+      SELECT DISTINCT
           u.ID_Usuario,
           u.Legajo,
           u.Nombre,
@@ -232,55 +370,17 @@ router.get("/horarios/:id_usuario", checkAuth, async (req, res) => {
 
     const admin = await esAdmin(pool, idSesion);
 
-    const { rol, grupoUsuario, subgrupoUsuario } = await obtenerRolUsuario(
-      pool,
-      idSesion,
-    );
+    const ctx = await obtenerRolUsuario(pool, idSesion);
 
-    if (!admin && rol === "USER" && Number(id_usuario) !== Number(idSesion)) {
-      return res.status(403).json({
-        success: false,
-        mensaje: "No tenés permiso para ver este horario.",
-      });
-    }
+    if (!admin) {
+      const permitido = await tienePermisoSobreUsuario(
+        pool,
+        id_usuario,
+        idSesion,
+        ctx,
+      );
 
-    if (!admin && rol === "COORDINADOR") {
-      const permiso = await pool
-        .request()
-        .input("id_usuario", sql.Int, id_usuario)
-        .input("grupoUsuario", sql.VarChar, grupoUsuario).query(`
-      SELECT 1
-      FROM ${schema}.USUARIO_GRUPO ug
-      INNER JOIN ${schema}.GRUPO g
-        ON g.ID_Grupo = ug.ID_Grupo
-      WHERE ug.ID_Usuario = @id_usuario
-        AND ug.Vigencia_Hasta IS NULL
-        AND g.Grupo = @grupoUsuario
-    `);
-
-      if (permiso.recordset.length === 0) {
-        return res.status(403).json({
-          success: false,
-          mensaje: "No tenés permiso para ver este horario.",
-        });
-      }
-    }
-
-    if (!admin && rol === "REFERENTE") {
-      const permiso = await pool
-        .request()
-        .input("id_usuario", sql.Int, id_usuario)
-        .input("subgrupoUsuario", sql.VarChar, subgrupoUsuario).query(`
-      SELECT 1
-      FROM ${schema}.USUARIO_GRUPO ug
-      INNER JOIN ${schema}.GRUPO g
-        ON g.ID_Grupo = ug.ID_Grupo
-      WHERE ug.ID_Usuario = @id_usuario
-        AND ug.Vigencia_Hasta IS NULL
-        AND g.Subgrupo = @subgrupoUsuario
-    `);
-
-      if (permiso.recordset.length === 0) {
+      if (!permitido) {
         return res.status(403).json({
           success: false,
           mensaje: "No tenés permiso para ver este horario.",
@@ -363,55 +463,17 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
 
     const admin = await esAdmin(pool, idSesion);
 
-    const { rol, grupoUsuario, subgrupoUsuario } = await obtenerRolUsuario(
-      pool,
-      idSesion,
-    );
+    const ctx = await obtenerRolUsuario(pool, idSesion);
 
-    if (!admin && rol === "USER" && Number(id_usuario) !== Number(idSesion)) {
-      return res.status(403).json({
-        success: false,
-        mensaje: "No tenés permiso para modificar este horario.",
-      });
-    }
+    if (!admin) {
+      const permitido = await tienePermisoSobreUsuario(
+        pool,
+        id_usuario,
+        idSesion,
+        ctx,
+      );
 
-    if (!admin && rol === "COORDINADOR") {
-      const permiso = await pool
-        .request()
-        .input("id_usuario", sql.Int, id_usuario)
-        .input("grupoUsuario", sql.VarChar, grupoUsuario).query(`
-      SELECT 1
-      FROM ${schema}.USUARIO_GRUPO ug
-      INNER JOIN ${schema}.GRUPO g
-        ON g.ID_Grupo = ug.ID_Grupo
-      WHERE ug.ID_Usuario = @id_usuario
-        AND ug.Vigencia_Hasta IS NULL
-        AND g.Grupo = @grupoUsuario
-    `);
-
-      if (permiso.recordset.length === 0) {
-        return res.status(403).json({
-          success: false,
-          mensaje: "No tenés permiso para modificar este horario.",
-        });
-      }
-    }
-
-    if (!admin && rol === "REFERENTE") {
-      const permiso = await pool
-        .request()
-        .input("id_usuario", sql.Int, id_usuario)
-        .input("subgrupoUsuario", sql.VarChar, subgrupoUsuario).query(`
-      SELECT 1
-      FROM ${schema}.USUARIO_GRUPO ug
-      INNER JOIN ${schema}.GRUPO g
-        ON g.ID_Grupo = ug.ID_Grupo
-      WHERE ug.ID_Usuario = @id_usuario
-        AND ug.Vigencia_Hasta IS NULL
-        AND g.Subgrupo = @subgrupoUsuario
-    `);
-
-      if (permiso.recordset.length === 0) {
+      if (!permitido) {
         return res.status(403).json({
           success: false,
           mensaje: "No tenés permiso para modificar este horario.",
@@ -608,10 +670,7 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
       if (cambios.length > 0) {
         const fecha = new Date().toLocaleString("es-AR");
 
-        nuevoLog += `\
-${fecha} - Modificación realizada por ID Usuario ${nombreUsuario}
-
-`;
+        nuevoLog += `${fecha} - Modificación realizada por ID Usuario ${nombreUsuario}\n\n`;
 
         for (const cambio of cambios) {
           nuevoLog += `${cambio.dia}:\n`;
