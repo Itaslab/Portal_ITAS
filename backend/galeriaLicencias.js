@@ -337,10 +337,6 @@ router.get("/subgrupos", async (req, res) => {
 // =============================
 // OBTENER USUARIOS (CON GRUPO)
 // =============================
-
-// =============================
-// OBTENER USUARIOS (CON GRUPO)
-// =============================
 router.get("/usuarios", async (req, res) => {
   const { grupo, subgrupo } = req.query;
 
@@ -397,31 +393,45 @@ router.get("/usuarios", async (req, res) => {
     const usuario = registrosUsuario[0];
     const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
 
-    let rol = "USER";
-    let gruposUsuario = [];
-    let subgruposUsuario = [];
+    // =========================================================
+    // DETECTAR ROL Y RECOPILAR TODOS LOS GRUPOS / SUBGRUPOS
+    // (misma lógica que /mes: banderas + pares grupo/subgrupo)
+    // =========================================================
+    let esGerente = false;
+    let esCoordinador = false;
+    let esReferente = false;
 
-    // =========================================================
-    // DETECTAR ROL Y RECOPILAR TODOS LOS GRUPOS/SUBGRUPOS
-    // =========================================================
+    const gruposUsuario = []; // pares { grupo, subgrupo } donde es coordinador
+    const subgruposUsuario = []; // subgrupos donde es referente
+
     for (const fila of registrosUsuario) {
       // GERENTE
       if (fila.Gerente === nombreCompleto) {
-        rol = "GERENTE";
+        esGerente = true;
       }
 
       // COORDINADOR
       if (fila.Coordinador === nombreCompleto) {
-        rol = "COORDINADOR";
+        esCoordinador = true;
 
-        if (fila.Grupo && !gruposUsuario.includes(fila.Grupo)) {
-          gruposUsuario.push(fila.Grupo);
+        if (fila.Grupo && fila.Subgrupo) {
+          const existe = gruposUsuario.some(
+            (item) =>
+              item.grupo === fila.Grupo && item.subgrupo === fila.Subgrupo,
+          );
+
+          if (!existe) {
+            gruposUsuario.push({
+              grupo: fila.Grupo,
+              subgrupo: fila.Subgrupo,
+            });
+          }
         }
       }
 
       // REFERENTE
       if (fila.Referente === nombreCompleto) {
-        rol = "REFERENTE";
+        esReferente = true;
 
         if (fila.Subgrupo && !subgruposUsuario.includes(fila.Subgrupo)) {
           subgruposUsuario.push(fila.Subgrupo);
@@ -429,6 +439,21 @@ router.get("/usuarios", async (req, res) => {
       }
     }
 
+    // Prioridad: GERENTE > COORDINADOR > REFERENTE > USER
+    let rol = "USER";
+
+    if (esGerente) {
+      rol = "GERENTE";
+    } else if (esCoordinador) {
+      rol = "COORDINADOR";
+    } else if (esReferente) {
+      rol = "REFERENTE";
+    }
+
+    console.log("=================================");
+    console.log("LICENCIAS /usuarios");
+    console.log("USUARIO:", idUsuarioSesion);
+    console.log("NOMBRE:", nombreCompleto);
     console.log("ROL:", rol);
     console.log(
       "GRUPOS:",
@@ -436,6 +461,9 @@ router.get("/usuarios", async (req, res) => {
         .map((item) => `${item.grupo} / ${item.subgrupo}`)
         .join(" | "),
     );
+    console.log("SUBGRUPOS:", subgruposUsuario.join(" | "));
+    console.log("=================================");
+
     // =========================================================
     // QUERY DE USUARIOS
     // =========================================================
@@ -464,24 +492,33 @@ router.get("/usuarios", async (req, res) => {
     if (esAdmin || rol === "GERENTE") {
       // Admin y Gerente ven todo
     } else if (rol === "COORDINADOR") {
-      // El Coordinador ve TODOS sus grupos
+      // Coordinador ve solamente los pares GRUPO + SUBGRUPO
+      // donde figura como coordinador.
       if (gruposUsuario.length > 0) {
-        const parametrosGrupo = [];
+        const condicionesGrupo = [];
 
-        gruposUsuario.forEach((grupoNombre, index) => {
-          const parametro = `grupoUsuario${index}`;
+        gruposUsuario.forEach((item, index) => {
+          const parametroGrupo = `grupoUsuario${index}`;
+          const parametroSubgrupo = `subgrupoUsuario${index}`;
 
-          request.input(parametro, sql.VarChar, grupoNombre);
+          request.input(parametroGrupo, sql.VarChar, item.grupo);
+          request.input(parametroSubgrupo, sql.VarChar, item.subgrupo);
 
-          parametrosGrupo.push(`@${parametro}`);
+          condicionesGrupo.push(`
+            (
+              g.Grupo = @${parametroGrupo}
+              AND g.Subgrupo = @${parametroSubgrupo}
+            )
+          `);
         });
 
         query += `
-          AND g.Grupo IN (${parametrosGrupo.join(", ")})
+          AND (
+            ${condicionesGrupo.join(" OR ")}
+          )
         `;
       } else {
-        // Si por algún motivo no tiene grupos,
-        // no mostramos usuarios
+        // Sin grupos/subgrupos como coordinador: no mostramos usuarios
         query += ` AND 1 = 0 `;
       }
     } else if (rol === "REFERENTE") {
