@@ -187,6 +187,10 @@ router.get("/subgrupos", async (req, res) => {
 // =============================
 // OBTENER USUARIOS (CON GRUPO)
 // =============================
+
+// =============================
+// OBTENER USUARIOS (CON GRUPO)
+// =============================
 router.get("/usuarios", async (req, res) => {
   const { grupo, subgrupo } = req.query;
 
@@ -204,7 +208,8 @@ router.get("/usuarios", async (req, res) => {
   try {
     const pool = await poolPromise;
 
-    // 🔎 Obtener datos del usuario logueado
+    // 🔎 Obtener TODOS los grupos donde el usuario logueado
+    // figura como Gerente, Coordinador o Referente
     const usuarioResult = await pool
       .request()
       .input("idUsuario", sql.Int, idUsuarioSesion).query(`
@@ -219,11 +224,14 @@ router.get("/usuarios", async (req, res) => {
             g.Referente
         FROM ${schema}.USUARIO u
         LEFT JOIN ${schema}.GRUPO g
-            ON (u.Nombre + ' ' + u.Apellido = g.Gerente
+            ON (
+                u.Nombre + ' ' + u.Apellido = g.Gerente
                 OR u.Nombre + ' ' + u.Apellido = g.Coordinador
-                OR u.Nombre + ' ' + u.Apellido = g.Referente)
+                OR u.Nombre + ' ' + u.Apellido = g.Referente
+            )
         WHERE u.ID_Usuario = @idUsuario
-        AND u.Vigencia_Hasta IS NULL
+          AND u.Vigencia_Hasta IS NULL
+        ORDER BY g.Grupo, g.Subgrupo
       `);
 
     if (usuarioResult.recordset.length === 0) {
@@ -233,24 +241,55 @@ router.get("/usuarios", async (req, res) => {
       });
     }
 
-    const usuario = usuarioResult.recordset[0];
+    const registrosUsuario = usuarioResult.recordset;
+
+    // Tomamos los datos básicos del usuario desde la primera fila
+    const usuario = registrosUsuario[0];
     const nombreCompleto = `${usuario.Nombre} ${usuario.Apellido}`;
 
     let rol = "USER";
-    let grupoUsuario = null;
-    let subgrupoUsuario = null;
+    let gruposUsuario = [];
+    let subgruposUsuario = [];
 
-    if (usuario.Gerente === nombreCompleto) {
-      rol = "GERENTE";
-    } else if (usuario.Coordinador === nombreCompleto) {
-      rol = "COORDINADOR";
-      grupoUsuario = usuario.Grupo;
-    } else if (usuario.Referente === nombreCompleto) {
-      rol = "REFERENTE";
-      grupoUsuario = usuario.Grupo;
-      subgrupoUsuario = usuario.Subgrupo;
+    // =========================================================
+    // DETECTAR ROL Y RECOPILAR TODOS LOS GRUPOS/SUBGRUPOS
+    // =========================================================
+    for (const fila of registrosUsuario) {
+      // GERENTE
+      if (fila.Gerente === nombreCompleto) {
+        rol = "GERENTE";
+      }
+
+      // COORDINADOR
+      if (fila.Coordinador === nombreCompleto) {
+        rol = "COORDINADOR";
+
+        if (fila.Grupo && !gruposUsuario.includes(fila.Grupo)) {
+          gruposUsuario.push(fila.Grupo);
+        }
+      }
+
+      // REFERENTE
+      if (fila.Referente === nombreCompleto) {
+        rol = "REFERENTE";
+
+        if (fila.Subgrupo && !subgruposUsuario.includes(fila.Subgrupo)) {
+          subgruposUsuario.push(fila.Subgrupo);
+        }
+      }
     }
 
+    console.log("=================================");
+    console.log("USUARIO SESION:", idUsuarioSesion);
+    console.log("NOMBRE:", nombreCompleto);
+    console.log("ROL:", rol);
+    console.log("GRUPOS COORDINADOR:", gruposUsuario);
+    console.log("SUBGRUPOS REFERENTE:", subgruposUsuario);
+    console.log("=================================");
+
+    // =========================================================
+    // QUERY DE USUARIOS
+    // =========================================================
     const request = pool.request();
 
     let query = `
@@ -266,39 +305,95 @@ router.get("/usuarios", async (req, res) => {
           AND ug.Vigencia_Hasta IS NULL
       INNER JOIN ${schema}.GRUPO g
           ON g.ID_Grupo = ug.ID_Grupo
-        WHERE u.Vigencia_Hasta IS NULL
-          
+      WHERE u.Vigencia_Hasta IS NULL
     `;
 
-    // 🎯 FILTRO POR ROL
+    // =========================================================
+    // FILTRO POR ROL
+    // =========================================================
+
     if (esAdmin || rol === "GERENTE") {
-      // ve todo
+      // Admin y Gerente ven todo
     } else if (rol === "COORDINADOR") {
-      request.input("grupoUsuario", sql.VarChar, grupoUsuario);
-      query += ` AND g.Grupo = @grupoUsuario `;
+      // El Coordinador ve TODOS sus grupos
+      if (gruposUsuario.length > 0) {
+        const parametrosGrupo = [];
+
+        gruposUsuario.forEach((grupoNombre, index) => {
+          const parametro = `grupoUsuario${index}`;
+
+          request.input(parametro, sql.VarChar, grupoNombre);
+
+          parametrosGrupo.push(`@${parametro}`);
+        });
+
+        query += `
+          AND g.Grupo IN (${parametrosGrupo.join(", ")})
+        `;
+      } else {
+        // Si por algún motivo no tiene grupos,
+        // no mostramos usuarios
+        query += ` AND 1 = 0 `;
+      }
     } else if (rol === "REFERENTE") {
-      request.input("subgrupoUsuario", sql.VarChar, subgrupoUsuario);
-      query += ` AND g.Subgrupo = @subgrupoUsuario `;
+      // El Referente ve todos sus subgrupos
+      if (subgruposUsuario.length > 0) {
+        const parametrosSubgrupo = [];
+
+        subgruposUsuario.forEach((subgrupoNombre, index) => {
+          const parametro = `subgrupoUsuario${index}`;
+
+          request.input(parametro, sql.VarChar, subgrupoNombre);
+
+          parametrosSubgrupo.push(`@${parametro}`);
+        });
+
+        query += `
+          AND g.Subgrupo IN (${parametrosSubgrupo.join(", ")})
+        `;
+      } else {
+        query += ` AND 1 = 0 `;
+      }
     } else {
+      // USER → solamente él mismo
       request.input("idUsuarioSesion", sql.Int, idUsuarioSesion);
-      query += ` AND u.ID_Usuario = @idUsuarioSesion `;
+
+      query += `
+        AND u.ID_Usuario = @idUsuarioSesion
+      `;
     }
 
-    // 🎯 FILTROS OPCIONALES
+    // =========================================================
+    // FILTROS OPCIONALES DE LA INTERFAZ
+    // =========================================================
+
     if (grupo && subgrupo) {
-      // Si se especifican ambos, filtrar por ambos
       request.input("grupo", sql.VarChar, grupo);
+
       request.input("subgrupo", sql.VarChar, subgrupo);
-      query += ` AND g.Grupo = @grupo AND g.Subgrupo = @subgrupo `;
+
+      query += `
+        AND g.Grupo = @grupo
+        AND g.Subgrupo = @subgrupo
+      `;
     } else if (grupo) {
-      // Si solo se especifica grupo, filtrar SOLO por ese grupo
       request.input("grupo", sql.VarChar, grupo);
-      query += ` AND g.Grupo = @grupo `;
+
+      query += `
+        AND g.Grupo = @grupo
+      `;
     }
 
-    query += ` ORDER BY g.Grupo, g.Subgrupo, u.Apellido, u.Nombre `;
+    query += `
+      ORDER BY
+        g.Grupo,
+        g.Subgrupo,
+        u.Apellido,
+        u.Nombre
+    `;
 
     const result = await request.query(query);
+
     console.log("USUARIOS CALENDARIO:", result.recordset);
 
     res.json({
@@ -308,6 +403,7 @@ router.get("/usuarios", async (req, res) => {
     });
   } catch (err) {
     console.error("Error obteniendo usuarios:", err);
+
     res.status(500).json({
       success: false,
       error: err.message,
