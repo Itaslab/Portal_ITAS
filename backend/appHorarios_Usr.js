@@ -491,19 +491,19 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
       const horariosActualesResult = await transaction
         .request()
         .input("id_usuario", sql.Int, id_usuario).query(`
-          SELECT
-              Dia_Semana,
-              Hora_In1,
-              Hora_Out1,
-              Hora_In2,
-              Hora_Out2,
-              Modalidad,
-              Edificio,
-              Log_De_Cambios
-          FROM ${schema}.APP_HORARIOS_USR
-          WHERE ID_Usuario = @id_usuario
-            AND Vigencia_Hasta IS NULL
-        `);
+    SELECT
+        Dia_Semana,
+        CONVERT(VARCHAR(5), Hora_In1, 108) AS Hora_In1,
+        CONVERT(VARCHAR(5), Hora_Out1, 108) AS Hora_Out1,
+        CONVERT(VARCHAR(5), Hora_In2, 108) AS Hora_In2,
+        CONVERT(VARCHAR(5), Hora_Out2, 108) AS Hora_Out2,
+        Modalidad,
+        Edificio,
+        Log_De_Cambios
+    FROM ${schema}.APP_HORARIOS_USR
+    WHERE ID_Usuario = @id_usuario
+      AND Vigencia_Hasta IS NULL
+  `);
 
       const horariosActuales = horariosActualesResult.recordset;
 

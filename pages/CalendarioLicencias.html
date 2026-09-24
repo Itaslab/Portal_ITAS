@@ -115,7 +115,7 @@
         </div>
 
         <!-- Botones -->
-        <div class="col ms-auto text-end">
+        <div class="col ms-auto d-flex justify-content-end align-items-center">
           <button
             id="btnCrearLicencia"
             class="btn btn-primary btn-sm text-white"
@@ -374,13 +374,13 @@
       fetch(`${basePath}/api/licencias/pendientes`)
         .then((res) => res.json())
         .then((data) => {
-          console.log("Rol recibido:", data.rol); // Log para depurar
+          console.log("Rol recibido:", data.rol);
           if (data.rol !== "COORDINADOR") {
             document.getElementById("btnAprobarLicencias").style.display =
               "none";
           } else {
             document.getElementById("btnAprobarLicencias").style.display =
-              "block";
+              "inline-block";
           }
         })
         .catch((err) =>
