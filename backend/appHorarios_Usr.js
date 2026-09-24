@@ -148,18 +148,8 @@ async function obtenerRolUsuario(pool, idUsuario) {
     if (fila.Referente === nombreCompleto) {
       esReferente = true;
 
-      if (fila.Grupo && fila.Subgrupo) {
-        const existe = gruposUsuario.some(
-          (item) =>
-            item.grupo === fila.Grupo && item.subgrupo === fila.Subgrupo,
-        );
-
-        if (!existe) {
-          gruposUsuario.push({
-            grupo: fila.Grupo,
-            subgrupo: fila.Subgrupo,
-          });
-        }
+      if (fila.Subgrupo && !subgruposUsuario.includes(fila.Subgrupo)) {
+        subgruposUsuario.push(fila.Subgrupo);
       }
     }
   }
@@ -209,23 +199,20 @@ function construirFiltroRol(request, { rol, gruposUsuario, subgruposUsuario }) {
   }
 
   if (rol === "REFERENTE") {
-    // Referente ve solamente los pares GRUPO + SUBGRUPO
-    // donde figura como referente.
-    if (gruposUsuario.length === 0) {
+    // Referente ve únicamente sus subgrupos.
+    if (subgruposUsuario.length === 0) {
       return ` AND 1 = 0 `;
     }
 
-    const condiciones = gruposUsuario.map((item, index) => {
-      const parametroGrupo = `grupoUsuario${index}`;
-      const parametroSubgrupo = `subgrupoUsuario${index}`;
+    const parametros = subgruposUsuario.map((subgrupoNombre, index) => {
+      const parametro = `subgrupoUsuario${index}`;
 
-      request.input(parametroGrupo, sql.VarChar, item.grupo);
-      request.input(parametroSubgrupo, sql.VarChar, item.subgrupo);
+      request.input(parametro, sql.VarChar, subgrupoNombre);
 
-      return `(g.Grupo = @${parametroGrupo} AND g.Subgrupo = @${parametroSubgrupo})`;
+      return `@${parametro}`;
     });
 
-    return ` AND (${condiciones.join(" OR ")}) `;
+    return ` AND g.Subgrupo IN (${parametros.join(", ")}) `;
   }
 
   return "";
