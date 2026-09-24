@@ -148,8 +148,18 @@ async function obtenerRolUsuario(pool, idUsuario) {
     if (fila.Referente === nombreCompleto) {
       esReferente = true;
 
-      if (fila.Subgrupo && !subgruposUsuario.includes(fila.Subgrupo)) {
-        subgruposUsuario.push(fila.Subgrupo);
+      if (fila.Grupo && fila.Subgrupo) {
+        const existe = gruposUsuario.some(
+          (item) =>
+            item.grupo === fila.Grupo && item.subgrupo === fila.Subgrupo,
+        );
+
+        if (!existe) {
+          gruposUsuario.push({
+            grupo: fila.Grupo,
+            subgrupo: fila.Subgrupo,
+          });
+        }
       }
     }
   }
@@ -199,20 +209,23 @@ function construirFiltroRol(request, { rol, gruposUsuario, subgruposUsuario }) {
   }
 
   if (rol === "REFERENTE") {
-    // Referente ve todos sus subgrupos.
-    if (subgruposUsuario.length === 0) {
+    // Referente ve solamente los pares GRUPO + SUBGRUPO
+    // donde figura como referente.
+    if (gruposUsuario.length === 0) {
       return ` AND 1 = 0 `;
     }
 
-    const parametros = subgruposUsuario.map((subgrupoNombre, index) => {
-      const parametro = `subgrupoUsuario${index}`;
+    const condiciones = gruposUsuario.map((item, index) => {
+      const parametroGrupo = `grupoUsuario${index}`;
+      const parametroSubgrupo = `subgrupoUsuario${index}`;
 
-      request.input(parametro, sql.VarChar, subgrupoNombre);
+      request.input(parametroGrupo, sql.VarChar, item.grupo);
+      request.input(parametroSubgrupo, sql.VarChar, item.subgrupo);
 
-      return `@${parametro}`;
+      return `(g.Grupo = @${parametroGrupo} AND g.Subgrupo = @${parametroSubgrupo})`;
     });
 
-    return ` AND g.Subgrupo IN (${parametros.join(", ")}) `;
+    return ` AND (${condiciones.join(" OR ")}) `;
   }
 
   return "";
@@ -785,7 +798,6 @@ router.put("/horarios/:id_usuario", checkAuth, async (req, res) => {
 // =========================================================
 // OBTENER LOG DE CAMBIOS DEL HORARIO
 // =========================================================
-
 router.get("/horarios/:id_usuario/log", checkAuth, async (req, res) => {
   const { id_usuario } = req.params;
 
@@ -794,12 +806,25 @@ router.get("/horarios/:id_usuario/log", checkAuth, async (req, res) => {
     const idSesion = req.session.user.ID_Usuario;
 
     const admin = await esAdmin(pool, idSesion);
+    const ctx = await obtenerRolUsuario(pool, idSesion);
 
-    if (!admin && Number(id_usuario) !== Number(idSesion)) {
-      return res.status(403).json({
-        success: false,
-        mensaje: "No tenés permiso para ver este log.",
-      });
+    // Admin puede ver cualquier log.
+    // El resto solamente puede ver el log de usuarios
+    // sobre los que tiene permiso.
+    if (!admin) {
+      const permitido = await tienePermisoSobreUsuario(
+        pool,
+        id_usuario,
+        idSesion,
+        ctx,
+      );
+
+      if (!permitido) {
+        return res.status(403).json({
+          success: false,
+          mensaje: "No tenés permiso para ver este log.",
+        });
+      }
     }
 
     const result = await pool.request().input("id_usuario", sql.Int, id_usuario)

@@ -320,7 +320,10 @@ function renderTabla(usuarios) {
   usuarios.forEach((u) => {
     const configurado = u.dias.length > 0;
 
-    const puedeVer = esAdmin || u.id_usuario === idUsuarioActual;
+    // Si el usuario aparece en GET /horarios,
+    // es porque el backend ya determinó que está dentro
+    // del alcance del usuario logueado.
+    const puedeVer = true;
 
     const tr = document.createElement("tr");
 
