@@ -820,9 +820,9 @@ document.addEventListener("DOMContentLoaded", () => {
                   letra = "EX";
                   claseExtra += " tipo-examen";
                   break;
-                case "ENFERMADAD FAMILIAR":
+                case "ENFERMEDAD FAMILIAR":
                   letra = "EF";
-                  claseExtra += " tipo-enfermadad-familiar";
+                  claseExtra += " tipo-enfermedad-familiar";
                   break;
                 default:
                   letra = "";
