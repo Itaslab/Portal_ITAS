@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderCalendario();
       } catch (error) {
         console.error(error);
-        alert("Error al cargar licencia");
+        alert(error.message || "Error al cargar licencia");
       }
     });
 
